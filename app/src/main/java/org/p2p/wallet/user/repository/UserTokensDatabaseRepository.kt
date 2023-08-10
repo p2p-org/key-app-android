@@ -7,14 +7,11 @@ import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
 import org.p2p.core.utils.scaleShort
 import org.p2p.token.service.model.TokenServicePrice
-import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.model.TokenConverter
 
 class UserTokensDatabaseRepository(
-    private val userLocalRepository: UserLocalRepository,
-    private val tokensDao: TokenDao,
-    private val tokenServiceRepository: TokenServiceRepository
+    private val tokensDao: TokenDao
 ) : UserTokensLocalRepository {
 
     override suspend fun updateTokens(tokens: List<Token.Active>) {
@@ -22,10 +19,6 @@ class UserTokensDatabaseRepository(
     }
 
     override suspend fun updateOrCreateUserToken(tokenToUpdate: Token.Active) {
-//        val tokenToUpdate = findTokenByMintAddress(mintAddress)
-//            ?.let { createUpdatedToken(it, newBalanceLamports) }
-//            ?: createNewToken(mintAddress, newBalanceLamports, publicKey)
-
         tokensDao.insertOrReplace(TokenConverter.toDatabase(tokenToUpdate))
     }
 
