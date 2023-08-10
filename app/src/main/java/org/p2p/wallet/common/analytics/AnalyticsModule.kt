@@ -28,7 +28,7 @@ import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.analytics.JupiterSwapTransactionDetailsAnalytics
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.send.analytics.NewSendAnalytics
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.sell.analytics.SellAnalytics

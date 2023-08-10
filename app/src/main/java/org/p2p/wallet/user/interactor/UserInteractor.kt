@@ -10,8 +10,8 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.repository.RecipientsLocalRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserTokensLocalRepository

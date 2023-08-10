@@ -88,8 +88,8 @@
 -keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
 -keep public class * implements org.p2p.core.network.data.transactionerrors.RpcTransactionError
 -keep public class * implements org.p2p.core.network.data.transactionerrors.TransactionInstructionError
--keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
--keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerState
+-keep public class * implements org.p2p.wallet.send.model.FeeRelayerStateError
+-keep public class * implements org.p2p.wallet.send.model.FeeRelayerState
 -keep public class * extends org.p2p.wallet.transaction.model.progressstate.TransactionState
 -keep public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
 -keep public class * implements org.p2p.wallet.bridge.model.BridgeResult
