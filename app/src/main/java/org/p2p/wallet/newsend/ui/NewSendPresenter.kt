@@ -65,8 +65,6 @@ import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.getErrorMessage
 import org.p2p.wallet.utils.toPublicKey
 
-private const val ACCEPTABLE_RATE_DIFF = 0.02
-
 private const val TAG = "NewSendPresenter"
 
 class NewSendPresenter(
@@ -321,8 +319,7 @@ class NewSendPresenter(
     }
 
     private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
-        val isStableCoin = token.isUSDC || token.isUSDT
-        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+        if (token.rate == null || isStableCoinRateDiffAcceptable(token)) {
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
@@ -333,8 +330,7 @@ class NewSendPresenter(
     }
 
     private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
-        val delta = token.rate.orZero() - BigDecimal.ONE
-        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
+        return token.rate.orZero() == BigDecimal.ONE
     }
 
     override fun switchCurrencyMode() {
