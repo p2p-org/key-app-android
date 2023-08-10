@@ -7,6 +7,7 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.settings.model.SettingsRow
 import org.p2p.wallet.utils.appendBreakLine
+import org.p2p.core.BuildConfig as CoreBuildConfig
 
 class DebugSettingsDeviceInfoMapper(
     private val resources: Resources
@@ -21,16 +22,16 @@ class DebugSettingsDeviceInfoMapper(
             val deviceDensity = displayMetrics.densityDpi.toString() + "dpi (" + densityBucket + ")"
             val deviceRelease = Build.VERSION.RELEASE
             val deviceApi = Build.VERSION.SDK_INT.toString()
-            createRecord("densityBucket", densityBucket)
-            createRecord("deviceMake", deviceMake)
-            createRecord("deviceModel", deviceModel)
-            createRecord("deviceResolution", deviceResolution)
-            createRecord("deviceDensity", deviceDensity)
+            appendFlagRecord("densityBucket", densityBucket)
+            appendFlagRecord("deviceMake", deviceMake)
+            appendFlagRecord("deviceModel", deviceModel)
+            appendFlagRecord("deviceResolution", deviceResolution)
+            appendFlagRecord("deviceDensity", deviceDensity)
 
             appendBreakLine()
 
-            createRecord("deviceRelease", deviceRelease)
-            createRecord("deviceApi", deviceApi)
+            appendFlagRecord("deviceRelease", deviceRelease)
+            appendFlagRecord("deviceApi", deviceApi)
         }
         return listOf(
             SettingsRow.Info(
@@ -42,16 +43,22 @@ class DebugSettingsDeviceInfoMapper(
 
     fun mapCiInfo(): List<SettingsRow> {
         val ciValues = buildString {
-            createApiKeyRecord("amplitudeKey", BuildConfig.amplitudeKey)
-            createApiKeyRecord("intercomApiKey", org.p2p.core.BuildConfig.intercomApiKey)
-            createApiKeyRecord("intercomAppId", org.p2p.core.BuildConfig.intercomAppId)
-            createApiKeyRecord("moonpayKey", org.p2p.core.BuildConfig.moonpayKey)
-            createApiKeyRecord("moonpaySanbdoxKey", org.p2p.core.BuildConfig.moonpaySandboxKey)
-            createApiKeyRecord("rpcPoolApiKey", org.p2p.core.BuildConfig.rpcPoolApiKey)
+            appendApiKeyRecord("amplitudeKey", BuildConfig.amplitudeKey)
+            appendApiKeyRecord("intercomApiKey", CoreBuildConfig.intercomApiKey)
+            appendApiKeyRecord("intercomAppId", CoreBuildConfig.intercomAppId)
+            appendApiKeyRecord("moonpayKey", CoreBuildConfig.moonpayKey)
+            appendApiKeyRecord("moonpaySanbdoxKey", CoreBuildConfig.moonpaySandboxKey)
+            appendApiKeyRecord("rpcPoolApiKey", CoreBuildConfig.rpcPoolApiKey)
+            appendApiKeyRecord("lokaliseKey", CoreBuildConfig.lokaliseKey)
+            appendApiKeyRecord("lokaliseAppId", CoreBuildConfig.lokaliseAppId)
+            appendApiKeyRecord("appsFlyerKey", CoreBuildConfig.appsFlyerKey)
 
             appendBreakLine()
 
-            createFlagRecord("CRASHLYTICS_ENABLED", org.p2p.core.BuildConfig.CRASHLYTICS_ENABLED)
+            appendFlagRecord("CRASHLYTICS_ENABLED", CoreBuildConfig.CRASHLYTICS_ENABLED)
+            appendFlagRecord("CRASHLYTICS_ENABLED", CoreBuildConfig.APPSFLYER_ENABLED)
+            appendFlagRecord("CRASHLYTICS_ENABLED", CoreBuildConfig.SENTRY_ENABLED)
+            appendFlagRecord("CRASHLYTICS_ENABLED", CoreBuildConfig.SENTRY_ENABLED)
         }
         return listOf(
             SettingsRow.Info(
@@ -72,14 +79,18 @@ class DebugSettingsDeviceInfoMapper(
         )
     }
 
-    private fun StringBuilder.createApiKeyRecord(apiKeyName: String, apiKey: String) {
+    private fun StringBuilder.appendApiKeyRecord(apiKeyName: String, apiKey: String) {
         append("$apiKeyName = ")
         append("***")
         append(apiKey.removeRange(startIndex = 0, endIndex = apiKey.length - 3))
         appendBreakLine()
     }
 
-    private fun StringBuilder.createFlagRecord(flagName: String, flagValue: Boolean) {
+    private fun StringBuilder.appendFlagRecord(flagName: String, flagValue: Boolean) {
+        appendFlagRecord(flagName, flagValue.toString())
+    }
+
+    private fun StringBuilder.appendFlagRecord(flagName: String, flagValue: String) {
         append("$flagName = $flagValue")
         appendBreakLine()
     }
@@ -99,10 +110,5 @@ class DebugSettingsDeviceInfoMapper(
             DisplayMetrics.DENSITY_TV -> "tvdpi"
             else -> displayMetrics.densityDpi.toString()
         }
-    }
-
-    private fun StringBuilder.createRecord(flagName: String, flagValue: String) {
-        append("$flagName = $flagValue")
-        appendBreakLine()
     }
 }

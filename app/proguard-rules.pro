@@ -70,24 +70,24 @@
 
 -keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
 -keep public class ** extends java.lang.Throwable  # Optional: Keep custom exceptions.
--keepnames class ** extends kotlin.Throwable  # Optional: Keep custom exceptions.
+-keep class ** extends kotlin.Throwable  # Optional: Keep custom exceptions.
 
 # Our own classes
 -keep public class org.p2p.core.crashlytics.helpers.TimberCrashTree
 -keep public class org.p2p.core.crashlytics.helpers.CrashHttpLoggingInterceptor
 -keep class io.sentry.SentryEvent { *; }
--keepnames public class * implements org.p2p.wallet.auth.model.OnboardingFlow
--keepnames public class org.p2p.wallet.auth.model.RestoreError
--keepnames public class * implements org.p2p.wallet.auth.model.RestoreUserResult
--keepnames public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
--keepnames public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
--keepnames public class * implements org.p2p.core.network.data.transactionerrors.RpcTransactionError
--keepnames public class * implements org.p2p.core.network.data.transactionerrors.TransactionInstructionError
--keepnames public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
--keepnames public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
--keepnames public class * implements org.p2p.wallet.bridge.model.BridgeResult
--keepnames public class * extends org.p2p.wallet.striga.common.model.StrigaDataLayerError
--keepnames enum org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
+-keep public class * implements org.p2p.wallet.auth.model.OnboardingFlow
+-keep public class org.p2p.wallet.auth.model.RestoreError
+-keep public class * implements org.p2p.wallet.auth.model.RestoreUserResult
+-keep public class * implements org.p2p.wallet.jupiter.statemanager.SwapStateAction
+-keep public class * extends org.p2p.wallet.moonpay.model.MoonpayBuyResult
+-keep public class * implements org.p2p.core.network.data.transactionerrors.RpcTransactionError
+-keep public class * implements org.p2p.core.network.data.transactionerrors.TransactionInstructionError
+-keep public class * implements org.p2p.wallet.newsend.model.FeeRelayerStateError
+-keep public class * implements org.p2p.wallet.feerelayer.model.FeeCalculationState
+-keep public class * implements org.p2p.wallet.bridge.model.BridgeResult
+-keep public class * extends org.p2p.wallet.striga.common.model.StrigaDataLayerError
+-keep enum org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 
 -keep class io.intercom.android.** { *; }
 -keep class com.intercom.** { *; }
