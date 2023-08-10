@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.addmoney.presenter
+package org.p2p.wallet.home.onofframp.ui
 
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -14,7 +14,6 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.home.onofframp.OnOffRampCountrySelectionContract
 import org.p2p.wallet.home.onofframp.interactor.OnOffRampCountrySelectionInteractor
-import org.p2p.wallet.home.onofframp.ui.OnOffRampCountrySelectionPresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.utils.StandardTestCoroutineDispatchers
 import org.p2p.wallet.utils.coVerifyNone
@@ -40,7 +39,7 @@ private val SupportedCountry = CountryCode(
 )
 
 @ExperimentalCoroutinesApi
-class AddMoneyOnboardingPresenterTest {
+class OnOffRampCountrySelectionPresenterTest {
 
     @MockK
     lateinit var interactor: OnOffRampCountrySelectionInteractor
