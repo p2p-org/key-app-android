@@ -1,7 +1,7 @@
 package org.p2p.token.service.api.mapper
 
-import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.token.TokenMetadata
+import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.token.service.api.request.TokenServiceItemRequest
 import org.p2p.token.service.api.request.TokenServiceQueryRequest
 import org.p2p.token.service.api.response.MetadataExtensionResponse

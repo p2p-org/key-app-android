@@ -24,8 +24,7 @@ class ScreensAnalyticsInteractor(
                 Timber.tag("ScreensAnalyticsInteractor").i("logScreenOpened: $newScreenName")
                 browseAnalytics.logScreenOpened(
                     screenName = newScreenName,
-                    lastScreen = getPreviousScreenName(),
-                    isSellEnabled = sellInteractor.isSellAvailable()
+                    lastScreen = getPreviousScreenName()
                 )
             }
         }

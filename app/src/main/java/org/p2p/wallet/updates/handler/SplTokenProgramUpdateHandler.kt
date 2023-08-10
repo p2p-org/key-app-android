@@ -5,19 +5,26 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.solanaj.programs.TokenProgram
-import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdateHandler
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.wallet.user.repository.UserTokensLocalRepository
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 private const val TAG = "TokensBalanceUpdateManager"
 
+/**
+ * This handler receives two types of updates:
+ * 1. SPL Token balance update
+ * 2. A New SPL Token receive
+ *
+ * In both cases we update or create a new user token by getting metadata, price and other things.
+ * */
 class SplTokenProgramUpdateHandler(
     private val gson: Gson,
-    private val tokensRepository: UserTokensLocalRepository
+    private val userTokensInteractor: UserTokensInteractor
 ) : SubscriptionUpdateHandler {
 
     override suspend fun initialize() = Unit
@@ -29,15 +36,15 @@ class SplTokenProgramUpdateHandler(
 
         val programData = response.account.data?.firstOrNull()?.toBase64Instance() ?: return
         val updatedTokenData = TokenProgram.AccountInfoData.decode(programData.decodeToBytes())
-        tokensRepository.updateUserToken(
-            newBalanceLamports = updatedTokenData.amount,
+
+        val amount = updatedTokenData.amount
+        userTokensInteractor.updateOrCreateUserToken(
+            newBalanceLamports = amount,
             mintAddress = updatedTokenData.mint.toBase58().toBase58Instance(),
             publicKey = response.accountPublicKey.toBase58Instance()
         )
-        Timber.tag(TAG).d(
-            "SPL Token data received, " +
-                "amountInLamports=${updatedTokenData.amount}, mint=${updatedTokenData.mint}, data = $data"
-        )
+
+        Timber.tag(TAG).d("SPL Token data received, lamports: $amount, mint: ${updatedTokenData.mint}")
     }
 }
 
