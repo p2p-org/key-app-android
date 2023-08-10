@@ -61,7 +61,10 @@ class Web3AuthClientMapper(private val gson: Gson) {
     }
 
     fun fromNetworkGetUserData(responseJson: String): Result<GatewayOnboardingMetadata> = try {
-        Result.success(gson.fromJsonReified<GatewayOnboardingMetadata>(responseJson)!!)
+        val unescapedJson = responseJson
+            .replace("\\", "")
+            .removeSurrounding("\"")
+        Result.success(gson.fromJsonReified<GatewayOnboardingMetadata>(unescapedJson)!!)
     } catch (mappingError: Throwable) {
         Timber.i(mappingError)
         Timber.i(responseJson)
