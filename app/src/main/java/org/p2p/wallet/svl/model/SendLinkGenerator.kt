@@ -6,7 +6,7 @@ import org.p2p.core.BuildConfig.saltPrefix
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.AccountCreationFailed
 import org.p2p.solanaj.crypto.DerivationPath
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.send.model.TemporaryAccount
 import org.p2p.wallet.utils.emptyString
 
 private const val REGEX_LINK_ALLOWED_SYMBOLS = "[A-Za-z0-9_~-]"

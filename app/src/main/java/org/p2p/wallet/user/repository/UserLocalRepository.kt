@@ -33,5 +33,6 @@ interface UserLocalRepository {
     /**
      * Find [Token] by its symbol
      */
+    @Deprecated("This repository should not return [Token] objects but only [TokenMetadata]")
     suspend fun findTokenByMint(mintAddress: String): Token?
 }

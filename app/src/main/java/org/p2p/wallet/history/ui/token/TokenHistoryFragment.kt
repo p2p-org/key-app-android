@@ -22,9 +22,9 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.send.analytics.NewSendAnalytics
+import org.p2p.wallet.send.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment

@@ -5,7 +5,7 @@ import org.p2p.core.network.data.ServerException
 import org.p2p.core.network.data.SimulationException
 import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.feerelayer.model.FeeRelayerException
-import org.p2p.wallet.newsend.model.SendTransactionFailed
+import org.p2p.wallet.send.model.SendTransactionFailed
 
 class AlarmThrowableFormatter {
     private fun Throwable.unwrap(): Throwable = if (this is SendTransactionFailed) cause else this
