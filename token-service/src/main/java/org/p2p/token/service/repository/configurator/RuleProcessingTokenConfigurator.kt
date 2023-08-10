@@ -6,7 +6,7 @@ import org.p2p.core.token.TokenMetadataExtension
 class RuleProcessingTokenConfigurator(
     private val extensions: TokenMetadataExtension,
     private val tokenExtensions: TokenExtensions
-) : TokenConfigurator<TokenExtensions> {
+) : TokenConfigurator {
 
     override fun config(): TokenExtensions {
         val processingRule = extensions.ruleOfProcessingTokenPriceWs

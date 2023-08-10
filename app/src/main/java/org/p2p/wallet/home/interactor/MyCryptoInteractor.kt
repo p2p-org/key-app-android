@@ -1,4 +1,4 @@
-package org.p2p.wallet.home.ui.crypto
+package org.p2p.wallet.home.interactor
 
 import java.math.BigDecimal
 import org.p2p.wallet.bridge.interactor.EthereumInteractor

@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.analytics
 
+import kotlinx.coroutines.launch
 import org.p2p.core.analytics.Analytics
 import org.p2p.core.analytics.constants.EventNames.BROWSE_BANNER_BACKUP_PRESSED
 import org.p2p.core.analytics.constants.EventNames.BROWSE_BANNER_FEEDBACK_PRESSED
@@ -15,7 +16,6 @@ import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SCROLLED
 import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_LIST_SEARCHED
 import org.p2p.core.analytics.constants.EventNames.BROWSE_TOKEN_LIST_VIEWED
 import org.p2p.core.common.di.AppScope
-import kotlinx.coroutines.launch
 
 class BrowseAnalytics(
     private val tracker: Analytics,
@@ -71,16 +71,14 @@ class BrowseAnalytics(
 
     fun logScreenOpened(
         screenName: String,
-        lastScreen: String,
-        isSellEnabled: Boolean
+        lastScreen: String
     ) {
         appScope.launch {
             tracker.logEvent(
                 event = BROWSE_SCREEN_OPENED,
                 params = mapOf(
                     "Screen_Name" to screenName,
-                    "Last_Screen" to lastScreen,
-                    "Is_Sell_Enabled" to isSellEnabled
+                    "Last_Screen" to lastScreen
                 )
             )
         }

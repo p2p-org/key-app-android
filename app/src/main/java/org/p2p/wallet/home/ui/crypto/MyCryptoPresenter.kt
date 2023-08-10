@@ -15,6 +15,7 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.home.interactor.MyCryptoInteractor
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
 import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler

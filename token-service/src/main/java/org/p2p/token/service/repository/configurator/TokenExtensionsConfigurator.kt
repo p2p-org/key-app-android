@@ -1,16 +1,17 @@
 package org.p2p.token.service.repository.configurator
 
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenMetadataExtension
 
-@Suppress("UNCHECKED_CAST")
-class TokenExtensionsConfigurator<T : Token>(
+class TokenExtensionsConfigurator(
     private val extensions: TokenMetadataExtension,
-    private val token: T
-) : TokenConfigurator<T> {
+    private val tokenTotal: BigDecimal? = null,
+    private val tokenRate: BigDecimal? = null
+) : TokenConfigurator {
 
-    override fun config(): T {
+    override fun config(): TokenExtensions {
         var tokenExtensions =
             TokenExtensions(tokenPercentDifferenceOnWalletScreen = extensions.percentDifferenceToShowByPriceOnWs)
         /**
@@ -41,16 +42,10 @@ class TokenExtensionsConfigurator<T : Token>(
         /**
          * Setup [Token.setupPercentDifferenceToShowByPrice] configuration
          */
-        return when (token) {
-            is Token.Active -> {
-                val newToken = PricePercentDifferenceToShow(extensions, token).config()
-                newToken.copy(tokenExtensions = tokenExtensions)
-            }
-            is Token.Other -> {
-                token.copy(tokenExtensions = tokenExtensions)
-            }
-            is Token.Eth -> token
-            else -> token
-        } as T
+        if (tokenTotal != null) {
+            tokenExtensions = PricePercentDifferenceToShow(extensions, tokenExtensions, tokenTotal, tokenRate).config()
+        }
+
+        return tokenExtensions
     }
 }

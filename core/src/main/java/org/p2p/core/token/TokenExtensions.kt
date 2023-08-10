@@ -19,6 +19,8 @@ data class TokenExtensions(
     val canTokenBeHidden: Boolean? = null
 ) : Parcelable {
 
+    var isRateExceedsTheDifference: Boolean = true
+
     companion object {
         val NONE = TokenExtensions()
     }

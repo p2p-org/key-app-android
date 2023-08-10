@@ -91,9 +91,6 @@ class UserInteractor(
         return userTokens.any { it.publicKey == address }
     }
 
-    suspend fun findMultipleTokenData(tokenSymbols: List<String>): List<Token.Other> =
-        tokenSymbols.mapNotNull { findTokenDataBySymbol(it) }
-
     private suspend fun findTokenDataBySymbol(symbol: String): Token.Other? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
         val price = tokenData?.let {
@@ -112,7 +109,4 @@ class UserInteractor(
     }
 
     suspend fun getRecipients(): List<SearchResult> = recipientsLocalRepository.getRecipients()
-
-    private fun List<Token.Active>.filterNotSol(): List<Token.Active> =
-        filterNot { it.mintAddress == Constants.WRAPPED_SOL_MINT }
 }

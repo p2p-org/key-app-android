@@ -2,9 +2,8 @@ package org.p2p.wallet.home.model
 
 import java.math.BigInteger
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenExtensions
-import org.p2p.core.token.TokenMetadataExtension
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -15,6 +14,7 @@ import org.p2p.token.service.repository.configurator.TokenExtensionsConfigurator
 import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.home.db.TokenExtensionEntity
 
+// TODO: We should transfer this object to class since for unit tests
 object TokenConverter {
 
     fun createToken(
@@ -31,25 +31,49 @@ object TokenConverter {
             null
         }
         val total = totalLamports.toBigDecimal().divide(tokenMetadata.decimals.toPowerValue())
-        val token = Token.Active(
+
+        val extensions = TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions,
+            tokenTotal = total,
+            tokenRate = totalInUsd
+        ).config()
+
+        return Token.Active(
             publicKey = accountPublicKey,
             tokenSymbol = tokenMetadata.symbol,
             decimals = tokenMetadata.decimals,
             mintAddress = mintAddress,
             tokenName = tokenMetadata.name,
             iconUrl = tokenMetadata.iconUrl,
-            totalInUsd = totalInUsd,
+            // TODO: Remove [totalInUsd] from constructor fields and make it as a function by calculating total * rate
+            totalInUsd = if (extensions.isRateExceedsTheDifference) totalInUsd else total,
             total = total,
             rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
             isWrapped = tokenMetadata.isWrapped,
             tokenServiceAddress = tokenMetadata.mintAddress,
-            tokenExtensions = TokenExtensions.NONE
+            tokenExtensions = extensions
         )
-        return TokenExtensionsConfigurator(
-            extensions = tokenMetadata.extensions,
-            token = token
+    }
+
+    fun fromNetwork(
+        tokenMetadata: TokenMetadata,
+        price: TokenServicePrice?
+    ): Token.Other {
+        val extensions = TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions
         ).config()
+
+        return Token.Other(
+            tokenName = tokenMetadata.name,
+            tokenSymbol = tokenMetadata.symbol,
+            decimals = tokenMetadata.decimals,
+            mintAddress = tokenMetadata.mintAddress,
+            iconUrl = tokenMetadata.iconUrl,
+            isWrapped = tokenMetadata.isWrapped,
+            rate = price?.rate?.usd,
+            tokenExtensions = extensions
+        )
     }
 
     fun fromNetwork(
@@ -67,26 +91,6 @@ object TokenConverter {
             tokenMetadata = tokenMetadata,
             price = price
         )
-    }
-
-    fun fromNetwork(
-        tokenMetadata: TokenMetadata,
-        price: TokenServicePrice?
-    ): Token.Other {
-        val token = Token.Other(
-            tokenName = tokenMetadata.name,
-            tokenSymbol = tokenMetadata.symbol,
-            decimals = tokenMetadata.decimals,
-            mintAddress = tokenMetadata.mintAddress,
-            iconUrl = tokenMetadata.iconUrl,
-            isWrapped = tokenMetadata.isWrapped,
-            rate = price?.rate?.usd,
-            tokenExtensions = TokenExtensions.NONE
-        )
-        return TokenExtensionsConfigurator(
-            extensions = tokenMetadata.extensions,
-            token = token
-        ).config()
     }
 
     fun toDatabase(token: Token.Active): TokenEntity =
@@ -118,29 +122,23 @@ object TokenConverter {
         )
     }
 
-    fun fromDatabase(entity: TokenEntity, extensions: TokenMetadataExtension?): Token.Active {
-        val domainToken = Token.Active(
-            publicKey = entity.publicKey,
-            tokenSymbol = entity.tokenSymbol,
-            decimals = entity.decimals,
-            mintAddress = entity.mintAddress,
-            tokenName = entity.tokenName,
-            iconUrl = entity.iconUrl,
-            totalInUsd = entity.totalInUsd,
-            total = entity.total,
-            rate = entity.exchangeRate?.toBigDecimalOrZero(),
-            visibility = TokenVisibility.parse(entity.visibility),
-            isWrapped = entity.isWrapped,
-            tokenServiceAddress = entity.tokenServiceAddress,
-            tokenExtensions = fromDatabase(entity.extensions)
-        )
-        return TokenExtensionsConfigurator(
-            extensions = extensions ?: TokenMetadataExtension.NONE,
-            token = domainToken
-        ).config()
-    }
+    fun fromDatabase(entity: TokenEntity): Token.Active = Token.Active(
+        publicKey = entity.publicKey,
+        tokenSymbol = entity.tokenSymbol,
+        decimals = entity.decimals,
+        mintAddress = entity.mintAddress,
+        tokenName = entity.tokenName,
+        iconUrl = entity.iconUrl,
+        totalInUsd = entity.totalInUsd,
+        total = entity.total,
+        rate = entity.exchangeRate?.toBigDecimalOrZero(),
+        visibility = TokenVisibility.parse(entity.visibility),
+        isWrapped = entity.isWrapped,
+        tokenServiceAddress = entity.tokenServiceAddress,
+        tokenExtensions = fromDatabase(entity.extensions)
+    )
 
-    fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
+    private fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
         TokenExtensions(
             ruleOfProcessingTokenPrice = entity?.ruleOfProcessingTokenPrice,
             isTokenVisibleOnWalletScreen = entity?.isTokenVisibleOnWalletScreen,
