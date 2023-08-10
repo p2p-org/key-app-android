@@ -2,13 +2,17 @@ package org.p2p.wallet
 
 import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.common.di.ServiceScope
 import org.p2p.core.crashlytics.CrashLoggerModule
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.network.NetworkCoreModule
+import org.p2p.ethereumkit.external.EthereumModule
+import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.alarmlogger.AlarmErrorsModule
 import org.p2p.wallet.auth.AuthModule
 import org.p2p.wallet.bridge.BridgeModule
@@ -20,14 +24,11 @@ import org.p2p.wallet.common.feature_toggles.di.FeatureTogglesModule
 import org.p2p.wallet.debug.DebugSettingsModule
 import org.p2p.wallet.feerelayer.FeeRelayerModule
 import org.p2p.wallet.history.HistoryModule
-import org.p2p.wallet.home.ui.container.MainContainerModule
-import org.p2p.wallet.infrastructure.InfrastructureModule
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.ethereumkit.external.EthereumModule
-import org.p2p.token.service.TokenServiceModule
 import org.p2p.wallet.home.events.HomeEventsModule
+import org.p2p.wallet.home.ui.container.MainContainerModule
 import org.p2p.wallet.home.ui.crypto.CryptoModule
 import org.p2p.wallet.home.ui.wallet.WalletModule
+import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
@@ -47,6 +48,7 @@ import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.utils.CrashLoggerInitializer
 
 object AppModule {
     fun create(restartAction: () -> Unit) = module {
@@ -63,6 +65,7 @@ object AppModule {
         }
 
         singleOf(::AppCreatedAction)
+        factoryOf(::CrashLoggerInitializer)
 
         includes(
             listOf(

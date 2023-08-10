@@ -12,9 +12,9 @@ class AppPublicKeyObserver(
 ) {
 
     fun startObserving() {
-        runCatching { tokenKeyProvider.publicKey }
+        tokenKeyProvider.runCatching { publicKey }
             .onSuccess {
-                Timber.i("Setting up public key for analytics and crash logger")
+                Timber.i("Setting up public key for analytics")
                 analytics.setUserId(it.takeIf(String::isNotBlank))
                 crashLogger.setUserId(it)
             }

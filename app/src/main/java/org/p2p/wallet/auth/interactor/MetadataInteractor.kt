@@ -45,19 +45,19 @@ class MetadataInteractor(
         }
 
     suspend fun tryLoadAndSaveMetadata(): MetadataLoadStatus {
-        val ethereumPublicKey = getEthereumPublicKey()
-        return if (ethereumPublicKey != null) {
-            Timber.tag(TAG).i("ETH key is found, fetching metadata")
+        val web3EthPublicKey = getWeb3EthereumPublicKey()
+        return if (web3EthPublicKey != null) {
+            Timber.tag(TAG).i("ETH WEB3 key is found, fetching metadata")
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
             loadAndSaveMetadata(
                 userAccount = userAccount,
                 mnemonicPhraseWords = userSeedPhrase,
-                ethereumPublicKey = ethereumPublicKey
+                ethereumPublicKey = web3EthPublicKey
             )
         } else {
-            Timber.i("User doesn't have ethereum public key, skipping metadata fetch")
-            MetadataLoadStatus.NoEthereumPublicKey
+            Timber.i("User doesn't have web3 ethereum public key, skipping metadata fetch")
+            MetadataLoadStatus.NoWeb3EthereumPublicKey
         }
     }
 
@@ -78,25 +78,15 @@ class MetadataInteractor(
         return DeviceInfoHelper.getCurrentDeviceName() != metadata.deviceShareDeviceName
     }
 
-    private fun getEthereumPublicKey(): String? {
+    private fun getWeb3EthereumPublicKey(): String? {
         return signUpDetailsStorage.getLastSignUpUserDetails()
             ?.signUpDetails
             ?.ethereumPublicKey
-            ?: tryToGetEthAddress()
-    }
-
-    private fun tryToGetEthAddress(): String? {
-        return if (bridgeFeatureToggle.isFeatureEnabled) {
-            ethereumInteractor.setup(userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase)
-            ethereumInteractor.getEthUserAddress().hex
-        } else {
-            null
-        }
     }
 
     private fun saveMetadataToStorage(metadata: GatewayOnboardingMetadata?) {
         // TODO PWN-8771 - implement database for metadata
-        val ethAddress = getEthereumPublicKey().orEmpty()
+        val ethAddress = getWeb3EthereumPublicKey().orEmpty()
         accountStorage.saveObject(
             key = AccountStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             data = metadata
@@ -108,7 +98,7 @@ class MetadataInteractor(
             return null
         }
         // TODO PWN-8771 - implement database for metadata
-        val ethAddress = getEthereumPublicKey().orEmpty()
+        val ethAddress = getWeb3EthereumPublicKey().orEmpty()
         return accountStorage.getObject(
             AccountStorageContract.Key.KEY_ONBOARDING_METADATA.withCustomKey(ethAddress),
             GatewayOnboardingMetadata::class
@@ -131,10 +121,10 @@ class MetadataInteractor(
     ): MetadataLoadStatus {
         return try {
             if (userAccount == null) {
-                throw MetadataFailed.MetadataNoAccount()
+                throw MetadataMethodFailed.NoAccount()
             }
             if (mnemonicPhraseWords.isEmpty()) {
-                throw MetadataFailed.MetadataNoSeedPhrase()
+                throw MetadataMethodFailed.NoSeedPhrase()
             }
             val serverMetadata = gatewayServiceRepository.loadOnboardingMetadata(
                 solanaPublicKey = userAccount.publicKey.toBase58Instance(),
@@ -142,28 +132,28 @@ class MetadataInteractor(
                 userSeedPhrase = mnemonicPhraseWords,
                 etheriumAddress = ethereumPublicKey
             )
-            val torusMetadata = getTorusMetadata()
+            val torusMetadata = getTorusMetadataFromTorus()
             compareMetadataAndSave(serverMetadata, torusMetadata)
             MetadataLoadStatus.Success
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
             MetadataLoadStatus.Canceled
-        } catch (validationError: MetadataFailed) {
+        } catch (validationError: MetadataMethodFailed) {
             Timber.e(validationError, "Get onboarding metadata failed")
             MetadataLoadStatus.Failure(validationError)
         } catch (error: Throwable) {
-            val targetError = MetadataFailed.OnboardingMetadataRequestFailure(error)
+            val targetError = MetadataMethodFailed.MetadataRequestFailure(error)
             Timber.e(targetError)
             MetadataLoadStatus.Failure(targetError)
         }
     }
 
-    private suspend fun getTorusMetadata(): GatewayOnboardingMetadata? {
+    private suspend fun getTorusMetadataFromTorus(): GatewayOnboardingMetadata? {
         if (!restoreFlowDataLocalRepository.isTorusKeyValid()) {
             return null
         }
         return try {
-            web3AuthApi.getUserData()
+            web3AuthApi.getUserMetadata()
         } catch (error: Throwable) {
             Timber.e(error)
             null
@@ -173,7 +163,7 @@ class MetadataInteractor(
     private suspend fun tryToUploadMetadataOnTorus(metadata: GatewayOnboardingMetadata) {
         if (restoreFlowDataLocalRepository.isTorusKeyValid()) {
             try {
-                web3AuthApi.setUserData(metadata)
+                web3AuthApi.setUserMetadata(metadata)
             } catch (error: Throwable) {
                 Timber.e(error)
             }
@@ -181,9 +171,9 @@ class MetadataInteractor(
     }
 
     private suspend fun tryToUploadMetadataOnServer(metadata: GatewayOnboardingMetadata) {
-        val ethereumPublicKey = getEthereumPublicKey()
+        val ethereumPublicKey = getWeb3EthereumPublicKey()
         if (ethereumPublicKey != null) {
-            Timber.tag(TAG).i("uploading new metadata")
+            Timber.tag(TAG).i("uploading new metadata with web3 eth key")
             val userAccount = Account(tokenKeyProvider.keyPair)
             val userSeedPhrase = seedPhraseProvider.getUserSeedPhrase().seedPhrase
             tryToUploadMetadataOnServer(
@@ -205,10 +195,10 @@ class MetadataInteractor(
     ) {
         try {
             if (userAccount == null) {
-                throw MetadataFailed.MetadataNoAccount()
+                throw MetadataMethodFailed.NoAccount()
             }
             if (mnemonicPhraseWords.isEmpty()) {
-                throw MetadataFailed.MetadataNoSeedPhrase()
+                throw MetadataMethodFailed.NoSeedPhrase()
             }
             gatewayServiceRepository.updateMetadata(
                 solanaPublicKey = userAccount.publicKey.toBase58Instance(),
@@ -219,10 +209,10 @@ class MetadataInteractor(
             )
         } catch (cancelled: CancellationException) {
             Timber.i(cancelled)
-        } catch (validationError: MetadataFailed) {
+        } catch (validationError: MetadataMethodFailed) {
             Timber.e(validationError, "Update metadata failed")
         } catch (error: Throwable) {
-            Timber.e(MetadataFailed.OnboardingMetadataRequestFailure(error))
+            Timber.e(MetadataMethodFailed.MetadataRequestFailure(error))
         }
     }
 
@@ -243,10 +233,12 @@ class MetadataInteractor(
             }
             updatedMetadata
         } ?: serverMetadata
+
         metadataChangesLogger.logChange(
             metadataOld = currentMetadata,
             metadataNew = finalMetadata
         )
+
         currentMetadata = finalMetadata
     }
 }

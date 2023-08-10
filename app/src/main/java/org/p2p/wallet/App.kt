@@ -19,25 +19,23 @@ import org.koin.core.logger.Level
 import timber.log.Timber
 import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.crashlytics.helpers.TimberCrashTree
-import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.solanaj.utils.SolanjLogger
 import org.p2p.wallet.appsflyer.AppsFlyerService
-import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.analytics.AppPublicKeyObserver
 import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.lokalise.LokaliseService
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.settings.interactor.ThemeInteractor
+import org.p2p.wallet.utils.CrashLoggerInitializer
 import org.p2p.wallet.utils.SolanajTimberLogger
 import org.p2p.core.BuildConfig as CoreBuildConfig
 import org.p2p.wallet.BuildConfig as AppBuildConfig
 
 class App : Application(), Configuration.Provider {
+    private val crashLoggerInitializer: CrashLoggerInitializer by inject()
     private val crashLogger: CrashLogger by inject()
     private val appCreatedAction: AppCreatedAction by inject()
     private val appsFlyerService: AppsFlyerService by inject()
-    private val usernameInteractor: UsernameInteractor by inject()
-    private val networkServicesUrlProvider: NetworkServicesUrlProvider by inject()
     private val analyticsPublicKeyObserver: AppPublicKeyObserver by inject()
 
     override fun onCreate() {
@@ -136,11 +134,6 @@ class App : Application(), Configuration.Provider {
             .getInstance()
             .setCrashlyticsCollectionEnabled(CoreBuildConfig.CRASHLYTICS_ENABLED)
 
-        crashLogger.apply {
-            setCustomKey("crashlytics_enabled", CoreBuildConfig.CRASHLYTICS_ENABLED)
-            setCustomKey("verifier", networkServicesUrlProvider.loadTorusEnvironment().verifier)
-            setCustomKey("sub_verifier", networkServicesUrlProvider.loadTorusEnvironment().subVerifier.orEmpty())
-            setCustomKey("username", usernameInteractor.getUsername()?.fullUsername.orEmpty())
-        }
+        crashLoggerInitializer.init()
     }
 }
