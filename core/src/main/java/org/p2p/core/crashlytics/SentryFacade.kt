@@ -59,7 +59,11 @@ class SentryFacade : CrashLoggingFacade {
     override fun setCustomKey(key: String, value: Any) {
         if (key.contentEquals("username")) {
             // for search purposes
-            Sentry.setTag(key, value.toString())
+            if (value is String && value.isNotBlank()) {
+                Sentry.setTag(key, value.toString())
+            } else {
+                Sentry.setTag(key, "none")
+            }
         }
 
         val validatedValue: String = if (value is String) {

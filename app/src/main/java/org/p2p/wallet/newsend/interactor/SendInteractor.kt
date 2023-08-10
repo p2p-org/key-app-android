@@ -6,6 +6,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isZero
@@ -29,7 +30,6 @@ import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.newsend.model.SendFatalError
 import org.p2p.wallet.newsend.model.SendTransactionFailed
@@ -107,8 +107,7 @@ class SendInteractor(
             val shouldCreateAccount =
                 token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
                     mintAddress = token.mintAddress,
-                    destinationAddress = recipient.toPublicKey(),
-                    useCache = useCache
+                    destinationAddress = recipient.toPublicKey()
                 ).shouldCreateAccount
 
             Timber.tag(TAG).i("Should create account = $shouldCreateAccount")
@@ -380,7 +379,7 @@ class SendInteractor(
         recentBlockhash: String? = null,
         lamportsPerSignature: BigInteger? = null
     ): PreparedTransaction {
-        Timber.tag(TAG).i("preparing native sol")
+        Timber.tag(TAG).i("preparing native sol to send to $destinationAddress")
 
         val account = Account(tokenKeyProvider.keyPair)
 
@@ -399,7 +398,16 @@ class SendInteractor(
             accountsCreationFee = BigInteger.ZERO,
             recentBlockhash = recentBlockhash,
             lamportsPerSignature = lamportsPerSignature
-        )
+        ).also {
+            Timber.tag(TAG).i(
+                buildString {
+                    append("SOL transaction prepared: ")
+                    append("transaction=${it.toFormattedString()};\n")
+                    append("l_per_sig=$lamportsPerSignature; ")
+                    append("real_dist=$destinationAddress")
+                }
+            )
+        }
     }
 
     private suspend fun prepareSplToken(
@@ -441,12 +449,12 @@ class SendInteractor(
             val owner = destinationAddress.toPublicKey()
 
             val createAccount = TokenProgram.createAssociatedTokenAccountInstruction(
-                TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-                TokenProgram.PROGRAM_ID,
-                mintAddress.toPublicKey(),
-                toPublicKey,
-                owner,
-                feePayer
+                /* associatedProgramId = */ TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
+                /* tokenProgramId = */ TokenProgram.PROGRAM_ID,
+                /* mint = */ mintAddress.toPublicKey(),
+                /* associatedAccount = */ toPublicKey,
+                /* owner = */ owner,
+                /* payer = */ feePayer
             )
 
             instructions += createAccount
@@ -455,7 +463,8 @@ class SendInteractor(
         }
 
         // send instruction
-        val instruction = if (transferChecked) {
+        val transferInstruction = if (transferChecked) {
+            Timber.tag(TAG).i("adding transferChecked instruction")
             TokenProgram.createTransferCheckedInstruction(
                 TokenProgram.PROGRAM_ID,
                 fromPublicKey.toPublicKey(),
@@ -466,6 +475,7 @@ class SendInteractor(
                 decimals
             )
         } else {
+            Timber.tag(TAG).i("adding regular transfer instruction")
             TokenProgram.transferInstruction(
                 TokenProgram.PROGRAM_ID,
                 fromPublicKey.toPublicKey(),
@@ -475,7 +485,7 @@ class SendInteractor(
             )
         }
 
-        instructions += instruction
+        instructions += transferInstruction
 
         var realDestination = destinationAddress
         if (!splDestinationAddress.shouldCreateAccount) {
@@ -491,6 +501,14 @@ class SendInteractor(
             accountsCreationFee = accountsCreationFee,
             recentBlockhash = recentBlockhash,
             lamportsPerSignature = lamportsPerSignature
+        )
+        Timber.tag(TAG).i(
+            buildString {
+                append("SPL transaction prepared: ")
+                append("transaction = ${preparedTransaction.toFormattedString()};\n")
+                append("l_per_sig=$lamportsPerSignature; ")
+                append("real_dist=$realDestination")
+            }
         )
 
         return preparedTransaction to realDestination

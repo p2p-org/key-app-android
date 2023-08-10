@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
@@ -50,7 +49,7 @@ class SwapStateManager(
     private val analytics: JupiterSwapMainScreenAnalytics,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val userTokensChangeHandler: SwapUserTokensChangeHandler,
-    private val swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
+    private val swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle,
 ) : CoroutineScope {
 
     companion object {
@@ -300,12 +299,6 @@ class SwapStateManager(
         return tokenRatioCache.getOrPut(token.mintAddress) {
             SwapTokenRateLoader(tokenServiceRepository)
         }.getRate(token)
-    }
-
-    suspend fun getTokenRateLoadedOrNull(token: SwapTokenModel): SwapRateLoaderState.Loaded? {
-        return getTokenRate(token)
-            .filterIsInstance<SwapRateLoaderState.Loaded>()
-            .firstOrNull()
     }
 
     private fun observeUserTokens() {

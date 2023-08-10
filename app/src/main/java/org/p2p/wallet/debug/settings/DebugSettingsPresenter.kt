@@ -9,13 +9,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class DebugSettingsPresenter(
     private val interactor: DebugSettingsInteractor,
     private val environmentManager: NetworkEnvironmentManager,
-    private val homeLocalRepository: HomeLocalRepository,
     private val deviceInfoMapper: DebugSettingsDeviceInfoMapper,
+    private val userTokensLocalRepository: UserTokensLocalRepository,
     private val networkServicesUrlProvider: NetworkServicesUrlProvider,
     private val inAppFeatureFlags: InAppFeatureFlags,
     private val appRestarter: AppRestarter,
@@ -38,7 +38,7 @@ class DebugSettingsPresenter(
         launch {
             try {
                 environmentManager.chooseEnvironment(newNetworkEnvironment)
-                homeLocalRepository.clear()
+                userTokensLocalRepository.clear()
             } catch (error: Throwable) {
                 Timber.e(error, "Network changing failed")
             }

@@ -1,6 +1,5 @@
 package org.p2p.wallet.auth.ui.onboarding
 
-import java.io.File
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 
@@ -10,8 +9,8 @@ interface NewOnboardingContract {
         fun onSameTokenFoundError()
         fun onSuccessfulSignUp()
         fun setButtonLoadingState(isScreenLoading: Boolean)
-        fun showFile(file: File)
         fun navigateToContinueCreateWallet()
+        fun showBrowserTab(url: String)
     }
 
     interface Presenter : MvpPresenter<View> {

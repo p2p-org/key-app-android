@@ -41,7 +41,7 @@ internal data class MetadataExtensionResponse(
     @SerializedName("isTokenCellVisibleOnWS")
     val isTokenCellVisibleOnWs: Boolean?,
     @SerializedName("percentDifferenceToShowByPriceOnWS")
-    val percentDifferenceToShowByPriceOnWs: Int?,
+    val percentDifferenceToShowByPriceOnWs: Double?,
     @SerializedName("calculationOfFinalBalanceOnWS")
     val calculationOfFinalBalanceOnWs: Boolean?,
     @SerializedName("ruleOfFractionalPartOnWS")

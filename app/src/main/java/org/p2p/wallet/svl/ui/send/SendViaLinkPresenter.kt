@@ -36,8 +36,6 @@ import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
-private const val ACCEPTABLE_RATE_DIFF = 0.02
-
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
@@ -188,8 +186,7 @@ class SendViaLinkPresenter(
     }
 
     private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
-        val isStableCoin = token.isUSDC || token.isUSDT
-        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+        if (token.rate == null || isStableCoinRateDiffAcceptable(token)) {
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
@@ -200,8 +197,7 @@ class SendViaLinkPresenter(
     }
 
     private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
-        val delta = token.rate.orZero() - BigDecimal.ONE
-        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
+        return token.rate.orZero() == BigDecimal.ONE
     }
 
     override fun switchCurrencyMode() {

@@ -11,13 +11,13 @@ object FeeRelayerErrorMapper {
 
     private const val codePrefix = "code: "
 
-    private val errorPrefixes = listOf(
+    private val errorPrefixes: List<String> = listOf(
         programFailed,
         programError,
         "Transfer: insufficient lamports " // 19266, need 2039280
     )
 
-    private val escapePrefixes = listOf(
+    private val escapePrefixes: List<String> = listOf(
         programFailed,
         programError,
         "Transfer: "
@@ -27,12 +27,10 @@ object FeeRelayerErrorMapper {
         val logRegex = Regex("\"(?:Program|Transfer:) [^\"]+\"")
         val matches = logRegex.findAll(rawError)
         val logs = matches.flatMap { match ->
-            match.groupValues.map { value ->
-                value.replace("\"", "")
-            }
+            match.groupValues.map { it.replace("\"", emptyString()) }
         }.toList()
         val currentLog = logs.findFirstValidLog(errorPrefixes)
-        Timber.tag("FeeRelayerError").e("Error: $code\n${logs.joinToString("\n")}")
+        Timber.tag("FeeRelayerErrorMapper").i("Error: $code\n${logs.joinToString("\n")}")
 
         val codeRegex = Regex("$codePrefix-?\\d+")
         val feeRelayerCode = codeRegex.findAll(rawError)
@@ -41,9 +39,9 @@ object FeeRelayerErrorMapper {
             ?.replace(codePrefix, emptyString())
             ?.toIntOrNull()
         return FeeRelayerError(
-            feeRelayerCode ?: code,
-            escapeAndCapitalizeFirstCharOfLog(currentLog),
-            currentLog?.let { typeFromLog(it) } ?: typeFromLog(rawError)
+            code = feeRelayerCode ?: code,
+            message = escapeAndCapitalizeFirstCharOfLog(currentLog),
+            type = currentLog?.let(::typeFromLog) ?: typeFromLog(rawError)
         )
     }
 

@@ -74,7 +74,7 @@ object AnalyticsModule : InjectionModule {
         factoryOf(::JupiterSwapMainScreenAnalytics)
         factoryOf(::JupiterSwapSettingsAnalytics)
         factoryOf(::JupiterSwapTransactionDetailsAnalytics)
-        singleOf(::AnalyticsPublicKeyObserver)
+        singleOf(::AppPublicKeyObserver)
 
         singleOf(::AnalyticsInMemoryRepository) bind AnalyticsLocalRepository::class
     }
