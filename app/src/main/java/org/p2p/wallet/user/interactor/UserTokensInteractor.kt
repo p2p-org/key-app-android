@@ -90,12 +90,7 @@ class UserTokensInteractor(
     suspend fun saveUserTokens(tokens: List<Token.Active>) = withContext(dispatchers.io) {
         val cachedTokens = userTokensLocalRepository.getUserTokens()
         tokens
-            .map { newToken ->
-                // saving visibility state which user could change by this moment
-                val oldToken = cachedTokens.find { oldTokens -> oldTokens.publicKey == newToken.publicKey }
-                oldToken?.visibility?.let { newToken.copy(visibility = it) }
-                newToken
-            }
+            .updateVisibilityState(cachedTokens)
             .sortedWith(TokenComparator())
             .let { userTokensLocalRepository.updateTokens(it) }
     }
@@ -150,4 +145,12 @@ class UserTokensInteractor(
             price = price
         )
     }
+
+    private fun List<Token.Active>.updateVisibilityState(cachedTokens: List<Token.Active>): List<Token.Active> =
+        map { newToken ->
+            // saving visibility state which user could change by this moment
+            val oldToken = cachedTokens.find { oldTokens -> oldTokens.publicKey == newToken.publicKey }
+            oldToken?.visibility?.let { newToken.copy(visibility = it) }
+            newToken
+        }
 }

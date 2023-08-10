@@ -1,6 +1,7 @@
 package org.p2p.core.token
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -19,6 +20,8 @@ data class TokenExtensions(
     val canTokenBeHidden: Boolean? = null
 ) : Parcelable {
 
+    // TODO: Make better solution for this
+    @IgnoredOnParcel
     var isRateExceedsTheDifference: Boolean = true
 
     companion object {
