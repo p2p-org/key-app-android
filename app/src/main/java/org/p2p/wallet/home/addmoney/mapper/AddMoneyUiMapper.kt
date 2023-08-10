@@ -15,38 +15,32 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.home.addmoney.model.AddMoneyItemType
+import org.p2p.wallet.home.addmoney.model.AddMoneyButton
+import org.p2p.wallet.home.addmoney.model.AddMoneyButtonType
 
-class AddMoneyCellMapper {
-    fun getFinanceBlock(
-        titleResId: Int,
-        subtitleRes: Int,
-        iconResId: Int,
-        backgroundTintId: Int,
-        payload: AddMoneyItemType,
-        showRightProgress: Boolean = false,
-    ): MainCellModel {
+class AddMoneyUiMapper {
+    fun mapToCellItem(item: AddMoneyButton): MainCellModel {
         val leftSideCellModel = LeftSideCellModel.IconWithText(
             icon = IconWrapperCellModel.SingleIcon(
                 icon = ImageViewCellModel(
-                    icon = DrawableContainer(iconResId),
-                    background = DrawableCellModel(tint = backgroundTintId),
+                    icon = DrawableContainer(item.type.iconResId),
+                    background = DrawableCellModel(tint = item.type.backgroundTintId),
                     clippingShape = shapeCircle()
                 )
             ),
             firstLineText = TextViewCellModel.Raw(
-                text = TextContainer(titleResId),
+                text = TextContainer(item.type.titleResId),
                 textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text3,
                 textColor = R.color.text_night
             ),
             secondLineText = TextViewCellModel.Raw(
-                text = TextContainer(subtitleRes),
+                text = TextContainer(item.type.subtitleRes),
                 textAppearance = R.style.UiKit_TextAppearance_Regular_Label1,
                 textColor = R.color.text_mountain
             )
         )
 
-        val rightSideCellModel = if (showRightProgress) {
+        val rightSideCellModel = if (item.isLoading) {
             RightSideCellModel.Progress(
                 indeterminateProgressTint = R.color.night
             )
@@ -70,7 +64,19 @@ class AddMoneyCellMapper {
             leftSideCellModel = leftSideCellModel,
             rightSideCellModel = rightSideCellModel,
             accessibility = ViewAccessibilityCellModel(isClickable = true),
-            payload = payload
+            payload = item
         )
+    }
+
+    fun mapButtonIsLoading(
+        button: AddMoneyButton,
+        ifType: AddMoneyButtonType,
+        isLoading: Boolean
+    ): MainCellModel {
+        return if (button.type == ifType) {
+            button.copy(isLoading = isLoading)
+        } else {
+            button
+        }.let(::mapToCellItem)
     }
 }

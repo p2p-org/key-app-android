@@ -3,7 +3,7 @@ package org.p2p.wallet.home.onofframp
 import androidx.fragment.app.Fragment
 import org.p2p.wallet.common.NavigationDestination
 import org.p2p.wallet.common.NavigationStrategy
-import org.p2p.wallet.home.addmoney.ui.AddMoneyDialog
+import org.p2p.wallet.home.addmoney.ui.AddMoneyBottomSheet
 import org.p2p.wallet.home.onofframp.ui.OnOffRampCountrySelectionFragment
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.striga.StrigaFragmentFactory
@@ -15,11 +15,11 @@ class OnOffRampNavigator(
     private val settingsInteractor: SettingsInteractor,
     private val strigaFragmentFactory: StrigaFragmentFactory,
 ) {
-    private val countryIsNotSelected: Boolean
+    private val isCountryNotSelected: Boolean
         get() = settingsInteractor.userCountryCode == null
 
     fun navigateToAddMoney(sourceFragment: Fragment) = with(sourceFragment) {
-        if (countryIsNotSelected) {
+        if (isCountryNotSelected) {
             val fragment = OnOffRampCountrySelectionFragment.create(NavigationDestination())
             replaceFragmentForResult(
                 target = fragment,
@@ -42,7 +42,7 @@ class OnOffRampNavigator(
     fun navigateToWithdraw(sourceFragment: Fragment) = with(sourceFragment) {
         sourceFragment.clearResultListener()
 
-        if (countryIsNotSelected) {
+        if (isCountryNotSelected) {
             val fragment = OnOffRampCountrySelectionFragment.create(
                 NavigationDestination(
                     clazz = StrigaOffRampFragment::class.java,
@@ -57,7 +57,7 @@ class OnOffRampNavigator(
     }
 
     private fun showAddMoneyDialog(sourceFragment: Fragment) = with(sourceFragment) {
-        AddMoneyDialog.show(parentFragmentManager)
+        AddMoneyBottomSheet.show(parentFragmentManager)
     }
 
     private fun Fragment.clearResultListener() {

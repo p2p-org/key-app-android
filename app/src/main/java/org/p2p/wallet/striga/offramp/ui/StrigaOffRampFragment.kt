@@ -107,6 +107,10 @@ class StrigaOffRampFragment :
         strigaFragmentFactory.withdrawUsdcFragment(amountInUsdc).let(::replaceFragment)
     }
 
+    /**
+     * It's overridden because we need to pass [enableBottomNavOffset] param to false for this dialog
+     * fixme: https://p2pvalidator.atlassian.net/browse/PWN-9348
+     */
     override fun showUiKitSnackBar(
         message: String?,
         messageResId: Int?,

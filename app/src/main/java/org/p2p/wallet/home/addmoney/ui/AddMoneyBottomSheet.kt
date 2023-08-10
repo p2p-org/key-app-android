@@ -6,24 +6,18 @@ import android.os.Bundle
 import android.view.View
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
-import org.p2p.core.common.DrawableContainer
 import org.p2p.core.token.Token
-import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.mainCellDelegate
-import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
-import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.natives.showSnackbarShort
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.disableScrolling
-import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.recycler.decoration.offsetFinanceBlockDecoration
 import org.p2p.wallet.R
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogAddMoneyBinding
-import org.p2p.wallet.home.addmoney.AddMoneyDialogContract
-import org.p2p.wallet.home.addmoney.model.AddMoneyItemType
+import org.p2p.wallet.home.addmoney.AddMoneyContract
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
@@ -33,15 +27,15 @@ import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class AddMoneyDialog :
-    BaseMvpBottomSheet<AddMoneyDialogContract.View, AddMoneyDialogContract.Presenter>(R.layout.dialog_add_money),
-    AddMoneyDialogContract.View {
+class AddMoneyBottomSheet :
+    BaseMvpBottomSheet<AddMoneyContract.View, AddMoneyContract.Presenter>(R.layout.dialog_add_money),
+    AddMoneyContract.View {
 
     companion object {
         fun show(fm: FragmentManager) {
-            val tag = AddMoneyDialog::javaClass.name
+            val tag = AddMoneyBottomSheet::javaClass.name
             if (fm.findFragmentByTag(tag) != null) return
-            AddMoneyDialog().show(fm, tag)
+            AddMoneyBottomSheet().show(fm, tag)
         }
     }
 
@@ -49,12 +43,12 @@ class AddMoneyDialog :
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val strigaFragmentFactory: StrigaFragmentFactory by inject()
 
-    override val presenter: AddMoneyDialogContract.Presenter by inject()
+    override val presenter: AddMoneyContract.Presenter by inject()
 
     private val cellAdapter = CommonAnyCellAdapter(
         mainCellDelegate(inflateListener = {
             it.setOnClickAction { _, item ->
-                presenter.onItemClick(item.typedPayload())
+                presenter.onButtonClick(item.typedPayload())
             }
         })
     )
@@ -68,29 +62,6 @@ class AddMoneyDialog :
             recyclerViewCells.attachAdapter(cellAdapter)
             recyclerViewCells.addItemDecoration(offsetFinanceBlockDecoration(8.toPx()))
         }
-    }
-
-    override fun showItemProgress(itemType: AddMoneyItemType, showProgress: Boolean) {
-        cellAdapter.updateItem<MainCellModel>(
-            predicate = { it is MainCellModel && it.payload == itemType },
-            transform = {
-                val rightSideCellModel = if (showProgress) {
-                    RightSideCellModel.Progress(
-                        indeterminateProgressTint = R.color.night
-                    )
-                } else {
-                    RightSideCellModel.IconWrapper(
-                        iconWrapper = IconWrapperCellModel.SingleIcon(
-                            icon = ImageViewCellModel(
-                                icon = DrawableContainer(R.drawable.ic_chevron_right),
-                                iconTint = R.color.icons_mountain
-                            )
-                        )
-                    )
-                }
-                it.copy(rightSideCellModel = rightSideCellModel)
-            }
-        )
     }
 
     override fun navigateToBankTransferTarget(target: StrigaUserStatusDestination) {
@@ -107,7 +78,7 @@ class AddMoneyDialog :
     }
 
     override fun navigateToKycPending() {
-        dismiss()
+        dismissAllowingStateLoss()
         strigaFragmentFactory.showPendingBottomSheet(requireActivity().supportFragmentManager)
     }
 
@@ -119,6 +90,10 @@ class AddMoneyDialog :
         dismissAndNavigate(receiveFragmentFactory.receiveFragment())
     }
 
+    /**
+     * It's overridden because we need to pass [enableBottomNavOffset] param to false for this dialog
+     * fixme: https://p2pvalidator.atlassian.net/browse/PWN-9348
+     */
     override fun showUiKitSnackBar(
         message: String?,
         messageResId: Int?,

@@ -121,6 +121,30 @@ class OnOffRampCountrySelectionFragment :
     }
 
     private fun mapCountryView(countryName: String, countryFlag: String) {
+        val leftCellModel = LeftSideCellModel.IconWithText(
+            icon = IconWrapperCellModel.SingleEmoji(
+                emoji = countryFlag,
+                background = DrawableCellModel(tint = R.color.smoke),
+                clippingShape = shapeCircle()
+            ),
+            firstLineText = TextViewCellModel.Raw(
+                text = TextContainer(countryName),
+                textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text3
+            ),
+            secondLineText = TextViewCellModel.Raw(
+                text = TextContainer(R.string.striga_onboarding_country_subtitle),
+                textAppearance = R.style.UiKit_TextAppearance_Regular_Label1
+            ),
+        )
+        val rightCellModel = RightSideCellModel.IconWrapper(
+            IconWrapperCellModel.SingleIcon(
+                ImageViewCellModel(
+                    icon = DrawableContainer(R.drawable.ic_chevron_right),
+                    iconTint = R.color.mountain
+                )
+            )
+        )
+
         binding.blockChangeCountry.bind(
             MainCellModel(
                 background = DrawableCellModel(
@@ -128,29 +152,8 @@ class OnOffRampCountrySelectionFragment :
                     tint = R.color.bg_snow
                 ),
                 foreground = ForegroundCellModel.Ripple(shapeRounded16dp()),
-                leftSideCellModel = LeftSideCellModel.IconWithText(
-                    icon = IconWrapperCellModel.SingleEmoji(
-                        emoji = countryFlag,
-                        background = DrawableCellModel(tint = R.color.smoke),
-                        clippingShape = shapeCircle()
-                    ),
-                    firstLineText = TextViewCellModel.Raw(
-                        text = TextContainer(countryName),
-                        textAppearance = R.style.UiKit_TextAppearance_SemiBold_Text3
-                    ),
-                    secondLineText = TextViewCellModel.Raw(
-                        text = TextContainer(R.string.striga_onboarding_country_subtitle),
-                        textAppearance = R.style.UiKit_TextAppearance_Regular_Label1
-                    ),
-                ),
-                rightSideCellModel = RightSideCellModel.IconWrapper(
-                    IconWrapperCellModel.SingleIcon(
-                        ImageViewCellModel(
-                            icon = DrawableContainer(R.drawable.ic_chevron_right),
-                            iconTint = R.color.mountain
-                        )
-                    )
-                )
+                leftSideCellModel = leftCellModel,
+                rightSideCellModel = rightCellModel
             )
         )
     }

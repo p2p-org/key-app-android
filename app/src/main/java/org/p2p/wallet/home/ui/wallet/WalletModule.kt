@@ -7,7 +7,11 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
-import org.p2p.wallet.home.addmoney.mapper.AddMoneyCellMapper
+import org.p2p.wallet.home.addmoney.AddMoneyContract
+import org.p2p.wallet.home.addmoney.interactor.AddMoneyInteractor
+import org.p2p.wallet.home.addmoney.mapper.AddMoneyUiMapper
+import org.p2p.wallet.home.addmoney.repository.AddMoneyButtonsRepository
+import org.p2p.wallet.home.addmoney.ui.AddMoneyPresenter
 import org.p2p.wallet.home.onofframp.OnOffRampNavigator
 import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
 import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
@@ -61,6 +65,9 @@ object WalletModule : InjectionModule {
 
     private fun Module.initAddMoney() {
         factoryOf(::OnOffRampNavigator)
-        factoryOf(::AddMoneyCellMapper)
+        factoryOf(::AddMoneyInteractor)
+        factoryOf(::AddMoneyButtonsRepository)
+        factoryOf(::AddMoneyUiMapper)
+        factoryOf(::AddMoneyPresenter) bind AddMoneyContract.Presenter::class
     }
 }
