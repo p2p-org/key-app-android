@@ -14,7 +14,7 @@ import org.p2p.wallet.alarmlogger.api.AlarmErrorsSvlRequest
 import org.p2p.wallet.alarmlogger.api.AlarmErrorsUsernameRequest
 import org.p2p.wallet.auth.username.repository.model.UsernameServiceError
 import org.p2p.wallet.feerelayer.model.RelayAccount
-import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.send.model.SearchResult
 
 class AlarmSendErrorConverter(
     private val gson: Gson,

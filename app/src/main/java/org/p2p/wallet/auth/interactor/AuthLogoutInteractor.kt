@@ -15,7 +15,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.intercom.IntercomService
-import org.p2p.wallet.newsend.repository.RecipientsLocalRepository
+import org.p2p.wallet.send.repository.RecipientsLocalRepository
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
 import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 import org.p2p.wallet.updates.SubscriptionUpdatesManager

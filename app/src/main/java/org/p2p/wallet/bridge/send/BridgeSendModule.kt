@@ -11,7 +11,7 @@ import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.repository.EthereumSendRemoteRepository
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.bridge.send.statemachine.SendActionHandler
-import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.fee.SendBridgeTransactionLoader
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.AmountChangeActionHandler
 import org.p2p.wallet.bridge.send.statemachine.handler.bridge.InitFeatureActionHandler
@@ -25,7 +25,7 @@ import org.p2p.wallet.bridge.send.ui.BridgeSendContract
 import org.p2p.wallet.bridge.send.ui.BridgeSendPresenter
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.core.common.di.InjectionModule
-import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.send.model.SearchResult
 
 object BridgeSendModule : InjectionModule {
     override fun create() = module {
@@ -92,7 +92,7 @@ object BridgeSendModule : InjectionModule {
                 )
             }
 
-            val stateMachine = SendStateMachine(
+            val stateMachine = BridgeSendStateMachine(
                 handlers = handlers,
                 dispatchers = get()
             )

@@ -27,9 +27,9 @@ import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
-import org.p2p.wallet.newsend.ui.SearchOpenedFromScreen
-import org.p2p.wallet.newsend.ui.search.NewSearchFragment
-import org.p2p.wallet.newsend.ui.stub.SendUnavailableFragment
+import org.p2p.wallet.send.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.ui.search.NewSearchFragment
+import org.p2p.wallet.send.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
