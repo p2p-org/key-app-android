@@ -1,7 +1,7 @@
 package org.p2p.wallet.countrycode.repository
 
 import org.p2p.wallet.auth.model.CountryCode
-import org.p2p.wallet.countrycode.ExternalCountryCodeLoadError
+import org.p2p.wallet.countrycode.ExternalCountryCodeError
 import org.p2p.wallet.countrycode.model.ExternalCountryCode
 import org.p2p.wallet.countrycode.model.PhoneNumberWithCountryCode
 
@@ -21,9 +21,9 @@ interface ExternalCountryCodeRepository {
     suspend fun isValidNumberForRegion(phoneNumber: String, regionCodeAlpha2: String): Boolean
     suspend fun parsePhoneNumber(phoneNumber: String, defaultRegionAlpha2: String = "US"): PhoneNumberWithCountryCode?
 
-    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
     suspend fun isMoonpaySupported(countryCode: CountryCode): Boolean
 
-    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
     suspend fun isStrigaSupported(countryCode: CountryCode): Boolean
 }

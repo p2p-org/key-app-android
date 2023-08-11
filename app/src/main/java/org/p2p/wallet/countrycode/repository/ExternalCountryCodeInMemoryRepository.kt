@@ -8,9 +8,9 @@ import timber.log.Timber
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.countrycode.ExternalCountryCodeLoader
 import org.p2p.wallet.countrycode.model.ExternalCountryCode
 import org.p2p.wallet.countrycode.model.PhoneNumberWithCountryCode
-import org.p2p.wallet.countrycode.parser.ExternalCountryCodeLoader
 
 class ExternalCountryCodeInMemoryRepository(
     private val context: Context,

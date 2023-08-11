@@ -2,7 +2,7 @@ package org.p2p.wallet.home.addmoney.repository
 
 import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
-import org.p2p.wallet.countrycode.ExternalCountryCodeLoadError
+import org.p2p.wallet.countrycode.ExternalCountryCodeError
 import org.p2p.wallet.countrycode.repository.ExternalCountryCodeRepository
 import org.p2p.wallet.home.addmoney.model.AddMoneyButton
 import org.p2p.wallet.home.addmoney.model.AddMoneyButtonType
@@ -27,7 +27,7 @@ class AddMoneyButtonsRepository(
     /**
      * Exception might be thrown if can't check whether striga supports current country
      */
-    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
     suspend fun getButtons(): List<AddMoneyButton> = buildList {
         // show only if striga is disabled or striga is enabled and supported for chosen country
         val showBankTransferItem = !isStrigaEnabled || isStrigaSupportedForCurrentCountry()
@@ -59,14 +59,14 @@ class AddMoneyButtonsRepository(
         )
     }
 
-    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
     private suspend fun isStrigaSupportedForCurrentCountry(): Boolean {
         return settingsInteractor.userCountryCode
             ?.let { strigaSignupInteractor.checkCountryIsSupported(it) }
             ?: false
     }
 
-    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
     private suspend fun isMoonpaySupportedForCurrentCountry(): Boolean {
         return settingsInteractor.userCountryCode
             ?.let { externalCountryCodeRepository.isMoonpaySupported(it) }

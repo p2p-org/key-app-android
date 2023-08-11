@@ -7,7 +7,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getClient
-import org.p2p.wallet.countrycode.parser.ExternalCountryCodeLoader
+import org.p2p.wallet.countrycode.ExternalCountryCodeLoader
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber

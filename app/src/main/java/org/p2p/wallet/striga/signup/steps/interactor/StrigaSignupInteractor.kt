@@ -10,7 +10,7 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.countrycode.ExternalCountryCodeLoadError
+import org.p2p.wallet.countrycode.ExternalCountryCodeError
 import org.p2p.wallet.countrycode.repository.ExternalCountryCodeRepository
 import org.p2p.wallet.striga.common.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.common.model.StrigaApiErrorResponse
@@ -227,7 +227,7 @@ class StrigaSignupInteractor(
         return PhoneNumberWithCode(phoneCode, selectedPhoneNumber.orEmpty())
     }
 
-    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
     suspend fun checkCountryIsSupported(country: CountryCode): Boolean {
         return externalCountryCodeRepository.isStrigaSupported(country)
     }

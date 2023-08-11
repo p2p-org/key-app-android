@@ -1,19 +1,18 @@
-package org.p2p.wallet.countrycode.parser
+package org.p2p.wallet.countrycode
 
 import android.content.res.Resources
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
-import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.lang.reflect.Type
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.utils.bodyAsString
 import org.p2p.wallet.R
 import org.p2p.wallet.common.storage.ExternalStorageRepository
-import org.p2p.wallet.countrycode.ExternalCountryCodeLoadError
 import org.p2p.wallet.countrycode.mapper.ExternalCountryCodeMapper
 import org.p2p.wallet.countrycode.model.ExternalCountryCode
 import org.p2p.wallet.countrycode.model.ExternalCountryCodeEntity
@@ -35,11 +34,10 @@ class ExternalCountryCodeLoader(
     }
 
     private val countryCodeListUrl: String = resources.getString(R.string.countryCodeListBaseUrl)
+    private val mutex = Mutex()
 
     override suspend fun onLoad() {
-        if (!externalStorageRepository.isFileExists(COUNTRY_LIST_FILE_NAME)) {
-            withContext(dispatchers.io) { downloadFile() }
-        }
+        withContext(dispatchers.io) { downloadFileIfNeeded() }
     }
 
     override suspend fun onRefresh() {
@@ -47,42 +45,52 @@ class ExternalCountryCodeLoader(
         onLoad()
     }
 
-    override suspend fun isEnabled(): Boolean = true
-
-    @Throws(ExternalCountryCodeLoadError::class, JsonParseException::class, JsonSyntaxException::class)
+    @Throws(ExternalCountryCodeError::class, JsonParseException::class)
     suspend fun loadAndSaveFile(): List<ExternalCountryCode> = withContext(dispatchers.io) {
-        val body: String = if (!externalStorageRepository.isFileExists(COUNTRY_LIST_FILE_NAME)) {
-            downloadFile()
-        } else {
-            externalStorageRepository.readJsonFile(COUNTRY_LIST_FILE_NAME)?.data
-                ?: error("Can't read existing file $COUNTRY_LIST_FILE_NAME")
-        }
+        downloadFileIfNeeded()
 
-        gson.fromJson<List<ExternalCountryCodeEntity>>(body, LIST_TYPE)
-            .map(mapper::fromEntity)
-    }
+        val body = externalStorageRepository.readJsonFile(COUNTRY_LIST_FILE_NAME)?.data
+            ?: throw ExternalCountryCodeError.LocalFileReadError("Can't read existing file $COUNTRY_LIST_FILE_NAME")
 
-    private suspend fun downloadFile(): String {
-        return executeRequest().also { body ->
-            externalStorageRepository.saveRawFile(COUNTRY_LIST_FILE_NAME, body)
+        try {
+            gson.fromJson<List<ExternalCountryCodeEntity>>(body, LIST_TYPE)
+                .map(mapper::fromEntity)
+        } catch (e: JsonParseException) {
+            throw ExternalCountryCodeError.ParseError(e)
+        } catch (e: Throwable) {
+            throw ExternalCountryCodeError.UnknownError(e)
         }
     }
 
-    private fun executeRequest(): String {
+    private suspend fun downloadFileIfNeeded() {
+        // double-check to prevent parallel file downloading
+        if (!externalStorageRepository.isFileExists(COUNTRY_LIST_FILE_NAME)) {
+            mutex.withLock {
+                if (!externalStorageRepository.isFileExists(COUNTRY_LIST_FILE_NAME)) {
+                    downloadFile()
+                }
+            }
+        }
+    }
+
+    private suspend fun downloadFile() {
         return try {
             val request = Request.Builder().get().url(countryCodeListUrl).build()
             val response = okHttpClient.newCall(request).execute()
             if (!response.isSuccessful) {
-                error(
-                    buildString {
-                        append("Error while loading country code list: ")
-                        append("[${response.code}] ${response.message} ${response.bodyAsString()}")
-                    }
-                )
+                throw ExternalCountryCodeError.HttpError("Unable to download country list", response)
             }
-            response.bodyAsString()
+
+            val body = response.body ?: throw NullPointerException("Response body is null")
+            if (body.contentLength() == 0L) {
+                throw ExternalCountryCodeError.EmptyResponse()
+            }
+
+            externalStorageRepository.saveRawFile(COUNTRY_LIST_FILE_NAME, body.byteStream())
+        } catch (e: ExternalCountryCodeError) {
+            throw e
         } catch (e: Throwable) {
-            throw ExternalCountryCodeLoadError(e)
+            throw ExternalCountryCodeError.UnknownError(e)
         }
     }
 }

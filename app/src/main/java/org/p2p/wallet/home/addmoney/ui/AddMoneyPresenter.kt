@@ -51,7 +51,7 @@ class AddMoneyPresenter(
                 // There's a tiny issue: buttons might take a noticeable delay to load
                 // when the view is already displayed, leaving the user with an empty view during that time
                 // and we don't have a progress bar to indicate the loading process
-                // This situation will occur only if user is logged in without internet access
+                // This situation will occur only if user is logged in without internet access/github error
                 // and couldn't load the new country list beforehand
                 val buttons = interactor.getAddMoneyButtons().map(addMoneyMapper::mapToCellItem)
                 view.setCellItems(buttons)

@@ -16,7 +16,7 @@ class FilesDirStorageRepository(
 ) : ExternalStorageRepository {
 
     override fun isFileExists(fileName: String): Boolean {
-        val file = getFile(fileName)
+        val file = findFile(fileName)
         return file != null && file.exists() && file.canRead()
     }
 
@@ -58,7 +58,7 @@ class FilesDirStorageRepository(
 
     // TODO: return optional InputStream instead of big raw string
     override suspend fun readJsonFile(fileName: String): ExternalFile? = withContext(dispatchers.io) {
-        val file = getFile(fileName)
+        val file = findFile(fileName)
 
         if (file == null || !file.exists()) {
             Timber.i(IOException("Error reading json file: $fileName - file does not exist"))
@@ -80,7 +80,7 @@ class FilesDirStorageRepository(
     }
 
     override fun deleteFile(fileName: String) {
-        val file = getFile(fileName)
+        val file = findFile(fileName)
         if (file == null || !file.exists()) {
             return
         }
@@ -93,7 +93,7 @@ class FilesDirStorageRepository(
         }
     }
 
-    private fun getFile(fileName: String): File? {
+    private fun findFile(fileName: String): File? {
         val filesDirectory = context.filesDir
         return filesDirectory
             .listFiles { file ->
