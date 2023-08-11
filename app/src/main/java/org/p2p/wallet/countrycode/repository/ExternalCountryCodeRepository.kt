@@ -21,9 +21,9 @@ interface ExternalCountryCodeRepository {
     suspend fun isValidNumberForRegion(phoneNumber: String, regionCodeAlpha2: String): Boolean
     suspend fun parsePhoneNumber(phoneNumber: String, defaultRegionAlpha2: String = "US"): PhoneNumberWithCountryCode?
 
-    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class)
     suspend fun isMoonpaySupported(countryCode: CountryCode): Boolean
 
-    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class)
     suspend fun isStrigaSupported(countryCode: CountryCode): Boolean
 }

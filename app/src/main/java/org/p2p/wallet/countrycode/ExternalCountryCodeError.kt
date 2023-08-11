@@ -34,4 +34,8 @@ sealed class ExternalCountryCodeError(
             }
         )
     )
+
+    data class CountryNotFound(val countryCode: String) : ExternalCountryCodeError(
+        IllegalStateException("Country code $countryCode not found")
+    )
 }

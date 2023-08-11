@@ -27,7 +27,7 @@ class AddMoneyButtonsRepository(
     /**
      * Exception might be thrown if can't check whether striga supports current country
      */
-    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class)
     suspend fun getButtons(): List<AddMoneyButton> = buildList {
         // show only if striga is disabled or striga is enabled and supported for chosen country
         val showBankTransferItem = !isStrigaEnabled || isStrigaSupportedForCurrentCountry()
@@ -59,14 +59,14 @@ class AddMoneyButtonsRepository(
         )
     }
 
-    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class)
     private suspend fun isStrigaSupportedForCurrentCountry(): Boolean {
         return settingsInteractor.userCountryCode
-            ?.let { strigaSignupInteractor.checkCountryIsSupported(it) }
+            ?.let { externalCountryCodeRepository.isStrigaSupported(it) }
             ?: false
     }
 
-    @Throws(ExternalCountryCodeError::class, IllegalStateException::class)
+    @Throws(ExternalCountryCodeError::class)
     private suspend fun isMoonpaySupportedForCurrentCountry(): Boolean {
         return settingsInteractor.userCountryCode
             ?.let { externalCountryCodeRepository.isMoonpaySupported(it) }

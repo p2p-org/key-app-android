@@ -8,9 +8,11 @@ import timber.log.Timber
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.p2p.wallet.auth.model.CountryCode
+import org.p2p.wallet.countrycode.ExternalCountryCodeError.CountryNotFound
 import org.p2p.wallet.countrycode.ExternalCountryCodeLoader
 import org.p2p.wallet.countrycode.model.ExternalCountryCode
 import org.p2p.wallet.countrycode.model.PhoneNumberWithCountryCode
+import org.p2p.wallet.utils.emptyString
 
 class ExternalCountryCodeInMemoryRepository(
     private val context: Context,
@@ -130,7 +132,7 @@ class ExternalCountryCodeInMemoryRepository(
     override suspend fun isMoonpaySupported(countryCode: CountryCode): Boolean {
         ensureCountriesAreLoaded()
         val code = findCountryCodeByIsoAlpha3(countryCode.nameCodeAlpha3)
-            ?: error("Country code [${countryCode.nameCodeAlpha3}] not found")
+            ?: throw CountryNotFound("Country code [${countryCode.nameCodeAlpha3}] not found")
 
         return code.isMoonpayAllowed
     }
@@ -138,7 +140,7 @@ class ExternalCountryCodeInMemoryRepository(
     override suspend fun isStrigaSupported(countryCode: CountryCode): Boolean {
         ensureCountriesAreLoaded()
         val code = findCountryCodeByIsoAlpha3(countryCode.nameCodeAlpha3)
-            ?: error("Country code [${countryCode.nameCodeAlpha3}] not found")
+            ?: throw CountryNotFound("Country code [${countryCode.nameCodeAlpha3}] not found")
 
         return code.isStrigaAllowed
     }
@@ -151,13 +153,13 @@ class ExternalCountryCodeInMemoryRepository(
                     exampleNumber,
                     PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL
                 )
-                internationalFormat.replace("+$phoneCode", org.p2p.wallet.utils.emptyString())
+                internationalFormat.replace("+$phoneCode", emptyString())
             } else {
-                org.p2p.wallet.utils.emptyString()
+                emptyString()
             }
         } catch (e: Throwable) {
             Timber.i(e, "Get mask for country code failed")
-            org.p2p.wallet.utils.emptyString()
+            emptyString()
         }
     }
 }
