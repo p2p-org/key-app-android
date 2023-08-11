@@ -34,10 +34,11 @@ class StrigaUserIbanUiMapper {
         leftIcon = InformerViewCellModel.LeftIconParams(
             icon = DrawableContainer(R.drawable.ic_alert),
             iconTint = R.color.night,
+            backgroundTint = R.color.smoke,
         ),
         caption = InformerViewCellModel.CaptionParams(
             value = TextContainer(R.string.striga_iban_informer_attention_caption, details.bankAccountHolderName),
-            textColorRes = R.color.text_snow,
+            textColorRes = R.color.text_cloud,
         ),
         backgroundDrawableRes = R.drawable.bg_rain_rounded_16,
         backgroundTintRes = R.color.bg_night,

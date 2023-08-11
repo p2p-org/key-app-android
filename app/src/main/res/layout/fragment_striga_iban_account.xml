@@ -75,6 +75,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:leftIcon="@drawable/ic_user"
+            app:leftIconBackgroundTint="@color/bg_smoke"
             app:leftIconTint="@color/icons_night" />
 
         <org.p2p.uikit.components.UiKitInformerView
@@ -85,7 +86,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/informerFirst"
-            app:leftIcon="@drawable/ic_checkbox_checked"
+            app:leftIcon="@drawable/ic_clock_filled"
+            app:leftIconBackgroundTint="@color/bg_smoke"
             app:leftIconTint="@color/icons_night" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
