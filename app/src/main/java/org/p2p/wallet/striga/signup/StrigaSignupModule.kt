@@ -88,6 +88,7 @@ object StrigaSignupModule : InjectionModule {
                 strigaOtpConfirmInteractor = get(named(SMS_QUALIFIER)),
                 strigaUserStatusRepository = get(),
                 strigaPresetDataLocalRepository = get(),
+                externalCountryCodeRepository = get(),
             )
         }
         factoryOf(::StrigaUserInteractor)

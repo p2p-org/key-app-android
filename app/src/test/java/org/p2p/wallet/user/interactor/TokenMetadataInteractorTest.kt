@@ -66,7 +66,7 @@ internal class TokenMetadataInteractorTest {
 
         // THEN
         verifyOnce { userLocalRepository.setTokenData(expectedMetadata.tokens) }
-        coVerifyOnce { externalStorageRepository.saveAsJsonFile(expectedMetadata, any()) }
+        coVerifyOnce { externalStorageRepository.saveAsJsonFile(any(), expectedMetadata) }
     }
 
     @Test
@@ -82,7 +82,7 @@ internal class TokenMetadataInteractorTest {
 
         // THEN
         coVerifyOnce { userLocalRepository.setTokenData(expectedMetadata.tokens) }
-        coVerifyNone { externalStorageRepository.saveAsJsonFile(expectedMetadata, any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any(), expectedMetadata) }
     }
 
     @Test
@@ -96,7 +96,7 @@ internal class TokenMetadataInteractorTest {
 
         // THEN
         coVerifyNone { userLocalRepository.setTokenData(any()) }
-        coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any(), any<TokensMetadataInfo>()) }
     }
 
     @Test
@@ -106,7 +106,7 @@ internal class TokenMetadataInteractorTest {
 
         // THEN
         coVerifyNone { userLocalRepository.setTokenData(any()) }
-        coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any(), any<TokensMetadataInfo>()) }
     }
 
     @Test
@@ -118,6 +118,6 @@ internal class TokenMetadataInteractorTest {
         // THEN
         coVerifyNone { tokenMetadataInteractor.loadAllTokensMetadata() }
         coVerifyNone { userLocalRepository.setTokenData(any()) }
-        coVerifyNone { externalStorageRepository.saveAsJsonFile(any<TokensMetadataInfo>(), any()) }
+        coVerifyNone { externalStorageRepository.saveAsJsonFile(any(), any<TokensMetadataInfo>()) }
     }
 }

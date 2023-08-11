@@ -3,7 +3,9 @@ package org.p2p.wallet.common.storage
 import android.content.Context
 import com.google.gson.Gson
 import timber.log.Timber
+import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.DefaultDispatchers
 
@@ -13,8 +15,35 @@ class FilesDirStorageRepository(
     private val dispatchers: DefaultDispatchers
 ) : ExternalStorageRepository {
 
+    override fun isFileExists(fileName: String): Boolean {
+        val file = getFile(fileName)
+        return file != null && file.exists() && file.canRead()
+    }
+
+    override suspend fun saveRawFile(fileName: String, body: InputStream) = withContext(dispatchers.io) {
+        try {
+            context.openFileOutput(fileName, Context.MODE_PRIVATE).use(body::copyTo)
+            Timber.i("File $fileName saved")
+        } catch (e: Throwable) {
+            Timber.e(e, "Error saving file: $fileName")
+        }
+    }
+
+    override suspend fun saveRawFile(fileName: String, body: String) {
+        withContext(dispatchers.io) {
+            try {
+                context.openFileOutput(fileName, Context.MODE_PRIVATE)
+                    .bufferedWriter()
+                    .use { it.write(body) }
+                Timber.i("File $fileName saved")
+            } catch (e: Throwable) {
+                Timber.e(e, "Error saving file: $fileName")
+            }
+        }
+    }
+
     // TODO: use toJson with streamed JsonReader instead of raw string
-    override suspend fun <T> saveAsJsonFile(jsonObject: T, fileName: String) {
+    override suspend fun <T> saveAsJsonFile(fileName: String, jsonObject: T) {
         withContext(dispatchers.io) {
             try {
                 context.openFileOutput(fileName, Context.MODE_PRIVATE)
@@ -28,15 +57,11 @@ class FilesDirStorageRepository(
     }
 
     // TODO: return optional InputStream instead of big raw string
-    override suspend fun readJsonFile(filePrefix: String): ExternalFile? = withContext(dispatchers.io) {
-        val filesDirectory = context.filesDir
-        val file = filesDirectory.listFiles { file ->
-            file.name.startsWith(filePrefix)
-        }
-            ?.firstOrNull()
+    override suspend fun readJsonFile(fileName: String): ExternalFile? = withContext(dispatchers.io) {
+        val file = getFile(fileName)
 
         if (file == null || !file.exists()) {
-            Timber.i(IOException("Error reading json file: $filePrefix - file does not exist"))
+            Timber.i(IOException("Error reading json file: $fileName - file does not exist"))
             return@withContext null
         }
 
@@ -45,12 +70,35 @@ class FilesDirStorageRepository(
                 .bufferedReader()
                 .useLines { lines ->
                     val joinedLines = lines.joinToString("")
-                    Timber.i("File $filePrefix is read successfully: ${joinedLines.length}")
+                    Timber.i("File $fileName is read successfully: ${joinedLines.length}")
                     ExternalFile(joinedLines)
                 }
         } catch (e: Throwable) {
-            Timber.e(e, "Error reading json file: $filePrefix")
+            Timber.e(e, "Error reading json file: $fileName")
             null
         }
+    }
+
+    override fun deleteFile(fileName: String) {
+        val file = getFile(fileName)
+        if (file == null || !file.exists()) {
+            return
+        }
+
+        try {
+            file.delete()
+            Timber.i("File $fileName deleted")
+        } catch (e: Throwable) {
+            Timber.e(e, "Error deleting file: $fileName")
+        }
+    }
+
+    private fun getFile(fileName: String): File? {
+        val filesDirectory = context.filesDir
+        return filesDirectory
+            .listFiles { file ->
+                file.name.startsWith(fileName)
+            }
+            ?.firstOrNull()
     }
 }

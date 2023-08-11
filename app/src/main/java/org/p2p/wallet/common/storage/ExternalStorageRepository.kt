@@ -1,6 +1,12 @@
 package org.p2p.wallet.common.storage
 
+import java.io.InputStream
+
 interface ExternalStorageRepository {
-    suspend fun <T> saveAsJsonFile(jsonObject: T, fileName: String)
-    suspend fun readJsonFile(filePrefix: String): ExternalFile?
+    fun isFileExists(fileName: String): Boolean
+    suspend fun saveRawFile(fileName: String, body: InputStream)
+    suspend fun saveRawFile(fileName: String, body: String)
+    suspend fun <T> saveAsJsonFile(fileName: String, jsonObject: T)
+    suspend fun readJsonFile(fileName: String): ExternalFile?
+    fun deleteFile(fileName: String)
 }

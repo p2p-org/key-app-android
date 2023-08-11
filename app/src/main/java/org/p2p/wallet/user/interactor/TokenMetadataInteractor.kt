@@ -40,7 +40,7 @@ class TokenMetadataInteractor(
 
     private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? =
         runCatching {
-            val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
+            val file = externalStorageRepository.readJsonFile(fileName = TOKENS_FILE_NAME)
             file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
         }
             .onFailure { Timber.i(it, "Failed to read metadata from file") }
@@ -52,8 +52,8 @@ class TokenMetadataInteractor(
 
         // Save tokens to the file
         externalStorageRepository.saveAsJsonFile(
-            jsonObject = tokensMetadata,
-            fileName = TOKENS_FILE_NAME
+            fileName = TOKENS_FILE_NAME,
+            jsonObject = tokensMetadata
         )
     }
 

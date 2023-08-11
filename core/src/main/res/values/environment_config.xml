@@ -45,5 +45,7 @@
     <string name="tokenServiceTestBaseUrl">https://token-service.keyapp.org/</string>
     <string name="tokenServiceBaseUrl">https://token-service.key.app/</string>
 
+    <string name="countryCodeListBaseUrl">https://raw.githubusercontent.com/p2p-org/country-list/main/country-list.json</string>
+
     <!--TODO PWN-4266 migrate googleClientId to CI for secure-->
 </resources>

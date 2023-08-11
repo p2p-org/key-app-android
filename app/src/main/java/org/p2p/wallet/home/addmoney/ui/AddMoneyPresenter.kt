@@ -20,6 +20,8 @@ import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.user.interactor.UserInteractor
 
+private const val TAG = "AddMoneyPresenter"
+
 class AddMoneyPresenter(
     private val appFeatureFlags: InAppFeatureFlags,
     private val interactor: AddMoneyInteractor,
@@ -44,24 +46,43 @@ class AddMoneyPresenter(
 
     override fun attach(view: AddMoneyContract.View) {
         super.attach(view)
-        view.setCellItems(
-            interactor.getAddMoneyButtons().map(addMoneyMapper::mapToCellItem)
-        )
+        launch {
+            try {
+                // There's a tiny issue: buttons might take a noticeable delay to load
+                // when the view is already displayed, leaving the user with an empty view during that time
+                // and we don't have a progress bar to indicate the loading process
+                // This situation will occur only if user is logged in without internet access
+                // and couldn't load the new country list beforehand
+                val buttons = interactor.getAddMoneyButtons().map(addMoneyMapper::mapToCellItem)
+                view.setCellItems(buttons)
+            } catch (e: Throwable) {
+                Timber.tag(TAG).e(e, "Unable to load add money buttons")
+                view.showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+        }
 
         bankTransferProgress
             .onEach { isLoading ->
-                val buttons = interactor.getAddMoneyButtons()
-                    .map {
-                        addMoneyMapper.mapButtonIsLoading(
-                            button = it,
-                            ifType = AddMoneyButtonType.BANK_TRANSFER_STRIGA,
-                            isLoading = isLoading
-                        )
-                    }
+                try {
+                    val buttons = interactor.getAddMoneyButtons()
+                        .map {
+                            addMoneyMapper.mapButtonIsLoading(
+                                button = it,
+                                ifType = AddMoneyButtonType.BANK_TRANSFER_STRIGA,
+                                isLoading = isLoading
+                            )
+                        }
 
-                view.setCellItems(buttons)
+                    view.setCellItems(buttons)
+                } catch (e: Throwable) {
+                    Timber.tag(TAG).e(e, "Unable to load add money buttons")
+                    view.showUiKitSnackBar(messageResId = R.string.error_general_message)
+                }
             }
             .launchIn(this)
+    }
+
+    private fun loadButtons() {
     }
 
     private fun onBankTransferMoonpayClicked() {

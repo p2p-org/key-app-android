@@ -10,6 +10,8 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.model.PhoneNumberWithCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.countrycode.ExternalCountryCodeLoadError
+import org.p2p.wallet.countrycode.repository.ExternalCountryCodeRepository
 import org.p2p.wallet.striga.common.model.StrigaApiErrorCode
 import org.p2p.wallet.striga.common.model.StrigaApiErrorResponse
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
@@ -42,6 +44,7 @@ class StrigaSignupInteractor(
     private val strigaOtpConfirmInteractor: StrigaOtpConfirmInteractor,
     private val strigaUserStatusRepository: StrigaUserStatusRepository,
     private val strigaPresetDataLocalRepository: StrigaPresetDataLocalRepository,
+    private val externalCountryCodeRepository: ExternalCountryCodeRepository,
 ) {
     private val firstStepDataTypes: Set<StrigaSignupDataType> by unsafeLazy {
         setOf(
@@ -224,8 +227,9 @@ class StrigaSignupInteractor(
         return PhoneNumberWithCode(phoneCode, selectedPhoneNumber.orEmpty())
     }
 
-    fun checkCountryIsSupported(country: CountryCode): Boolean {
-        return strigaPresetDataLocalRepository.checkIsCountrySupported(country)
+    @Throws(ExternalCountryCodeLoadError::class, IllegalStateException::class)
+    suspend fun checkCountryIsSupported(country: CountryCode): Boolean {
+        return externalCountryCodeRepository.isStrigaSupported(country)
     }
 
     fun getOccupationByName(name: String): StrigaOccupation? {

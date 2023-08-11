@@ -1,10 +1,13 @@
 package org.p2p.wallet.home.events
 
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.network.NetworkCoreModule.getClient
+import org.p2p.wallet.countrycode.parser.ExternalCountryCodeLoader
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
@@ -35,6 +38,17 @@ object HomeEventsModule : InjectionModule {
             SocketSubscribeLoader(
                 updatesManager = get(),
                 updateSubscribers = getAll(SubscriptionUpdateSubscriber::class),
+            )
+        } bind AppLoader::class
+
+        single {
+            ExternalCountryCodeLoader(
+                resources = androidContext().resources,
+                dispatchers = get(),
+                okHttpClient = getClient(tag = ExternalCountryCodeLoader.TAG),
+                externalStorageRepository = get(),
+                gson = get(),
+                mapper = get()
             )
         } bind AppLoader::class
 

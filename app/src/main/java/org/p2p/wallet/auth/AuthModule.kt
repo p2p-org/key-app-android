@@ -73,6 +73,9 @@ import org.p2p.wallet.auth.web3authsdk.Web3AuthApi
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApiClient
 import org.p2p.wallet.auth.web3authsdk.Web3AuthDurationTracker
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
+import org.p2p.wallet.countrycode.mapper.ExternalCountryCodeMapper
+import org.p2p.wallet.countrycode.repository.ExternalCountryCodeInMemoryRepository
+import org.p2p.wallet.countrycode.repository.ExternalCountryCodeRepository
 import org.p2p.wallet.settings.ui.security.seed.UserSeedPhraseContract
 import org.p2p.wallet.settings.ui.security.seed.UserSeedPhrasePresenter
 import org.p2p.wallet.smsinput.SmsInputContract
@@ -234,5 +237,12 @@ object AuthModule {
                 web3AuthApi = get(),
             )
         }
+
+        initExternalCountryCode()
+    }
+
+    private fun Module.initExternalCountryCode() {
+        factoryOf(::ExternalCountryCodeMapper)
+        singleOf(::ExternalCountryCodeInMemoryRepository) bind ExternalCountryCodeRepository::class
     }
 }
