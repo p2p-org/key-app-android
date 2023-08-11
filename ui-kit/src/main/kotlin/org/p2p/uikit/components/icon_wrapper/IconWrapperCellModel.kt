@@ -1,5 +1,7 @@
 package org.p2p.uikit.components.icon_wrapper
 
+import com.google.android.material.shape.ShapeAppearanceModel
+import org.p2p.uikit.utils.drawable.DrawableCellModel
 import org.p2p.uikit.utils.image.ImageViewCellModel
 
 sealed interface IconWrapperCellModel {
@@ -14,6 +16,9 @@ sealed interface IconWrapperCellModel {
 
     data class SingleEmoji(
         val emoji: String,
+        val background: DrawableCellModel? = null,
+        val foreground: DrawableCellModel? = null,
+        val clippingShape: ShapeAppearanceModel? = null,
     ) : IconWrapperCellModel
 
     // todo

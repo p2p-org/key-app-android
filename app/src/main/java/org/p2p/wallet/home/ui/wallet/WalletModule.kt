@@ -1,11 +1,18 @@
 package org.p2p.wallet.home.ui.wallet
 
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.wallet.home.addmoney.AddMoneyContract
+import org.p2p.wallet.home.addmoney.interactor.AddMoneyInteractor
+import org.p2p.wallet.home.addmoney.mapper.AddMoneyUiMapper
+import org.p2p.wallet.home.addmoney.repository.AddMoneyButtonsRepository
+import org.p2p.wallet.home.addmoney.ui.AddMoneyPresenter
+import org.p2p.wallet.home.onofframp.OnOffRampNavigator
 import org.p2p.wallet.home.ui.wallet.handlers.WalletStrigaHandler
 import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
 import org.p2p.wallet.home.ui.wallet.mapper.StrigaKycUiBannerMapper
@@ -16,7 +23,29 @@ import org.p2p.wallet.striga.onramp.StrigaOnRampModule
 object WalletModule : InjectionModule {
 
     override fun create() = module {
+        initAddMoney()
+        initStriga()
+
         factoryOf(::WalletMapper)
+        factory {
+            WalletPresenter(
+                dispatchers = get(),
+                usernameInteractor = get(),
+                walletMapper = get(),
+                tokenKeyProvider = get(),
+                tokenServiceCoordinator = get(),
+                walletStrigaInteractor = get(),
+                walletStrigaHandler = get(),
+                strigaSignupEnabledFeatureToggle = get(),
+                sellInteractor = get(),
+                mainScreenAnalytics = get(),
+            )
+        } bind WalletContract.Presenter::class
+    }
+
+    private fun Module.initStriga() {
+        factoryOf(::WalletStrigaInteractor)
+        singleOf(::WalletStrigaOnOffRampTokensRepository)
         factoryOf(::StrigaKycUiBannerMapper)
         factory {
             WalletStrigaHandler(
@@ -32,22 +61,13 @@ object WalletModule : InjectionModule {
                 strigaSmsInputTimer = get(named(StrigaOnRampModule.SMS_QUALIFIER)),
             )
         }
-        factory {
-            WalletPresenter(
-                dispatchers = get(),
-                usernameInteractor = get(),
-                walletMapper = get(),
-                tokenKeyProvider = get(),
-                tokenServiceCoordinator = get(),
-                walletStrigaInteractor = get(),
-                walletStrigaHandler = get(),
-                strigaSignupEnabledFeatureToggle = get(),
-                sellInteractor = get(),
-                mainScreenAnalytics = get(),
-            )
-        } bind WalletContract.Presenter::class
+    }
 
-        factoryOf(::WalletStrigaInteractor)
-        singleOf(::WalletStrigaOnOffRampTokensRepository)
+    private fun Module.initAddMoney() {
+        factoryOf(::OnOffRampNavigator)
+        factoryOf(::AddMoneyInteractor)
+        factoryOf(::AddMoneyButtonsRepository)
+        factoryOf(::AddMoneyUiMapper)
+        factoryOf(::AddMoneyPresenter) bind AddMoneyContract.Presenter::class
     }
 }

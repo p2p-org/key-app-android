@@ -29,12 +29,12 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentWalletBinding
 import org.p2p.wallet.databinding.LayoutHomeToolbarBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
+import org.p2p.wallet.home.onofframp.OnOffRampNavigator
 import org.p2p.wallet.home.ui.main.delegates.banner.homeScreenBannerDelegate
 import org.p2p.wallet.home.ui.main.delegates.striga.offramp.StrigaOffRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.offramp.strigaOffRampTokenDelegate
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.strigaOnRampTokenDelegate
-import org.p2p.wallet.home.ui.topup.TopUpWalletBottomSheet
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaBanner
 import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
@@ -64,6 +64,7 @@ class WalletFragment :
     private val binding: FragmentWalletBinding by viewBinding()
 
     private val strigaFragmentFactory: StrigaFragmentFactory by inject()
+    private val onOffRampNavigator: OnOffRampNavigator by inject()
 
     private val cellAdapter = CommonAnyCellAdapter(
         strigaOnRampTokenDelegate(
@@ -183,9 +184,7 @@ class WalletFragment :
     }
 
     override fun navigateToOffRamp() {
-        replaceFragment(
-            strigaFragmentFactory.offRampFragment()
-        )
+        onOffRampNavigator.navigateToWithdraw(this)
     }
 
     override fun navigateToOffRampWithdrawEur(amountInEur: BigDecimal) {
@@ -215,8 +214,8 @@ class WalletFragment :
         binding.swipeRefreshLayout.isRefreshing = isRefreshing
     }
 
-    override fun showTopupWalletDialog() {
-        TopUpWalletBottomSheet.show(parentFragmentManager)
+    override fun showAddMoneyDialog() {
+        onOffRampNavigator.navigateToAddMoney(this)
     }
 
     override fun showStrigaOnRampProgress(isLoading: Boolean, tokenMint: Base58String) {

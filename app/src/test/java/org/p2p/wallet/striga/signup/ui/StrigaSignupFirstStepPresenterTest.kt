@@ -155,7 +155,8 @@ class StrigaSignupFirstStepPresenterTest {
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor,
                 strigaOtpConfirmInteractor = mockk(relaxed = true),
-                strigaUserStatusRepository = mockk(relaxed = true)
+                strigaUserStatusRepository = mockk(relaxed = true),
+                strigaPresetDataLocalRepository = mockk(relaxed = true),
             )
         )
     }

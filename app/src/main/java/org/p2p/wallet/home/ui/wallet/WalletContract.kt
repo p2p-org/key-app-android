@@ -23,7 +23,7 @@ interface WalletContract {
         fun showStrigaOffRampProgress(isLoading: Boolean, accountId: StrigaAccountId)
         fun showStrigaBannerProgress(isLoading: Boolean)
         fun showUserAddress(ellipsizedAddress: String)
-        fun showTopupWalletDialog()
+        fun showAddMoneyDialog()
         fun showKycPendingDialog()
         fun navigateToProfile()
         fun navigateToReserveUsername()

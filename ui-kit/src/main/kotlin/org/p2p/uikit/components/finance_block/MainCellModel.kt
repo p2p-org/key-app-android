@@ -6,6 +6,7 @@ import org.p2p.uikit.components.right_side.RightSideCellModel
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.model.CellModelPayload
 import org.p2p.uikit.utils.drawable.DrawableCellModel
+import org.p2p.uikit.utils.drawable.ForegroundCellModel
 import org.p2p.uikit.utils.viewState.ViewAccessibilityCellModel
 
 data class MainCellModel(
@@ -13,6 +14,7 @@ data class MainCellModel(
     val rightSideCellModel: RightSideCellModel? = null,
     val accessibility: ViewAccessibilityCellModel = ViewAccessibilityCellModel(),
     val background: DrawableCellModel? = DrawableCellModel(tint = R.color.snow),
+    val foreground: ForegroundCellModel? = null,
     val styleType: MainCellStyle = MainCellStyle.FINANCE_BLOCK,
     val horizontalMargins: Int = 0,
     override val payload: Any? = null,

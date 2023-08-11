@@ -13,15 +13,15 @@ import retrofit2.create
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.wallet.R
+import org.p2p.wallet.home.onofframp.OnOffRampCountrySelectionContract
+import org.p2p.wallet.home.onofframp.interactor.OnOffRampCountrySelectionInteractor
+import org.p2p.wallet.home.onofframp.ui.OnOffRampCountrySelectionPresenter
 import org.p2p.wallet.infrastructure.network.interceptor.StrigaProxyApiInterceptor
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.smsinput.SmsInputTimer
 import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishContract
 import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishPresenter
-import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingContract
-import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingPresenter
-import org.p2p.wallet.striga.signup.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.presetpicker.StrigaPresetDataPickerContract
 import org.p2p.wallet.striga.signup.presetpicker.StrigaPresetDataSearcher
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataInteractor
@@ -60,10 +60,10 @@ object StrigaSignupModule : InjectionModule {
         initDataLayer()
         initSms()
 
-        factoryOf(::StrigaOnboardingInteractor)
+        factoryOf(::OnOffRampCountrySelectionInteractor)
+        factoryOf(::OnOffRampCountrySelectionPresenter) bind OnOffRampCountrySelectionContract.Presenter::class
         factoryOf(::StrigaPresetDataInteractor)
         factoryOf(::StrigaPresetDataSearcher)
-        factoryOf(::StrigaOnboardingPresenter) bind StrigaOnboardingContract.Presenter::class
         factory { (selectedItem: StrigaPresetDataItem) ->
             StrigaPresetDataPickerPresenter(
                 strigaElementCellMapper = get(),
@@ -87,6 +87,7 @@ object StrigaSignupModule : InjectionModule {
                 metadataInteractor = get(),
                 strigaOtpConfirmInteractor = get(named(SMS_QUALIFIER)),
                 strigaUserStatusRepository = get(),
+                strigaPresetDataLocalRepository = get(),
             )
         }
         factoryOf(::StrigaUserInteractor)
