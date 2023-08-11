@@ -10,7 +10,6 @@ import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
-import org.p2p.wallet.striga.signup.onboarding.interactor.StrigaOnboardingInteractor
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
 import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaSourceOfFunds
@@ -22,7 +21,6 @@ import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
 class StrigaSignUpSecondStepPresenter(
     dispatchers: CoroutineDispatchers,
     private val interactor: StrigaSignupInteractor,
-    private val onboardingInteractor: StrigaOnboardingInteractor,
     private val strigaItemCellMapper: StrigaItemCellMapper,
     private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<StrigaSignUpSecondStepContract.View>(dispatchers.ui),
@@ -50,11 +48,11 @@ class StrigaSignUpSecondStepPresenter(
         }
 
         cachedSignupData[StrigaSignupDataType.OCCUPATION]?.value?.let {
-            onboardingInteractor.getOccupationByName(it)
+            interactor.getOccupationByName(it)
                 ?.also(::onOccupationChanged)
         }
         cachedSignupData[StrigaSignupDataType.SOURCE_OF_FUNDS]?.value?.let {
-            onboardingInteractor.getSourcesOfFundsByName(it)
+            interactor.getSourcesOfFundsByName(it)
                 ?.also(::onSourceOfFundsChanged)
         }
         cachedSignupData[StrigaSignupDataType.COUNTRY_ALPHA_2]?.value?.let {

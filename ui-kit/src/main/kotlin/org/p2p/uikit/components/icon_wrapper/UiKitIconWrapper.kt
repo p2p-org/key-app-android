@@ -9,6 +9,9 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
 import org.p2p.uikit.databinding.WidgetIconWrapperSingleBinding
 import org.p2p.uikit.databinding.WidgetIconWrapperTwoBinding
+import org.p2p.uikit.utils.drawable.applyBackground
+import org.p2p.uikit.utils.drawable.applyForeground
+import org.p2p.uikit.utils.drawable.shape.shapeOutline
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
@@ -52,13 +55,19 @@ class UiKitIconWrapper @JvmOverloads constructor(
     }
 
     private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleEmoji) {
-        this.emojiViewIcon.isVisible = true
-        this.imageViewIcon.isVisible = false
-        this.emojiViewIcon.bind(TextContainer(model.emoji))
+        textViewEmoji.isVisible = true
+        textViewEmoji.bind(TextContainer(model.emoji))
+
+        // we don't show imageview image itself, but using it as a background for emoji
+        imageViewIcon.apply {
+            model.background.applyBackground(this)
+            model.foreground.applyForeground(this)
+            shapeOutline(model.clippingShape)
+        }
     }
 
     private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleIcon) {
-        this.emojiViewIcon.isVisible = false
+        this.textViewEmoji.isVisible = false
         this.imageViewIcon.isVisible = true
         this.imageViewIcon.bind(model.icon)
 

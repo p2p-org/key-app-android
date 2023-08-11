@@ -12,7 +12,7 @@ import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawFragment
 import org.p2p.wallet.striga.offramp.withdraw.StrigaWithdrawFragmentType
 import org.p2p.wallet.striga.onramp.iban.StrigaUserIbanDetailsFragment
 import org.p2p.wallet.striga.signup.finish.StrigaSignupFinishFragment
-import org.p2p.wallet.striga.signup.onboarding.StrigaOnboardingFragment
+import org.p2p.wallet.striga.signup.onboarding.StrigaOpenAccountFragment
 import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.wallet.models.ids.StrigaWithdrawalChallengeId
@@ -47,7 +47,7 @@ class StrigaFragmentFactory {
     fun signupFlowFragment(target: StrigaUserStatusDestination): Fragment? {
         return when (target) {
             StrigaUserStatusDestination.ONBOARDING -> {
-                StrigaOnboardingFragment.create()
+                StrigaOpenAccountFragment.create()
             }
             StrigaUserStatusDestination.SMS_VERIFICATION -> {
                 SmsInputFactory.create(
