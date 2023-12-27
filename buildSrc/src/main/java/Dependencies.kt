@@ -110,7 +110,7 @@ object Dependencies {
         "com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:$adapterDelegatesVersion"
 
     // AppsFlyer
-    private const val appsFlyerSdk = "com.appsflyer:af-android-sdk:6.9.0"
+    private const val appsFlyerSdk = "com.appsflyer:af-android-sdk:6.12.2"
     private const val androidInstallReferrer = "com.android.installreferrer:installreferrer:2.2"
     private const val androidAdsIndetifier = "androidx.ads:ads-identifier:1.0.0-alpha05"
 
