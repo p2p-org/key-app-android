@@ -13,3 +13,7 @@ data class TokenMetadata(
     val isWrapped: Boolean,
     val extensions: TokenMetadataExtension
 ) : Parcelable
+
+fun List<TokenMetadata>.filterByAvailability(): List<TokenMetadata> {
+    return filter { it.extensions.isTokenCellVisibleOnWs != false }
+}

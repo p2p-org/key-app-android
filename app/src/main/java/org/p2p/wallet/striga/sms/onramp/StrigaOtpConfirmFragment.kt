@@ -2,8 +2,6 @@ package org.p2p.wallet.striga.sms.onramp
 
 import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResult
-import android.os.Bundle
-import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.koin.core.qualifier.named
@@ -25,13 +23,11 @@ import org.p2p.wallet.utils.replaceFragment
 class StrigaOtpConfirmFragment : BaseSmsInputFragment() {
 
     companion object {
-        const val ARG_TITLE_AMOUNT = "ARG_TITLE_AMOUNT"
         const val ARG_CHALLENGE_ID = "ARG_CHALLENGE_ID"
         val REQUEST_KEY: String = StrigaOtpConfirmFragment::class.java.name
         const val RESULT_KEY_CONFIRMED: String = "RESULT_KEY_CONFIRMED"
     }
 
-    private val titleAmount: String by args(ARG_TITLE_AMOUNT)
     private val challengeId: StrigaWithdrawalChallengeId by args(ARG_CHALLENGE_ID)
 
     override val presenter: SmsInputContract.Presenter by inject(named(StrigaOnRampModule.SMS_QUALIFIER)) {
@@ -45,20 +41,16 @@ class StrigaOtpConfirmFragment : BaseSmsInputFragment() {
         popBackStack()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.uiKitToolbar.title = emptyString()
-        binding.textViewTitle.text = getString(R.string.striga_onramp_sms_input_title, titleAmount)
-    }
-
     override fun navigateNext() {
         isOtpConfirmed = true
         super.navigateNext()
     }
 
     override fun initView(userPhoneNumber: PhoneNumber) {
+        binding.uiKitToolbar.title = emptyString()
+        binding.textViewTitle.text = getString(R.string.striga_sms_input_title)
         binding.textViewDescription.text =
-            getString(R.string.striga_onramp_sms_input_description, userPhoneNumber.formattedValue)
+            getString(R.string.striga_sms_input_description, userPhoneNumber.formattedValue)
     }
 
     override fun navigateToSmsInputBlocked(timerLeftTime: Long) = Unit

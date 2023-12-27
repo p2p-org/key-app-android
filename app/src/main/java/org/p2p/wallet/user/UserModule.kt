@@ -1,5 +1,6 @@
 package org.p2p.wallet.user
 
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -34,8 +35,8 @@ object UserModule : InjectionModule {
             )
         }
 
+        factoryOf(::UserTokensInteractor)
         singleOf(::UserTokensDatabaseRepository) bind UserTokensLocalRepository::class
-        factory { UserTokensInteractor(get(), get(), get(), get()) }
         singleOf(::UserTokensRemoteRepository) bind UserTokensRepository::class
         singleOf(::TokenMetadataInteractor)
     }

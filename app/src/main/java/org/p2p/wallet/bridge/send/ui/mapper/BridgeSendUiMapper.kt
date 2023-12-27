@@ -48,7 +48,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
             amountTokens = amountTokens,
             amountUsd = amountUsd,
             totalFees = feeDetails?.bridgeFee?.toTextHighlighting()?.let { listOf(it) },
-            data = listOf(TitleValue(resources.getString(R.string.transaction_send_to_title), recipient))
+            transactionDetails = listOf(TitleValue(resources.getString(R.string.transaction_send_to_title), recipient))
         )
     }
 

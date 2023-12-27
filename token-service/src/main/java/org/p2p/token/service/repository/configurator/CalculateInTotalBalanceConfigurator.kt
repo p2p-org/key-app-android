@@ -6,7 +6,7 @@ import org.p2p.core.token.TokenExtensions
 class CalculateInTotalBalanceConfigurator(
     private val extensions: TokenMetadataExtension,
     private val tokenExtensions: TokenExtensions
-) : TokenConfigurator<TokenExtensions> {
+) : TokenConfigurator {
 
     override fun config(): TokenExtensions {
         return tokenExtensions.copy(isCalculateWithTotalBalance = extensions.calculationOfFinalBalanceOnWs)

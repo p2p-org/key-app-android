@@ -1,15 +1,17 @@
 package org.p2p.token.service.repository.configurator
 
-import org.p2p.core.token.TokenMetadataExtension
+import java.math.BigDecimal
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadataExtension
 
 class TokenExtensionsConfigurator(
     private val extensions: TokenMetadataExtension,
-    private val token: Token.Active
-) : TokenConfigurator<Token.Active> {
+    private val tokenTotal: BigDecimal? = null,
+    private val tokenRate: BigDecimal? = null
+) : TokenConfigurator {
 
-    override fun config(): Token.Active {
+    override fun config(): TokenExtensions {
         var tokenExtensions =
             TokenExtensions(tokenPercentDifferenceOnWalletScreen = extensions.percentDifferenceToShowByPriceOnWs)
         /**
@@ -36,11 +38,14 @@ class TokenExtensionsConfigurator(
          * Setup [Token.numbersAfterDecimalPoint] setup count of numbers after decimal point
          */
         tokenExtensions = RuleOfFractionalPartConfigurator(extensions, tokenExtensions).config()
+
         /**
          * Setup [Token.setupPercentDifferenceToShowByPrice] configuration
          */
-        val newToken = PricePercentDifferenceToShow(tokenExtensions, token).config()
+        if (tokenTotal != null) {
+            tokenExtensions = PricePercentDifferenceToShow(extensions, tokenExtensions, tokenTotal, tokenRate).config()
+        }
 
-        return newToken.copy(tokenExtensions = tokenExtensions)
+        return tokenExtensions
     }
 }

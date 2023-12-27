@@ -1,20 +1,14 @@
 package org.p2p.core.network.environment
 
 import android.content.Context
-import timber.log.Timber
-import org.p2p.core.BuildConfig
 import org.p2p.core.R
 import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.network.NetworkServicesUrlStorage
-import org.p2p.core.utils.getStringResourceByName
 
 private const val KEY_NOTIFICATION_SERVICE_BASE_URL = "KEY_NOTIFICATION_SERVICE_BASE_URL"
 private const val KEY_FEE_RELAYER_BASE_URL = "KEY_FEE_RELAYER_BASE_URL"
 private const val KEY_NAME_SERVICE_BASE_URL = "KEY_NAME_SERVICE_BASE_URL"
-private const val KEY_TORUS_BASE_URL = "KEY_TORUS_BASE_URL"
-private const val KEY_TORUS_BASE_VERIFIER = "KEY_TORUS_BASE_VERIFIER"
-private const val KEY_TORUS_BASE_SUB_VERIFIER = "KEY_TORUS_BASE_SUB_VERIFIER"
-private const val KEY_MOONPAY_SERVER_SIDE_BASE_URL = "KEY_MOONPAY_SERVER_SIDE_BASE_URL"
+
 private const val KEY_BRIDGES_SERVICE_BASE_URL = "KEY_BRIDGES_SERVICE_BASE_URL"
 private const val KEY_GATEWAY_BASE_URL = "KEY_GATEWAY_BASE_URL"
 private const val KEY_TOKEN_SERVICE_BASE_URL = "KEY_TOKEN_SERVICE_BASE_URL"
@@ -24,6 +18,17 @@ class NetworkServicesUrlProvider(
     private val storage: NetworkServicesUrlStorage,
     private val crashLogger: CrashLogger
 ) {
+
+    private val moonpayEnvironmentProvider = MoonpayEnvironmentProvider(
+        context = context,
+        storage = storage,
+        crashLogger = crashLogger
+    )
+
+    private val torusEnvironmentProvider = TorusEnvironmentProvider(
+        context = context,
+        storage = storage
+    )
 
     fun loadFeeRelayerEnvironment(): FeeRelayerEnvironment {
         val url = storage.getString(
@@ -35,33 +40,31 @@ class NetworkServicesUrlProvider(
         return FeeRelayerEnvironment(url)
     }
 
-    fun saveFeeRelayerEnvironment(newUrl: String) {
-        storage.putString(KEY_FEE_RELAYER_BASE_URL, newUrl)
+    fun toggleFeeRelayerEnvironment(isProdSelected: Boolean) {
+        val newUrl = if (isProdSelected) R.string.feeRelayerBaseUrl else R.string.feeRelayerTestBaseUrl
+        storage.putString(KEY_FEE_RELAYER_BASE_URL, context.getString(newUrl))
     }
 
     fun loadNameServiceEnvironment(): NameServiceEnvironment {
         val url = storage.getString(
             KEY_NAME_SERVICE_BASE_URL,
-            context.getString(R.string.registerUsernameServiceProductionUrl)
+            context.getString(R.string.registerUsernameServiceBaseUrl)
         ).orEmpty()
 
-        val isProductionSelected = url == context.getString(R.string.registerUsernameServiceProductionUrl)
-
         crashLogger.setCustomKey(KEY_NAME_SERVICE_BASE_URL, url)
-
-        return NameServiceEnvironment(url, isProductionSelected)
+        return NameServiceEnvironment(
+            baseUrl = url,
+            isProductionSelected = isProdUrl(url, R.string.registerUsernameServiceBaseUrl)
+        )
     }
 
     fun toggleNameServiceEnvironment(isProdSelected: Boolean) {
-        if (isProdSelected) {
-            saveNameServiceEnvironment(context.getString(R.string.registerUsernameServiceProductionUrl))
+        val newUrl = if (isProdSelected) {
+            R.string.registerUsernameServiceBaseUrl
         } else {
-            saveNameServiceEnvironment(context.getString(R.string.registerUsernameServiceTestUrl))
+            R.string.registerUsernameServiceTestUrl
         }
-    }
-
-    private fun saveNameServiceEnvironment(newUrl: String) {
-        storage.putString(KEY_NAME_SERVICE_BASE_URL, newUrl)
+        storage.putString(KEY_NAME_SERVICE_BASE_URL, context.getString(newUrl))
     }
 
     fun loadNotificationServiceEnvironment(): NotificationServiceEnvironment {
@@ -71,11 +74,19 @@ class NetworkServicesUrlProvider(
         ).orEmpty()
 
         crashLogger.setCustomKey(KEY_NOTIFICATION_SERVICE_BASE_URL, url)
-        return NotificationServiceEnvironment(url)
+        return NotificationServiceEnvironment(
+            baseUrl = url,
+            isProdSelected = isProdUrl(url, R.string.notificationServiceBaseUrl)
+        )
     }
 
-    fun saveNotificationServiceEnvironment(newUrl: String) {
-        storage.putString(KEY_NOTIFICATION_SERVICE_BASE_URL, newUrl)
+    fun toggleNotificationServiceEnvironment(isProdSelected: Boolean) {
+        val newUrl = if (isProdSelected) {
+            R.string.notificationServiceBaseUrl
+        } else {
+            R.string.notificationServiceTestBaseUrl
+        }
+        storage.putString(KEY_NOTIFICATION_SERVICE_BASE_URL, context.getString(newUrl))
     }
 
     fun loadBridgesServiceEnvironment(): BridgesServiceEnvironment {
@@ -99,89 +110,10 @@ class NetworkServicesUrlProvider(
             context.getString(R.string.web3AuthServiceBaseUrl)
         ).orEmpty()
 
-        return GatewayServiceEnvironment(url)
-    }
-
-    fun saveGatewayServiceEnvironment(newUrl: String) {
-        storage.putString(KEY_GATEWAY_BASE_URL, newUrl)
-    }
-
-    fun loadTorusEnvironment(): TorusEnvironment {
-        val url = storage.getString(
-            KEY_TORUS_BASE_URL,
-            context.getString(R.string.torusBaseUrl)
-        ).orEmpty()
-        val verifier = storage.getString(
-            KEY_TORUS_BASE_VERIFIER,
-            context.getString(R.string.torusVerifier)
-        ).orEmpty()
-        Timber.d("Torus verifier: $verifier")
-
-        val subVerifier = storage.getString(
-            KEY_TORUS_BASE_SUB_VERIFIER,
-            context.getStringResourceByName("torusSubVerifier")
-        ).orEmpty()
-
-        if (!BuildConfig.DEBUG && subVerifier.isBlank()) {
-            Timber.e(IllegalArgumentException("torusSubVerifier is missing for release builds!"))
-        }
-
-        val torusEnvironment = TorusEnvironment(
+        return GatewayServiceEnvironment(
             baseUrl = url,
-            verifier = verifier,
-            subVerifier = subVerifier,
-            torusNetwork = context.getString(R.string.torusNetwork),
-            torusLogLevel = context.getString(R.string.torusLogLevel)
+            isProdSelected = isProdUrl(url, R.string.web3AuthServiceBaseUrl)
         )
-
-        Timber.i("Torus environment init: $torusEnvironment")
-        return torusEnvironment
-    }
-
-    fun saveTorusEnvironment(newUrl: String?, newVerifier: String?, newSubVerifier: String?) {
-        storage.edit {
-            newUrl?.let {
-                putString(KEY_TORUS_BASE_URL, it)
-            }
-            newVerifier?.let {
-                putString(KEY_TORUS_BASE_VERIFIER, it)
-            }
-            newSubVerifier?.let {
-                putString(KEY_TORUS_BASE_SUB_VERIFIER, it)
-            } ?: run {
-                remove(KEY_TORUS_BASE_SUB_VERIFIER)
-            }
-        }
-        Timber.i("Torus environment changed and saved: $newUrl; $newVerifier; $newSubVerifier")
-    }
-
-    fun loadMoonpayEnvironment(): MoonpayEnvironment {
-        val defaultUrl = if (BuildConfig.DEBUG) {
-            context.getString(R.string.moonpayServerSideProxySandboxUrl)
-        } else {
-            context.getString(R.string.moonpayServerSideProxyUrl)
-        }
-        val serverSideBaseUrl = storage.getString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, defaultUrl).orEmpty()
-        val clientSideBaseUrl = context.getString(R.string.moonpayClientSideBaseUrl)
-        val isSandboxEnabled = serverSideBaseUrl == context.getString(R.string.moonpayServerSideProxySandboxUrl)
-
-        crashLogger.setCustomKey(KEY_MOONPAY_SERVER_SIDE_BASE_URL, serverSideBaseUrl)
-        crashLogger.setCustomKey("KEY_MOONPAY_CLIENT_SIDE_BASE_URL", clientSideBaseUrl)
-
-        return MoonpayEnvironment(
-            baseServerSideUrl = serverSideBaseUrl,
-            baseClientSideUrl = clientSideBaseUrl,
-            isSandboxEnabled = isSandboxEnabled,
-            moonpayApiKey = if (isSandboxEnabled) BuildConfig.moonpaySandboxKey else BuildConfig.moonpayKey
-        )
-    }
-
-    fun toggleMoonpayEnvironment(isSandboxSelected: Boolean) {
-        if (isSandboxSelected) {
-            saveMoonpayEnvironment(context.getString(R.string.moonpayServerSideProxySandboxUrl))
-        } else {
-            saveMoonpayEnvironment(context.getString(R.string.moonpayServerSideProxyUrl))
-        }
     }
 
     fun loadTokenServiceEnvironment(): TokenServiceEnvironment {
@@ -191,14 +123,33 @@ class NetworkServicesUrlProvider(
         ).orEmpty()
 
         crashLogger.setCustomKey(KEY_TOKEN_SERVICE_BASE_URL, url)
-        return TokenServiceEnvironment(url)
+        return TokenServiceEnvironment(
+            baseServiceUrl = url,
+            isProdSelected = isProdUrl(url, R.string.tokenServiceBaseUrl)
+        )
     }
 
-    private fun saveMoonpayEnvironment(newServerSideUrl: String) {
-        storage.putString(KEY_MOONPAY_SERVER_SIDE_BASE_URL, newServerSideUrl)
+    fun toggleTokenServiceEnvironment(isProdSelected: Boolean) {
+        val newUrl = if (isProdSelected) R.string.tokenServiceBaseUrl else R.string.tokenServiceTestBaseUrl
+        storage.putString(KEY_TOKEN_SERVICE_BASE_URL, context.getString(newUrl))
     }
 
-    fun resetMoonpayEnvironment() {
-        storage.remove(KEY_MOONPAY_SERVER_SIDE_BASE_URL)
+    fun loadTorusEnvironment(): TorusEnvironment =
+        torusEnvironmentProvider.loadTorusEnvironment()
+
+    fun saveTorusEnvironment(newUrl: String?, newVerifier: String?, newSubVerifier: String?) =
+        torusEnvironmentProvider.saveTorusEnvironment(newUrl, newVerifier, newSubVerifier)
+
+    fun loadMoonpayEnvironment(): MoonpayEnvironment =
+        moonpayEnvironmentProvider.loadMoonpayEnvironment()
+
+    fun toggleMoonpayEnvironment(isSandboxSelected: Boolean) =
+        moonpayEnvironmentProvider.toggleMoonpayEnvironment(isSandboxSelected)
+
+    fun resetMoonpayEnvironment() =
+        moonpayEnvironmentProvider.resetMoonpayEnvironment()
+
+    private fun isProdUrl(currentUrl: String, prodUrlRes: Int): Boolean {
+        return currentUrl == context.getString(prodUrlRes)
     }
 }

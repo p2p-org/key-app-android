@@ -4,9 +4,9 @@ import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.wallet.R
 import org.p2p.wallet.common.InAppFeatureFlags
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.settings.model.SettingsRow
 
 class DebugSettingsMapper(
@@ -27,17 +27,19 @@ class DebugSettingsMapper(
         )
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_feature_toggles_title,
-            iconRes = R.drawable.ic_home_settings
+            iconRes = R.drawable.ic_switch
         )
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_logs_title,
             subtitleRes = R.string.debug_settings_logs_subtitle,
-            iconRes = R.drawable.ic_settings_cloud
+            iconRes = R.drawable.ic_settings_cloud,
+            isDivider = true
         )
         if (seedPhraseProvider.isWeb3AuthUser) {
             this += SettingsRow.Section(
                 titleResId = R.string.debug_settings_web3,
-                iconRes = R.drawable.ic_settings_contacts
+                iconRes = R.drawable.ic_settings_contacts,
+                isDivider = true
             )
         }
 
@@ -54,11 +56,8 @@ class DebugSettingsMapper(
         }
 
         this += createStrigaSettings()
-
-        this += SettingsRow.Section(
-            titleResId = R.string.debug_settings_ui_kit,
-            iconRes = R.drawable.ic_settings_cloud
-        )
+        this += createUiKitExamplesSettings()
+        this += createToolsSettings()
     }
 
     private fun createEnvironmentSettings(): List<SettingsRow> = buildList {
@@ -66,31 +65,43 @@ class DebugSettingsMapper(
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_network,
             subtitle = networkName,
-            iconRes = R.drawable.ic_settings_network
-        )
-
-        val feeRelayerUrl = networkUrlProvider.loadFeeRelayerEnvironment().baseUrl
-        this += SettingsRow.Section(
-            titleResId = R.string.debug_settings_fee_relayer,
-            subtitle = feeRelayerUrl,
-            iconRes = R.drawable.ic_network
+            iconRes = R.drawable.ic_settings_network,
         )
 
         val torusSubtitle = networkUrlProvider.loadTorusEnvironment().run {
             "$baseUrl\n$verifier $subVerifier"
         }
+
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_torus,
             subtitle = torusSubtitle,
             iconRes = R.drawable.ic_network
         )
-
-        val notificationServiceUrl = networkUrlProvider.loadNotificationServiceEnvironment().baseUrl
-        this += SettingsRow.Section(
-            titleResId = R.string.debug_settings_notification_service,
-            subtitle = notificationServiceUrl,
+        val feeRelayerUrl = networkUrlProvider.loadFeeRelayerEnvironment().baseUrl
+        this += SettingsRow.Switcher(
+            titleResId = R.string.debug_settings_fee_relayer,
             iconRes = R.drawable.ic_network,
-            isDivider = true
+            isDivider = false,
+            subtitle = feeRelayerUrl,
+            isSelected = true
+        )
+
+        val notificationServiceEnvironment = networkUrlProvider.loadNotificationServiceEnvironment()
+        this += SettingsRow.Switcher(
+            titleResId = R.string.debug_settings_notification_service,
+            iconRes = R.drawable.ic_network,
+            isDivider = false,
+            subtitle = notificationServiceEnvironment.baseUrl,
+            isSelected = notificationServiceEnvironment.isProdSelected
+        )
+
+        val tokenServiceEnvironment = networkUrlProvider.loadTokenServiceEnvironment()
+        this += SettingsRow.Switcher(
+            titleResId = R.string.debug_settings_token_service,
+            iconRes = R.drawable.ic_network,
+            isDivider = false,
+            subtitle = tokenServiceEnvironment.baseServiceUrl,
+            isSelected = tokenServiceEnvironment.isProdSelected
         )
 
         val nameServiceEnvironment = networkUrlProvider.loadNameServiceEnvironment()
@@ -137,6 +148,26 @@ class DebugSettingsMapper(
             titleResId = R.string.debug_settings_striga_detach_user_id_title,
             subtitle = "Delete striga metadata from web3 metadata (requires app restart)",
             iconRes = R.drawable.ic_user,
+        )
+    }
+
+    private fun createUiKitExamplesSettings(): List<SettingsRow> = buildList {
+        this += SettingsRow.Title(
+            titleResId = R.string.debug_settings_ui_kit,
+        )
+        this += SettingsRow.Section(
+            titleResId = R.string.debug_settings_ui_kit,
+            iconRes = R.drawable.ic_settings_cloud
+        )
+    }
+
+    private fun createToolsSettings(): List<SettingsRow> = buildList {
+        this += SettingsRow.Title(
+            titleResId = R.string.debug_settings_tools_title,
+        )
+        this += SettingsRow.Section(
+            titleResId = R.string.debug_settings_reset_user_country_title,
+            iconRes = R.drawable.ic_settings_country
         )
     }
 }

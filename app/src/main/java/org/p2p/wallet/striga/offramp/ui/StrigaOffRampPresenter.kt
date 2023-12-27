@@ -93,7 +93,7 @@ class StrigaOffRampPresenter(
     }
 
     private fun observeRateChanges() {
-        launch {
+        launchInternetAware(connectionManager) {
             interactor.observeExchangeRateState()
                 .collect(::handleRateChange)
         }
@@ -174,6 +174,7 @@ class StrigaOffRampPresenter(
         } else {
             navigateToSignupFlow()
         }
+        setButtonState(StrigaOffRampButtonState.Enabled)
     }
 
     private fun navigateToWithdrawFlow() {

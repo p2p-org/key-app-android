@@ -34,7 +34,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterModule
 import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.moonpay.ui.BuyModule
-import org.p2p.wallet.newsend.SendModule
+import org.p2p.wallet.send.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.ReceiveModule
@@ -80,6 +80,13 @@ object AppModule {
                 NetworkModule.create(),
                 RpcModule.create(),
                 TransactionModule.create(),
+                TransactionManagerModule.create(),
+                UserModule.create(),
+                NetworkCoreModule.create(),
+                CrashLoggerModule.create(),
+                TokenServiceModule.create(),
+                HomeEventsModule.create(),
+                EthereumModule.create(),
                 // feature screens
                 AuthModule.create(),
                 BridgeModule.create(),
@@ -102,15 +109,6 @@ object AppModule {
                 SettingsModule.create(),
                 StrigaModule.create(),
                 SwapModule.create(),
-                TransactionManagerModule.create(),
-                UserModule.create(),
-                NetworkCoreModule.create(),
-                UserModule.create(),
-                CrashLoggerModule.create(),
-                NetworkCoreModule.create(),
-                TokenServiceModule.create(),
-                HomeEventsModule.create(),
-                EthereumModule.create()
             )
         )
     }

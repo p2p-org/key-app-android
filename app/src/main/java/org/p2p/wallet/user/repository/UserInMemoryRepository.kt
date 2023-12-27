@@ -15,6 +15,7 @@ private const val DEFAULT_TOKEN_KEY = "DEFAULT_TOKEN_KEY"
 
 private const val TAG = "UserInMemoryRepository"
 
+// TODO: https://p2pvalidator.atlassian.net/browse/PWN-9649
 class UserInMemoryRepository(
     private val tokenConverter: TokenConverter,
     private val tokenServiceRepository: TokenServiceRepository

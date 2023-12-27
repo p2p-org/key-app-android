@@ -1,6 +1,7 @@
 package org.p2p.core.token
 
 import android.os.Parcelable
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -19,6 +20,10 @@ data class TokenExtensions(
     val canTokenBeHidden: Boolean? = null
 ) : Parcelable {
 
+    // TODO: Make better solution for this
+    @IgnoredOnParcel
+    var isRateExceedsTheDifference: Boolean = true
+
     companion object {
         val NONE = TokenExtensions()
     }
@@ -33,5 +38,5 @@ fun List<Token.Active>.filterTokensForCalculationOfFinalBalance(): List<Token.Ac
 }
 
 fun List<Token.Active>.filterTokensByAvailability(): List<Token.Active> {
-    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen == true }
+    return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen != false }
 }

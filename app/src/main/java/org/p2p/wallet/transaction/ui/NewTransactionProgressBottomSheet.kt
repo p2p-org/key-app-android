@@ -56,9 +56,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     }
 
     private val handlerQualifier: String by args(EXTRA_HANDLER_QUALIFIER)
-    private val progressStateHandler: TransactionProgressHandler by lazy {
-        get(named(handlerQualifier))
-    }
+    private val progressStateHandler: TransactionProgressHandler by lazy { get(named(handlerQualifier)) }
 
     private val transactionManager: TransactionManager by inject()
 
@@ -75,6 +73,7 @@ class NewTransactionProgressBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         progressStateHandler.init(binding, data)
+
         binding.buttonDone.setOnClickListener {
             dismissAllowingStateLoss()
         }

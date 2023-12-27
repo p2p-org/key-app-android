@@ -261,7 +261,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
     }
 
     private fun List<RpcFee>?.formatFees(lessThenMinString: String): CharSequence {
-        return if (this == null) {
+        return if (this.isNullOrEmpty()) {
             getString(R.string.transaction_transaction_fee_free_value)
         } else {
             val fees = this

@@ -62,5 +62,7 @@ interface WalletContract {
             challengeId: StrigaWithdrawalChallengeId,
             token: StrigaOffRampCellModel
         )
+
+        fun onResume()
     }
 }

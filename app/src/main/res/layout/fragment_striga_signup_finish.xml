@@ -26,15 +26,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
-        app:srcCompat="@drawable/fingerprint" />
+        app:srcCompat="@drawable/ic_cat_checkmark" />
 
     <TextView
         android:id="@+id/textViewTitle"
         style="@style/UiKit.TextAppearance.SemiBold.Title2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="16dp"
         android:gravity="center"
         android:text="@string/striga_signup_finish_title"
         app:layout_constraintEnd_toEndOf="parent"

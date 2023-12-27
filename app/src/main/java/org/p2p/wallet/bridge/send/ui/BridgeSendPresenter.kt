@@ -30,7 +30,7 @@ import org.p2p.wallet.bridge.send.model.getFeeList
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.SendStateMachine
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
@@ -43,8 +43,8 @@ import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.newsend.model.CalculationMode
-import org.p2p.wallet.newsend.model.SearchResult
+import org.p2p.wallet.send.model.CalculationMode
+import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.transaction.model.progressstate.BridgeSendProgressState
 import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
@@ -67,7 +67,7 @@ class BridgeSendPresenter(
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
     private val initialData: SendInitialData.Bridge,
-    private val stateMachine: SendStateMachine,
+    private val stateMachine: BridgeSendStateMachine,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val alarmErrorsLogger: AlarmErrorsLogger
 ) : BasePresenter<BridgeSendContract.View>(), BridgeSendContract.Presenter {

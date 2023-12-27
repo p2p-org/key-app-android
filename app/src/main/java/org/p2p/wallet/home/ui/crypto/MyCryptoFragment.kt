@@ -109,13 +109,15 @@ class MyCryptoFragment :
     }
 
     private fun showTokenVisibilityStateChangeDialog(item: TokenCellModel) {
-        TokenVisibilityChangeBottomSheet.show(
-            fm = childFragmentManager,
-            token = item.payload,
-            isTokenHidden = item.isDefinitelyHidden,
-            requestKey = KEY_REQUEST,
-            resultKey = KEY_RESULT_TOKEN
-        )
+        if (item.payload.canTokenBeHidden) {
+            TokenVisibilityChangeBottomSheet.show(
+                fm = childFragmentManager,
+                token = item.payload,
+                isTokenHidden = item.isDefinitelyHidden,
+                requestKey = KEY_REQUEST,
+                resultKey = KEY_RESULT_TOKEN
+            )
+        }
     }
 
     private fun FragmentMyCryptoBinding.setupView() {

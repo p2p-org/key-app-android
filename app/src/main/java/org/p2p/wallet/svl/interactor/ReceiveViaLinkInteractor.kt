@@ -22,8 +22,8 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.newsend.model.SEND_LINK_FORMAT
-import org.p2p.wallet.newsend.model.TemporaryAccount
+import org.p2p.wallet.send.model.SEND_LINK_FORMAT
+import org.p2p.wallet.send.model.TemporaryAccount
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository

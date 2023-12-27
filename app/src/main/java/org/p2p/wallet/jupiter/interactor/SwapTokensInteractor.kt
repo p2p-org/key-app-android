@@ -6,10 +6,10 @@ import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
-import org.p2p.wallet.user.interactor.UserTokensInteractor
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 class SwapTokensInteractor(
-    private val userTokensInteractor: UserTokensInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
     private val swapStateManager: SwapStateManager,
@@ -30,7 +30,7 @@ class SwapTokensInteractor(
     }
 
     suspend fun getAllTokens(): List<SwapTokenModel> {
-        val userTokens = userTokensInteractor.getUserTokens()
+        val userTokens = tokenServiceCoordinator.getUserTokens()
         val jupiterTokens = swapTokensRepository.getTokens()
 
         val userTokensModel = userTokens.map(SwapTokenModel::UserToken)
@@ -47,7 +47,7 @@ class SwapTokensInteractor(
     }
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
-        val userTokens = userTokensInteractor.getUserTokens().map(SwapTokenModel::UserToken)
+        val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
         val jupiterTokens = swapTokensRepository.getTokens().map(SwapTokenModel::JupiterToken)
             .filter { it.mintAddress !in userTokens.map(SwapTokenModel.UserToken::mintAddress) }
 

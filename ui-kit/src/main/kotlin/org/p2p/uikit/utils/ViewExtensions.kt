@@ -29,6 +29,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.Toast
 import org.p2p.core.utils.showKeyboard
+import org.p2p.uikit.utils.recycler.NonScrollableLinearLayoutManager
 
 fun View.requireActivity(): AppCompatActivity {
     var context: Context = context
@@ -133,6 +134,10 @@ fun RecyclerView.attachAdapter(adapter: RecyclerView.Adapter<*>) {
 }
 
 fun RecyclerView.ViewHolder.requireContext(): Context = itemView.context
+
+fun RecyclerView.disableScrolling() {
+    layoutManager = NonScrollableLinearLayoutManager(context)
+}
 
 fun View.getString(@StringRes resourceId: Int): String =
     context.getString(resourceId)

@@ -13,10 +13,10 @@ private const val TAG = "BridgeRemoteRepository"
 internal class TokenServiceRemoteDataSource(
     private val api: RpcApi,
     private val gson: Gson,
-    urlProvider: NetworkServicesUrlProvider,
+    private val urlProvider: NetworkServicesUrlProvider,
 ) : TokenServiceDataSource {
-    private val tokenServiceStringUrl = urlProvider.loadTokenServiceEnvironment().baseServiceUrl
-    private val tokenServiceUrl = URI(tokenServiceStringUrl)
+    private val tokenServiceUrl: URI
+        get() = URI(urlProvider.loadTokenServiceEnvironment().baseServiceUrl)
 
     override suspend fun <P, T> launch(request: JsonRpc<P, T>): TokenServiceResult<T> {
         return try {

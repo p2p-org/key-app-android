@@ -160,6 +160,7 @@ class AppDeeplinksManager(
                     values[NOTIFICATION_TYPE].orEmpty()
                 )
                 intent.addDeeplinkDataToIntent(notificationType)
+                switchToMainTabIfPossible(intent)
             }
             extras.containsKey(EXTRA_TAB_SCREEN) -> {
                 switchToMainTabIfPossible(intent)

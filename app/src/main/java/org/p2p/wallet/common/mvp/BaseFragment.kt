@@ -30,7 +30,7 @@ import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.newsend.ui.NewSendFragment
+import org.p2p.wallet.send.ui.NewSendFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment

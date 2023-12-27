@@ -185,7 +185,7 @@ object JupiterModule : InjectionModule {
                     swapValidator = get(),
                     analytics = get(),
                     tokenServiceRepository = get(),
-                    userTokensInteractor = get(),
+                    tokenServiceCoordinator = get(),
                     userTokensChangeHandler = get(),
                     swapRoutesRefreshFeatureToggle = get(),
                 )
@@ -196,7 +196,7 @@ object JupiterModule : InjectionModule {
     private fun Module.initJupiterSwapSettings() {
         factory { (stateManagerHolderKey: String) ->
             SwapTokensInteractor(
-                userTokensInteractor = get(),
+                tokenServiceCoordinator = get(),
                 swapTokensRepository = get(),
                 swapRoutesRepository = get(),
                 jupiterSwapInteractor = get(),
