@@ -35,7 +35,9 @@ class ActionButtonsView @JvmOverloads constructor(
     private val sellAnalytics: SellAnalytics by inject()
 
     private val buttonsAdapter = ActionButtonsAdapter(onButtonClicked = {
-        sellAnalytics.logCashOutClicked(SellAnalytics.AnalyticsCashOutSource.MAIN)
+        if (it == ActionButton.SELL_BUTTON) {
+            sellAnalytics.logCashOutClicked(SellAnalytics.AnalyticsCashOutSource.MAIN)
+        }
         onButtonClicked?.invoke(it)
     })
 

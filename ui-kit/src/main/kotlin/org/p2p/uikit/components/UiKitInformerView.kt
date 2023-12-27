@@ -61,6 +61,8 @@ class UiKitInformerView @JvmOverloads constructor(
                 style.getResourceId(R.styleable.UiKitInformerView_leftIcon, R.drawable.ic_checkbox_checked)
             val leftIconTint: Int =
                 style.getResourceId(R.styleable.UiKitInformerView_leftIconTint, R.color.icons_mountain)
+            val leftIconBackgroundTint: Int = style
+                .getResourceId(R.styleable.UiKitInformerView_leftIconBackgroundTint, R.color.bg_mountain)
             val title: String? =
                 style.getString(R.styleable.UiKitInformerView_title)
             val titleTextColorResId = style.getResourceId(
@@ -84,7 +86,8 @@ class UiKitInformerView @JvmOverloads constructor(
 
             val leftIconParams = InformerViewCellModel.LeftIconParams(
                 DrawableContainer(iconRes = leftIconRes),
-                iconTint = leftIconTint
+                iconTint = leftIconTint,
+                backgroundTint = leftIconBackgroundTint
             )
             val background = style.getDrawable(R.styleable.UiKitInformerView_android_background)
             val backgroundTint = style.getColor(R.styleable.UiKitInformerView_android_backgroundTint, -1)
@@ -186,7 +189,7 @@ class UiKitInformerView @JvmOverloads constructor(
             iconTint = iconTint,
             background = DrawableCellModel(
                 drawable = shapeDrawable(shapeCircle()),
-                tint = R.color.bg_cloud
+                tint = backgroundTint
             )
         )
     }
