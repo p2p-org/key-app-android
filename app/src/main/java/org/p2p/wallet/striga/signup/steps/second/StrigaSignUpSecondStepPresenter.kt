@@ -1,12 +1,10 @@
 package org.p2p.wallet.striga.signup.steps.second
 
-import com.sumsub.sns.core.data.model.SNSSDKState
 import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
-import org.p2p.wallet.alarmlogger.model.StrigaAlarmError
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.striga.common.model.StrigaDataLayerError
@@ -154,7 +152,6 @@ class StrigaSignUpSecondStepPresenter(
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to create striga user")
                     view?.showUiKitSnackBar(e.message, R.string.error_general_message)
-                    logAlarmError(e)
                 } finally {
                     view?.setProgressIsVisible(isVisible = false)
                 }
@@ -167,15 +164,6 @@ class StrigaSignUpSecondStepPresenter(
                 view?.scrollToFirstError(it.type)
             }
         }
-    }
-
-    private fun logAlarmError(e: Throwable) {
-        val error = StrigaAlarmError(
-            source = "other",
-            kycSdkState = SNSSDKState.Initial.toString(),
-            error = e
-        )
-        alarmErrorsLogger.triggerStrigaAlarm(error)
     }
 
     private fun mapDataForStorage() {

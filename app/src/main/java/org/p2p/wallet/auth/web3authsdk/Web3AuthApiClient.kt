@@ -171,7 +171,7 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun getUserData(): GatewayOnboardingMetadata {
+    override suspend fun getUserMetadata(): GatewayOnboardingMetadata {
         return suspendCancellableCoroutine {
             this.continuation = it
 
@@ -187,7 +187,7 @@ class Web3AuthApiClient(
         }
     }
 
-    override suspend fun setUserData(
+    override suspend fun setUserMetadata(
         metadata: GatewayOnboardingMetadata
     ) {
         return suspendCancellableCoroutine {

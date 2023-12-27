@@ -29,8 +29,8 @@ interface Web3AuthApi {
         encryptedMnemonic: JsonObject
     ): Web3AuthSignInResponse
 
-    suspend fun getUserData(): GatewayOnboardingMetadata
-    suspend fun setUserData(metadata: GatewayOnboardingMetadata): Unit
+    suspend fun getUserMetadata(): GatewayOnboardingMetadata
+    suspend fun setUserMetadata(metadata: GatewayOnboardingMetadata): Unit
 
     suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta
 

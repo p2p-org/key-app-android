@@ -93,7 +93,7 @@ class DebugWeb3Fragment : BaseFragment(R.layout.fragment_debug_web3) {
                     }
                 }
             }
-            MetadataLoadStatus.NoEthereumPublicKey -> {
+            MetadataLoadStatus.NoWeb3EthereumPublicKey -> {
                 binding.textViewMetadataValue.text = "No ETH public key found"
             }
             MetadataLoadStatus.Success -> {

@@ -2,6 +2,7 @@ package org.p2p.wallet
 
 import android.content.res.Resources
 import org.koin.android.ext.koin.androidContext
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.p2p.core.common.di.AppScope
@@ -47,6 +48,7 @@ import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
 import org.p2p.wallet.transaction.di.TransactionModule
 import org.p2p.wallet.user.UserModule
+import org.p2p.wallet.utils.CrashLoggerInitializer
 
 object AppModule {
     fun create(restartAction: () -> Unit) = module {
@@ -63,6 +65,7 @@ object AppModule {
         }
 
         singleOf(::AppCreatedAction)
+        factoryOf(::CrashLoggerInitializer)
 
         includes(
             listOf(
