@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import org.intellij.lang.annotations.Language
 import org.junit.Test
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
+import org.p2p.wallet.utils.assertThat
 
 class Web3AuthClientMapperTest {
     @Test
@@ -34,7 +35,6 @@ class Web3AuthClientMapperTest {
             prop(GatewayOnboardingMetadata::strigaMetadata).isEqualTo(metadata1.strigaMetadata)
         }
     }
-
 
     @Test
     fun `test F iOS metadata string wrapped fix`() {
