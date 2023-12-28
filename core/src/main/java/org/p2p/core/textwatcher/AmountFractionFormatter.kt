@@ -50,6 +50,7 @@ class AmountFractionFormatter(
     }
 
     private fun handleValueWithDotCase(value: String): String {
+        // if values ends with dot, return it as-as, otherwise receiver won't know that user wants to add dot
         if (value.endsWith(".")) {
             return value
         }
