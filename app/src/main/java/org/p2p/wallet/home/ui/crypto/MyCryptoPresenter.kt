@@ -103,7 +103,8 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
                 showTokensAndBalance(
-                    solTokens = filterCryptoTokens(newState.solTokens),
+                    // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
+                    solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
                 )
             }
