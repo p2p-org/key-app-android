@@ -101,16 +101,20 @@ fun BigDecimal.formatWithDecimals(
     decimals: Int,
     exactDecimals: Boolean = false,
     keepInitialDecimals: Boolean = false,
-): String = (if (keepInitialDecimals) this else stripTrailingZeros()).run {
-    if (isZero()) {
-        this.setScale(0).toString()
-    } else {
-        DecimalFormatter.format(
-            value = this,
-            decimals = decimals,
-            exactDecimals = exactDecimals,
-            keepInitialDecimals = keepInitialDecimals,
-        )
+): String {
+    val source = if (keepInitialDecimals) this else stripTrailingZeros()
+
+    return with(source) {
+        if (isZero()) {
+            this.setScale(0).toString()
+        } else {
+            DecimalFormatter.format(
+                value = this,
+                decimals = decimals,
+                exactDecimals = exactDecimals,
+                keepInitialDecimals = keepInitialDecimals,
+            )
+        }
     }
 }
 
