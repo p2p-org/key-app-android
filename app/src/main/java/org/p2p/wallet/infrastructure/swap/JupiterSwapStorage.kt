@@ -5,12 +5,12 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
-import org.p2p.core.utils.fromJsonReified
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.TokenExtensions
+import org.p2p.core.utils.fromJsonReified
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
+import org.p2p.wallet.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
 
 private const val KEY_TOKEN_A_MINT = "KEY_TOKEN_A_MINT"
 private const val KEY_TOKEN_B_MINT = "KEY_TOKEN_B_MINT"
@@ -101,7 +101,7 @@ class JupiterSwapStorage(
             val allRoutes =
                 routesKeys.associateWith { sharedPreferences.getStringSet(it, null)!! }
                     .mapKeys { it.key.toInt() }
-                    .mapValues { it.value.map(String::toInt).toList() }
+                    .mapValues { it.value.map(String::toInt) }
 
             return JupiterAvailableSwapRoutesMap(mintAddresses, allRoutes)
         } catch (parsingError: Throwable) {
@@ -115,15 +115,22 @@ class JupiterSwapStorage(
      * Map<Int, List<Int>> -> Map<String, Set<String>> where key is also used in shared prefs
      */
     private fun saveRoutesMap(routesMap: JupiterAvailableSwapRoutesMap) {
-        val mintAddresses: List<String> = routesMap.tokenMints.map(Base58String::base58Value)
-        val routesInPrefsFormat: Map<String, Set<String>> =
+        val mintAddresses = routesMap.tokenMints
+            .map(Base58String::base58Value)
+            .asSequence()
+        val routesInPrefsFormat =
             routesMap.allRoutes
                 .mapKeys { it.key.toString() }
-                .mapValues { it.value.map(Int::toString).toSet() }
+                .mapValues { it.value.map(Int::toString) }
 
         sharedPreferences.edit {
             putStringSet(KEY_ROUTES_MINTS, mintAddresses.toSet())
-            routesInPrefsFormat.forEach { (key, value) -> putStringSet(key, value) }
+            routesInPrefsFormat
+                .asSequence()
+                .forEach { (key, value) ->
+//                    val chunks = value.toSet()
+//                    putStringSet(key, chunks)
+                }
         }
     }
 

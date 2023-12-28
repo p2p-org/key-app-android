@@ -2,6 +2,11 @@ package org.p2p.wallet.jupiter.repository.routes
 
 import timber.log.Timber
 
+class JupiterSwapRoutesDatabaseRepository(
+
+)
+
+
 internal class JupiterSwapRoutesInMemoryRepository : JupiterSwapRoutesLocalRepository {
 
     private var cachedAllSwapRoutes: JupiterAvailableSwapRoutesMap? = null

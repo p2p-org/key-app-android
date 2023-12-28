@@ -1,20 +1,26 @@
 package org.p2p.wallet.jupiter.repository.routes
 
+import com.google.gson.Gson
+import com.google.gson.stream.JsonReader
+import okio.use
 import org.json.JSONObject
 import retrofit2.HttpException
 import timber.log.Timber
+import java.io.InputStream
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.common.date.toDateTimeString
 import org.p2p.wallet.common.date.toZonedDateTime
-import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.wallet.common.storage.FilesDirStorageRepository
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
+import org.p2p.wallet.jupiter.api.response.JupiterAllSwapRoutesResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.retryOnException
 
 private const val TAG = "JupiterSwapRoutesRemoteRepository"
@@ -25,7 +31,9 @@ class JupiterSwapRoutesRemoteRepository(
     private val mapper: JupiterSwapRoutesMapper,
     private val localRepository: JupiterSwapRoutesLocalRepository,
     private val swapStorage: JupiterSwapStorageContract,
-    private val routeValidator: JupiterSwapRouteValidator
+    private val fileRepository: FilesDirStorageRepository,
+    private val routeValidator: JupiterSwapRouteValidator,
+    private val gson: Gson
 ) : JupiterSwapRoutesRepository {
 
     override suspend fun loadAndCacheAllSwapRoutes() {
@@ -33,35 +41,48 @@ class JupiterSwapRoutesRemoteRepository(
     }
 
     private suspend fun getSwapRoutes(): JupiterAvailableSwapRoutesMap = withContext(dispatchers.io) {
-        getSwapRoutesFromCache() ?: fetchSwapRoutes().also(::saveToStorage)
+        getSwapRoutesFromCache() ?: fetchSwapRoutes().let {
+            saveToStorage(it)
+            getSwapRoutesFromCache()!!
+        }
     }
 
-    private fun getSwapRoutesFromCache(): JupiterAvailableSwapRoutesMap? {
+    private suspend fun getSwapRoutesFromCache(): JupiterAvailableSwapRoutesMap? {
         if (!isCacheCanBeUsed()) {
             Timber.tag(TAG).i("Cannot use the cache for routes")
             return null
         }
         Timber.tag(TAG).i("Cache is valid, using cache")
-        return localRepository.getCachedAllSwapRoutes()
-            ?: swapStorage.routesMap?.also(localRepository::setCachedSwapRoutes)
-    }
+        val localCache = localRepository.getCachedAllSwapRoutes()
 
-    private suspend fun fetchSwapRoutes(): JupiterAvailableSwapRoutesMap {
-        Timber.tag(TAG).i("Fetching new routes, cache is empty")
-        return api.getSwapRoutesMap().let { response ->
-            JupiterAvailableSwapRoutesMap(
-                tokenMints = response.mintKeys,
-                allRoutes = response.routeMap.mapKeys { it.key.toInt() }
-            )
+        if (localCache != null) {
+            return localCache
         }
+        return fileRepository.readJsonFileAsStream("swap_routes.json")
+            ?.bufferedReader()
+            ?.let(::JsonReader)
+            ?.let {
+                val routes = gson.fromJson<JupiterAllSwapRoutesResponse>(it, JupiterAllSwapRoutesResponse::class.java)
+                JupiterAvailableSwapRoutesMap(
+                    tokenMints = routes.mintKeys,
+                    allRoutes = routes.routeMap.mapKeys { it.key.toInt() }
+                )
+            }
     }
 
-    private fun saveToStorage(routes: JupiterAvailableSwapRoutesMap) {
+    private suspend fun fetchSwapRoutes(): InputStream {
+        Timber.tag(TAG).i("Fetching new routes, cache is empty")
+        return api.getSwapRoutesMap().byteStream()
+    }
+
+    private suspend fun saveToStorage(jsonBody: InputStream) {
         swapStorage.routesFetchDateMillis = System.currentTimeMillis()
-        swapStorage.routesMap = routes
+        val result = jsonBody.use {
+            fileRepository.saveAsJsonFile(it, "swap_routes.json")
+        }
 
         val updateDate = swapStorage.routesFetchDateMillis?.toZonedDateTime()?.toDateTimeString()
-        Timber.tag(TAG).i("Updated routes cache: date=$updateDate; routes=${routes.allRoutes.size} ")
+        Timber.tag(TAG).i("Updated routes cache: date=$updateDate; routes_size=${result} ")
     }
 
     override suspend fun getSwapRoutesForSwapPair(
@@ -100,7 +121,7 @@ class JupiterSwapRoutesRemoteRepository(
             val allSwapRoutes = getSwapRoutes()
 
             val indexOfSourceToken: Int = allSwapRoutes.tokenMints.indexOfFirst { sourceTokenMint == it }
-            val swappableTokensIndexes: List<Int> = allSwapRoutes.allRoutes[indexOfSourceToken].orEmpty()
+            val swappableTokensIndexes = allSwapRoutes.allRoutes[indexOfSourceToken].orEmpty()
             val swappableTokensMints: List<Base58String> = swappableTokensIndexes.mapNotNull {
                 allSwapRoutes.tokenMints.getOrNull(it)
             }

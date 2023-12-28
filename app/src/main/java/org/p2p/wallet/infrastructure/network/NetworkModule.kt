@@ -122,7 +122,7 @@ object NetworkModule : InjectionModule {
             val baseUrl = androidContext().getString(R.string.jupiterQuoteBaseUrl)
             getRetrofit(
                 baseUrl = baseUrl,
-                tag = "JupiterQuoteService",
+                tag = null,
                 interceptor = null
             )
         }

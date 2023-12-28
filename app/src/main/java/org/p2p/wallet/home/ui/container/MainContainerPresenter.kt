@@ -17,10 +17,11 @@ import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.deeplinks.DeeplinkHandler
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
-import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
@@ -59,7 +60,13 @@ class MainContainerPresenter(
 
     private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
         add(ScreenConfiguration(ScreenTab.WALLET_SCREEN, WalletFragment::class))
-        add(ScreenConfiguration(ScreenTab.MY_CRYPTO_SCREEN, MyCryptoFragment::class))
+        add(
+            ScreenConfiguration(
+                screen = ScreenTab.SWAP_SCREEN,
+                kClass = JupiterSwapFragment::class,
+                bundle = JupiterSwapFragment.createArgs(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
+            )
+        )
         add(ScreenConfiguration(ScreenTab.HISTORY_SCREEN, HistoryFragment::class))
         add(ScreenConfiguration(ScreenTab.SETTINGS_SCREEN, SettingsFragment::class))
     }
@@ -73,7 +80,6 @@ class MainContainerPresenter(
 
     override fun initializeDeeplinks() {
         val supportedTargets = setOf(
-            DeeplinkTarget.MY_CRYPTO,
             DeeplinkTarget.HISTORY,
             DeeplinkTarget.SETTINGS,
             DeeplinkTarget.BUY,
