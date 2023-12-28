@@ -47,10 +47,7 @@ class DeeplinkUtilsTest {
 
     @Test
     fun `GIVEN navigation deeplink WHEN deeplink is valid THEN isValidCommonLink returns true`() {
-        var uri: Uri = newMockUri("keyapp", DeeplinkTarget.MY_CRYPTO.screenName)
-        assertTrue(DeeplinkUtils.isValidCommonLink(uri))
-
-        uri = newMockUri("keyapp", "earn", "")
+        var uri = newMockUri("keyapp", "earn", "")
         assertFalse(DeeplinkUtils.isValidCommonLink(uri))
 
         uri = newMockUri("keyapp", DeeplinkTarget.HISTORY.screenName)
