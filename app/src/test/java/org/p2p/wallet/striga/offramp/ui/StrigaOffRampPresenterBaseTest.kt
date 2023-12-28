@@ -20,7 +20,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.DecimalFormatter
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
@@ -39,7 +38,6 @@ import org.p2p.wallet.striga.wallet.interactor.StrigaWalletInteractor
 import org.p2p.wallet.striga.wallet.repository.StrigaWalletRepository
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
-import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.mockBooleanFeatureFlag
 
@@ -100,16 +98,11 @@ abstract class StrigaOffRampPresenterBaseTest {
         MockKAnnotations.init(this)
 
         mockkStatic(Resources::class)
-        // decimal formatter uses android imports
-        mockkStatic(DecimalFormatter::class)
 
         every { Resources.getSystem().displayMetrics } returns DisplayMetrics().apply {
             density = 2.0f
             widthPixels = 1080
             heightPixels = 1920
-        }
-        every { DecimalFormatter.format(any(), any()) } answers {
-            JvmDecimalFormatter.format(arg(0), arg(1))
         }
 
         coEvery { strigaExchangeRepository.getExchangeRateForPair(any(), any()) } returns exchangeRate.toSuccessResult()
