@@ -124,6 +124,12 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
+        // Amount which has dot at the end is not valid, so we skip such values,
+        // otherwise user will see reformatted value "1." -> "1" which is quite confusing
+        // and it would be impossible to enter a value like "1.01".
+        // Certainly, we could convert "1." into "1.0" but it's wrong it breaks entering value like "1.1"
+        // todo: possible solution: do not notify presenter about wrong decimal values,
+        //      show some warning that the value is wrong etc
         if (amount.endsWith(".")) {
             return
         }
