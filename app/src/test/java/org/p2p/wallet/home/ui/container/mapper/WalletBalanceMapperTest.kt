@@ -2,13 +2,9 @@ package org.p2p.wallet.home.ui.container.mapper
 
 import assertk.assertions.isEqualTo
 import io.mockk.MockKAnnotations
-import io.mockk.every
-import io.mockk.mockkStatic
 import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal
-import org.p2p.core.utils.DecimalFormatter
-import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.assertThat
 
 class WalletBalanceMapperTest {
@@ -17,11 +13,11 @@ class WalletBalanceMapperTest {
     fun setUp() {
         MockKAnnotations.init(this)
 
-        mockkStatic(DecimalFormatter::class)
-
-        every { DecimalFormatter.format(any(), any()) } answers {
-            JvmDecimalFormatter.format(arg(0), arg(1))
-        }
+//        mockkStatic(DecimalFormatter::class)
+//
+//        every { DecimalFormatter.format(any(), any()) } answers {
+//            JvmDecimalFormatter.format(arg(0), arg(1))
+//        }
     }
 
     @Test

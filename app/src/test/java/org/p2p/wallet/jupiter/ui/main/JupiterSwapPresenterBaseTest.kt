@@ -27,7 +27,6 @@ import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
 import org.p2p.core.token.Token
 import org.p2p.core.token.TokenMetadata
-import org.p2p.core.utils.DecimalFormatter
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.TokenServiceRepository
@@ -81,7 +80,6 @@ import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.CoroutineExtension
-import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 
@@ -176,16 +174,11 @@ open class JupiterSwapPresenterBaseTest {
     open fun setUp() {
         MockKAnnotations.init(this)
         mockkStatic(Resources::class)
-        // decimal formatter uses android imports
-        mockkStatic(DecimalFormatter::class)
 
         every { Resources.getSystem().displayMetrics } returns DisplayMetrics().apply {
             density = 2.0f
             widthPixels = 1080
             heightPixels = 1920
-        }
-        every { DecimalFormatter.format(any(), any()) } answers {
-            JvmDecimalFormatter.format(arg(0), arg(1))
         }
     }
 

@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.data.ServerException
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
@@ -31,8 +33,6 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
@@ -124,22 +124,24 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
+        if (amount.endsWith(".")) {
+            return
+        }
+
         debounceInputJob?.cancel()
         cancelRateJobs()
         debounceInputJob = launch {
+
             val newAmount = amount.toBigDecimalOrZero()
-            val pair = currentFeatureState?.getTokensPair()
-            val tokenA = pair?.first
-            val tokenB = pair?.second
+            val (tokenA, _) = currentFeatureState?.getTokensPair() ?: (null to null)
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
             val action = if (newAmount.isZero()) {
                 SwapStateAction.EmptyAmountTokenA
             } else {
                 if (tokenA != null) {
-                    widgetAState = widgetMapper.copyAmount(
+                    widgetAState = widgetMapper.copyAmountWithSourceValue(
                         oldWidgetModel = widgetAState,
-                        token = tokenA,
-                        tokenAmount = newAmount
+                        userInputTokenAmount = amount
                     )
                     getRateTokenA(widgetAModel = widgetAState, tokenA = tokenA, tokenAmount = newAmount)
                 }

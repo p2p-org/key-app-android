@@ -50,6 +50,9 @@ class AmountFractionFormatter(
     }
 
     private fun handleValueWithDotCase(value: String): String {
+        if (value.endsWith(".")) {
+            return value
+        }
         val dotPosition = value.indexOf(SYMBOL_DOT)
         val intPart = value.substring(0, dotPosition)
             .dropSpaces()
