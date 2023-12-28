@@ -10,7 +10,7 @@ class DecimalFormatterTest {
     @Test
     fun testFormatPreservingDecimals() {
         val value = BigDecimal("10.0")
-        val result = value.formatToken(9, noStrip = true, keepInitialDecimals = true)
+        val result = value.formatToken(9, keepInitialDecimals = true)
         assertEquals("10.0", result)
     }
 }
