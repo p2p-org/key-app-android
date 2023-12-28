@@ -82,7 +82,7 @@ class JupiterSwapRoutesRemoteRepository(
         }
 
         val updateDate = swapStorage.routesFetchDateMillis?.toZonedDateTime()?.toDateTimeString()
-        Timber.tag(TAG).i("Updated routes cache: date=$updateDate; routes_size=${result} ")
+        Timber.tag(TAG).i("Updated routes cache: date=$updateDate; routes_size=$result ")
     }
 
     override suspend fun getSwapRoutesForSwapPair(
