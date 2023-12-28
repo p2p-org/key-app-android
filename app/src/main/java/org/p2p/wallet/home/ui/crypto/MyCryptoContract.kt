@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.crypto
 
+import androidx.annotation.StringRes
 import org.p2p.core.token.Token
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -11,6 +12,8 @@ import org.p2p.wallet.transaction.model.NewShowProgress
 interface MyCryptoContract {
 
     interface View : MvpView {
+        fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int)
+        fun showUserAddress(ellipsizedAddress: String)
         fun showBalance(cellModel: TextViewCellModel?)
         fun showRefreshing(isRefreshing: Boolean)
         fun showActionButtons(buttons: List<ActionButton>)
@@ -28,6 +31,7 @@ interface MyCryptoContract {
         fun onTokenClicked(token: Token.Active)
         fun onAmountClicked()
         fun onReceiveClicked()
+        fun onAddressClicked()
         fun onSwapClicked()
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()

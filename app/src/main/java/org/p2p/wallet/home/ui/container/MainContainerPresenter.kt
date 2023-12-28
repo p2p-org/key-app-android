@@ -17,7 +17,7 @@ import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.deeplinks.DeeplinkHandler
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
-import org.p2p.wallet.home.ui.wallet.WalletFragment
+import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
@@ -59,7 +59,7 @@ class MainContainerPresenter(
     }
 
     private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
-        add(ScreenConfiguration(ScreenTab.WALLET_SCREEN, WalletFragment::class))
+        add(ScreenConfiguration(ScreenTab.WALLET_SCREEN, MyCryptoFragment::class))
         add(
             ScreenConfiguration(
                 screen = ScreenTab.SWAP_SCREEN,

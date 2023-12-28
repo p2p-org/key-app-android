@@ -48,16 +48,12 @@
 
             </LinearLayout>
 
-            <org.p2p.uikit.organisms.UiKitToolbar
-                android:id="@+id/toolbar"
+            <include
+                android:id="@+id/layoutToolbar"
+                layout="@layout/layout_home_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:title="@string/common_my_crypto"
-                app:titleTextAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
-                app:titleTextColor="@color/text_night" />
+                app:layout_collapseMode="pin" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
