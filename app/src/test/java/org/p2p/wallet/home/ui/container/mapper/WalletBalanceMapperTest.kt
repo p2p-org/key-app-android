@@ -12,12 +12,6 @@ class WalletBalanceMapperTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
-
-//        mockkStatic(DecimalFormatter::class)
-//
-//        every { DecimalFormatter.format(any(), any()) } answers {
-//            JvmDecimalFormatter.format(arg(0), arg(1))
-//        }
     }
 
     @Test
