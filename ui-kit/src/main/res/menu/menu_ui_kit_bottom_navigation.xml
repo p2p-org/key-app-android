@@ -6,12 +6,9 @@
         android:icon="@drawable/ic_main_wallet"
         android:title="@string/common_wallet" />
     <item
-        android:id="@+id/myCryptoItem"
-        android:icon="@drawable/ic_earn"
-        android:title="@string/common_crypto" />
-    <item
-        android:id="@+id/sendItem"
-        android:title="@string/common_send" />
+        android:id="@+id/swapItem"
+        android:icon="@drawable/ic_swap_filled"
+        android:title="@string/common_swap" />
     <item
         android:id="@+id/historyItem"
         android:icon="@drawable/ic_main_history"

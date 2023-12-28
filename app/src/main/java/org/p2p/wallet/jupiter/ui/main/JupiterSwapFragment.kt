@@ -322,7 +322,7 @@ class JupiterSwapFragment :
         when (openedFrom) {
             SwapOpenedFrom.BOTTOM_NAVIGATION -> {
                 presenter.reloadFeature()
-                mainTabsSwitcher?.navigate(ScreenTab.MY_CRYPTO_SCREEN)
+                mainTabsSwitcher?.navigate(ScreenTab.WALLET_SCREEN)
             }
             else -> {
                 popBackStack()
