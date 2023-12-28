@@ -25,31 +25,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:layout_height="60dp" />
 
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="22dp"
-        android:background="@drawable/bg_circle"
-        android:padding="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <org.p2p.uikit.components.UiKitButton
-            android:id="@+id/buttonCenterAction"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:background="@drawable/bg_circle_button"
-            android:scaleType="center"
-            app:backgroundTint="@color/bg_lime"
-            app:icon="@drawable/ic_main_send"
-            app:iconGravity="textTop"
-            app:iconPadding="0dp"
-            app:iconTint="@color/icons_night" />
-
-    </FrameLayout>
-
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/animationView"
         android:layout_width="wrap_content"

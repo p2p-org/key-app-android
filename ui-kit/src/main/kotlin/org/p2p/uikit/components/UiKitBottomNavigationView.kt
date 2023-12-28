@@ -61,8 +61,6 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
 
 enum class ScreenTab(val itemId: Int) {
     WALLET_SCREEN(R.id.walletItem),
-    MY_CRYPTO_SCREEN(R.id.myCryptoItem),
-    SEND_SCREEN(R.id.sendItem),
     HISTORY_SCREEN(R.id.historyItem),
     FEEDBACK_SCREEN(R.id.feedbackItem),
     SWAP_SCREEN(R.id.swapItem),

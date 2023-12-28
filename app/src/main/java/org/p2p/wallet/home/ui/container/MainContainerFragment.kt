@@ -27,12 +27,12 @@ import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
-import org.p2p.wallet.send.ui.SearchOpenedFromScreen
-import org.p2p.wallet.send.ui.search.NewSearchFragment
-import org.p2p.wallet.send.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.send.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.ui.search.NewSearchFragment
+import org.p2p.wallet.send.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.replaceFragment
@@ -75,9 +75,6 @@ class MainContainerFragment :
             bottomNavigation.setOnItemSelectedListener { tab ->
                 navigate(tab)
                 return@setOnItemSelectedListener true
-            }
-            buttonCenterAction.setOnClickListener {
-                presenter.onSendClicked()
             }
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
@@ -128,7 +125,6 @@ class MainContainerFragment :
             is MainFragmentOnCreateAction.ShowSnackbar -> {
                 showUiKitSnackBar(messageResId = action.messageResId)
             }
-
             is MainFragmentOnCreateAction.PlayAnimation -> {
                 with(binding.animationView) {
                     setAnimation(action.animationRes)
@@ -153,7 +149,6 @@ class MainContainerFragment :
     }
 
     override fun showCryptoBadgeVisible(isVisible: Boolean) {
-        binding.bottomNavigation.setBadgeVisible(screenTab = ScreenTab.MY_CRYPTO_SCREEN, isVisible = isVisible)
     }
 
     override fun showWalletBadgeVisible(isVisible: Boolean) {
@@ -198,33 +193,17 @@ class MainContainerFragment :
 
     override fun navigateFromDeeplink(data: DeeplinkData) {
         when (data.target) {
-            DeeplinkTarget.MY_CRYPTO -> {
-                navigate(ScreenTab.MY_CRYPTO_SCREEN)
-            }
-
-            DeeplinkTarget.HISTORY -> {
-                navigate(ScreenTab.HISTORY_SCREEN)
-            }
-
-            DeeplinkTarget.SETTINGS -> {
-                navigate(ScreenTab.SETTINGS_SCREEN)
-            }
-
+            DeeplinkTarget.HISTORY -> navigate(ScreenTab.HISTORY_SCREEN)
+            DeeplinkTarget.SETTINGS -> navigate(ScreenTab.SETTINGS_SCREEN)
             else -> Unit
         }
     }
 
     override fun navigate(clickedTab: ScreenTab) {
         when (clickedTab) {
-            ScreenTab.SEND_SCREEN -> {
-                presenter.onSendClicked()
-                resetOnLastBottomNavigationItem()
-                return
-            }
             else -> {
                 when (clickedTab) {
                     ScreenTab.WALLET_SCREEN -> presenter.logWalletOpened()
-                    ScreenTab.MY_CRYPTO_SCREEN -> presenter.logCryptoOpened()
                     ScreenTab.HISTORY_SCREEN -> presenter.logHistoryOpened()
                     ScreenTab.SETTINGS_SCREEN -> presenter.logSettingsOpened()
                     else -> Unit
@@ -282,7 +261,6 @@ class MainContainerFragment :
     override fun inflateBottomNavigationMenu(menuRes: Int) {
         binding.bottomNavigation.menu.clear()
         binding.bottomNavigation.inflateMenu(menuRes)
-        binding.bottomNavigation.menu.findItem(R.id.sendItem)?.isCheckable = false
     }
 
     private fun fragmentPositionByItemId(itemId: Int): Int {
