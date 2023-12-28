@@ -1,5 +1,6 @@
 package org.p2p.wallet.home.ui.crypto
 
+import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -9,6 +10,7 @@ import android.view.View
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
 import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import org.p2p.core.glide.GlideManager
@@ -20,12 +22,14 @@ import org.p2p.uikit.utils.recycler.decoration.topOffsetDifferentClassDecoration
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.uikit.utils.toPx
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.ui.ClaimFragment
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentMyCryptoBinding
+import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
 import org.p2p.wallet.home.ui.crypto.bottomsheet.TokenVisibilityChangeBottomSheet
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
@@ -40,6 +44,7 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.ClaimProgressHandler
 import org.p2p.wallet.utils.HomeScreenLayoutManager
+import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.getParcelableCompat
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -131,6 +136,16 @@ class MyCryptoFragment :
         }
         swipeRefreshLayout.setOnRefreshListener(presenter::refreshTokens)
         viewActionButtons.onButtonClicked = ::onActionButtonClicked
+
+        if (BuildConfig.DEBUG) {
+            with(layoutToolbar) {
+                viewDebugShadow.isVisible = true
+                imageViewDebug.isVisible = true
+                imageViewDebug.setOnClickListener {
+                    replaceFragment(DebugSettingsFragment.create())
+                }
+            }
+        }
     }
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
@@ -147,6 +162,24 @@ class MyCryptoFragment :
 
     override fun showBalance(cellModel: TextViewCellModel?) {
         binding.viewBalance.textViewAmount.bindOrGone(cellModel)
+    }
+
+    override fun showUserAddress(ellipsizedAddress: String) {
+        with(binding.layoutToolbar) {
+            textViewAddress.text = ellipsizedAddress
+            textViewAddress.setOnClickListener {
+                presenter.onAddressClicked()
+            }
+        }
+    }
+
+    override fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int) {
+        requireContext().copyToClipBoard(addressOrUsername)
+        showUiKitSnackBar(
+            message = getString(stringResId),
+            actionButtonResId = R.string.common_ok,
+            actionBlock = Snackbar::dismiss
+        )
     }
 
     override fun showRefreshing(isRefreshing: Boolean) {

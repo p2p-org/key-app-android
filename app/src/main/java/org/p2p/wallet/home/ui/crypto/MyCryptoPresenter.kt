@@ -13,6 +13,9 @@ import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.scaleShort
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.wallet.R
+import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.home.interactor.MyCryptoInteractor
@@ -20,9 +23,13 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
 import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
+import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
+import org.p2p.wallet.utils.ellipsizeAddress
+import org.p2p.wallet.utils.unsafeLazy
 
 private val MINIMAL_DUST_FOR_BALANCE = BigDecimal(0.01)
 
@@ -34,6 +41,9 @@ class MyCryptoPresenter(
     private val cryptoScreenAnalytics: CryptoScreenAnalytics,
     private val claimHandler: BridgeClaimBundleClickHandler,
     private val sharedPreferences: SharedPreferences,
+    private val usernameInteractor: UsernameInteractor,
+    private val tokenKeyProvider: TokenKeyProvider,
+    private val mainScreenAnalytics: MainScreenAnalytics,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
     private var currentVisibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
@@ -47,11 +57,14 @@ class MyCryptoPresenter(
             observeCryptoTokens()
         }
     }
+    private val userPublicKey: String by unsafeLazy { tokenKeyProvider.publicKey }
+    private var username: Username? = null
 
     private var cryptoTokensSubscription: Job? = null
 
     override fun attach(view: MyCryptoContract.View) {
         super.attach(view)
+        showUserAddressAndUsername()
         prepareAndShowActionButtons()
         observeCryptoTokens()
         cryptoScreenAnalytics.logCryptoScreenOpened()
@@ -134,6 +147,12 @@ class MyCryptoPresenter(
         view?.showItems(mappedItems)
     }
 
+    private fun showUserAddressAndUsername() {
+        this.username = usernameInteractor.getUsername()
+        val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
+        view?.showUserAddress(userAddress)
+    }
+
     private fun getUserBalance(tokens: List<Token.Active>): BigDecimal {
         if (tokens.none { it.totalInUsd != null }) return BigDecimal.ZERO
 
@@ -202,5 +221,19 @@ class MyCryptoPresenter(
     override fun detach() {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
         super.detach()
+    }
+
+    override fun onAddressClicked() {
+        mainScreenAnalytics.logMainScreenAddressClick()
+        val fullUsername = username?.fullUsername
+        val hasUserName = !fullUsername.isNullOrEmpty()
+        view?.showAddressCopied(
+            addressOrUsername = fullUsername ?: userPublicKey,
+            stringResId = if (hasUserName) {
+                R.string.wallet_username_copy_snackbar_text
+            } else {
+                R.string.wallet_address_copy_snackbar_text
+            }
+        )
     }
 }
