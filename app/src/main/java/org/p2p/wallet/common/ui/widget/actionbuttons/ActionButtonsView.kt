@@ -66,7 +66,7 @@ enum class ActionButton(
     RECEIVE_BUTTON(
         viewId = R.id.buttonReceive,
         textRes = R.string.home_receive,
-        iconRes = R.drawable.ic_receive
+        iconRes = R.drawable.ic_receive_simple
     ),
     SEND_BUTTON(
         viewId = R.id.actionButtonSend,

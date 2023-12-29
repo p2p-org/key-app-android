@@ -261,7 +261,7 @@
     <string name="home_send">Send</string>
     <string name="home_feedback">Feedback</string>
     <string name="home_settings">Settings</string>
-    <string name="home_buy">Add money</string>
+    <string name="home_buy">Buy</string>
     <string name="home_sell">Withdraw</string>
     <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
