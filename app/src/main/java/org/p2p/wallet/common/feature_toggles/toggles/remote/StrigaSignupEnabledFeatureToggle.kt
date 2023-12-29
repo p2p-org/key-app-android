@@ -8,4 +8,6 @@ class StrigaSignupEnabledFeatureToggle(
     override val featureKey: String = "striga_enabled"
     override val featureDescription: String = "Is striga sign up via KYC enabled"
     override val defaultValue: Boolean = false
+    override val value: Boolean
+        get() = false
 }

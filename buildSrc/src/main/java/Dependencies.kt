@@ -16,12 +16,14 @@ object Dependencies {
     private const val recyclerviewVersion = "1.2.1"
     private const val activityKtxVersion = "1.6.0"
     private const val fragmentKtxVersion = "1.4.1"
+    private const val constraintLayoutVersion = "2.1.4"
 
     private const val coreKtx = "androidx.core:core-ktx:$androidxCoreKtxVersion"
     private const val splash = "androidx.core:core-splashscreen:1.0.1"
     private const val appCompat = "androidx.appcompat:appcompat:$appCompatVersion"
     private const val material = "com.google.android.material:material:$materialDesignVersion"
     private const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerviewVersion"
+    private const val constraintLayout = "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     private const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
     private const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     private const val biometricKtx = "androidx.biometric:biometric:1.1.0"
@@ -193,6 +195,7 @@ object Dependencies {
         appCompat,
         material,
         recyclerView,
+        constraintLayout,
         activityKtx,
         fragmentKtx,
         biometricKtx,
