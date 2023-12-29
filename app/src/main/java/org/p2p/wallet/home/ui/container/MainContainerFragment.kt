@@ -156,7 +156,12 @@ class MainContainerFragment :
     }
 
     override fun showWalletBalance(balance: String) {
-        binding.bottomNavigation.setMenuItemTitle(screenTab = ScreenTab.WALLET_SCREEN, balance)
+        // todo: will this logic be used in the future?
+        // binding.bottomNavigation.setMenuItemTitle(screenTab = ScreenTab.WALLET_SCREEN, balance)
+        binding.bottomNavigation.setMenuItemTitle(
+            screenTab = ScreenTab.WALLET_SCREEN,
+            title = getString(R.string.common_wallet)
+        )
     }
 
     override fun navigateToSendNoTokens(fallbackToken: Token) {
