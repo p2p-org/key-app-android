@@ -197,13 +197,27 @@ class MyCryptoPresenter(
     }
 
     private fun prepareAndShowActionButtons() {
-        val buttons = listOf(ActionButton.RECEIVE_BUTTON, ActionButton.SWAP_BUTTON)
+        val buttons = listOf(
+            ActionButton.BUY_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
+            ActionButton.SEND_BUTTON,
+            ActionButton.SWAP_BUTTON
+        )
         view?.showActionButtons(buttons)
+    }
+
+    override fun onBuyClicked() {
+        mainScreenAnalytics.logMainScreenAddMoneyClick()
+        view?.showAddMoneyDialog()
     }
 
     override fun onReceiveClicked() {
         cryptoScreenAnalytics.logCryptoReceiveClick()
         view?.navigateToReceive()
+    }
+
+    override fun onSendClicked() {
+        view?.navigateToSend()
     }
 
     override fun onSwapClicked() {

@@ -25,12 +25,14 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.bridge.claim.ui.ClaimFragment
+import org.p2p.wallet.bridge.send.SendFragmentFactory
 import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.databinding.FragmentMyCryptoBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
+import org.p2p.wallet.home.onofframp.OnOffRampNavigator
 import org.p2p.wallet.home.ui.crypto.bottomsheet.TokenVisibilityChangeBottomSheet
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.ethClaimTokenDelegate
@@ -41,6 +43,8 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.send.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.ClaimProgressHandler
 import org.p2p.wallet.utils.HomeScreenLayoutManager
@@ -66,6 +70,8 @@ class MyCryptoFragment :
 
     private val receiveFragmentFactory: ReceiveFragmentFactory by inject()
     private val glideManager: GlideManager by inject()
+    private val onOffRampNavigator: OnOffRampNavigator by inject()
+    private val sendFragmentFactory: SendFragmentFactory by inject()
 
     private var listener: RootListener? = null
 
@@ -150,14 +156,29 @@ class MyCryptoFragment :
 
     private fun onActionButtonClicked(clickedButton: ActionButton) {
         when (clickedButton) {
+            ActionButton.BUY_BUTTON -> {
+                presenter.onBuyClicked()
+            }
             ActionButton.RECEIVE_BUTTON -> {
                 presenter.onReceiveClicked()
+            }
+            ActionButton.SEND_BUTTON -> {
+                presenter.onSendClicked()
             }
             ActionButton.SWAP_BUTTON -> {
                 presenter.onSwapClicked()
             }
             else -> Timber.d("Unsupported Action! $clickedButton")
         }
+    }
+
+    override fun showAddMoneyDialog() {
+        onOffRampNavigator.navigateToAddMoney(this)
+    }
+
+    override fun navigateToSend() {
+        val target = NewSearchFragment.create(SearchOpenedFromScreen.MAIN)
+        replaceFragment(target)
     }
 
     override fun showBalance(cellModel: TextViewCellModel?) {

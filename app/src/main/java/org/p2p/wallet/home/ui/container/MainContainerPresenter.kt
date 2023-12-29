@@ -176,9 +176,11 @@ class MainContainerPresenter(
                 view?.showWalletBalance(balanceMapper.formatBalance(BigDecimal.ZERO))
             }
             is UserTokensState.Loaded -> {
+                // todo: this new filter supposed to be used for new design
                 val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
                 val balance = filteredTokens.sumOf { it.total }
                 view?.showWalletBalance(balanceMapper.formatBalance(balance))
+                view?.showWalletBalance("Wallet")
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
             }
         }
