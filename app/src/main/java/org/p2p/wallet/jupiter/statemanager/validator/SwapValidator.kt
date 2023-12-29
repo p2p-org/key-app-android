@@ -12,12 +12,19 @@ class SwapValidator {
         tokenA: SwapTokenModel,
         amountTokenA: BigDecimal
     ) {
-        val isJupiterTokenAndNotZero = tokenA is SwapTokenModel.JupiterToken && !amountTokenA.isZero()
-        val isUserTokenAndNotEnough = tokenA is SwapTokenModel.UserToken && amountTokenA.isMoreThan(tokenA.tokenAmount)
         when {
-            isJupiterTokenAndNotZero || isUserTokenAndNotEnough ->
+            !isValidInputAmount(tokenA, amountTokenA) ->
                 throw SwapFeatureException.NotValidTokenA(amountTokenA)
         }
+    }
+
+    fun isValidInputAmount(
+        tokenA: SwapTokenModel,
+        amountTokenA: BigDecimal
+    ): Boolean {
+        val isJupiterTokenAndNotZero = tokenA is SwapTokenModel.JupiterToken && !amountTokenA.isZero()
+        val isUserTokenAndNotEnough = tokenA is SwapTokenModel.UserToken && amountTokenA.isMoreThan(tokenA.tokenAmount)
+        return !(isJupiterTokenAndNotZero || isUserTokenAndNotEnough)
     }
 
     fun validateIsSameTokens(

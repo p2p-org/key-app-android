@@ -87,7 +87,8 @@ class JupiterSwapRoutesRemoteRepository(
 
     override suspend fun getSwapRoutesForSwapPair(
         jupiterSwapPair: JupiterSwapPair,
-        userPublicKey: Base58String
+        userPublicKey: Base58String,
+        validateRoutes: Boolean,
     ): List<JupiterSwapRoute> = withContext(dispatchers.io) {
         try {
             // SocketTimeoutException can occur even when there's no real problem with the network
@@ -103,8 +104,12 @@ class JupiterSwapRoutesRemoteRepository(
                     slippageBps = jupiterSwapPair.slippageBasePoints
                 )
             }
-            mapper.fromNetwork(response)
-                .let { routeValidator.validateRoutes(it) }
+            val routes = mapper.fromNetwork(response)
+            if (validateRoutes) {
+                routeValidator.validateRoutes(routes)
+            } else {
+                routes
+            }
         } catch (e: HttpException) {
             val isTooSmallAmountError = try {
                 val json = JSONObject(e.response()?.errorBody()?.string() ?: emptyString())
