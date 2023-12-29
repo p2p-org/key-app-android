@@ -147,7 +147,6 @@ dependencies {
     implementation(Dependencies.workRuntimeKtx)
     implementation(Dependencies.barcodeScanner)
     implementation(Dependencies.threetenabp)
-    implementation(Dependencies.intercom)
     implementation(Dependencies.amplitude)
     implementation(Dependencies.debugDrawer)
     implementation(Dependencies.tickerView)

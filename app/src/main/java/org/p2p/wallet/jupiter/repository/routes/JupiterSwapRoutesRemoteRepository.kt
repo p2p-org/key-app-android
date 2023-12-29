@@ -2,7 +2,6 @@ package org.p2p.wallet.jupiter.repository.routes
 
 import com.google.gson.Gson
 import com.google.gson.stream.JsonReader
-import okio.use
 import org.json.JSONObject
 import retrofit2.HttpException
 import timber.log.Timber
@@ -61,8 +60,11 @@ class JupiterSwapRoutesRemoteRepository(
         return fileRepository.readJsonFileAsStream("swap_routes.json")
             ?.bufferedReader()
             ?.let(::JsonReader)
-            ?.let {
-                val routes = gson.fromJson<JupiterAllSwapRoutesResponse>(it, JupiterAllSwapRoutesResponse::class.java)
+            ?.let { jsonReader ->
+                val routes = gson.fromJson<JupiterAllSwapRoutesResponse>(
+                    jsonReader,
+                    JupiterAllSwapRoutesResponse::class.java
+                )
                 JupiterAvailableSwapRoutesMap(
                     tokenMints = routes.mintKeys,
                     allRoutes = routes.routeMap.mapKeys { it.key.toInt() }

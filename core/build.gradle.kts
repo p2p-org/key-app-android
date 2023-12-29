@@ -72,7 +72,6 @@ dependencies {
     Dependencies.appsFlyerLibraries.forEach { implementation(it) }
 
     // analytics
-    implementation(Dependencies.intercom)
     implementation(Dependencies.amplitude)
 
     // Sentry

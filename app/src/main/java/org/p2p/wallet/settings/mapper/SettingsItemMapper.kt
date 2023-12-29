@@ -50,13 +50,6 @@ class SettingsItemMapper(
             addUsernameItem(username)
         }
         addCountrySelectorItem(countryName)
-        add(
-            ComplexSettingsItem(
-                nameRes = R.string.settings_item_title_support,
-                iconRes = R.drawable.ic_settings_support,
-                hasSeparator = false
-            )
-        )
         add(SignOutButtonItem)
         add(SettingsSpaceSeparatorItem)
     }
