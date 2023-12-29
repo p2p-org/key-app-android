@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.full.staticProperties
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import org.p2p.core.common.TextContainer
@@ -620,10 +621,22 @@ open class JupiterSwapPresenterBaseTest {
         assertNotNull("Button state is null", state)
         assertTrue(state is SwapButtonState.Disabled)
         with(state as SwapButtonState.Disabled) {
+            if (text !is TextContainer.ResParams) {
+                if (text is TextContainer.Res) {
+                    println("Given button text resource name: ${findStringPropertyName((text as TextContainer.Res).textRes)}")
+                }
+                assertTrue("Wrong button text type: expected TextContainer.ResParams $text", text is TextContainer.ResParams)
+            }
             val container = text as TextContainer.ResParams
             assertEquals(R.string.swap_main_button_not_enough_amount, container.textRes)
             assertEquals(1, container.args.size)
             assertEquals(tokenSymbol, container.args.first())
         }
     }
+}
+
+private fun findStringPropertyName(id: Int): String? {
+    return R.string::class.staticProperties
+        .firstOrNull { it.get() == id }
+        ?.name
 }
