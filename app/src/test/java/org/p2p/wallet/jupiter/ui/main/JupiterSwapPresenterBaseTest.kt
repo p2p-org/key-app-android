@@ -66,7 +66,7 @@ import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.jupiter.statemanager.token_selector.CommonSwapTokenSelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokenASelector
-import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokensBySymbolSelector
+import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokensByMintSelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokenSelector
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
@@ -285,19 +285,19 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun createInitialTokenSelector(
-        tokenASymbol: String? = null,
-        tokenBSymbol: String? = null,
+        tokenAMint: Base58String? = null,
+        tokenBMint: Base58String? = null,
         preinstallTokenA: Token.Active? = null
     ): SwapInitialTokenSelector {
         return when {
-            !tokenASymbol.isNullOrBlank() && !tokenBSymbol.isNullOrBlank() -> {
-                PreinstallTokensBySymbolSelector(
+            tokenAMint != null && tokenBMint != null -> {
+                PreinstallTokensByMintSelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
                     dispatchers = dispatchers,
                     tokenServiceCoordinator = homeLocalRepository,
                     savedSelectedSwapTokenStorage = jupiterSwapStorage,
-                    preinstallTokenASymbol = tokenASymbol,
-                    preinstallTokenBSymbol = tokenBSymbol,
+                    preinstallTokenAMint = tokenAMint,
+                    preinstallTokenBMint = tokenBMint,
                 )
             }
 
@@ -323,15 +323,15 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun createStateManagerHandlers(
-        tokenASymbol: String?,
-        tokenBSymbol: String?,
+        tokenAMint: Base58String?,
+        tokenBMint: Base58String?,
         preinstallTokenA: Token.Active?
     ): Set<SwapStateHandler> {
         return setOf(
             SwapStateInitialLoadingHandler(
                 dispatchers = dispatchers,
                 initialTokenSelector = createInitialTokenSelector(
-                    tokenASymbol, tokenBSymbol, preinstallTokenA
+                    tokenAMint, tokenBMint, preinstallTokenA
                 )
             ),
             SwapStateLoadingRoutesHandler(
@@ -408,13 +408,13 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun initSwapStateManager(
-        tokenASymbol: String?,
-        tokenBSymbol: String?,
+        tokenAMint: Base58String?,
+        tokenBMint: Base58String?,
         preinstallTokenA: Token.Active?
     ) {
         stateManager = SwapStateManager(
             handlers = createStateManagerHandlers(
-                tokenASymbol, tokenBSymbol, preinstallTokenA
+                tokenAMint, tokenBMint, preinstallTokenA
             ),
             dispatchers = dispatchers,
             selectedSwapTokenStorage = jupiterSwapStorage,
@@ -454,8 +454,8 @@ open class JupiterSwapPresenterBaseTest {
             swapper = data.jupiterSwapInteractorSwapTokens
         )
         initSwapStateManager(
-            tokenASymbol = data.initialTokenASymbol,
-            tokenBSymbol = data.initialTokenBSymbol,
+            tokenAMint = data.initialTokenAMint,
+            tokenBMint = data.initialTokenBMint,
             preinstallTokenA = data.preinstallTokenA
         )
         initSwapRateTickerManager()

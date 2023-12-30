@@ -83,6 +83,12 @@ class SwapTokensInteractor(
                 it.tokenName.contains(query, ignoreCase = true) && !it.tokenName.startsWith(query, ignoreCase = true)
         }
 
+        // Filter items that match the mint address in query
+        swapTokens.filterTo(filteredList) {
+            it.mintAddress.base58Value.startsWith(query, ignoreCase = true) ||
+                it.mintAddress.base58Value.contentEquals(query)
+        }
+
         return filteredList
     }
 

@@ -62,7 +62,8 @@ class NetworkServicesUrlProvider(
         val newUrl = if (isProdSelected) {
             R.string.registerUsernameServiceBaseUrl
         } else {
-            R.string.registerUsernameServiceTestUrl
+            // testing server is disabled, no need to select another one
+            R.string.registerUsernameServiceBaseUrl
         }
         storage.putString(KEY_NAME_SERVICE_BASE_URL, context.getString(newUrl))
     }
@@ -84,7 +85,8 @@ class NetworkServicesUrlProvider(
         val newUrl = if (isProdSelected) {
             R.string.notificationServiceBaseUrl
         } else {
-            R.string.notificationServiceTestBaseUrl
+            // test server is disabled, no need to select another one
+            R.string.notificationServiceBaseUrl
         }
         storage.putString(KEY_NOTIFICATION_SERVICE_BASE_URL, context.getString(newUrl))
     }

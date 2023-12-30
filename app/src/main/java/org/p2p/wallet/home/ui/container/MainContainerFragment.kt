@@ -9,6 +9,7 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import kotlin.reflect.KClass
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
@@ -185,9 +186,14 @@ class MainContainerFragment :
         replaceFragment(SellPayloadFragment.create())
     }
 
-    override fun showSwapWithArgs(tokenASymbol: String, tokenBSymbol: String, amountA: String, source: SwapOpenedFrom) {
+    override fun showSwapWithArgs(
+        tokenAMint: Base58String,
+        tokenBMint: Base58String,
+        amountA: String,
+        source: SwapOpenedFrom
+    ) {
         replaceFragment(
-            JupiterSwapFragment.create(tokenASymbol, tokenBSymbol, amountA, source)
+            JupiterSwapFragment.create(tokenAMint, tokenBMint, amountA, source)
         )
     }
 

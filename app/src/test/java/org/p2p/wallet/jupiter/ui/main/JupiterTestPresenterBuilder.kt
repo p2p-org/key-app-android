@@ -1,8 +1,13 @@
 package org.p2p.wallet.jupiter.ui.main
 
 import java.math.BigDecimal
-import org.p2p.core.token.Token
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.Token
+import org.p2p.token.service.model.TokenRate
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
@@ -12,18 +17,13 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.token.service.model.TokenRate
-import org.p2p.token.service.model.TokenServiceNetwork
-import org.p2p.token.service.model.TokenServicePrice
 
 class JupiterTestPresenterBuilder {
 
     var swapOpenedFrom: SwapOpenedFrom = SwapOpenedFrom.MAIN_SCREEN
     var initialAmountA: String? = null
-    var initialTokenASymbol: String? = null
-    var initialTokenBSymbol: String? = null
+    var initialTokenAMint: Base58String? = null
+    var initialTokenBMint: Base58String? = null
     var preinstallTokenA: Token.Active? = null
 
     /**

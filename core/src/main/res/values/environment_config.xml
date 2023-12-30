@@ -26,14 +26,16 @@
     <string name="jupiterQuoteBaseUrl">https://swap.key.app/</string>
 
     <string name="notificationServiceBaseUrl">https://push-service.key.app/</string>
-    <string name="notificationServiceTestBaseUrl">https://push-service.keyapp.org/</string>
+<!--    disabled for now-->
+<!--    <string name="notificationServiceTestBaseUrl">https://push-service.keyapp.org/</string>-->
 
     <string name="bridgesServiceBaseUrl">https://bridge-service.key.app/</string>
     <string name="bridgesServiceTestBaseUrl">https://bridge-service.keyapp.org/</string>
 
     <string name="web3AuthServiceBaseUrl">https://web3-auth.keyapp.org/</string>
 
-    <string name="registerUsernameServiceTestUrl">https://name-register.keyapp.org/</string>
+<!--    disabled for now-->
+<!--    <string name="registerUsernameServiceTestUrl">https://name-register.keyapp.org/</string>-->
     <string name="registerUsernameServiceBaseUrl">https://name-register.key.app/</string>
 
     <string name="webClientGoogleId">553127941597-j88bgo2invnpiefq2j1fhq8duju6o2tq.apps.googleusercontent.com</string>

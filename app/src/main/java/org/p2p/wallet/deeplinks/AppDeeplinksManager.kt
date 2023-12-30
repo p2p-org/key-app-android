@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -50,7 +51,8 @@ class AppDeeplinksManager(
      * Notify manager that we have new deeplink to handle
      * @param data Deeplink data
      */
-    fun notify(data: DeeplinkData) {
+    private fun notify(data: DeeplinkData) {
+        Timber.e(data.toString())
         deeplinkData.tryEmit(data)
     }
 
@@ -89,10 +91,14 @@ class AppDeeplinksManager(
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
                 val isTransferScheme = isTransferDeeplink(data)
+                val isSwapScheme = isSwapDeeplink(data)
+
+                Timber.e(data.toString())
 
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
                     isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> handleCommonDeeplink(intent)
+                    isSwapScheme -> handleCommonDeeplink(intent)
                     isTransferScheme -> handleTransferDeeplink(data)
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> Unit
                 }
@@ -110,6 +116,19 @@ class AppDeeplinksManager(
         val transferHostMain = context.getString(R.string.transfer_app_host)
         val transferSchemeMain = "https"
         val transferHostAlternative = "t"
+        val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
+        return data.host == transferHostMain && data.scheme == transferSchemeMain ||
+            data.host == transferHostAlternative && data.scheme == transferSchemeAlternative
+    }
+
+    /**
+     * https://s.key.app/...
+     * or keyapp://s/... if came from website
+     */
+    private fun isSwapDeeplink(data: Uri): Boolean {
+        val transferHostMain = context.getString(R.string.transfer_app_host_swap)
+        val transferSchemeMain = "https"
+        val transferHostAlternative = "s"
         val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
         return data.host == transferHostMain && data.scheme == transferSchemeMain ||
             data.host == transferHostAlternative && data.scheme == transferSchemeAlternative
@@ -194,6 +213,8 @@ class AppDeeplinksManager(
         val data = intent.data ?: return
         val screenName = data.host
         val target = DeeplinkTarget.fromScreenName(screenName)
+
+        Timber.e(target.toString())
         target?.let { deeplinkTarget ->
             val deeplinkData = DeeplinkData(
                 target = deeplinkTarget,

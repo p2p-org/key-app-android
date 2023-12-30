@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.R
@@ -82,8 +83,8 @@ class HistoryFragment :
     ) {
         replaceFragment(
             JupiterSwapFragment.create(
-                tokenASymbol = sourceSymbol,
-                tokenBSymbol = destinationSymbol,
+                tokenAMint = sourceTokenMint.toBase58Instance(),
+                tokenBMint = destinationTokenMint.toBase58Instance(),
                 amountA = Constants.ZERO_AMOUNT,
                 source = openedFrom
             )
