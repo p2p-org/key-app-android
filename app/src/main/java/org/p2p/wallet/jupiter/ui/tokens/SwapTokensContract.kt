@@ -10,6 +10,7 @@ interface SwapTokensContract {
         fun setTokenItems(items: List<AnyCellItem>)
         fun showEmptyState(isEmpty: Boolean)
         fun close()
+        fun renderLoading(isLoading: Boolean)
     }
 
     interface Presenter : MvpPresenter<View> {

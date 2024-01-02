@@ -144,6 +144,10 @@ class SwapTokensFragment :
         binding.recyclerViewTokens.isVisible = !isEmpty
     }
 
+    override fun renderLoading(isLoading: Boolean) {
+        binding.progressBar.isVisible = isLoading
+    }
+
     override fun close() {
         popBackStack()
     }

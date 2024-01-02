@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onCompletion
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
@@ -52,7 +53,7 @@ class AppDeeplinksManager(
      * @param data Deeplink data
      */
     private fun notify(data: DeeplinkData) {
-        Timber.e(data.toString())
+        Timber.e("notifing data: $data")
         deeplinkData.tryEmit(data)
     }
 
@@ -93,12 +94,13 @@ class AppDeeplinksManager(
                 val isTransferScheme = isTransferDeeplink(data)
                 val isSwapScheme = isSwapDeeplink(data)
 
-                Timber.e(data.toString())
+                Timber.e("url found: $data")
+                Timber.d(isSwapScheme.toString())
 
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
-                    isValidScheme && DeeplinkUtils.isValidCommonLink(data) -> handleCommonDeeplink(intent)
-                    isSwapScheme -> handleCommonDeeplink(intent)
+                    isValidScheme && DeeplinkUtils.isValidNavigationLink(data) -> handleCommonDeeplink(intent)
+                    isSwapScheme -> handleSwapDeeplink(intent)
                     isTransferScheme -> handleTransferDeeplink(data)
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> Unit
                 }
@@ -126,12 +128,13 @@ class AppDeeplinksManager(
      * or keyapp://s/... if came from website
      */
     private fun isSwapDeeplink(data: Uri): Boolean {
+        Timber.i("parsing data: $data")
         val transferHostMain = context.getString(R.string.transfer_app_host_swap)
         val transferSchemeMain = "https"
         val transferHostAlternative = "s"
         val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
-        return data.host == transferHostMain && data.scheme == transferSchemeMain ||
-            data.host == transferHostAlternative && data.scheme == transferSchemeAlternative
+        return (data.host == transferHostMain && data.scheme == transferSchemeMain) ||
+            (data.host == transferHostAlternative && data.scheme == transferSchemeAlternative)
     }
 
     fun buildIntent(notificationType: NotificationType): Intent {
@@ -188,6 +191,7 @@ class AppDeeplinksManager(
     }
 
     private fun handleOnboardingDeeplink(data: Uri) {
+        Timber.i("handleOnboardingDeeplink called")
         rootListener?.triggerOnboardingDeeplink(data)
     }
 
@@ -210,11 +214,31 @@ class AppDeeplinksManager(
     }
 
     private fun handleCommonDeeplink(intent: Intent) {
+        Timber.i("handleCommonDeeplink called")
         val data = intent.data ?: return
         val screenName = data.host
         val target = DeeplinkTarget.fromScreenName(screenName)
 
         Timber.e(target.toString())
+        target?.let { deeplinkTarget ->
+            val deeplinkData = DeeplinkData(
+                target = deeplinkTarget,
+                pathSegments = data.pathSegments,
+                args = data.queryParameterNames
+                    .filter { !data.getQueryParameter(it).isNullOrBlank() }
+                    .associateWith { data.getQueryParameter(it)!! },
+                intent = intent
+            )
+            notify(deeplinkData)
+        }
+    }
+
+    private fun handleSwapDeeplink(intent: Intent) {
+        Timber.e(" intent data: ${intent.data}")
+        val data = intent.data ?: return
+        val target = DeeplinkTarget.fromScreenTab(ScreenTab.SWAP_SCREEN)
+
+        Timber.e("parsing target: $target")
         target?.let { deeplinkTarget ->
             val deeplinkData = DeeplinkData(
                 target = deeplinkTarget,

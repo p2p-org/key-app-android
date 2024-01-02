@@ -7,7 +7,7 @@ import org.p2p.uikit.components.ScreenTab
  */
 enum class DeeplinkTarget(val screenName: String, val tab: ScreenTab? = null) {
     HISTORY("history", ScreenTab.HISTORY_SCREEN),
-    SWAP("s", ScreenTab.SWAP_SCREEN),
+    SWAP("swap", ScreenTab.SWAP_SCREEN),
     SETTINGS("settings", ScreenTab.SETTINGS_SCREEN),
     SEND("send"),
     BUY("buy"),

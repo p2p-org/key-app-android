@@ -24,12 +24,14 @@ class SwapTokensPresenter(
     override fun attach(view: SwapTokensContract.View) {
         super.attach(view)
         launch {
+            renderLoading(true)
             try {
                 initialLoad()
             } catch (error: Throwable) {
                 Timber.e(error, "Failed to load swap tokens")
                 view.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
+            renderLoading(false)
         }
     }
 
@@ -73,6 +75,7 @@ class SwapTokensPresenter(
 
     private fun renderSearchTokenList(newQuery: String) {
         launch {
+            renderLoading(true)
             try {
                 val searchResult = interactor.searchToken(tokenToChange, newQuery)
                 val cellItems = searchResultMapper.toCellItems(searchResult)
@@ -85,10 +88,15 @@ class SwapTokensPresenter(
                 view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
         }
+        renderLoading(false)
     }
 
     override fun onTokenClicked(clickedToken: SwapTokenModel) {
         interactor.selectToken(tokenToChange, clickedToken)
         view?.close()
+    }
+
+    private fun renderLoading(isLoading: Boolean){
+        view?.renderLoading(isLoading)
     }
 }

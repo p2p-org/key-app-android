@@ -20,7 +20,7 @@ object DeeplinkUtils {
      * Valid ones: keyapp://home, keyapp://swap et cetera.
      * @see DeeplinkTarget.fromScreenName
      */
-    fun isValidCommonLink(uri: Uri): Boolean {
+    fun isValidNavigationLink(uri: Uri): Boolean {
         return DeeplinkTarget.fromScreenName(uri.host) != null
     }
 }

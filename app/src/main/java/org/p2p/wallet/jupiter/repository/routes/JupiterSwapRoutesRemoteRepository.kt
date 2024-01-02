@@ -7,6 +7,8 @@ import retrofit2.HttpException
 import timber.log.Timber
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.dispatchers.CoroutineDispatchers
@@ -35,14 +37,18 @@ class JupiterSwapRoutesRemoteRepository(
     private val gson: Gson
 ) : JupiterSwapRoutesRepository {
 
+    private val lock = Mutex()
+
     override suspend fun loadAndCacheAllSwapRoutes() {
         getSwapRoutes()
     }
 
     private suspend fun getSwapRoutes(): JupiterAvailableSwapRoutesMap = withContext(dispatchers.io) {
-        getSwapRoutesFromCache() ?: fetchSwapRoutes().let {
-            saveToStorage(it)
-            getSwapRoutesFromCache()!!
+        lock.withLock {
+            getSwapRoutesFromCache() ?: fetchSwapRoutes().let {
+                saveToStorage(it)
+                getSwapRoutesFromCache()!!
+            }
         }
     }
 
@@ -55,14 +61,15 @@ class JupiterSwapRoutesRemoteRepository(
         val localCache = localRepository.getCachedAllSwapRoutes()
 
         if (localCache != null) {
+            Timber.i("Local in-memory cache is valid, using cache")
             return localCache
         }
         return fileRepository.readJsonFileAsStream("swap_routes.json")
             ?.bufferedReader()
             ?.let(::JsonReader)
-            ?.let { jsonReader ->
+            ?.runCatching {
                 val routes = gson.fromJson<JupiterAllSwapRoutesResponse>(
-                    jsonReader,
+                    this,
                     JupiterAllSwapRoutesResponse::class.java
                 )
                 JupiterAvailableSwapRoutesMap(
@@ -70,6 +77,9 @@ class JupiterSwapRoutesRemoteRepository(
                     allRoutes = routes.routeMap.mapKeys { it.key.toInt() }
                 )
             }
+            ?.onSuccess { localRepository.setCachedSwapRoutes(it) }
+            ?.onFailure { Timber.e(it) }
+            ?.getOrNull()
     }
 
     private suspend fun fetchSwapRoutes(): InputStream {

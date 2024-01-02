@@ -110,6 +110,7 @@
 
                 <data
                     android:host="s.key.app"
+                    android:path="/swap"
                     android:scheme="https" />
             </intent-filter>
 
@@ -162,7 +163,7 @@
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
-            tools:node="remove"/>
+            tools:node="remove" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"
