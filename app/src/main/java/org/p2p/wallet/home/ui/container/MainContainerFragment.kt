@@ -161,7 +161,7 @@ class MainContainerFragment :
         // binding.bottomNavigation.setMenuItemTitle(screenTab = ScreenTab.WALLET_SCREEN, balance)
         binding.bottomNavigation.setMenuItemTitle(
             screenTab = ScreenTab.WALLET_SCREEN,
-            title = getString(R.string.common_wallet)
+            title = getString(R.string.common_crypto)
         )
     }
 

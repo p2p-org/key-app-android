@@ -137,6 +137,7 @@ class UserInMemoryRepository(
         return popularTokens
     }
 
+    @Deprecated("This repository should not return [Token] objects but only [TokenMetadata]")
     override suspend fun findTokenByMint(mintAddress: String): Token? {
         val tokenMetadata: TokenMetadata? = findTokenData(mintAddress)
         return if (tokenMetadata != null) {
