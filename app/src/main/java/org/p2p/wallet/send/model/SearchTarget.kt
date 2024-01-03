@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.model
 
+import timber.log.Timber
 import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.ethereumkit.external.utils.EthereumUtils
 import org.p2p.solanaj.utils.PublicKeyValidator
@@ -65,6 +66,8 @@ data class SearchTarget(
                 BitcoinAddressValidator.isValid(value) -> Validation.BTC_ADDRESS
                 value.isEmpty() -> Validation.EMPTY
                 else -> Validation.INVALID
+            }.also {
+                Timber.i("Getting validation for $value: $it")
             }
         }
 
