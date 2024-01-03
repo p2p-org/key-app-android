@@ -143,13 +143,13 @@ class SwapWidget @JvmOverloads constructor(
         editTextAmount.setReadOnly(readOnly, inputType)
         val amountMaxDecimals = model.amountMaxDecimals ?: DEFAULT_DECIMAL
         updateFormatter(amountMaxDecimals)
+        val oldAmountRaw = editTextAmount.text?.toString() ?: emptyString()
         val newAmountRaw = (newAmount as? TextViewCellModel.Raw)?.text?.getString(context)
-        val oldAMountRaw = editTextAmount.text?.toString() ?: emptyString()
         val newTextColorRes = (newAmount as? TextViewCellModel.Raw)?.textColor
         val oldTextColorRes = (currentAmountCell as? TextViewCellModel.Raw)?.textColor
         internalOnAmountChanged = null
         if (currentAmountCell is TextViewCellModel.Skeleton ||
-            newAmountRaw != oldAMountRaw ||
+            checkAmountsAreNotEqualExcludingTrailingDot(newAmountRaw, oldAmountRaw) ||
             newTextColorRes != oldTextColorRes
         ) {
             editTextAmount.bindOrGone(newAmount, force = true)
@@ -213,5 +213,16 @@ class SwapWidget @JvmOverloads constructor(
             getColor(R.color.text_silver),
         )
         return ColorStateList(states, colors)
+    }
+
+    /**
+     * Consider two amounts are not equal if they are not equal excluding trailing dot.
+     * We should respect trailing dot in user input as it can be used to enter fractional part.
+     * Example: 6. == 6; 6.0 != 6; 6.0 == 6.0
+     */
+    private fun checkAmountsAreNotEqualExcludingTrailingDot(a: String?, b: String?): Boolean {
+        val aWithoutTrailingDot = a?.removeSuffix(".")
+        val bWithoutTrailingDot = b?.removeSuffix(".")
+        return aWithoutTrailingDot != bWithoutTrailingDot
     }
 }
