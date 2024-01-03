@@ -43,7 +43,12 @@ internal class JupiterSwapTokensRemoteRepository(
 
     private suspend fun fetchTokensFromRemote(): List<JupiterSwapToken> {
         Timber.i("Fetching new routes, cache is empty")
-        return api.getSwapTokens().toJupiterToken().filterTokensByAvailability()
+        return api.getSwapTokens()
+            .toJupiterToken()
+            .asSequence()
+            .filterTokensByAvailability()
+            .filter { it.tokenSymbol.isNotBlank() }
+            .toList()
     }
 
     private fun saveToStorage(tokens: List<JupiterSwapToken>) {
@@ -54,33 +59,35 @@ internal class JupiterSwapTokensRemoteRepository(
         Timber.i("Updated tokens cache: date=$updateDate; routes=${tokens.size} ")
     }
 
-    private suspend fun List<JupiterTokenResponse>.toJupiterToken(): List<JupiterSwapToken> = map { response ->
-        val token = userRepository.findTokenByMint(response.address)
-        if (token != null) {
-            val tokenLogoUri = token.iconUrl ?: response.logoUri.orEmpty()
-            JupiterSwapToken(
-                tokenMint = token.mintAddress.toBase58Instance(),
-                chainId = response.chainId,
-                decimals = token.decimals,
-                coingeckoId = response.extensions?.coingeckoId,
-                logoUri = tokenLogoUri,
-                tokenName = token.tokenName,
-                tokenSymbol = token.tokenSymbol,
-                tags = response.tags,
-                tokenExtensions = token.tokenExtensions
-            )
-        } else {
-            JupiterSwapToken(
-                tokenMint = response.address.toBase58Instance(),
-                chainId = response.chainId,
-                decimals = response.decimals,
-                coingeckoId = response.extensions?.coingeckoId,
-                logoUri = null,
-                tokenName = response.name,
-                tokenSymbol = response.symbol,
-                tags = response.tags,
-                tokenExtensions = TokenExtensions.NONE
-            )
+    private suspend fun List<JupiterTokenResponse>.toJupiterToken(): List<JupiterSwapToken> {
+        return map { response ->
+            val token = userRepository.findTokenByMint(response.address)
+            if (token != null) {
+                val tokenLogoUri = token.iconUrl ?: response.logoUri.orEmpty()
+                JupiterSwapToken(
+                    tokenMint = token.mintAddress.toBase58Instance(),
+                    chainId = response.chainId,
+                    decimals = token.decimals,
+                    coingeckoId = response.extensions?.coingeckoId,
+                    logoUri = tokenLogoUri,
+                    tokenName = token.tokenName,
+                    tokenSymbol = token.tokenSymbol,
+                    tags = response.tags,
+                    tokenExtensions = token.tokenExtensions
+                )
+            } else {
+                JupiterSwapToken(
+                    tokenMint = response.address.toBase58Instance(),
+                    chainId = response.chainId,
+                    decimals = response.decimals,
+                    coingeckoId = response.extensions?.coingeckoId,
+                    logoUri = null,
+                    tokenName = response.name,
+                    tokenSymbol = response.symbol,
+                    tags = response.tags,
+                    tokenExtensions = TokenExtensions.NONE
+                )
+            }
         }
     }
 
@@ -136,7 +143,7 @@ internal class JupiterSwapTokensRemoteRepository(
         )
     }
 
-    private fun List<JupiterSwapToken>.filterTokensByAvailability(): List<JupiterSwapToken> {
+    private fun Sequence<JupiterSwapToken>.filterTokensByAvailability(): Sequence<JupiterSwapToken> {
         return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen != false }
     }
 }

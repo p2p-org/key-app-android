@@ -13,6 +13,7 @@ internal class JupiterSwapRoutesInMemoryRepository : JupiterSwapRoutesLocalRepos
     override fun getCachedAllSwapRoutes(): JupiterAvailableSwapRoutesMap? = cachedAllSwapRoutes
 
     override fun setCachedSwapRoutes(swapRoutes: JupiterAvailableSwapRoutesMap) {
+        Timber.i("settings swaproutes in memory")
         this.cachedAllSwapRoutes = swapRoutes
     }
 }

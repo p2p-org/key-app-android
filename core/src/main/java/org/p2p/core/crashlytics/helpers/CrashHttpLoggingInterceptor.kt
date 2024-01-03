@@ -29,9 +29,9 @@ class CrashHttpLoggingInterceptor : Interceptor {
         val responseLog = createResponseLog(response, rpcMethodName)
         Timber.tag(TAG).i(responseLog)
 
-        val responseBody = response.bodyAsString()
-        val responseBodySize = responseBody.length
+        val responseBodySize = response.body?.contentLength() ?: 0
         if (responseBodySize < 7_000) {
+            val responseBody = response.bodyAsString()
             if (!response.isSuccessful || responseBody.contains("error")) {
                 // log to crash facades !200 error bodies
                 Timber.tag(TAG).i(responseBody)

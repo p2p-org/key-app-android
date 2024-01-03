@@ -16,6 +16,8 @@ import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.p2p.core.common.bind
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.appleBottomInsets
 import org.p2p.core.utils.insets.appleTopInsets
@@ -62,8 +64,8 @@ import org.p2p.wallet.utils.withArgs
 
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
-private const val EXTRA_INITIAL_TOKEN_A_SYMBOL = "EXTRA_INITIAL_TOKEN_A_SYMBOL"
-private const val EXTRA_INITIAL_TOKEN_B_SYMBOL = "EXTRA_INITIAL_TOKEN_B_SYMBOL"
+private const val EXTRA_INITIAL_TOKEN_A_MINT = "EXTRA_INITIAL_TOKEN_A_MINT"
+private const val EXTRA_INITIAL_TOKEN_B_MINT = "EXTRA_INITIAL_TOKEN_B_MINT"
 private const val EXTRA_INITIAL_AMOUNT_A = "EXTRA_INITIAL_AMOUNT_A"
 
 class JupiterSwapFragment :
@@ -78,15 +80,15 @@ class JupiterSwapFragment :
             }
 
         fun create(
-            tokenASymbol: String,
-            tokenBSymbol: String,
+            tokenAMint: Base58String,
+            tokenBMint: Base58String,
             amountA: String,
             source: SwapOpenedFrom
         ): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
-                    EXTRA_INITIAL_TOKEN_A_SYMBOL to tokenASymbol,
-                    EXTRA_INITIAL_TOKEN_B_SYMBOL to tokenBSymbol,
+                    EXTRA_INITIAL_TOKEN_A_MINT to tokenAMint.base58Value,
+                    EXTRA_INITIAL_TOKEN_B_MINT to tokenBMint.base58Value,
                     EXTRA_INITIAL_AMOUNT_A to amountA,
                     EXTRA_OPENED_FROM to source
                 )
@@ -101,8 +103,8 @@ class JupiterSwapFragment :
     private val stateManagerHolderKey: String = UUID.randomUUID().toString()
 
     private val initialToken: Token.Active? by args(EXTRA_TOKEN)
-    private val initialTokenASymbol: String? by args(EXTRA_INITIAL_TOKEN_A_SYMBOL)
-    private val initialTokenBSymbol: String? by args(EXTRA_INITIAL_TOKEN_B_SYMBOL)
+    private val initialTokenAMint: String? by args(EXTRA_INITIAL_TOKEN_A_MINT)
+    private val initialTokenBMint: String? by args(EXTRA_INITIAL_TOKEN_B_MINT)
     private val initialAmountA: String? by args(EXTRA_INITIAL_AMOUNT_A)
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
@@ -116,8 +118,8 @@ class JupiterSwapFragment :
                 swapOpenedFrom = openedFrom,
                 initialToken = initialToken,
                 initialAmountA = initialAmountA,
-                tokenASymbol = initialTokenASymbol,
-                tokenBSymbol = initialTokenBSymbol,
+                tokenAMint = initialTokenAMint?.toBase58Instance(),
+                tokenBMint = initialTokenBMint?.toBase58Instance(),
             )
         )
     }

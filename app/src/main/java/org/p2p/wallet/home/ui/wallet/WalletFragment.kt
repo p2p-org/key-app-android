@@ -194,15 +194,13 @@ class WalletFragment :
     }
 
     private fun LayoutHomeToolbarBinding.setupToolbar() {
-        textViewAddress.setOnClickListener {
-            presenter.onAddressClicked()
-        }
         imageViewProfile.setOnClickListener { presenter.onProfileClick() }
         imageViewQr.setOnClickListener { replaceFragment(ReceiveSolanaFragment.create(token = null)) }
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
-        binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
+        // temp commented
+//        binding.layoutToolbar.textViewAddress.text = ellipsizedAddress
     }
 
     override fun showBalance(fiatBalanceCellModel: TextViewCellModel?, tokenBalanceCellModel: TextViewCellModel?) {

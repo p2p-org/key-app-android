@@ -103,9 +103,9 @@ object JupiterModule : InjectionModule {
         factory { (initialData: JupiterPresenterInitialData) ->
             val stateManager: SwapStateManager = getSwapStateManager(
                 initialTokensData = SwapInitialTokensData(
-                    initialData.initialToken,
-                    initialData.tokenASymbol,
-                    initialData.tokenBSymbol
+                    token = initialData.initialToken,
+                    tokenAMint = initialData.tokenAMint,
+                    tokenBMint = initialData.tokenBMint
                 ),
                 stateManagerHolderKey = initialData.stateManagerHolderKey
             )

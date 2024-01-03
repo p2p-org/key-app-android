@@ -8,27 +8,32 @@ data class SearchState(
     var recentRecipients: List<SearchResult>? = null
 ) {
 
-    sealed interface State {
-        class UsersFound(val query: String, val users: List<SearchResult>) : State
-        class UsersNotFound(val query: String) : State
-        class ShowInvalidAddresses(val users: List<SearchResult>) : State
-        class ShowRecipients(val recipients: List<SearchResult>) : State
-        object ShowEmptyState : State
+    sealed interface ViewState {
+        class UsersFound(val query: String, val users: List<SearchResult>) : ViewState
+        class UsersNotFound(val query: String) : ViewState
+        class ShowInvalidAddresses(val users: List<SearchResult>) : ViewState
+        class ShowRecipients(val recipients: List<SearchResult>) : ViewState
+        object ShowEmptyState : ViewState
     }
 
-    val state: State
+    val state: ViewState
         get() {
             return when {
-                foundResult.any { it.isInvalid() } ->
-                    State.ShowInvalidAddresses(foundResult)
-                foundResult.isNotEmpty() ->
-                    State.UsersFound(query, foundResult)
-                query.isNotEmpty() && foundResult.isEmpty() ->
-                    State.UsersNotFound(query)
-                !recentRecipients.isNullOrEmpty() ->
-                    State.ShowRecipients(recentRecipients!!)
-                else ->
-                    State.ShowEmptyState
+                foundResult.any { it.isInvalid() } -> {
+                    ViewState.ShowInvalidAddresses(foundResult)
+                }
+                foundResult.isNotEmpty() -> {
+                    ViewState.UsersFound(query, foundResult)
+                }
+                query.isNotEmpty() && foundResult.isEmpty() -> {
+                    ViewState.UsersNotFound(query)
+                }
+                !recentRecipients.isNullOrEmpty() -> {
+                    ViewState.ShowRecipients(recentRecipients!!)
+                }
+                else -> {
+                    ViewState.ShowEmptyState
+                }
             }
         }
 

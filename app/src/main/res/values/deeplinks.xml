@@ -2,5 +2,6 @@
 <resources>
     <string name="app_scheme">keyapp</string>
     <string name="transfer_app_host">t.key.app</string>
+    <string name="transfer_app_host_swap">s.key.app</string>
     <string name="transfer_app_scheme_alternative">keyapp</string>
 </resources>

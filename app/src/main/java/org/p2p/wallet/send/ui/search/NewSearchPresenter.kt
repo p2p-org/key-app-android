@@ -38,7 +38,7 @@ class NewSearchPresenter(
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor
 ) : BasePresenter<NewSearchContract.View>(), NewSearchContract.Presenter {
 
-    private var state = SearchState()
+    private var searchState = SearchState()
     private var searchJob: Job? = null
 
     override fun attach(view: NewSearchContract.View) {
@@ -47,7 +47,7 @@ class NewSearchPresenter(
 
         loadFeeLimits()
 
-        if (state.recentRecipients == null) {
+        if (searchState.recentRecipients == null) {
             loadRecentRecipients()
         } else {
             renderCurrentState()
@@ -57,41 +57,42 @@ class NewSearchPresenter(
     private fun loadRecentRecipients() {
         launch {
             val recipients = userInteractor.getRecipients()
-            state.updateRecipients(recipients)
+            searchState.updateRecipients(recipients)
 
             renderCurrentState()
         }
     }
 
     private fun renderCurrentState() {
-        when (val currentState = state.state) {
-            is SearchState.State.UsersFound -> {
+        Timber.i("rendering current state ${searchState.state}")
+        when (val currentState = searchState.state) {
+            is SearchState.ViewState.UsersFound -> {
                 showSendViaLinkContainer(isVisible = false)
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.updateSearchInput(currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
-            is SearchState.State.UsersNotFound -> {
+            is SearchState.ViewState.UsersNotFound -> {
                 showSendViaLinkContainer(isVisible = false)
                 view?.showNotFound()
                 view?.showUsersMessage(null)
                 view?.updateSearchInput(currentState.query, submit = false)
                 view?.showBackgroundVisible(isVisible = true)
             }
-            is SearchState.State.ShowInvalidAddresses -> {
+            is SearchState.ViewState.ShowInvalidAddresses -> {
                 showSendViaLinkContainer(isVisible = false)
                 view?.showUsers(currentState.users)
                 view?.showUsersMessage(R.string.search_found)
                 view?.showBackgroundVisible(isVisible = false)
             }
-            is SearchState.State.ShowRecipients -> {
+            is SearchState.ViewState.ShowRecipients -> {
                 showSendViaLinkContainer(isVisible = true)
                 view?.showUsers(currentState.recipients)
                 view?.showUsersMessage(R.string.search_recently)
                 view?.showBackgroundVisible(isVisible = true)
             }
-            is SearchState.State.ShowEmptyState -> {
+            is SearchState.ViewState.ShowEmptyState -> {
                 showSendViaLinkContainer(isVisible = true)
                 view?.showEmptyState(isEmpty = true)
                 view?.showUsersMessage(null)
@@ -104,18 +105,18 @@ class NewSearchPresenter(
     override fun search(newQuery: String) {
         // when screen is restored, the searchView triggers the queryChange automatically
         // we don't need to make a new request, since we already restored the state in attach
-        if (state.query == newQuery) {
+        if (searchState.query == newQuery) {
             return
         }
 
         if (newQuery.isBlank()) {
             searchJob?.cancel()
-            state.clear()
+            searchState.clear()
             renderCurrentState()
             return
         }
 
-        state.updateSearchResult(newQuery, emptyList())
+        searchState.updateSearchResult(newQuery, emptyList())
 
         val target = SearchTarget(
             value = newQuery,
@@ -199,7 +200,7 @@ class NewSearchPresenter(
 
     private suspend fun searchByUsername(username: String) {
         val usernames = searchInteractor.searchByName(username)
-        state.updateSearchResult(username, usernames)
+        searchState.updateSearchResult(username, usernames)
         renderCurrentState()
     }
 
@@ -208,13 +209,13 @@ class NewSearchPresenter(
             PublicKey(address)
         } catch (e: Throwable) {
             Timber.i(e)
-            state.updateSearchResult(address, emptyList())
+            searchState.updateSearchResult(address, emptyList())
             renderCurrentState()
             return
         }
 
         val newAddresses = searchInteractor.searchByAddress(publicKey, initialToken)
-        state.updateSearchResult(address, listOf(newAddresses))
+        searchState.updateSearchResult(address, listOf(newAddresses))
         renderCurrentState()
     }
 
@@ -223,12 +224,13 @@ class NewSearchPresenter(
             showNotFound()
         } else {
             val newAddresses = searchInteractor.searchByEthAddress(EthAddress(address))
-            state.updateSearchResult(address, listOf(newAddresses))
+            searchState.updateSearchResult(address, listOf(newAddresses))
             renderCurrentState()
         }
     }
 
     private fun showNotFound() {
+        view?.showSendViaLink(isVisible = false)
         view?.showUsersMessage(textRes = null)
         view?.clearUsers()
         view?.showNotFound()
@@ -252,6 +254,6 @@ class NewSearchPresenter(
     }
 
     private fun logRecipientSelected(recipient: SearchResult) {
-        newSendAnalytics.logRecipientSelected(recipient, state.foundResult)
+        newSendAnalytics.logRecipientSelected(recipient, searchState.foundResult)
     }
 }

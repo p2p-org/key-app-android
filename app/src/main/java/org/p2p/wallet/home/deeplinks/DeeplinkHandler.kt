@@ -2,6 +2,7 @@ package org.p2p.wallet.home.deeplinks
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
@@ -36,11 +37,11 @@ class DeeplinkHandler(
     }
 
     private fun handleSwapDeeplink(data: DeeplinkData) {
-        if (data.args.containsKey("from") && data.args.containsKey("to")) {
+        if (data.args.containsKey("inputMint") && data.args.containsKey("outputMint")) {
             val amount = data.args["amount"]?.toBigDecimalOrNull()?.toPlainString() ?: "0"
             screenNavigator?.showSwapWithArgs(
-                tokenASymbol = data.args.getValue("from"),
-                tokenBSymbol = data.args.getValue("to"),
+                tokenAMint = data.args.getValue("inputMint").toBase58Instance(),
+                tokenBMint = data.args.getValue("outputMint").toBase58Instance(),
                 amountA = amount,
                 source = SwapOpenedFrom.MAIN_SCREEN
             )

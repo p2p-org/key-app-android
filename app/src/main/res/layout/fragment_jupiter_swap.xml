@@ -152,6 +152,8 @@
                     android:text="@string/swap_main_alert"
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3" />
             </LinearLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

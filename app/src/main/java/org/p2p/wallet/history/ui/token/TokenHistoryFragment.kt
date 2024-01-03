@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.BuildConfig
@@ -21,10 +22,8 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
+import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
-import org.p2p.wallet.send.analytics.NewSendAnalytics
-import org.p2p.wallet.send.ui.SearchOpenedFromScreen
-import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
@@ -34,16 +33,17 @@ import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.analytics.SellAnalytics
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.send.analytics.NewSendAnalytics
+import org.p2p.wallet.send.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.swap.analytics.SwapAnalytics
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.showErrorDialog
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
-import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -191,8 +191,8 @@ class TokenHistoryFragment :
     ) {
         replaceFragment(
             JupiterSwapFragment.create(
-                tokenASymbol = sourceSymbol,
-                tokenBSymbol = destinationSymbol,
+                tokenAMint = sourceTokenMint.toBase58Instance(),
+                tokenBMint = destinationTokenMint.toBase58Instance(),
                 amountA = Constants.ZERO_AMOUNT,
                 source = openedFrom
             )
