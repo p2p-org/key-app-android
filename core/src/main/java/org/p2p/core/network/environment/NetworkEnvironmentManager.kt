@@ -49,11 +49,7 @@ class NetworkEnvironmentManager(
     }
 
     private fun getDefaultAvailableNetwork(): NetworkEnvironment {
-        return if (NetworkEnvironment.RPC_POOL in availableNetworks) {
-            NetworkEnvironment.RPC_POOL
-        } else {
-            availableNetworks.first()
-        }
+        return NetworkEnvironment.RPC_POOL
     }
 
     fun loadRpcEnvironment(): RpcEnvironment = if (loadCurrentEnvironment() == NetworkEnvironment.DEVNET) {
