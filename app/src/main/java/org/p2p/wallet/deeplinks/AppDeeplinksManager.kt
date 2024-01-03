@@ -53,7 +53,7 @@ class AppDeeplinksManager(
      * @param data Deeplink data
      */
     private fun notify(data: DeeplinkData) {
-        Timber.e("notifing data: $data")
+        Timber.i("notifying data: $data")
         deeplinkData.tryEmit(data)
     }
 
@@ -94,9 +94,6 @@ class AppDeeplinksManager(
                 val isTransferScheme = isTransferDeeplink(data)
                 val isSwapScheme = isSwapDeeplink(data)
 
-                Timber.e("url found: $data")
-                Timber.d(isSwapScheme.toString())
-
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
                     isValidScheme && DeeplinkUtils.isValidNavigationLink(data) -> handleCommonDeeplink(intent)
@@ -128,7 +125,6 @@ class AppDeeplinksManager(
      * or keyapp://s/... if came from website
      */
     private fun isSwapDeeplink(data: Uri): Boolean {
-        Timber.i("parsing data: $data")
         val transferHostMain = context.getString(R.string.transfer_app_host_swap)
         val transferSchemeMain = "https"
         val transferHostAlternative = "s"
@@ -219,7 +215,6 @@ class AppDeeplinksManager(
         val screenName = data.host
         val target = DeeplinkTarget.fromScreenName(screenName)
 
-        Timber.e(target.toString())
         target?.let { deeplinkTarget ->
             val deeplinkData = DeeplinkData(
                 target = deeplinkTarget,
@@ -234,11 +229,9 @@ class AppDeeplinksManager(
     }
 
     private fun handleSwapDeeplink(intent: Intent) {
-        Timber.e(" intent data: ${intent.data}")
         val data = intent.data ?: return
         val target = DeeplinkTarget.fromScreenTab(ScreenTab.SWAP_SCREEN)
 
-        Timber.e("parsing target: $target")
         target?.let { deeplinkTarget ->
             val deeplinkData = DeeplinkData(
                 target = deeplinkTarget,

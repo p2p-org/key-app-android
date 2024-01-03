@@ -96,7 +96,7 @@ class SwapTokensPresenter(
         view?.close()
     }
 
-    private fun renderLoading(isLoading: Boolean){
+    private fun renderLoading(isLoading: Boolean) {
         view?.renderLoading(isLoading)
     }
 }

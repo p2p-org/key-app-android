@@ -69,7 +69,7 @@ class SwapTokensFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.setTitle(
-            if(tokenToChange == SwapTokensListMode.TOKEN_A) {
+            if (tokenToChange == SwapTokensListMode.TOKEN_A) {
                 R.string.swap_tokens_token_a_toolbar
             } else {
                 R.string.swap_tokens_token_b_toolbar
