@@ -56,6 +56,11 @@ class SwapStateRoutesRefresher(
             )
         } catch (e: SwapFailure.TooSmallInputAmount) {
             throw SwapFeatureException.SmallTokenAAmount(amountTokenA)
+        } catch (e: SwapFailure.ServerUnknownError) {
+            Timber.e(e, "Unable to fetch routes")
+            // todo: I guess common unknown errors must be interpreted differently,
+            //       but currently we don't know how exactly distinguish them
+            throw SwapFeatureException.RoutesNotFound
         } finally {
             swapProfiler.setRoutesFetchedTime()
         }
