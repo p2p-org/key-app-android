@@ -34,6 +34,6 @@ class StrigaOffRampMapper {
     }
 
     private fun StrigaExchangeRate.formatRate(): String {
-        return "1 ${Constants.EUR_SYMBOL} ≈ ${sellRate.formatFiat()} ${Constants.USDC_SYMBOL}"
+        return "1 ${Constants.EUR_READABLE_SYMBOL} ≈ ${sellRate.formatFiat()} ${Constants.USDC_SYMBOL}"
     }
 }

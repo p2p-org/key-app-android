@@ -47,7 +47,7 @@ class StrigaOffRampExchangeRateNotifier(
                     retryOnException(exceptionTypes = setOf(Throwable::class)) {
                         val result = strigaExchangeRepository.getExchangeRateForPair(
                             Constants.USDC_SYMBOL,
-                            Constants.EUR_SYMBOL,
+                            Constants.EUR_READABLE_SYMBOL,
                         ).unwrap()
 
                         exchangeRateState.emit(

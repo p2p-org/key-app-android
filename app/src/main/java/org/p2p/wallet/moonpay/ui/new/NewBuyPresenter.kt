@@ -7,8 +7,11 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.Constants.EUR_READABLE_SYMBOL
+import org.p2p.core.utils.Constants.GBP_READABLE_SYMBOL
 import org.p2p.core.utils.Constants.USD_SYMBOL
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.formatFiat
@@ -18,7 +21,6 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
@@ -68,8 +70,8 @@ class NewBuyPresenter(
     private var calculationJob: Job? = null
 
     private val currenciesToSelect: List<BuyCurrency.Currency> = listOf(
-        BuyCurrency.Currency.create(Constants.GBP_SYMBOL),
-        BuyCurrency.Currency.create(Constants.EUR_SYMBOL),
+        BuyCurrency.Currency.create(GBP_READABLE_SYMBOL),
+        BuyCurrency.Currency.create(EUR_READABLE_SYMBOL),
         SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     )
 
@@ -173,9 +175,9 @@ class NewBuyPresenter(
     private fun validatePaymentMethod() {
         if (selectedPaymentMethod?.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (currentAlpha3Code == BANK_TRANSFER_UK_CODE) {
-                selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
+                selectCurrency(BuyCurrency.Currency.create(GBP_READABLE_SYMBOL))
             } else {
-                selectCurrency(BuyCurrency.Currency.create(Constants.EUR_SYMBOL))
+                selectCurrency(BuyCurrency.Currency.create(EUR_READABLE_SYMBOL))
             }
         }
     }
@@ -238,13 +240,13 @@ class NewBuyPresenter(
 
         if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
-                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
+                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == EUR_READABLE_SYMBOL)
             ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
                 return isValidCurrencyForPay()
-            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
+            } else if (selectedCurrency.code == GBP_READABLE_SYMBOL && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
@@ -487,7 +489,7 @@ class NewBuyPresenter(
     }
 
     private fun getValidPaymentType(): String? {
-        return if (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
+        return if (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency.code == EUR_READABLE_SYMBOL) {
             SEPA_BANK_TRANSFER
         } else {
             selectedPaymentMethod?.paymentType

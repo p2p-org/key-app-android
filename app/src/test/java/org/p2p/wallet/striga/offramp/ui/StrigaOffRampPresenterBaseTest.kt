@@ -149,7 +149,7 @@ abstract class StrigaOffRampPresenterBaseTest {
     }
 
     protected fun formatRate(rate: BigDecimal): String {
-        return "1 ${Constants.EUR_SYMBOL} ≈ $rate ${Constants.USDC_SYMBOL}"
+        return "1 ${Constants.EUR_READABLE_SYMBOL} ≈ $rate ${Constants.USDC_SYMBOL}"
     }
 
     protected fun String.toRawTextViewCellModel(): TextViewCellModel {

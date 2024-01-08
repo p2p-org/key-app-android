@@ -5,10 +5,10 @@ import java.math.BigDecimal
 import javax.net.ssl.HttpsURLConnection
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayBuyCurrencyResponse
 import org.p2p.wallet.moonpay.model.MoonpayBuyQuote
@@ -16,7 +16,9 @@ import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.repository.buy.MoonpayApiMapper
 import org.p2p.wallet.moonpay.repository.buy.NewMoonpayBuyRepository
 
-private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "1"
+// amount in pounds does not accept getting currency rate of 1, it triggers minimal amount error
+// so we use 100 as a workaround
+private const val CURRENCY_AMOUNT_FOR_PRICE_REQUEST = "100"
 private const val DEFAULT_MAX_CURRENCY_AMOUNT = 10000
 private const val DEFAULT_PAYMENT_TYPE = "credit_debit_card"
 private val FIAT_CURRENCY_CODES = listOf("eur", "usd", "gbp")
@@ -101,22 +103,27 @@ class BuyInteractor(
     }
 
     private suspend fun loadQuote(currency: String, token: Token) {
-        val response = moonpayRepository.getBuyCurrencyData(
-            baseCurrencyAmount = CURRENCY_AMOUNT_FOR_PRICE_REQUEST,
-            quoteCurrencyAmount = null,
-            tokenToBuy = token,
-            baseCurrencyCode = currency.lowercase(),
-            paymentMethod = DEFAULT_PAYMENT_TYPE
-        )
-
-        quotes.add(
-            MoonpayBuyQuote(
+        Timber.d("Load quote for currency=$currency; token=${token.tokenSymbol}")
+        try {
+            val response = moonpayRepository.getBuyCurrencyData(
+                baseCurrencyAmount = CURRENCY_AMOUNT_FOR_PRICE_REQUEST,
+                quoteCurrencyAmount = null,
+                tokenToBuy = token,
+                baseCurrencyCode = currency.lowercase(),
+                paymentMethod = DEFAULT_PAYMENT_TYPE
+            )
+            val result = MoonpayBuyQuote(
                 currency = currency,
                 token = token,
                 price = response.quoteCurrencyPrice,
                 minAmount = response.baseCurrency.minBuyAmount
             )
-        )
+            quotes.add(
+                result
+            )
+        } catch (e: Throwable) {
+            Timber.e(e, "Error while loading quote for currency=$currency; token=${token.tokenSymbol}")
+        }
     }
 
     private fun isMinAmountValid(response: MoonpayBuyCurrencyResponse, token: Token): Boolean {
