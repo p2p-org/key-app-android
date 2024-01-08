@@ -68,6 +68,13 @@ class SwapTokensFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.toolbar.setTitle(
+            if (tokenToChange == SwapTokensListMode.TOKEN_A) {
+                R.string.swap_tokens_token_a_toolbar
+            } else {
+                R.string.swap_tokens_token_b_toolbar
+            }
+        )
         binding.toolbar.setNavigationOnClickListener {
             analytics.logSelectTokenClosed(tokenToChange)
             popBackStack()
@@ -135,6 +142,10 @@ class SwapTokensFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         binding.textViewEmpty.isVisible = isEmpty
         binding.recyclerViewTokens.isVisible = !isEmpty
+    }
+
+    override fun renderLoading(isLoading: Boolean) {
+        binding.progressBar.isVisible = isLoading
     }
 
     override fun close() {

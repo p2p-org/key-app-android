@@ -1,7 +1,7 @@
 package org.p2p.wallet.striga.user.repository
 
 import timber.log.Timber
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
@@ -9,18 +9,21 @@ import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
 class StrigaUserStatusDestinationMapper {
 
     fun mapToDestination(userStatus: StrigaUserStatusDetails?): StrigaUserStatusDestination {
-        val isUserNotCreated = userStatus == null
         return when {
-            isUserNotCreated -> {
+            // if user is not created
+            userStatus == null -> {
                 StrigaUserStatusDestination.ONBOARDING
             }
-            userStatus?.isMobileVerified == false -> {
+            !userStatus.isMobileVerified -> {
                 StrigaUserStatusDestination.SMS_VERIFICATION
             }
-            userStatus?.isKycInProgress == true -> {
+            userStatus.isKycOpenable -> {
                 StrigaUserStatusDestination.SUM_SUB_VERIFICATION
             }
-            userStatus?.kycStatus == StrigaUserVerificationStatus.APPROVED -> {
+            userStatus.isKycPending -> {
+                StrigaUserStatusDestination.KYC_PENDING
+            }
+            userStatus.isKycApproved -> {
                 StrigaUserStatusDestination.IBAN_ACCOUNT
             }
             else -> {

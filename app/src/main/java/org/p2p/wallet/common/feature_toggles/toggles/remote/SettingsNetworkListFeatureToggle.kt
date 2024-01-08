@@ -24,7 +24,7 @@ class SettingsNetworkListFeatureToggle(
     override val featureDescription: String = "List of available networks to choose from"
 
     override val defaultValue: List<SettingsNetworkValue> = listOf(
-        SettingsNetworkValue(url = "https://p2p.rpcpool.com", networkName = "mainnet-beta"),
+        SettingsNetworkValue(url = "https://solana.keyapp.org", networkName = "mainnet-beta"),
         SettingsNetworkValue(url = "https://solana-api.projectserum.com", networkName = "mainnet-beta"),
         SettingsNetworkValue(url = "https://api.mainnet-beta.solana.com", networkName = "mainnet-beta")
     )

@@ -43,20 +43,24 @@ class UiKitBottomNavigationView @JvmOverloads constructor(
     }
 
     fun setChecked(menuItemId: Int) {
-        binding.bottomNavigationView.menu.findItem(menuItemId)?.isChecked = true
+        menu.findItem(menuItemId)?.isChecked = true
     }
 
-    fun setBadgeVisible(isVisible: Boolean) {
+    fun setBadgeVisible(screenTab: ScreenTab, isVisible: Boolean) {
         with(binding) {
-            val settingsItem = bottomNavigationView.menu.findItem(ScreenTab.SETTINGS_SCREEN.itemId) ?: return
-            bottomNavigationView.getOrCreateBadge(settingsItem.itemId).isVisible = isVisible
+            val screenItem = menu.findItem(screenTab.itemId) ?: return
+            bottomNavigationView.getOrCreateBadge(screenItem.itemId).isVisible = isVisible
         }
+    }
+
+    fun setMenuItemTitle(screenTab: ScreenTab, title: String) {
+        val screenItem = menu.findItem(screenTab.itemId) ?: return
+        screenItem.title = title
     }
 }
 
 enum class ScreenTab(val itemId: Int) {
-    HOME_SCREEN(R.id.homeItem),
-    EARN_SCREEN(R.id.earnItem),
+    WALLET_SCREEN(R.id.walletItem),
     HISTORY_SCREEN(R.id.historyItem),
     FEEDBACK_SCREEN(R.id.feedbackItem),
     SWAP_SCREEN(R.id.swapItem),

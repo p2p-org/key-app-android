@@ -2,6 +2,7 @@ package org.p2p.wallet.auth.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.p2p.core.utils.emptyString
 
 @Parcelize
 data class CountryCode(
@@ -10,7 +11,7 @@ data class CountryCode(
     val phoneCode: String,
     val name: String,
     val flagEmoji: String,
-    var mask: String = ""
+    var mask: String = emptyString()
 ) : Parcelable {
 
     val phoneCodeWithPlusSign get() = "+$phoneCode"

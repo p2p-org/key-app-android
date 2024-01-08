@@ -1,7 +1,10 @@
 package org.p2p.wallet.feerelayer.interactor
 
+import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
@@ -16,8 +19,6 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.TokenAccount
 import org.p2p.wallet.feerelayer.program.FeeRelayerProgram
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
@@ -124,6 +125,7 @@ class FeeRelayerInteractor(
         expectedFee: FeeAmount,
         payingFeeToken: TokenAccount
     ): List<String>? {
+        Timber.i("checkAndTopUp is called with $expectedFee and $payingFeeToken")
         if (payingFeeToken.isSOL) return null
 
         val feeRelayerProgramId = FeeRelayerProgram.getProgramId(environmentManager.isMainnet())
@@ -186,6 +188,8 @@ class FeeRelayerInteractor(
         // verify fee payer
         val transactionFeePayer = preparedTransaction.transaction.getFeePayer()
         if (transactionFeePayer == null || !feePayer.equals(transactionFeePayer)) {
+            Timber.i("transactionFeePayer = $transactionFeePayer")
+            Timber.i("feePayer != txFeePayer = ${feePayer != transactionFeePayer}")
             throw IllegalStateException("Invalid fee payer")
         }
 
@@ -193,8 +197,10 @@ class FeeRelayerInteractor(
         // Account creation fee (accountBalances) is a must-pay-back fee
         var paybackFee = additionalPaybackFee + preparedTransaction.expectedFee.accountBalances
 
+        Timber.i("original payback fee = $paybackFee")
         // The transaction fee, on the other hand, is only be paid if user used more than number of free transaction fee
         if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transaction)) {
+            Timber.i("adding to payback fee ${preparedTransaction.expectedFee.transaction}")
             paybackFee += preparedTransaction.expectedFee.transaction
         }
 
@@ -204,6 +210,7 @@ class FeeRelayerInteractor(
         if (paybackFee.isNotZero()) {
             val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)
             if (payingFeeToken.isSOL && minRelayAccountBalance < paybackFee) {
+                Timber.i("adding payback transfer instruction")
                 val instruction = SystemProgram.transfer(
                     fromPublicKey = owner.publicKey,
                     toPublicKey = feePayer,
@@ -211,6 +218,7 @@ class FeeRelayerInteractor(
                 )
                 transaction.addInstruction(instruction)
             } else {
+                Timber.i("adding payback relay transfer instruction")
                 val createRelayTransferSolInstruction = FeeRelayerProgram.createRelayTransferSolInstruction(
                     programId = feeRelayerProgramId,
                     userAuthority = owner.publicKey,
@@ -223,6 +231,7 @@ class FeeRelayerInteractor(
         }
 
         // resign transaction
+        Timber.i("resigning transaction in fee relayer after payback fee")
         transaction.sign(preparedTransaction.signers)
 
         /*

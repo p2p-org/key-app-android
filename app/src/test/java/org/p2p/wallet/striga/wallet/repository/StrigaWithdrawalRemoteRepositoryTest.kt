@@ -9,8 +9,9 @@ import org.junit.Assert
 import org.junit.Test
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.wallet.api.StrigaWalletApi
 import org.p2p.wallet.striga.wallet.models.StrigaInitWithdrawalDetails
 import org.p2p.wallet.striga.wallet.models.StrigaNetworkCurrency
@@ -22,6 +23,7 @@ import org.p2p.wallet.striga.wallet.repository.impl.StrigaWithdrawalsRemoteRepos
 import org.p2p.wallet.striga.wallet.repository.mapper.StrigaWithdrawalsMapper
 import org.p2p.wallet.utils.fromJson
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class StrigaWithdrawalRemoteRepositoryTest {
     private val gson = Gson()
     private val api: StrigaWalletApi = mockk()

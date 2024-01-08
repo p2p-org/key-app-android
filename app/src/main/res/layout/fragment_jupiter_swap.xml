@@ -22,8 +22,8 @@
         android:id="@+id/textViewRate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -152,6 +152,8 @@
                     android:text="@string/swap_main_alert"
                     android:textAppearance="@style/UiKit.TextAppearance.Regular.Text3" />
             </LinearLayout>
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

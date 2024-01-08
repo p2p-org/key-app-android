@@ -3,21 +3,21 @@ package org.p2p.wallet.settings.ui.settings
 import timber.log.Timber
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.analytics.constants.ScreenNames
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.interactor.UsernameInteractor
+import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.AppRestarter
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.repository.HomeLocalRepository
-import org.p2p.core.network.environment.NetworkEnvironment
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.settings.interactor.SettingsInteractor
-import org.p2p.wallet.settings.model.SettingsItemMapper
+import org.p2p.wallet.settings.mapper.SettingsItemMapper
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_DISCORD
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_HIDE_BALANCE
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_NETWORK
@@ -26,6 +26,7 @@ import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_SUPPORT
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_TWITTER
 import org.p2p.wallet.settings.ui.settings.SettingsPresenterAnalytics.Companion.SETTING_ITEM_USERNAME
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 private const val NETWORK_CHANGE_DELAY = 250L
 
@@ -36,7 +37,7 @@ class SettingsPresenter(
     private val appRestarter: AppRestarter,
     private val analytics: SettingsPresenterAnalytics,
     private val settingsInteractor: SettingsInteractor,
-    private val homeLocalRepository: HomeLocalRepository,
+    private val userTokensLocalRepository: UserTokensLocalRepository,
     private val settingsItemMapper: SettingsItemMapper,
     private val metadataInteractor: MetadataInteractor,
     private val authInteractor: AuthInteractor,
@@ -53,6 +54,7 @@ class SettingsPresenter(
             val settings = settingsItemMapper.createItems(
                 username = usernameInteractor.getUsername(),
                 isUsernameItemVisible = usernameInteractor.isUsernameItemVisibleInSettings(),
+                countryName = settingsInteractor.userCountryCode?.countryName,
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden(),
@@ -87,6 +89,11 @@ class SettingsPresenter(
             Timber.e(fingerPrintChangeError, "Failed to change biometric login flag")
             view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
+    }
+
+    override fun onCountryChanged(selectedCountryCode: CountryCode) {
+        settingsInteractor.userCountryCode = selectedCountryCode
+        loadSettings()
     }
 
     override fun onPinClicked() {
@@ -132,6 +139,10 @@ class SettingsPresenter(
         analytics.logSettingItemClicked(SETTING_ITEM_USERNAME)
     }
 
+    override fun onCountryClicked() {
+        view?.showCountryPicker(settingsInteractor.userCountryCode)
+    }
+
     override fun onSecurityClicked() {
         view?.openSecurityAndPrivacy()
         analytics.logSettingItemClicked(SETTING_ITEM_SECURITY)
@@ -143,7 +154,7 @@ class SettingsPresenter(
             try {
                 environmentManager.chooseEnvironment(newNetworkEnvironment)
 
-                homeLocalRepository.clear()
+                userTokensLocalRepository.clear()
 
                 analytics.logNetworkChanging(newNetworkEnvironment.name)
                 // Sometimes these operations are completed too quickly

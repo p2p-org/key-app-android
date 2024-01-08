@@ -5,8 +5,13 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.isVisible
 import android.content.Context
 import android.util.AttributeSet
+import org.p2p.core.common.TextContainer
+import org.p2p.core.common.bind
 import org.p2p.uikit.databinding.WidgetIconWrapperSingleBinding
 import org.p2p.uikit.databinding.WidgetIconWrapperTwoBinding
+import org.p2p.uikit.utils.drawable.applyBackground
+import org.p2p.uikit.utils.drawable.applyForeground
+import org.p2p.uikit.utils.drawable.shape.shapeOutline
 import org.p2p.uikit.utils.image.bind
 import org.p2p.uikit.utils.image.bindOrGone
 import org.p2p.uikit.utils.inflateViewBinding
@@ -22,6 +27,7 @@ class UiKitIconWrapper @JvmOverloads constructor(
     private val viewPool = ComponentViewPool<IconWrapperCellModel>(this) {
         when (this) {
             IconWrapperCellModel.SingleIcon::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
+            IconWrapperCellModel.SingleEmoji::class -> inflateViewBinding<WidgetIconWrapperSingleBinding>()
             IconWrapperCellModel.TwoIcon::class -> inflateViewBinding<WidgetIconWrapperTwoBinding>()
             else -> error("No type for viewPool: $this")
         }
@@ -43,12 +49,36 @@ class UiKitIconWrapper @JvmOverloads constructor(
         when (model) {
             is IconWrapperCellModel.SingleIcon -> (pair.first as WidgetIconWrapperSingleBinding).bind(model)
             is IconWrapperCellModel.TwoIcon -> (pair.first as WidgetIconWrapperTwoBinding).bind(model)
+            is IconWrapperCellModel.SingleEmoji -> (pair.first as WidgetIconWrapperSingleBinding).bind(model)
         }
         this.currentModel = model
     }
 
+    private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleEmoji) {
+        textViewEmoji.isVisible = true
+        textViewEmoji.bind(TextContainer(model.emoji))
+
+        // we don't show imageview image itself, but using it as a background for emoji
+        imageViewIcon.apply {
+            model.background.applyBackground(this)
+            model.foreground.applyForeground(this)
+            shapeOutline(model.clippingShape)
+        }
+    }
+
     private fun WidgetIconWrapperSingleBinding.bind(model: IconWrapperCellModel.SingleIcon) {
+        this.textViewEmoji.isVisible = false
+        this.imageViewIcon.isVisible = true
         this.imageViewIcon.bind(model.icon)
+
+        if (model.sizePx != null) {
+            val layoutParams = root.layoutParams as LayoutParams
+            root.layoutParams = layoutParams.apply {
+                width = model.sizePx
+                height = model.sizePx
+                verticalBias = 0.5f
+            }
+        }
     }
 
     private fun WidgetIconWrapperTwoBinding.bind(model: IconWrapperCellModel.TwoIcon) {

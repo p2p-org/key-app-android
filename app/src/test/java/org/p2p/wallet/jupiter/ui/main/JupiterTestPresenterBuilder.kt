@@ -1,10 +1,13 @@
 package org.p2p.wallet.jupiter.ui.main
 
 import java.math.BigDecimal
-import org.p2p.core.token.Token
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
-import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.home.repository.HomeLocalRepository
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.Token
+import org.p2p.token.service.model.TokenRate
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
@@ -14,14 +17,13 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.Base58String
 
 class JupiterTestPresenterBuilder {
 
     var swapOpenedFrom: SwapOpenedFrom = SwapOpenedFrom.MAIN_SCREEN
     var initialAmountA: String? = null
-    var initialTokenASymbol: String? = null
-    var initialTokenBSymbol: String? = null
+    var initialTokenAMint: Base58String? = null
+    var initialTokenBMint: Base58String? = null
     var preinstallTokenA: Token.Active? = null
 
     /**
@@ -70,14 +72,14 @@ class JupiterTestPresenterBuilder {
      * Mock for
      * @see JupiterSwapTokensRepository.getTokenRate(JupiterSwapToken)
      */
-    var jupiterSwapTokensRepoGetTokenRate: (JupiterSwapToken) -> TokenPrice? = { token ->
+    var jupiterSwapTokensRepoGetTokenRate: (JupiterSwapToken) -> TokenServicePrice? = { token ->
         when (token) {
             JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
-                TokenPrice(token.coingeckoId!!, BigDecimal("100"))
+                TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.TEN), network = TokenServiceNetwork.SOLANA)
             }
 
             JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
-                TokenPrice(token.coingeckoId!!, BigDecimal("1"))
+                TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.ONE), network = TokenServiceNetwork.SOLANA)
             }
 
             else -> null
@@ -86,23 +88,23 @@ class JupiterTestPresenterBuilder {
 
     /**
      * Mock for
-     * @see JupiterSwapTokensRepository.getTokensRates(List<JupiterSwapToken>)
+     * @see JupiterSwapTokensRepository.loadTokensRate(List<JupiterSwapToken>)
      */
-    var jupiterSwapTokensRepoGetTokensRate: (List<JupiterSwapToken>) -> Map<Base58String, TokenPrice> = { tokens ->
+    var jupiterSwapTokensRepoGetTokensRate: (List<JupiterSwapToken>) -> Map<Base58String, TokenServicePrice> = { tokens ->
 
         tokens.mapNotNull { token ->
             when (token) {
                 JupiterSwapTestHelpers.JUPITER_SOL_TOKEN -> {
-                    token.tokenMint to TokenPrice(token.coingeckoId!!, BigDecimal("100"))
+                    TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.TEN), network = TokenServiceNetwork.SOLANA)
                 }
 
                 JupiterSwapTestHelpers.JUPITER_USDC_TOKEN -> {
-                    token.tokenMint to TokenPrice(token.coingeckoId!!, BigDecimal("1"))
+                    TokenServicePrice(token.coingeckoId!!, TokenRate(BigDecimal.ONE), network = TokenServiceNetwork.SOLANA)
                 }
 
                 else -> null
             }
-        }.toMap()
+        }.associateBy { it.address.toBase58Instance() }
     }
 
     /**

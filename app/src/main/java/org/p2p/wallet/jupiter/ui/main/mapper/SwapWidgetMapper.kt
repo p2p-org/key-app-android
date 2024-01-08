@@ -71,6 +71,18 @@ class SwapWidgetMapper {
         )
     }
 
+    fun copyAmountWithSourceValue(
+        oldWidgetModel: SwapWidgetModel,
+        userInputTokenAmount: String,
+    ): SwapWidgetModel {
+        val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
+        val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
+        return widgetModel.copy(
+            amount = TextViewCellModel.Raw(TextContainer(userInputTokenAmount))
+                .copy(textColor = oldAmount.textColor)
+        )
+    }
+
     fun mapTokenAAndSaveOldFiatAmount(
         oldWidgetModel: SwapWidgetModel,
         token: SwapTokenModel,
@@ -148,7 +160,12 @@ class SwapWidgetMapper {
 
     private fun tokenAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw {
         val decimals = token.decimals
-        val amountText = tokenAmount?.formatToken(decimals) ?: emptyString()
+        val amountText = tokenAmount
+            ?.formatToken(
+                decimals = decimals,
+                keepInitialDecimals = true
+            )
+            ?: emptyString()
         return TextViewCellModel.Raw(TextContainer(amountText))
     }
 

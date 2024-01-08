@@ -7,14 +7,14 @@ import org.p2p.wallet.auth.model.PhoneNumber
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.smsinput.SmsInputContract
 import org.p2p.wallet.smsinput.SmsInputContract.Presenter.SmsInputTimerState
-import org.p2p.wallet.striga.model.StrigaApiErrorCode
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.sms.StrigaSmsInputInteractor
+import org.p2p.wallet.striga.common.model.StrigaApiErrorCode
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.sms.interactor.StrigaOtpConfirmInteractor
 import org.p2p.wallet.utils.removeWhiteSpaces
 
 class StrigaSignupSmsInputPresenter(
-    private val interactor: StrigaSmsInputInteractor,
+    private val interactor: StrigaOtpConfirmInteractor,
 ) : BasePresenter<SmsInputContract.View>(), SmsInputContract.Presenter {
 
     override fun firstAttach() {
@@ -130,6 +130,10 @@ class StrigaSignupSmsInputPresenter(
             }
             StrigaApiErrorCode.EXCEEDED_DAILY_RESEND_SMS_LIMIT -> {
                 view?.navigateToExceededDailyResendSmsLimit()
+            }
+            StrigaApiErrorCode.USER_MOBILE_NUMBER_ALREADY_VERIFIED -> {
+                Timber.e(apiServiceError, "Seems we're trying to verify already verified number")
+                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
             }
             else -> {
                 Timber.e(apiServiceError, "Unknown code met when handling error for sms input")

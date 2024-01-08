@@ -25,19 +25,23 @@ import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.TokenExtensions
+import org.p2p.core.utils.Constants
+import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 class BridgeSendInteractor(
     private val ethereumSendRepository: EthereumSendRepository,
     private val ethereumRepository: EthereumRepository,
     private val userInteractor: UserInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val tokenKeyProvider: TokenKeyProvider,
     private val relaySdkFacade: RelaySdkFacade,
     private val dispatchers: CoroutineDispatchers,
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val feeRelayerRepository: FeeRelayerRepository
 ) {
-
-    private val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
 
     suspend fun getSendFee(
         sendTokenMint: SolAddress?,
@@ -49,8 +53,9 @@ class BridgeSendInteractor(
     }
 
     suspend fun supportedSendTokens(): List<Token.Active> {
-        return userInteractor.getNonZeroUserTokens()
-            .filter { it.mintAddress in supportedTokensMints }
+        val supportedTokensMints = ERC20Tokens.values().map { it.mintAddress }
+        return tokenServiceCoordinator.getUserTokens()
+            .filter { !it.isZero && it.mintAddress in supportedTokensMints }
             .sortedWith(BridgeTokenComparator())
             .ifEmpty {
                 // TODO PWN-7613 also block button as we can't send we do not have funds
@@ -69,12 +74,11 @@ class BridgeSendInteractor(
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
             iconUrl = token.iconUrl,
-            coingeckoId = null,
             rate = null,
             visibility = TokenVisibility.DEFAULT,
-            serumV3Usdc = token.serumV3Usdc,
-            serumV3Usdt = token.serumV3Usdt,
-            isWrapped = token.isWrapped
+            isWrapped = token.isWrapped,
+            tokenExtensions = TokenExtensions(),
+            tokenServiceAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN
         )
     }
 
@@ -94,16 +98,59 @@ class BridgeSendInteractor(
         sendToBlockchain(feeRelayerTransaction.transaction)
     }
 
+    suspend fun transferFromSolana(
+        userWallet: SolAddress,
+        feePayer: SolAddress,
+        source: SolAddress,
+        recipient: EthAddress,
+        tokenMint: SolAddress?,
+        amount: String
+    ): BridgeSendTransaction {
+        return ethereumSendRepository.transferFromSolana(
+            userWallet = userWallet,
+            feePayer = feePayer,
+            source = source,
+            recipient = recipient,
+            mint = tokenMint,
+            amount = amount
+        )
+    }
+
+    suspend fun getSendTransactionDetails(message: String): BridgeSendTransactionDetails {
+        return ethereumSendRepository.getSendTransactionDetail(message)
+    }
+
+    suspend fun getSendTransactionDetails(userWallet: SolAddress): List<BridgeSendTransactionDetails> {
+        return ethereumSendRepository.getSendTransactionsDetail(userWallet)
+    }
+
+    suspend fun getSendFee(
+        userWallet: SolAddress,
+        recipient: EthAddress,
+        mint: SolAddress?,
+        amount: String
+    ): BridgeSendFees {
+        return ethereumSendRepository.getSendFee(
+            userWallet = userWallet,
+            recipient = recipient,
+            mint = mint,
+            amount = amount
+        )
+    }
+
     private suspend fun signByFeeRelayer(
         signedTransaction: RelaySdkSignedTransaction,
         token: Token.Active
     ): FeeRelayerSignTransaction {
+
         val statistics = FeeRelayerStatistics(
             operationType = OperationType.TRANSFER,
             currency = token.mintAddress
         )
         return feeRelayerRepository.signTransaction(
-            transaction = signedTransaction.transaction.decodeToBytes().toBase64Instance(),
+            transaction = signedTransaction.transaction
+                .decodeToBytes()
+                .toBase64Instance(),
             statistics = statistics
         )
     }

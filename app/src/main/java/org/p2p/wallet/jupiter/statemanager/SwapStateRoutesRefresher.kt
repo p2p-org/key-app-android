@@ -3,6 +3,7 @@ package org.p2p.wallet.jupiter.statemanager
 import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -15,7 +16,6 @@ import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepos
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.core.crypto.toBase58Instance
 
 class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
@@ -120,9 +120,12 @@ class SwapStateRoutesRefresher(
             amountInLamports = amountTokenA.toLamports(tokenA.decimals),
             slippageBasePoints = (slippage.doubleValue * 10000).toInt() // 100% = 1000; 0.5 = 50
         )
+        val validateRoutes = swapValidator.isValidInputAmount(tokenA, amountTokenA)
         return swapRoutesRepository.getSwapRoutesForSwapPair(
             jupiterSwapPair = routesRequest,
-            userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
+            userPublicKey = tokenKeyProvider.publicKey.toBase58Instance(),
+            // don't validate routes if amount is invalid or balance insufficient
+            validateRoutes = validateRoutes
         )
     }
 }

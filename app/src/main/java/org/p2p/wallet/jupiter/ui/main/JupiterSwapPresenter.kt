@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.data.ServerException
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
@@ -31,8 +33,6 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.network.data.ServerException
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
@@ -56,9 +56,10 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
-import org.p2p.wallet.transaction.model.TransactionState
 import org.p2p.wallet.transaction.model.TransactionStateSwapFailureReason
+import org.p2p.wallet.transaction.model.progressstate.JupiterSwapProgressState
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetToken
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -81,6 +82,7 @@ class JupiterSwapPresenter(
     private val historyInteractor: HistoryInteractor,
     private val resources: Resources,
     private val alarmErrorsLogger: AlarmErrorsLogger,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val initialAmountA: String? = null,
 ) : BasePresenter<JupiterSwapContract.View>(dispatchers.ui), JupiterSwapContract.Presenter {
 
@@ -122,22 +124,30 @@ class JupiterSwapPresenter(
     }
 
     override fun onTokenAmountChange(amount: String) {
+        // Amount which has dot at the end is not valid, so we skip such values,
+        // otherwise user will see reformatted value "1." -> "1" which is quite confusing
+        // and it would be impossible to enter a value like "1.01".
+        // Certainly, we could convert "1." into "1.0" but it's wrong it breaks entering value like "1.1"
+        // todo: possible solution: do not notify presenter about wrong decimal values,
+        //      show some warning that the value is wrong etc
+        if (amount.endsWith(".")) {
+            return
+        }
+
         debounceInputJob?.cancel()
         cancelRateJobs()
         debounceInputJob = launch {
+
             val newAmount = amount.toBigDecimalOrZero()
-            val pair = currentFeatureState?.getTokensPair()
-            val tokenA = pair?.first
-            val tokenB = pair?.second
+            val (tokenA, _) = currentFeatureState?.getTokensPair() ?: (null to null)
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
             val action = if (newAmount.isZero()) {
                 SwapStateAction.EmptyAmountTokenA
             } else {
                 if (tokenA != null) {
-                    widgetAState = widgetMapper.copyAmount(
+                    widgetAState = widgetMapper.copyAmountWithSourceValue(
                         oldWidgetModel = widgetAState,
-                        token = tokenA,
-                        tokenAmount = newAmount
+                        userInputTokenAmount = amount
                     )
                     getRateTokenA(widgetAModel = widgetAState, tokenA = tokenA, tokenAmount = newAmount)
                 }
@@ -200,9 +210,9 @@ class JupiterSwapPresenter(
                         tokenBAmountUsd = tokenBUsdAmount.toString(),
                         signature = result.signature
                     )
-
+                    tokenServiceCoordinator.refresh()
                     stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
-                    val transactionState = TransactionState.JupiterSwapSuccess
+                    val transactionState = JupiterSwapProgressState.Success
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
 
                     val pendingTransaction = buildPendingTransaction(result, currentState)
@@ -223,7 +233,7 @@ class JupiterSwapPresenter(
                         Timber.i("Swap failure: low slippage = unknown")
                         TransactionStateSwapFailureReason.Unknown(result.message.orEmpty())
                     }
-                    val transactionState = TransactionState.JupiterSwapFailed(failure = causeFailure)
+                    val transactionState = JupiterSwapProgressState.Error(failure = causeFailure)
                     transactionManager.emitTransactionState(internalTransactionId, transactionState)
                     Timber.e(result, "Failed to swap tokens")
                     view?.showDefaultSlider()

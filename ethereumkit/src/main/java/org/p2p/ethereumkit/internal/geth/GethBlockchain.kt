@@ -1,5 +1,5 @@
 package org.p2p.ethereumkit.internal.geth
-
+/* ktlint-disable max-line-length comment-spacing */
 //import org.p2p.ethereumkit.internal.core.*
 //import org.p2p.ethereumkit.internal.models.EthereumLog
 //import org.p2p.ethereumkit.internal.models.EthereumTransaction

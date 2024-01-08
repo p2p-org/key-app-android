@@ -243,6 +243,12 @@ class RpcHistoryTransactionConverter(
             bundle?.fees?.arbiterFee,
             bundle?.fees?.gasFeeInToken
         )
+        val isClaimFree = bundle?.compensationDeclineReason?.isEmpty() ?: false
+        val fees = if (isClaimFree) {
+            emptyList()
+        } else {
+            bundleFees.parseBridgeFees() ?: transaction.fees.parseFees()
+        }
 
         val total = info.tokenAmount?.amount?.amount.toBigDecimalOrZero()
         val totalInUsd = info.tokenAmount?.amount?.usdAmount.toBigDecimalOrZero()
@@ -256,7 +262,7 @@ class RpcHistoryTransactionConverter(
             tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
             amount = RpcHistoryAmount(total, totalInUsd),
             iconUrl = info.tokenAmount?.token?.logoUrl,
-            fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees(),
+            fees = fees,
             claimKey = claimKey
         )
     }

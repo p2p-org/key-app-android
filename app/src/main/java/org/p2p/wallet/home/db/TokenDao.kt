@@ -5,22 +5,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TokenDao {
 
     @Transaction
-    suspend fun insertOrUpdate(entities: List<TokenEntity>) {
-        entities.forEach { entity ->
-            val found = findByPublicKey(entity.publicKey)
-            if (found != null) {
-                update(entity.publicKey, entity.totalInUsd, entity.total, entity.exchangeRate, found.visibility)
-            } else {
-                insertOrReplace(entity)
-            }
-        }
+    suspend fun replaceAll(entities: List<TokenEntity>) {
+        clearAll()
+        insertOrReplace(entities)
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -44,6 +38,15 @@ interface TokenDao {
         visibility: String
     )
 
+    @Query(
+        """
+            UPDATE token_table
+            SET total = :newTotal, price = :newTotalInUsd
+            WHERE public_key = :publicKey
+        """
+    )
+    suspend fun updateTokenTotal(publicKey: String, newTotal: BigDecimal, newTotalInUsd: BigDecimal?)
+
     @Query("DELETE FROM token_table WHERE symbol = :symbol AND public_key != :solAddress")
     suspend fun removeIfExists(solAddress: String, symbol: String)
 
@@ -55,6 +58,9 @@ interface TokenDao {
 
     @Query("SELECT * FROM token_table")
     fun getTokensFlow(): Flow<List<TokenEntity>>
+
+    @Query("SELECT * FROM token_table WHERE mint_address = :mintAddress")
+    fun getSingleTokenFlow(mintAddress: String): Flow<TokenEntity>
 
     @Query("SELECT * FROM token_table")
     suspend fun getTokens(): List<TokenEntity>

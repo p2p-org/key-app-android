@@ -20,16 +20,14 @@ import org.p2p.wallet.home.db.TokenEntity
 import org.p2p.wallet.infrastructure.db.WalletDatabase.Companion.DATABASE_VERSION
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinkEntity
 import org.p2p.wallet.infrastructure.sendvialink.db.UserSendLinksDao
-import org.p2p.wallet.newsend.db.RecipientEntity
-import org.p2p.wallet.newsend.db.RecipientsDao
-import org.p2p.wallet.renbtc.db.SessionDao
-import org.p2p.wallet.renbtc.db.SessionEntity
+import org.p2p.wallet.send.db.RecipientEntity
+import org.p2p.wallet.send.db.RecipientsDao
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataDao
+import org.p2p.wallet.striga.signup.repository.dao.StrigaSignupDataEntity
 
 @Database(
     entities = [
         TokenEntity::class,
-        SessionEntity::class,
-
         CreateAccountTransactionEntity::class,
         CloseAccountTransactionEntity::class,
         SwapTransactionEntity::class,
@@ -39,7 +37,9 @@ import org.p2p.wallet.renbtc.db.SessionEntity
 
         RecipientEntity::class,
 
-        UserSendLinkEntity::class
+        UserSendLinkEntity::class,
+
+        StrigaSignupDataEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
@@ -48,12 +48,11 @@ import org.p2p.wallet.renbtc.db.SessionEntity
 abstract class WalletDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 11
+        const val DATABASE_VERSION = 19
         const val DATABASE_NAME = "p2p.wallet"
     }
 
     abstract fun tokenDao(): TokenDao
-    abstract fun sessionDao(): SessionDao
 
     abstract fun createAccountTransactionsDao(): CreateAccountTransactionsDao
     abstract fun closeAccountTransactionsDao(): CloseAccountTransactionsDao
@@ -64,4 +63,5 @@ abstract class WalletDatabase : RoomDatabase() {
 
     abstract fun recipientsDao(): RecipientsDao
     abstract fun userSendLinksDao(): UserSendLinksDao
+    abstract fun strigaSignupDao(): StrigaSignupDataDao
 }

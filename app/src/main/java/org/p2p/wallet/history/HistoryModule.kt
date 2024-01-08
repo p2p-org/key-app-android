@@ -8,8 +8,8 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
 import org.p2p.wallet.history.api.RpcHistoryServiceApi
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.interactor.mapper.RpcHistoryTransactionConverter
@@ -18,11 +18,12 @@ import org.p2p.wallet.history.repository.local.PendingTransactionsLocalRepositor
 import org.p2p.wallet.history.repository.local.TransactionDetailsDatabaseRepository
 import org.p2p.wallet.history.repository.local.TransactionDetailsLocalRepository
 import org.p2p.wallet.history.repository.local.mapper.TransactionDetailsEntityMapper
+import org.p2p.wallet.history.repository.remote.BridgeHistoryRepository
+import org.p2p.wallet.history.repository.remote.HistoryPendingTransactionsCleaner
 import org.p2p.wallet.history.repository.remote.HistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.HistoryRepository
 import org.p2p.wallet.history.repository.remote.MoonpayHistoryRemoteRepository
 import org.p2p.wallet.history.repository.remote.RpcHistoryRepository
-import org.p2p.wallet.history.repository.remote.BridgeHistoryRepository
 import org.p2p.wallet.history.signature.HistoryServiceSignatureFieldGenerator
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsContract
 import org.p2p.wallet.history.ui.detailsbottomsheet.HistoryTransactionDetailsPresenter
@@ -72,7 +73,7 @@ object HistoryModule : InjectionModule {
 
         factoryOf(::TransactionDetailsEntityMapper)
         singleOf(::HistoryServiceSignatureFieldGenerator)
-
+        factoryOf(::HistoryPendingTransactionsCleaner)
         single<HistoryRemoteRepository> {
             val remotes = listOf(
                 new(::RpcHistoryRepository),
@@ -82,7 +83,8 @@ object HistoryModule : InjectionModule {
             HistoryRepository(
                 repositories = remotes,
                 dispatchers = get(),
-                pendingTransactionsLocalRepository = get()
+                pendingTransactionsLocalRepository = get(),
+                pendingTransactionsCleaner = get()
             )
         }
 

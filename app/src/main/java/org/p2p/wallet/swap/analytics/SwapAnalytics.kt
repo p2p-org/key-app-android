@@ -1,34 +1,33 @@
 package org.p2p.wallet.swap.analytics
 
 import org.p2p.wallet.auth.analytics.AuthAnalytics
-import org.p2p.wallet.common.analytics.Analytics
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_ACTION_BUTTON_CLICKED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_CURRENCY
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A_NEW
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B_NEW
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_COMPLETED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CONFIRM_CLICKED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_CREATING_ANOTHER
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_GOING_BACK
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_PROCESS_SHOWN
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_REVERSING
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_REVIEWING
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_REVIEWING_HELP_CLOSED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SETTING_SETTINGS
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_DETAILS
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_HISTORY
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOWING_SETTINGS
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_SHOW_DETAILS_PRESSED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_STARTED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_START_SCREEN
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_USER_CONFIRMED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VERIFICATION_INVOKED
-import org.p2p.wallet.common.analytics.constants.EventNames.SWAP_VIEWED
+import org.p2p.core.analytics.Analytics
+import org.p2p.core.analytics.constants.EventNames.SWAP_ACTION_BUTTON_CLICKED
+import org.p2p.core.analytics.constants.EventNames.SWAP_CHANGING_CURRENCY
+import org.p2p.core.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A
+import org.p2p.core.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_A_NEW
+import org.p2p.core.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B
+import org.p2p.core.analytics.constants.EventNames.SWAP_CHANGING_TOKEN_B_NEW
+import org.p2p.core.analytics.constants.EventNames.SWAP_COMPLETED
+import org.p2p.core.analytics.constants.EventNames.SWAP_CONFIRM_CLICKED
+import org.p2p.core.analytics.constants.EventNames.SWAP_CREATING_ANOTHER
+import org.p2p.core.analytics.constants.EventNames.SWAP_GOING_BACK
+import org.p2p.core.analytics.constants.EventNames.SWAP_PROCESS_SHOWN
+import org.p2p.core.analytics.constants.EventNames.SWAP_REVERSING
+import org.p2p.core.analytics.constants.EventNames.SWAP_REVIEWING
+import org.p2p.core.analytics.constants.EventNames.SWAP_REVIEWING_HELP_CLOSED
+import org.p2p.core.analytics.constants.EventNames.SWAP_SETTING_SETTINGS
+import org.p2p.core.analytics.constants.EventNames.SWAP_SHOWING_DETAILS
+import org.p2p.core.analytics.constants.EventNames.SWAP_SHOWING_HISTORY
+import org.p2p.core.analytics.constants.EventNames.SWAP_SHOWING_SETTINGS
+import org.p2p.core.analytics.constants.EventNames.SWAP_SHOW_DETAILS_PRESSED
+import org.p2p.core.analytics.constants.EventNames.SWAP_STARTED
+import org.p2p.core.analytics.constants.EventNames.SWAP_START_SCREEN
+import org.p2p.core.analytics.constants.EventNames.SWAP_USER_CONFIRMED
+import org.p2p.core.analytics.constants.EventNames.SWAP_VERIFICATION_INVOKED
+import org.p2p.core.analytics.constants.EventNames.SWAP_VIEWED
 import java.math.BigDecimal
 
-private const val SWAP_MAIN_SWAP = "Main_Swap"
 private const val SWAP_HOME_BAR_BUTTON = "Main_Swap_Buy_Bar"
 private const val SWAP_TOKEN_SCREEN_ACTION_CLICKED = "Token_Screen_Swap_Bar"
 
@@ -36,13 +35,6 @@ class SwapAnalytics(private val tracker: Analytics) {
 
     fun logTokenScreenActionClicked() {
         tracker.logEvent(SWAP_TOKEN_SCREEN_ACTION_CLICKED)
-    }
-
-    fun logSwapOpenedFromMain(isSellEnabled: Boolean) {
-        tracker.logEvent(
-            event = SWAP_MAIN_SWAP,
-            params = mapOf("Is_Sell_Enabled" to isSellEnabled)
-        )
     }
 
     fun logSwapViewed(lastScreenName: String) {

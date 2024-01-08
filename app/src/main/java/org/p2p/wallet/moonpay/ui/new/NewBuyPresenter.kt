@@ -18,7 +18,7 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
@@ -42,6 +42,7 @@ class NewBuyPresenter(
     tokenToBuy: Token,
     private val fiatToken: String? = null,
     private val fiatAmount: String? = null,
+    private val preselectedMethodType: PaymentMethod.MethodType? = null,
     private val buyAnalytics: BuyAnalytics,
     private val userInteractor: UserInteractor,
     private val paymentMethodsInteractor: PaymentMethodsInteractor,
@@ -57,7 +58,7 @@ class NewBuyPresenter(
     private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     private var selectedToken: Token = tokenToBuy
     private var selectedPaymentMethod: PaymentMethod? = null
-    private var currentAlphaCode: String = emptyString()
+    private var currentAlpha3Code: String = emptyString()
 
     private var amount: String = "0"
     private var isSwappedToToken: Boolean = false
@@ -101,9 +102,11 @@ class NewBuyPresenter(
     private fun loadAvailablePaymentMethods() {
         launch {
             view?.showLoading(isLoading = true)
-            currentAlphaCode = paymentMethodsInteractor.getBankTransferAlphaCode()
+            currentAlpha3Code = paymentMethodsInteractor.getBankTransferAlphaCode()
 
-            val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(currentAlphaCode)
+            val availablePaymentMethods = paymentMethodsInteractor.getAvailablePaymentMethods(
+                currentAlpha3Code, preselectedMethodType
+            )
             selectedPaymentMethod = availablePaymentMethods.first { it.isSelected }
             paymentMethods.addAll(availablePaymentMethods)
 
@@ -169,7 +172,7 @@ class NewBuyPresenter(
 
     private fun validatePaymentMethod() {
         if (selectedPaymentMethod?.method == PaymentMethod.MethodType.BANK_TRANSFER) {
-            if (currentAlphaCode == BANK_TRANSFER_UK_CODE) {
+            if (currentAlpha3Code == BANK_TRANSFER_UK_CODE) {
                 selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
             } else {
                 selectCurrency(BuyCurrency.Currency.create(Constants.EUR_SYMBOL))
@@ -220,19 +223,28 @@ class NewBuyPresenter(
         }
     }
 
+    private fun selectPaymentMethod(methodType: PaymentMethod.MethodType) {
+        paymentMethods.find { it.method == methodType }?.let {
+            onPaymentMethodSelected(it, byUser = false)
+        }
+        if (isValidCurrencyForPay()) {
+            recalculate()
+        }
+    }
+
     private fun isValidCurrencyForPay(): Boolean {
         val selectedCurrencyCode = selectedCurrency.code
         val currentPaymentMethod = selectedPaymentMethod ?: return false
 
         if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
-                (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
+                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
             ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
                 return isValidCurrencyForPay()
-            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlphaCode != BANK_TRANSFER_UK_CODE) {
+            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
@@ -475,7 +487,7 @@ class NewBuyPresenter(
     }
 
     private fun getValidPaymentType(): String? {
-        return if (currentAlphaCode == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
+        return if (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
             SEPA_BANK_TRANSFER
         } else {
             selectedPaymentMethod?.paymentType

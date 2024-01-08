@@ -48,7 +48,9 @@ class StrigaUserInfo(
     val phoneNumber: String,
     val phoneNumberCode: String,
     val placeOfBirth: String,
-)
+) {
+    val fullName: String = "$firstName $lastName"
+}
 
 data class StrigaUserAddress(
     val addressLine1: String,
@@ -82,12 +84,19 @@ data class StrigaUserStatusDetails(
     val isMobileVerified: Boolean,
     val kycStatus: StrigaUserVerificationStatus
 ) {
-    val isKycInProgress: Boolean
+    val isKycOpenable: Boolean
         get() = kycStatus in setOf(
             StrigaUserVerificationStatus.INITIATED,
-            StrigaUserVerificationStatus.PENDING_REVIEW,
-            StrigaUserVerificationStatus.ON_HOLD,
             StrigaUserVerificationStatus.REJECTED,
             StrigaUserVerificationStatus.REJECTED_FINAL
         )
+
+    val isKycPending: Boolean
+        get() = kycStatus in setOf(
+            StrigaUserVerificationStatus.PENDING_REVIEW,
+            StrigaUserVerificationStatus.ON_HOLD
+        )
+
+    val isKycApproved: Boolean
+        get() = kycStatus == StrigaUserVerificationStatus.APPROVED
 }

@@ -1,7 +1,7 @@
 package org.p2p.wallet.receive.analytics
 
 import java.math.BigDecimal
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 
 private const val RECEIVE_VIEWED = "Receive_Viewed"

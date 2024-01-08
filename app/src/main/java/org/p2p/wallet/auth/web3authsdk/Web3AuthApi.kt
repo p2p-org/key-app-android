@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.web3authsdk
 
 import com.google.gson.JsonObject
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 
@@ -27,6 +28,9 @@ interface Web3AuthApi {
         thirdShare: Web3AuthSignUpResponse.ShareDetailsWithMeta,
         encryptedMnemonic: JsonObject
     ): Web3AuthSignInResponse
+
+    suspend fun getUserMetadata(): GatewayOnboardingMetadata
+    suspend fun setUserMetadata(metadata: GatewayOnboardingMetadata): Unit
 
     suspend fun refreshDeviceShare(): Web3AuthSignUpResponse.ShareDetailsWithMeta
 

@@ -3,12 +3,14 @@ package org.p2p.wallet.settings
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.named
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.interactor.ThemeInteractor
-import org.p2p.wallet.settings.model.SettingsItemMapper
+import org.p2p.wallet.settings.mapper.SettingsEntityMapper
+import org.p2p.wallet.settings.mapper.SettingsItemMapper
 import org.p2p.wallet.settings.ui.devices.DeviceCellMapper
 import org.p2p.wallet.settings.ui.devices.DevicesContract
 import org.p2p.wallet.settings.ui.devices.DevicesPresenter
@@ -30,7 +32,7 @@ import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputPresenter
 object SettingsModule : InjectionModule {
 
     override fun create() = module {
-        factoryOf(::SettingsInteractor)
+        singleOf(::SettingsInteractor)
         factoryOf(::ThemeInteractor)
 
         factoryOf(::SettingsItemMapper)
@@ -43,7 +45,7 @@ object SettingsModule : InjectionModule {
                 appRestarter = get(),
                 analytics = get(),
                 settingsInteractor = get(),
-                homeLocalRepository = get(),
+                userTokensLocalRepository = get(),
                 settingsItemMapper = get(),
                 metadataInteractor = get(),
                 authInteractor = get(),
@@ -62,5 +64,6 @@ object SettingsModule : InjectionModule {
             named(SmsInputFactory.Type.UpdateDevice.name)
         }
         factoryOf(::DeviceCellMapper)
+        factoryOf(::SettingsEntityMapper)
     }
 }

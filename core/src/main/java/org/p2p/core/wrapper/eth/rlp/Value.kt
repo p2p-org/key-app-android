@@ -1,6 +1,5 @@
 package org.p2p.core.wrapper.eth.rlp
 
-
 class Value(obj: Any?) {
 
     private var value: Any? = null
@@ -8,7 +7,6 @@ class Value(obj: Any?) {
     private var sha3: ByteArray? = null
 
     private var decoded = false
-
 
     init {
         this.decoded = true
@@ -51,6 +49,6 @@ class Value(obj: Any?) {
     fun isList(): Boolean {
         decode()
         return value?.let { it.javaClass.isArray && it.javaClass.componentType?.isPrimitive == false }
-                ?: false
+            ?: false
     }
 }

@@ -13,7 +13,7 @@ import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.FocusField
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewBuyBinding
@@ -39,6 +39,7 @@ import org.p2p.wallet.utils.withArgs
 private const val EXTRA_TOKEN = "EXTRA_TOKEN"
 private const val EXTRA_FIAT_TOKEN = "EXTRA_FIAT_TOKEN"
 private const val EXTRA_FIAT_AMOUNT = "EXTRA_AMOUNT"
+private const val EXTRA_PRESELECTED_METHOD_TYPE = "EXTRA_PRESELECTED_METHOD_TYPE"
 
 private const val KEY_REQUEST = "KEY_REQUEST_NEW_BUY"
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
@@ -49,20 +50,34 @@ class NewBuyFragment :
     NewBuyContract.View {
 
     companion object {
-        fun create(token: Token, fiatToken: String? = null, fiatAmount: String? = null): NewBuyFragment =
+        fun create(
+            token: Token,
+            fiatToken: String? = null,
+            fiatAmount: String? = null,
+            preselectedMethodType: PaymentMethod.MethodType? = null
+        ): NewBuyFragment =
             NewBuyFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
                     EXTRA_FIAT_TOKEN to fiatToken,
-                    EXTRA_FIAT_AMOUNT to fiatAmount
+                    EXTRA_FIAT_AMOUNT to fiatAmount,
+                    EXTRA_PRESELECTED_METHOD_TYPE to preselectedMethodType
                 )
     }
 
     private val token: Token by args(EXTRA_TOKEN)
     private val fiatToken: String? by args(EXTRA_FIAT_TOKEN)
     private val fiatAmount: String? by args(EXTRA_FIAT_AMOUNT)
+    private val preselectedMethodType: PaymentMethod.MethodType? by args(EXTRA_PRESELECTED_METHOD_TYPE)
 
-    override val presenter: NewBuyContract.Presenter by inject { parametersOf(token, fiatToken, fiatAmount) }
+    override val presenter: NewBuyContract.Presenter by inject {
+        parametersOf(
+            token,
+            fiatToken,
+            fiatAmount,
+            preselectedMethodType
+        )
+    }
 
     private val binding: FragmentNewBuyBinding by viewBinding()
     private val adapter: PaymentMethodsAdapter by unsafeLazy {

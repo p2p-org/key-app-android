@@ -20,13 +20,14 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
-import org.p2p.wallet.newsend.model.SearchResult
-import org.p2p.wallet.newsend.ui.SendOpenedFrom
-import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
-import org.p2p.wallet.newsend.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
-import org.p2p.wallet.newsend.ui.search.NewSearchFragment
+import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.ui.SendOpenedFrom
+import org.p2p.wallet.send.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
+import org.p2p.wallet.send.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
+import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.BridgeSendProgressHandler
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getParcelableCompat
@@ -247,7 +248,7 @@ class BridgeSendFragment :
     }
 
     override fun showProgressDialog(internalTransactionId: String, data: NewShowProgress) {
-        listener?.showTransactionProgress(internalTransactionId, data)
+        listener?.showTransactionProgress(internalTransactionId, data, BridgeSendProgressHandler.QUALIFIER)
         when (openedFrom) {
             SendOpenedFrom.SELL_FLOW -> popBackStackTo(target = MainContainerFragment::class, inclusive = false)
             SendOpenedFrom.MAIN_FLOW -> popBackStackTo(target = NewSearchFragment::class, inclusive = true)

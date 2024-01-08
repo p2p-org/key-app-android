@@ -6,14 +6,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
-import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
-import org.p2p.solanaj.kits.renBridge.renVM.RenVMRepository
-import org.p2p.solanaj.rpc.RenPoolRepository
-import org.p2p.solanaj.rpc.RpcSolanaInteractor
-import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.core.common.di.AppScope
 import org.p2p.core.common.di.InjectionModule
-import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.rpc.RPC_RETROFIT_QUALIFIER
+import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.rpc.api.RpcAccountApi
 import org.p2p.wallet.rpc.api.RpcAmountApi
 import org.p2p.wallet.rpc.api.RpcBalanceApi
@@ -33,16 +28,12 @@ import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRemoteRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRemoteRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
-import org.p2p.wallet.rpc.repository.ren.RenPoolApi
-import org.p2p.wallet.rpc.repository.ren.RenPoolRemoteRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRemoteRepository
 import org.p2p.wallet.rpc.repository.signature.RpcSignatureRepository
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaApi
 import org.p2p.wallet.rpc.repository.solana.RpcSolanaRemoteRepository
 
 object RpcModule : InjectionModule {
-
-    const val REN_POOL_RETROFIT_QUALIFIER = "REN_POOL_RETROFIT_QUALIFIER"
 
     override fun create(): Module = module {
         single {
@@ -87,14 +78,5 @@ object RpcModule : InjectionModule {
             TransactionInteractor(get(), get(), get(), get())
         }
         factoryOf(::TokenInteractor)
-
-        factory { RpcSolanaInteractor(get(), get<NetworkEnvironmentManager>().loadRpcEnvironment(), get<AppScope>()) }
-
-        factory { RenVMRepository(get()) }
-
-        single {
-            val api = get<Retrofit>(named(REN_POOL_RETROFIT_QUALIFIER)).create(RenPoolApi::class.java)
-            RenPoolRemoteRepository(api, get())
-        } bind RenPoolRepository::class
     }
 }

@@ -46,24 +46,20 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/text_view_address"
+            android:id="@+id/text_view_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_home_address"
-            android:drawablePadding="8dp"
-            android:foreground="@drawable/ripple_address_button"
-            android:gravity="end"
+            android:layout_marginStart="8dp"
             android:maxLines="1"
+            android:text="@string/common_my_crypto"
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
-            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text4"
-            android:textColor="@color/text_mountain"
-            app:drawableStartCompat="@drawable/ic_wallet_home"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Title3"
+            android:textColor="@color/text_night"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="123456789012345" />
+            />
 
         <View
             android:id="@+id/view_debug_shadow"
@@ -94,7 +90,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/image_view_qr"
             app:layout_constraintHorizontal_bias="0.8"
-            app:layout_constraintStart_toEndOf="@id/text_view_address"
+            app:layout_constraintStart_toEndOf="@id/text_view_title"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
 

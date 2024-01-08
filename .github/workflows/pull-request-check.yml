@@ -79,17 +79,23 @@ jobs:
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest koverXmlReportDebug
       - name: Attach coverage to pull request
-        uses: mi-kas/kover-report@v1
+        id: kover-report-task
+        uses: edwardstock/kover-report@main
         with:
-          path: ${{ github.workspace }}/app/build/reports/kover/reportDebug.xml
+          path: |
+            ${{ github.workspace }}/app/build/reports/kover/reportDebug.xml
+            ${{ github.workspace }}/core/build/reports/kover/reportDebug.xml
+            ${{ github.workspace }}/token-service/build/reports/kover/reportDebug.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           title: Code coverage report
           update-comment: true
           coverage-counter-type: LINE
+          min-coverage-overall: 80
+          min-coverage-changed-files: 60
       - name: Print coverage information
         run: |
-          echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
-          echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+          echo "Total coverage ${{ steps.kover-report-task.outputs.coverage-overall }}"
+          echo "Changed Files coverage ${{ steps.kover-report-task.outputs.coverage-changed-files }}"
 
   android-build-artifacts:
     name: "Run build feature artifacts"

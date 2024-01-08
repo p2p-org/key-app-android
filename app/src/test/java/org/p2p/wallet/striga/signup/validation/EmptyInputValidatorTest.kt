@@ -6,6 +6,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.p2p.core.common.TextContainer
 import org.p2p.wallet.R
+import org.p2p.wallet.striga.signup.steps.validation.EmptyInputValidator
 
 class EmptyInputValidatorTest {
 

@@ -1,7 +1,9 @@
 package org.p2p.wallet.striga.wallet.repository
 
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 import org.p2p.wallet.striga.wallet.models.ids.StrigaAccountId
 
@@ -14,5 +16,22 @@ interface StrigaWalletRepository {
         accountId: StrigaAccountId
     ): StrigaDataLayerResult<StrigaFiatAccountDetails>
 
-    suspend fun getUserWallet(): StrigaDataLayerResult<StrigaUserWallet>
+    /**
+     * Call enrichAccount to get deposit information
+     * @param accountId The account id to get details for. !! Must be a crypto account (i.e. BTC or USDC) !!
+     */
+    suspend fun getCryptoAccountDetails(
+        accountId: StrigaAccountId
+    ): StrigaDataLayerResult<StrigaCryptoAccountDetails>
+
+    /**
+     * @param ignoreCache - ignore cache and fetch fresh data
+     */
+    suspend fun getUserWallet(ignoreCache: Boolean = false): StrigaDataLayerResult<StrigaUserWallet>
+
+    suspend fun getUserBankingDetails(
+        accountId: StrigaAccountId,
+    ): StrigaDataLayerResult<StrigaUserBankingDetails>
+
+    suspend fun saveUserEurBankingDetails(userBic: String, userIban: String)
 }

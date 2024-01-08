@@ -16,17 +16,13 @@ object EthereumUtils {
     }
 
     fun isValidAddress(input: String): Boolean {
-        return isValidAddress(input, ADDRESS_LENGTH_IN_HEX)
-    }
-
-    fun isValidAddress(input: String, addressLength: Int): Boolean {
         val cleanInput = cleanHexPrefix(input)
         try {
             toBigIntNoPrefix(cleanInput)
         } catch (e: NumberFormatException) {
             return false
         }
-        return cleanInput.length == addressLength
+        return cleanInput.length == ADDRESS_LENGTH_IN_HEX
     }
 
     private fun toBigIntNoPrefix(hexValue: String): BigInteger {

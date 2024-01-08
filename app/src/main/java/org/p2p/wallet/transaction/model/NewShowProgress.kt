@@ -5,6 +5,7 @@ import android.os.Parcelable
 import org.threeten.bp.ZonedDateTime
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.model.TextHighlighting
+import org.p2p.core.model.TitleValue
 
 @Parcelize
 class NewShowProgress(
@@ -12,7 +13,7 @@ class NewShowProgress(
     val tokenUrl: String,
     val amountTokens: String,
     val amountUsd: String?,
-    val recipient: String?,
-    val totalFees: List<TextHighlighting>?,
+    val transactionDetails: List<TitleValue> = emptyList(),
+    val totalFees: List<TextHighlighting>? = null,
     @ColorRes val amountColor: Int? = null
 ) : Parcelable

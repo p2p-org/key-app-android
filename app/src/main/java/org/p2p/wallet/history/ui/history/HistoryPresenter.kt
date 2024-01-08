@@ -9,8 +9,9 @@ import org.p2p.wallet.bridge.claim.ui.mapper.ClaimUiMapper
 import org.p2p.wallet.bridge.interactor.EthereumInteractor
 import org.p2p.wallet.bridge.send.ui.mapper.BridgeSendUiMapper
 import org.p2p.wallet.common.mvp.BasePresenter
+import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.ifNotEmpty
@@ -21,7 +22,8 @@ class HistoryPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val transactionManager: TransactionManager,
-    private val userRepository: UserLocalRepository
+    private val userRepository: UserLocalRepository,
+    private val historyAnalytics: HistoryAnalytics
 ) : BasePresenter<HistoryContract.View>(), HistoryContract.Presenter {
 
     override fun onBuyClicked() {
@@ -33,6 +35,7 @@ class HistoryPresenter(
     }
 
     override fun onTransactionClicked(transactionId: String) {
+        historyAnalytics.logTokenTransactionClicked(transactionId)
         view?.openTransactionDetailsScreen(transactionId)
     }
 
@@ -48,7 +51,7 @@ class HistoryPresenter(
                 minAmountForFreeFee = ethereumInteractor.getClaimMinAmountForFreeFee(),
             )
             val amountToClaim = bridgeBundle.resultAmount.amountInToken
-            val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth()).tokenIconUrl
+            val iconUrl = ERC20Tokens.findToken(bridgeBundle.findTokenOrDefaultEth().hex).tokenIconUrl
             val progressDetails = claimUiMapper.prepareShowProgress(
                 amountToClaim = amountToClaim,
                 iconUrl = iconUrl,
@@ -56,7 +59,7 @@ class HistoryPresenter(
             )
             transactionManager.emitTransactionState(
                 transactionId,
-                TransactionState.ClaimProgress(transactionId)
+                TransactionState.Progress(description = R.string.bridge_claim_description_progress)
             )
             view?.showProgressDialog(
                 bundleId = bridgeBundle.bundleId,

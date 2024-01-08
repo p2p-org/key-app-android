@@ -1,14 +1,13 @@
 package org.p2p.wallet.moonpay.ui
 
-import android.content.res.Resources
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
-import org.p2p.core.token.Token
-import org.p2p.wallet.R
 import org.p2p.core.common.di.InjectionModule
+import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
+import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.ui.new.NewBuyContract
 import org.p2p.wallet.moonpay.ui.new.NewBuyPresenter
 import org.p2p.wallet.receive.solana.ReceiveSolanaContract
@@ -17,8 +16,6 @@ import org.p2p.wallet.receive.solana.ReceiveSolanaPresenter
 object BuyModule : InjectionModule {
 
     override fun create() = module {
-        factoryOf(::BuyFragmentFactory)
-
         initDomainLayer()
         initPresentationLayer()
     }
@@ -40,22 +37,17 @@ object BuyModule : InjectionModule {
                 context = get()
             )
         }
-        factory<BuySolanaContract.Presenter> { (token: Token) ->
-            BuySolanaPresenter(
-                tokenToBuy = token,
-                moonpayBuyRepository = get(),
-                minBuyErrorFormat = get<Resources>().getString(R.string.buy_min_error_format),
-                maxBuyErrorFormat = get<Resources>().getString(R.string.buy_max_error_format),
-                buyAnalytics = get(),
-                analyticsInteractor = get(),
-                networkServicesUrlProvider = get()
-            )
-        }
-        factory<NewBuyContract.Presenter> { (token: Token, fiatToken: String?, fiatAmount: String?) ->
+        factory<NewBuyContract.Presenter> { (
+            token: Token,
+            fiatToken: String?,
+            fiatAmount: String?,
+            preselectedMethodType: PaymentMethod.MethodType?
+        ) ->
             NewBuyPresenter(
                 tokenToBuy = token,
                 fiatToken = fiatToken,
                 fiatAmount = fiatAmount,
+                preselectedMethodType = preselectedMethodType,
                 buyAnalytics = get(),
                 userInteractor = get(),
                 paymentMethodsInteractor = get(),

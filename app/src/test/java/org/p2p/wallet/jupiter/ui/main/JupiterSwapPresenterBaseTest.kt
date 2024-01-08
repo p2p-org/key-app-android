@@ -20,21 +20,22 @@ import org.junit.jupiter.api.extension.ExtendWith
 import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
+import kotlin.reflect.full.staticProperties
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.p2p.core.common.TextContainer
-import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
-import org.p2p.core.utils.DecimalFormatter
-import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
+import org.p2p.core.token.Token
+import org.p2p.core.token.TokenMetadata
+import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesRefreshFeatureToggle
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.home.model.TokenPrice
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageMock
@@ -64,7 +65,7 @@ import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.jupiter.statemanager.token_selector.CommonSwapTokenSelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokenASelector
-import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokensBySymbolSelector
+import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokensByMintSelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokenSelector
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
@@ -75,11 +76,10 @@ import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.repository.UserInMemoryRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.CoroutineExtension
-import org.p2p.wallet.utils.JvmDecimalFormatter
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 
@@ -100,7 +100,7 @@ open class JupiterSwapPresenterBaseTest {
     lateinit var historyInteractor: HistoryInteractor
 
     @MockK
-    lateinit var homeLocalRepository: HomeLocalRepository
+    lateinit var homeLocalRepository: TokenServiceCoordinator
 
     @MockK
     lateinit var jupiterSwapRoutesRepository: JupiterSwapRoutesRepository
@@ -114,8 +114,14 @@ open class JupiterSwapPresenterBaseTest {
     @MockK
     lateinit var swapRoutesRefreshFeatureToggle: SwapRoutesRefreshFeatureToggle
 
+    @MockK
+    lateinit var tokenServiceRepository: TokenServiceRepository
+
     @MockK(relaxed = true)
     lateinit var relaySdkFacade: RelaySdkFacade
+
+    @MockK(relaxed = true)
+    lateinit var tokenServiceCoordinator: TokenServiceCoordinator
 
     @MockK(relaxed = true)
     lateinit var tokenKeyProvider: TokenKeyProvider
@@ -165,16 +171,11 @@ open class JupiterSwapPresenterBaseTest {
     open fun setUp() {
         MockKAnnotations.init(this)
         mockkStatic(Resources::class)
-        // decimal formatter uses android imports
-        mockkStatic(DecimalFormatter::class)
 
         every { Resources.getSystem().displayMetrics } returns DisplayMetrics().apply {
             density = 2.0f
             widthPixels = 1080
             heightPixels = 1920
-        }
-        every { DecimalFormatter.format(any(), any()) } answers {
-            JvmDecimalFormatter.format(arg(0), arg(1))
         }
     }
 
@@ -242,9 +243,10 @@ open class JupiterSwapPresenterBaseTest {
         )
     }
 
-    private fun initUserLocalRepository(tokens: List<TokenData>) {
+    private fun initUserLocalRepository(tokens: List<TokenMetadata>) {
         userLocalRepository = UserInMemoryRepository(
-            tokenConverter = TokenConverter
+            tokenConverter = TokenConverter,
+            tokenServiceRepository = tokenServiceRepository
         ).apply {
             setTokenData(tokens)
         }
@@ -262,8 +264,8 @@ open class JupiterSwapPresenterBaseTest {
 
     private fun initJupiterSwapTokenRepository(
         allTokens: List<JupiterSwapToken>,
-        tokenRate: (JupiterSwapToken) -> TokenPrice?,
-        tokenRates: (List<JupiterSwapToken>) -> Map<Base58String, TokenPrice>,
+        tokenRate: (JupiterSwapToken) -> TokenServicePrice?,
+        tokenRates: (List<JupiterSwapToken>) -> Map<Base58String, TokenServicePrice>,
     ) {
         coEvery { jupiterSwapTokensRepository.getTokens() } returns allTokens
 
@@ -271,26 +273,26 @@ open class JupiterSwapPresenterBaseTest {
             val token: JupiterSwapToken = arg(0)
             tokenRate(token)
         }
-        coEvery { jupiterSwapTokensRepository.getTokensRates(any()) } answers {
+        coEvery { tokenServiceRepository.loadPriceForTokens(any(), any()) } answers {
             val tokens: List<JupiterSwapToken> = arg(0)
             tokenRates(tokens)
         }
     }
 
     private fun createInitialTokenSelector(
-        tokenASymbol: String? = null,
-        tokenBSymbol: String? = null,
+        tokenAMint: Base58String? = null,
+        tokenBMint: Base58String? = null,
         preinstallTokenA: Token.Active? = null
     ): SwapInitialTokenSelector {
         return when {
-            !tokenASymbol.isNullOrBlank() && !tokenBSymbol.isNullOrBlank() -> {
-                PreinstallTokensBySymbolSelector(
+            tokenAMint != null && tokenBMint != null -> {
+                PreinstallTokensByMintSelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
                     dispatchers = dispatchers,
-                    homeLocalRepository = homeLocalRepository,
+                    tokenServiceCoordinator = homeLocalRepository,
                     savedSelectedSwapTokenStorage = jupiterSwapStorage,
-                    preinstallTokenASymbol = tokenASymbol,
-                    preinstallTokenBSymbol = tokenBSymbol,
+                    preinstallTokenAMint = tokenAMint,
+                    preinstallTokenBMint = tokenBMint,
                 )
             }
 
@@ -298,7 +300,7 @@ open class JupiterSwapPresenterBaseTest {
                 PreinstallTokenASelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
                     dispatchers = dispatchers,
-                    homeLocalRepository = homeLocalRepository,
+                    tokenServiceCoordinator = homeLocalRepository,
                     savedSelectedSwapTokenStorage = jupiterSwapStorage,
                     preinstallTokenA = preinstallTokenA,
                 )
@@ -307,7 +309,7 @@ open class JupiterSwapPresenterBaseTest {
             else -> {
                 CommonSwapTokenSelector(
                     jupiterTokensRepository = jupiterSwapTokensRepository,
-                    homeLocalRepository = homeLocalRepository,
+                    tokenServiceCoordinator = homeLocalRepository,
                     dispatchers = dispatchers,
                     selectedSwapTokenStorage = jupiterSwapStorage
                 )
@@ -316,15 +318,15 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun createStateManagerHandlers(
-        tokenASymbol: String?,
-        tokenBSymbol: String?,
+        tokenAMint: Base58String?,
+        tokenBMint: Base58String?,
         preinstallTokenA: Token.Active?
     ): Set<SwapStateHandler> {
         return setOf(
             SwapStateInitialLoadingHandler(
                 dispatchers = dispatchers,
                 initialTokenSelector = createInitialTokenSelector(
-                    tokenASymbol, tokenBSymbol, preinstallTokenA
+                    tokenAMint, tokenBMint, preinstallTokenA
                 )
             ),
             SwapStateLoadingRoutesHandler(
@@ -378,7 +380,7 @@ open class JupiterSwapPresenterBaseTest {
             SwapRateTickerManager(
                 swapScope = SwapCoroutineScope(dispatchers),
                 userLocalRepository = userLocalRepository,
-                swapTokensRepository = jupiterSwapTokensRepository,
+                tokenServiceRepository = tokenServiceRepository,
                 initDispatcher = dispatchers.io
             )
         )
@@ -389,9 +391,9 @@ open class JupiterSwapPresenterBaseTest {
         userTokens: List<Token.Active>
     ) {
         every {
-            homeLocalRepository.getTokensFlow()
+            homeLocalRepository.observeUserTokens()
         } answers {
-            MutableStateFlow(allTokens)
+            MutableSharedFlow(replay = 1)
         }
         coEvery {
             homeLocalRepository.getUserTokens()
@@ -401,20 +403,20 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun initSwapStateManager(
-        tokenASymbol: String?,
-        tokenBSymbol: String?,
+        tokenAMint: Base58String?,
+        tokenBMint: Base58String?,
         preinstallTokenA: Token.Active?
     ) {
         stateManager = SwapStateManager(
             handlers = createStateManagerHandlers(
-                tokenASymbol, tokenBSymbol, preinstallTokenA
+                tokenAMint, tokenBMint, preinstallTokenA
             ),
             dispatchers = dispatchers,
             selectedSwapTokenStorage = jupiterSwapStorage,
-            swapTokensRepository = jupiterSwapTokensRepository,
+            tokenServiceRepository = tokenServiceRepository,
             swapValidator = SwapValidator(),
             analytics = analytics,
-            homeLocalRepository = homeLocalRepository,
+            tokenServiceCoordinator = homeLocalRepository,
             userTokensChangeHandler = SwapUserTokensChangeHandler(
                 jupiterSwapInteractor,
                 jupiterSwapTokensRepository
@@ -447,8 +449,8 @@ open class JupiterSwapPresenterBaseTest {
             swapper = data.jupiterSwapInteractorSwapTokens
         )
         initSwapStateManager(
-            tokenASymbol = data.initialTokenASymbol,
-            tokenBSymbol = data.initialTokenBSymbol,
+            tokenAMint = data.initialTokenAMint,
+            tokenBMint = data.initialTokenBMint,
             preinstallTokenA = data.preinstallTokenA
         )
         initSwapRateTickerManager()
@@ -474,7 +476,8 @@ open class JupiterSwapPresenterBaseTest {
             historyInteractor = historyInteractor,
             resources = mockk(relaxed = true),
             alarmErrorsLogger = mockk(relaxed = true),
-            initialAmountA = data.initialAmountA
+            initialAmountA = data.initialAmountA,
+            tokenServiceCoordinator = tokenServiceCoordinator
         )
     }
 
@@ -613,10 +616,22 @@ open class JupiterSwapPresenterBaseTest {
         assertNotNull("Button state is null", state)
         assertTrue(state is SwapButtonState.Disabled)
         with(state as SwapButtonState.Disabled) {
+            if (text !is TextContainer.ResParams) {
+                if (text is TextContainer.Res) {
+                    println("Given button text resource name: ${findStringPropertyName((text as TextContainer.Res).textRes)}")
+                }
+                assertTrue("Wrong button text type: expected TextContainer.ResParams $text", text is TextContainer.ResParams)
+            }
             val container = text as TextContainer.ResParams
             assertEquals(R.string.swap_main_button_not_enough_amount, container.textRes)
             assertEquals(1, container.args.size)
             assertEquals(tokenSymbol, container.args.first())
         }
     }
+}
+
+private fun findStringPropertyName(id: Int): String? {
+    return R.string::class.staticProperties
+        .firstOrNull { it.get() == id }
+        ?.name
 }

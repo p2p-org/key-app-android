@@ -14,7 +14,11 @@ interface RpcSolanaRepository {
     suspend fun getRecentPerformanceSamples(exampleCount: Int): List<RecentPerformanceSample>
     suspend fun sendTransaction(transaction: Transaction, signer: Account, encoding: Encoding = Encoding.BASE64): String
     suspend fun sendTransaction(serializedTransaction: String, encoding: Encoding = Encoding.BASE64): String
-    suspend fun simulateTransaction(serializedTransaction: String, encoding: Encoding = Encoding.BASE64): TransactionSimulationResult
+    suspend fun simulateTransaction(
+        serializedTransaction: String,
+        encoding: Encoding = Encoding.BASE64
+    ): TransactionSimulationResult
+
     suspend fun getConfirmedSignaturesForAddress(
         mintLogAccount: PublicKey,
         limit: Int

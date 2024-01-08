@@ -57,23 +57,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="key.app"
-                    android:path="/intercom"
-                    android:scheme="https" />
-
-                <data
-                    android:path="/intercom"
-                    android:scheme="key.app" />
-
-            </intent-filter>
-
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -119,6 +102,29 @@
                     android:scheme="https" />
             </intent-filter>
 
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="s.key.app"
+                    android:path="/swap"
+                    android:scheme="https" />
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="s"
+                    android:scheme="keyapp" />
+            </intent-filter>
+
             <intent-filter android:label="Key App website deeplink">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -130,8 +136,6 @@
                     android:scheme="keyapp" />
             </intent-filter>
         </activity>
-
-        <service android:name=".renbtc.service.RenVMService" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -159,7 +163,7 @@
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
-            tools:node="remove"/>
+            tools:node="remove" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

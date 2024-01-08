@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.wallet.R
@@ -20,6 +21,7 @@ import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
+import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -81,8 +83,8 @@ class HistoryFragment :
     ) {
         replaceFragment(
             JupiterSwapFragment.create(
-                tokenASymbol = sourceSymbol,
-                tokenBSymbol = destinationSymbol,
+                tokenAMint = sourceTokenMint.toBase58Instance(),
+                tokenBMint = destinationTokenMint.toBase58Instance(),
                 amountA = Constants.ZERO_AMOUNT,
                 source = openedFrom
             )
@@ -119,6 +121,6 @@ class HistoryFragment :
     }
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
-        listener?.showTransactionProgress(bundleId, progressDetails)
+        listener?.showTransactionProgress(bundleId, progressDetails, SendSwapTransactionProgressHandler.QUALIFIER)
     }
 }

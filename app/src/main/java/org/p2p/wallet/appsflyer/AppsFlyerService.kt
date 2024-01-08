@@ -45,7 +45,7 @@ class AppsFlyerService(private val context: Context) {
             when (result.status) {
                 DeepLinkResult.Status.FOUND -> {
                     val deeplink = result.deepLink
-                    Timber.tag(TAG).i("Deeplink found = ${deeplink.values}")
+                    Timber.tag(TAG).i("Deeplink found = ${deeplink.valueOf}")
                 }
                 DeepLinkResult.Status.NOT_FOUND -> {
                     Timber.tag(TAG).i("Deeplink not found")

@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.View
 import org.koin.android.ext.android.inject
-import java.io.File
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.uikit.natives.UiKitSnackbarStyle
@@ -28,13 +27,14 @@ import org.p2p.wallet.auth.ui.restore.found.WalletFoundFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.BaseFragmentAdapter
+import org.p2p.wallet.common.ui.FragmentPageConfiguration
 import org.p2p.wallet.databinding.FragmentNewOnboardingBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.OnboardingSpanUtils
-import org.p2p.wallet.utils.openFile
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 class NewOnboardingFragment :
@@ -59,35 +59,40 @@ class NewOnboardingFragment :
     private val createWalletAnalytics: CreateWalletAnalytics by inject()
     private val restoreWalletAnalytics: RestoreWalletAnalytics by inject()
 
-    private val args = listOf(
-        SliderFragmentArgs(
-            R.drawable.onboarding_slide_1,
-            R.string.onboarding_slide_1_title,
-            R.string.onboarding_slide_1_text,
-        ).toBundle(),
-        SliderFragmentArgs(
-            R.drawable.onboarding_slide_5,
-            R.string.onboarding_slide_5_title,
-            R.string.onboarding_slide_5_text,
-        ).toBundle(),
-        SliderFragmentArgs(
-            R.drawable.onboarding_slide_2,
-            R.string.onboarding_slide_2_title,
-            R.string.onboarding_slide_2_text,
-        ).toBundle(),
-        SliderFragmentArgs(
-            R.drawable.onboarding_slide_3,
-            R.string.onboarding_slide_3_title,
-            R.string.onboarding_slide_3_text,
-        ).toBundle(),
-        // TODO PWN-5663 temporary disable earn slide for this release
-        /*SliderFragmentArgs(
-            R.drawable.onboarding_slide_4,
-            R.string.onboarding_slide_4_title,
-            R.string.onboarding_slide_4_text,
-        ).toBundle(),*/
+    private val pages = listOf(
+        FragmentPageConfiguration(
+            SliderFragment::class,
+            SliderFragmentArgs(
+                R.drawable.onboarding_slide_1,
+                R.string.onboarding_slide_1_title,
+                R.string.onboarding_slide_1_text,
+            ).toBundle(),
+        ),
+        FragmentPageConfiguration(
+            SliderFragment::class,
+            SliderFragmentArgs(
+                R.drawable.onboarding_slide_5,
+                R.string.onboarding_slide_5_title,
+                R.string.onboarding_slide_5_text,
+            ).toBundle(),
+        ),
+        FragmentPageConfiguration(
+            SliderFragment::class,
+            SliderFragmentArgs(
+                R.drawable.onboarding_slide_2,
+                R.string.onboarding_slide_2_title,
+                R.string.onboarding_slide_2_text,
+            ).toBundle(),
+        ),
+        FragmentPageConfiguration(
+            SliderFragment::class,
+            SliderFragmentArgs(
+                R.drawable.onboarding_slide_3,
+                R.string.onboarding_slide_3_title,
+                R.string.onboarding_slide_3_text,
+            ).toBundle(),
+        )
     )
-    private val fragments = List(args.size) { SliderFragment::class }
 
     private val signInHelper: GoogleSignInHelper by inject()
 
@@ -101,7 +106,7 @@ class NewOnboardingFragment :
         onboardingAnalytics.logSplashViewed()
 
         with(binding) {
-            viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, fragments, args)
+            viewPagerOnboardingSlider.adapter = BaseFragmentAdapter(childFragmentManager, lifecycle, pages)
             dotsIndicatorOnboardingSlider.attachTo(viewPagerOnboardingSlider)
             buttonCreateWalletOnboarding.setOnClickListener {
                 createWalletAnalytics.logCreateWalletClicked()
@@ -187,8 +192,8 @@ class NewOnboardingFragment :
         showUiKitSnackBar(messageResId = R.string.onboarding_google_services_error)
     }
 
-    override fun showFile(file: File) {
-        openFile(file)
+    override fun showBrowserTab(url: String) {
+        showUrlInCustomTabs(url)
     }
 
     override fun navigateToContinueCreateWallet() {

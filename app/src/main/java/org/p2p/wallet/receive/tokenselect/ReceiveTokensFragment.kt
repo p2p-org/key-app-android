@@ -15,7 +15,7 @@ import android.widget.ImageView
 import org.koin.android.ext.android.inject
 import java.util.Objects
 import org.p2p.core.glide.GlideManager
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.mainCellDelegate
@@ -178,7 +178,7 @@ class ReceiveTokensFragment :
         )
     }
 
-    override fun openReceiveInSolana(tokenData: TokenData) = with(tokenData) {
+    override fun openReceiveInSolana(tokenMetadata: TokenMetadata) = with(tokenMetadata) {
         replaceFragment(
             NewReceiveSolanaFragment.create(
                 tokenLogoUrl = iconUrl.orEmpty(),
@@ -187,7 +187,7 @@ class ReceiveTokensFragment :
         )
     }
 
-    override fun openReceiveInEthereum(tokenData: TokenData) = with(tokenData) {
+    override fun openReceiveInEthereum(tokenMetadata: TokenMetadata) = with(tokenMetadata) {
         replaceFragment(
             EthereumReceiveFragment.create(
                 tokenLogoUrl = iconUrl.orEmpty(),
@@ -207,7 +207,7 @@ class ReceiveTokensFragment :
 
     private fun onTokenClick(item: MainCellModel) {
         val payload = item.typedPayload() as ReceiveTokenPayload
-        receiveAnalytics.logTokenClicked(payload.tokenData.symbol)
+        receiveAnalytics.logTokenClicked(payload.tokenMetadata.symbol)
         presenter.onTokenClicked(payload)
     }
 }
@@ -217,8 +217,8 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
     override fun areItemsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
             oldItem is MainCellModel && newItem is MainCellModel -> {
-                val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenData
-                val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenData
+                val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenMetadata
+                val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenMetadata
                 oldData.name == newData.name && oldData.symbol == newData.symbol
             }
             else -> oldItem::class == newItem::class
@@ -228,8 +228,8 @@ private class TokenDiffCallback : DiffUtil.ItemCallback<AnyCellItem>() {
     override fun areContentsTheSame(oldItem: AnyCellItem, newItem: AnyCellItem): Boolean {
         return when {
             oldItem is MainCellModel && newItem is MainCellModel -> {
-                val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenData
-                val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenData
+                val oldData = oldItem.typedPayload<ReceiveTokenPayload>().tokenMetadata
+                val newData = newItem.typedPayload<ReceiveTokenPayload>().tokenMetadata
                 oldData.name == newData.name && oldData.symbol == newData.symbol
             }
             else -> Objects.equals(oldItem, newItem)

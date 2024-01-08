@@ -1,6 +1,6 @@
 package org.p2p.wallet.jupiter.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val SWAP_TRANSACTION_PROGRESS_SCREEN = "Swap_Transaction_Progress_Screen"
 private const val SWAP_TRANSACTION_PROGRESS_SCREEN_DONE = "Swap_Transaction_Progress_Screen_Done"

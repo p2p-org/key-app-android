@@ -10,9 +10,9 @@ import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_C
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.settings.ui.security.SecurityAndPrivacyFragment
 import org.p2p.wallet.smsinput.onboarding.OnboardingSmsInputFragment
-import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputFragment
 import org.p2p.wallet.smsinput.updatedevice.UpdateDeviceSmsInputFragment
-import org.p2p.wallet.striga.sms.onramp.StrigaOnRampSmsInputFragment
+import org.p2p.wallet.striga.sms.onramp.StrigaOtpConfirmFragment
+import org.p2p.wallet.striga.sms.signup.StrigaSignupSmsInputFragment
 
 object SmsInputFactory {
     enum class Type(
@@ -25,7 +25,7 @@ object SmsInputFactory {
         ),
         StrigaSignup(StrigaSignupSmsInputFragment::class.java, NavigationStrategy.Replace),
         StrigaOnRamp(
-            StrigaOnRampSmsInputFragment::class.java,
+            StrigaOtpConfirmFragment::class.java,
             NavigationStrategy.PopBackStackTo(MainContainerFragment::class.java)
         ),
         UpdateDevice(

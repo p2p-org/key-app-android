@@ -1,9 +1,11 @@
 package org.p2p.wallet.feerelayer.repository
 
+import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
-import org.p2p.core.crypto.Base64String
 import org.p2p.wallet.feerelayer.api.FeeRelayerApi
 import org.p2p.wallet.feerelayer.api.FeeRelayerDevnetApi
 import org.p2p.wallet.feerelayer.api.RelayTopUpSwapRequest
@@ -17,7 +19,6 @@ import org.p2p.wallet.feerelayer.model.SwapData
 import org.p2p.wallet.feerelayer.model.SwapDataConverter
 import org.p2p.wallet.feerelayer.model.SwapTransactionSignatures
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.utils.toPublicKey
 
 class FeeRelayerRemoteRepository(
@@ -96,6 +97,7 @@ class FeeRelayerRemoteRepository(
             blockHash = blockHash,
             info = infoRequest
         )
+        Timber.i("relayTransactionRequest = $request")
         return if (environmentManager.isDevnet()) {
             devnetApi.relayTransactionV2(request)
         } else {

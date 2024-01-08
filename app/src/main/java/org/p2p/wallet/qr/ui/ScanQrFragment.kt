@@ -16,7 +16,7 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView
 import org.koin.android.ext.android.inject
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.mvp.NoOpPresenter
@@ -25,7 +25,7 @@ import org.p2p.wallet.common.permissions.PermissionState
 import org.p2p.wallet.common.permissions.PermissionsDialog
 import org.p2p.wallet.common.permissions.PermissionsUtil
 import org.p2p.wallet.databinding.FragmentScanQrBinding
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
+import org.p2p.wallet.send.analytics.NewSendAnalytics
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
 import org.p2p.wallet.utils.args

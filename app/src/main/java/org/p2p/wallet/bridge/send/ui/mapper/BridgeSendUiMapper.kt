@@ -2,9 +2,10 @@ package org.p2p.wallet.bridge.send.ui.mapper
 
 import android.content.res.Resources
 import android.view.Gravity
-import java.math.BigDecimal
 import org.threeten.bp.ZonedDateTime
+import java.math.BigDecimal
 import org.p2p.core.model.TextHighlighting
+import org.p2p.core.model.TitleValue
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -46,8 +47,8 @@ class BridgeSendUiMapper(private val resources: Resources) {
             tokenUrl = iconUrl,
             amountTokens = amountTokens,
             amountUsd = amountUsd,
-            recipient = recipient,
-            totalFees = feeDetails?.bridgeFee?.toTextHighlighting()?.let { listOf(it) }
+            totalFees = feeDetails?.bridgeFee?.toTextHighlighting()?.let { listOf(it) },
+            transactionDetails = listOf(TitleValue(resources.getString(R.string.transaction_send_to_title), recipient))
         )
     }
 

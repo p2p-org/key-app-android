@@ -2,6 +2,7 @@ package org.p2p.wallet.debug.uikit
 
 import android.os.Bundle
 import android.view.View
+import org.p2p.uikit.components.edittext.v2.newUiKitEditTextDelegate
 import org.p2p.uikit.components.informerViewDelegate
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.sectionHeaderCellDelegate
@@ -23,7 +24,8 @@ class DebugUiKitFragment :
     private val binding: FragmentDebugUiKitBinding by viewBinding()
     private val adapter = CommonAnyCellAdapter(
         sectionHeaderCellDelegate(),
-        informerViewDelegate()
+        informerViewDelegate(),
+        newUiKitEditTextDelegate()
     )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

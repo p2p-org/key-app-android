@@ -13,7 +13,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.user.repository.UserAccountRepository
 import org.p2p.wallet.utils.toPublicKey
 
@@ -21,7 +21,7 @@ class FeeRelayerAccountInteractor(
     private val userAccountRepository: UserAccountRepository,
     private val amountRepository: RpcAmountRepository,
     private val feeRelayerRepository: FeeRelayerRepository,
-    private val userInteractor: UserInteractor,
+    private val userInteractor: UserTokensInteractor,
     private val dispatchers: CoroutineDispatchers,
     private val tokenKeyProvider: TokenKeyProvider
 ) {

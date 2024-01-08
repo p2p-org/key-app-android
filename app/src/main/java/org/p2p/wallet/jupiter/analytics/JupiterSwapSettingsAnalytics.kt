@@ -1,6 +1,6 @@
 package org.p2p.wallet.jupiter.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.ui.info.SwapInfoType
 import org.p2p.wallet.swap.model.Slippage

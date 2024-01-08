@@ -3,6 +3,7 @@ package org.p2p.wallet.jupiter.ui.main
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.ClassRule
 import org.junit.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
@@ -18,16 +19,21 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.attachCallsLog
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.mutableListQueueOf
-import org.p2p.wallet.utils.plantTimberToStdout
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)
 class JupiterSwapPresenterInitialStateTest : JupiterSwapPresenterBaseTest() {
 
-    init {
-        plantTimberToStdout("Swap:InitialState")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "Swap:InitialState"
+        )
     }
 
     @Test
@@ -260,7 +266,7 @@ class JupiterSwapPresenterInitialStateTest : JupiterSwapPresenterBaseTest() {
      */
     @Test
     fun `GIVEN swap screen WHEN has set initialAmountA THEN check setFirstTokenWidget state has this value`() = runTest {
-        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.28"))
+        val firstToken = JupiterSwapTestHelpers.createUSDCToken(BigDecimal("10.30"))
         val secondToken = JupiterSwapTestHelpers.createSOLToken(
             amount = BigDecimal("26.48"),
             rateToUsd = BigDecimal("22.14")

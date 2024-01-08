@@ -10,6 +10,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.routes.JupiterAvailableSwapRoutesMap
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.TokenExtensions
 
 private const val KEY_TOKEN_A_MINT = "KEY_TOKEN_A_MINT"
 private const val KEY_TOKEN_B_MINT = "KEY_TOKEN_B_MINT"
@@ -188,7 +189,8 @@ class JupiterSwapStorage(
                 logoUri = logoUri,
                 tokenName = tokenName,
                 tokenSymbol = tokenSymbol,
-                tags = tags
+                tags = tags,
+                tokenExtensions = TokenExtensions.NONE
             )
         }
     }

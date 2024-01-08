@@ -2,7 +2,7 @@ package org.p2p.wallet.auth.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import org.p2p.wallet.common.ui.SimpleMaskFormatter
+import org.p2p.uikit.utils.SimpleMaskFormatter
 
 /**
  * @param phoneCode - country of phone number

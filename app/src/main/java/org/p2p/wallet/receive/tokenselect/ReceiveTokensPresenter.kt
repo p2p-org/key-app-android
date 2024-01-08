@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.p2p.core.common.TextContainer
-import org.p2p.core.token.TokenData
-import org.p2p.core.utils.Constants
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.token.TokenMetadata
+import org.p2p.core.token.TokenMetadataExtension
+import org.p2p.core.token.filterByAvailability
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.receive.tokenselect.ReceiveTokensMapper.toTokenFinanceCellModel
 import org.p2p.wallet.receive.tokenselect.models.ReceiveNetwork
 import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
@@ -37,7 +38,7 @@ class ReceiveTokensPresenter(
     private var searchJob: Job? = null
 
     private val tokensFlow = MutableStateFlow<List<AnyCellItem>>(emptyList())
-    private lateinit var pinnedWormholeTokens: List<TokenData>
+    private lateinit var pinnedWormholeTokens: List<TokenMetadata>
     private lateinit var pinnedWormholeTokensAddresses: List<String>
 
     override fun attach(view: ReceiveTokensContract.View) {
@@ -45,12 +46,6 @@ class ReceiveTokensPresenter(
         launch {
             pinnedWormholeTokens = preparePinedWormholeTokens()
             pinnedWormholeTokensAddresses = pinnedWormholeTokens.map { it.mintAddress }
-            val tokensForReceiveBanner = interactor.getTokensForBuy(
-                availableTokensSymbols = listOf(
-                    Constants.SOL_SYMBOL,
-                    Constants.ETH_SYMBOL
-                )
-            )
             view.setBannerTokens(
                 firstTokenUrl = ERC20Tokens.SOL_TOKEN_URL,
                 secondTokenUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty()
@@ -60,20 +55,18 @@ class ReceiveTokensPresenter(
         }
     }
 
-    private fun preparePinedWormholeTokens(): List<TokenData> {
-        return ERC20Tokens.values()
+    private suspend fun preparePinedWormholeTokens(): List<TokenMetadata> {
+        return ERC20Tokens.valuesWithout(ERC20Tokens.MATIC)
             .mapNotNull { erc20Token ->
                 interactor.findTokenDataByAddress(erc20Token.mintAddress)?.let { token ->
-                    TokenData(
+                    TokenMetadata(
                         mintAddress = token.mintAddress,
                         name = erc20Token.replaceTokenName ?: token.tokenName,
                         symbol = erc20Token.replaceTokenSymbol ?: token.tokenSymbol,
-                        iconUrl = erc20Token.tokenIconUrl ?: token.iconUrl,
+                        iconUrl = erc20Token.tokenIconUrl,
                         decimals = token.decimals,
-                        coingeckoId = erc20Token.coingeckoId,
                         isWrapped = false,
-                        serumV3Usdc = null,
-                        serumV3Usdt = null
+                        extensions = TokenMetadataExtension.NONE
                     )
                 }
             }
@@ -107,12 +100,12 @@ class ReceiveTokensPresenter(
             lastSelectedTokenPayload = tokenDataPayload
             view?.showSelectNetworkDialog()
         } else {
-            view?.openReceiveInSolana(tokenDataPayload.tokenData)
+            view?.openReceiveInSolana(tokenDataPayload.tokenMetadata)
         }
     }
 
     override fun onNetworkSelected(network: ReceiveNetwork) {
-        lastSelectedTokenPayload?.tokenData?.let { tokenData ->
+        lastSelectedTokenPayload?.tokenMetadata?.let { tokenData ->
             view?.apply {
                 when (network) {
                     ReceiveNetwork.SOLANA -> openReceiveInSolana(tokenData)
@@ -172,9 +165,9 @@ class ReceiveTokensPresenter(
         )
     }
 
-    private suspend fun mapTokenToCellItem(items: List<TokenData>): List<AnyCellItem> {
+    private suspend fun mapTokenToCellItem(items: List<TokenMetadata>): List<AnyCellItem> {
         return withContext(dispatchers.io) {
-            items.map {
+            items.filterByAvailability().map {
                 it.toTokenFinanceCellModel(
                     solTokenUrl = ERC20Tokens.SOL_TOKEN_URL,
                     ethTokenUrl = ERC20Tokens.ETH.tokenIconUrl.orEmpty()

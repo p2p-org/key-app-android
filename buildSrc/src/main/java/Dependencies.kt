@@ -1,3 +1,8 @@
+import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.testImplementation
+import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.testRuntimeOnly
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.project
+
 object Dependencies {
 
     // Kotlin
@@ -11,12 +16,14 @@ object Dependencies {
     private const val recyclerviewVersion = "1.2.1"
     private const val activityKtxVersion = "1.6.0"
     private const val fragmentKtxVersion = "1.4.1"
+    private const val constraintLayoutVersion = "2.1.4"
 
     private const val coreKtx = "androidx.core:core-ktx:$androidxCoreKtxVersion"
     private const val splash = "androidx.core:core-splashscreen:1.0.1"
     private const val appCompat = "androidx.appcompat:appcompat:$appCompatVersion"
     private const val material = "com.google.android.material:material:$materialDesignVersion"
     private const val recyclerView = "androidx.recyclerview:recyclerview:$recyclerviewVersion"
+    private const val constraintLayout = "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     private const val activityKtx = "androidx.activity:activity-ktx:$activityKtxVersion"
     private const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     private const val biometricKtx = "androidx.biometric:biometric:1.1.0"
@@ -105,7 +112,7 @@ object Dependencies {
         "com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:$adapterDelegatesVersion"
 
     // AppsFlyer
-    private const val appsFlyerSdk = "com.appsflyer:af-android-sdk:6.9.0"
+    private const val appsFlyerSdk = "com.appsflyer:af-android-sdk:6.12.2"
     private const val androidInstallReferrer = "com.android.installreferrer:installreferrer:2.2"
     private const val androidAdsIndetifier = "androidx.ads:ads-identifier:1.0.0-alpha05"
 
@@ -188,6 +195,7 @@ object Dependencies {
         appCompat,
         material,
         recyclerView,
+        constraintLayout,
         activityKtx,
         fragmentKtx,
         biometricKtx,
@@ -280,4 +288,26 @@ object Dependencies {
         xmlPull,
         kxml
     )
+
+    fun testUtilsModule(scope: DependencyHandlerScope) {
+        with(scope) {
+            testImplementation(project(":test-utils"))
+
+            // Core testing
+            coreTestingLibraries.forEach { testImplementation(it) }
+            // Koin testing
+            koinTestingLibraries.forEach { testImplementation(it) }
+            // Other testing tools
+            otherTestingLibraries.forEach { testImplementation(it) }
+
+            // Runtime only testing tools
+            testRuntimeOnly(junitPlatform) {
+                because(
+                    "This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe " +
+                        "be incompatible with the version of junit-platform-launcher shipped with the IDE."
+                )
+            }
+            junitRuntimeOnlyLibraries.forEach { testRuntimeOnly(it) }
+        }
+    }
 }

@@ -20,12 +20,8 @@ object Constants {
     const val WETH_SYMBOL = "WETH"
     const val WBTC_SYMBOL = "WBTC"
 
-    const val SOL_COINGECKO_ID = "solana"
-    const val USDC_COINGECKO_ID = "usd-coin"
-    const val BTC_COINGECKO_ID = "bitcoin"
-    const val ETH_COINGECKO_ID = "ethereum"
-    const val WETH_COINGECKO_ID = "ethereum-wormhole"
-    const val USDT_COINGECKO_ID = "tether"
+    const val TOKEN_SERVICE_NATIVE_SOL_TOKEN = "native"
+    const val TOKEN_SERVICE_NATIVE_ETH_TOKEN = "native"
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
     const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
@@ -37,8 +33,6 @@ object Constants {
         FEE_RELAYER_ACCOUNT,
         SWAP_FEE_RELAYER_ACCOUNT
     )
-    const val REN_BTC_DEVNET_MINT = "FsaLodPu4VmSwXGr3gWfwANe4vKf8XSZcCh1CEeJ3jpD"
-    const val REN_BTC_DEVNET_MINT_ALTERNATE = "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"
 
     // Arbitrary mint to represent SOL (not wrapped SOL).
     const val SOL_MINT = "Ejmc1UB4EsES5oAaRN63SpoxMJidt3ZGBrqrZk49vjTZ"

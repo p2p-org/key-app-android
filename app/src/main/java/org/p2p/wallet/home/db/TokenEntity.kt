@@ -1,10 +1,11 @@
 package org.p2p.wallet.home.db
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import org.p2p.wallet.home.db.TokenEntity.Companion.TABLE_NAME
 import java.math.BigDecimal
+import org.p2p.wallet.home.db.TokenEntity.Companion.TABLE_NAME
 
 @Entity(
     tableName = TABLE_NAME
@@ -39,20 +40,17 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_EXCHANGE_RATE)
     val exchangeRate: String?,
 
-    @ColumnInfo(name = COLUMN_COINGECKO_ID)
-    val coingeckoId: String?,
-
     @ColumnInfo(name = COLUMN_VISIBILITY)
     val visibility: String,
 
-    @ColumnInfo(name = COLUMN_SERUM_V3_USDC)
-    val serumV3Usdc: String?,
-
-    @ColumnInfo(name = COLUMN_SERUM_V3_USDT)
-    val serumV3Usdt: String?,
-
     @ColumnInfo(name = COLUMN_WRAPPED)
-    val isWrapped: Boolean
+    val isWrapped: Boolean,
+
+    @ColumnInfo(name = COLUMN_TOKEN_SERVICE_ADDRESS)
+    val tokenServiceAddress: String,
+
+    @Embedded(prefix = COLUMN_EXTENSIONS)
+    val extensions: TokenExtensionEntity?
 ) {
     companion object {
         const val TABLE_NAME = "token_table"
@@ -64,11 +62,10 @@ data class TokenEntity(
         const val COLUMN_ICON_URL = "icon_url"
         const val COLUMN_PRICE = "price"
         const val COLUMN_TOTAL = "total"
-        const val COLUMN_COINGECKO_ID = "coingecko_id"
         const val COLUMN_EXCHANGE_RATE = "exchange_rate"
         const val COLUMN_VISIBILITY = "visibility"
-        const val COLUMN_SERUM_V3_USDC = "serumV3Usdc"
-        const val COLUMN_SERUM_V3_USDT = "serumV3Usdt"
         const val COLUMN_WRAPPED = "wrapped"
+        const val COLUMN_TOKEN_SERVICE_ADDRESS = "token_service_address"
+        const val COLUMN_EXTENSIONS = "ext_"
     }
 }

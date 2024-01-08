@@ -7,13 +7,19 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
     id("io.sentry.android.gradle") version "3.2.0"
-    id("org.jetbrains.kotlinx.kover") version "0.7.0"
+    id("org.jetbrains.kotlinx.kover") version "0.7.2"
+    id("kotlin-kapt")
 }
 
 koverReport {
     androidReports("debug") {
         filters {
             excludes {
+                annotatedBy(
+                    "*NoCoverage",
+                    "*Generated*",
+                    "androidx.room.Database",
+                )
                 packages(
                     "com.bumptech.glide*",
                 )
@@ -97,6 +103,7 @@ dependencies {
     implementation(project(":ui-kit"))
     implementation(project(":core"))
     implementation(project(":ethereumkit"))
+    implementation(project(":token-service"))
 
     implementation(files("libs/borshj-0.0.0.jar"))
 
@@ -112,9 +119,6 @@ dependencies {
     Dependencies.coroutineLibraries.forEach { implementation(it) }
 
     // Room
-    implementation(Dependencies.roomRuntime)
-    implementation(Dependencies.roomKtx)
-    kapt(Dependencies.roomCompiler)
 
     // Firebase
     implementation(platform(Dependencies.firebaseBom))
@@ -137,32 +141,20 @@ dependencies {
     // AppsFlyer
     Dependencies.appsFlyerLibraries.forEach { implementation(it) }
 
-    // Striga SDK https://developers.sumsub.com/msdk/android/changelog.html
-//    implementation(Dependencies.strigaSdk)
-
     // Utils
     implementation(Dependencies.libphonenumber)
     implementation(Dependencies.lokalise) { isTransitive = true }
     implementation(Dependencies.workRuntimeKtx)
     implementation(Dependencies.barcodeScanner)
     implementation(Dependencies.threetenabp)
-    implementation(Dependencies.intercom)
     implementation(Dependencies.amplitude)
     implementation(Dependencies.debugDrawer)
     implementation(Dependencies.tickerView)
+    implementation(Dependencies.bitcoinj)
 
-    // Core testing
-    Dependencies.coreTestingLibraries.forEach { testImplementation(it) }
+    implementation(Dependencies.roomRuntime)
+    implementation(Dependencies.roomKtx)
+    kapt(Dependencies.roomCompiler)
 
-    // Koin testing
-    Dependencies.koinTestingLibraries.forEach { testImplementation(it) }
-
-    // Other testing tools
-    Dependencies.otherTestingLibraries.forEach { testImplementation(it) }
-
-    // Runtime only testing tools
-    testRuntimeOnly(Dependencies.junitPlatform) {
-        because("This lib comes shipped with the IDE and it possible that newer versions of JUnit 5 maybe be incompatible with the version of junit-platform-launcher shipped with the IDE.")
-    }
-    Dependencies.junitRuntimeOnlyLibraries.forEach { testRuntimeOnly(it) }
+    Dependencies.testUtilsModule(this)
 }

@@ -8,7 +8,7 @@ import org.p2p.wallet.alarmlogger.api.StrigaErrorRequest
 
 class AlarmStrigaErrorConverter(
     private val gson: Gson
-) {
+) : AlarmFeatureConverter {
 
     fun toStrigaErrorRequest(userPublicKey: Base58String, error: StrigaAlarmError): AlarmErrorsRequest {
         val throwable = error.error

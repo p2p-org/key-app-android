@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.ui.new
 
 import kotlin.properties.Delegates.observable
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -14,10 +15,11 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
-import org.p2p.wallet.home.repository.UserTokensRepository
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokensState
 
 class NewSelectTokenPresenter(
-    private val userTokensRepository: UserTokensRepository,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val selectedTokenMintAddress: String?,
     private val selectableTokens: List<Token.Active>?
 ) : BasePresenter<NewSelectTokenContract.View>(), NewSelectTokenContract.Presenter {
@@ -30,8 +32,9 @@ class NewSelectTokenPresenter(
     override fun attach(view: NewSelectTokenContract.View) {
         super.attach(view)
 
-        userTokensRepository.observeUserTokens()
-            .map(::getTokensToSelect)
+        tokenServiceCoordinator.observeUserTokens()
+            .filterIsInstance<UserTokensState.Loaded>()
+            .map { getTokensToSelect(it.solTokens) }
             .onEach(::initTokensToSelect)
             .launchIn(this)
     }

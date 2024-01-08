@@ -1,22 +1,22 @@
 package org.p2p.wallet.alarmlogger.model
 
 import com.google.gson.Gson
-import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
-import org.p2p.wallet.alarmlogger.api.AlarmErrorsSwapRequest
-import org.p2p.wallet.home.repository.UserTokensRepository
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.network.data.ServerException
 import org.p2p.core.utils.toJsonObject
+import org.p2p.wallet.alarmlogger.api.AlarmErrorsRequest
+import org.p2p.wallet.alarmlogger.api.AlarmErrorsSwapRequest
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class AlarmSwapErrorConverter(
     private val gson: Gson,
     private val transactionMapper: JupiterSwapTransactionMapper,
-    private val userTokensRepository: UserTokensRepository,
+    private val userTokensRepository: UserTokensLocalRepository,
     private val swapProfiler: SwapProfiler,
-) {
+) : AlarmFeatureConverter {
 
     suspend fun toSwapError(
         userPublicKey: Base58String,
@@ -43,10 +43,10 @@ class AlarmSwapErrorConverter(
             } else {
                 swapError.stackTraceToString()
             }
-            val tokenABalance = userTokensRepository.findUserTokenByMint(tokenA.mintAddress)
+            val tokenABalance = userTokensRepository.findTokenByMintAddress(tokenA.mintAddress)
                 ?.getFormattedTotal()
                 ?: "0"
-            val tokenBBalance = userTokensRepository.findUserTokenByMint(tokenB.mintAddress)
+            val tokenBBalance = userTokensRepository.findTokenByMintAddress(tokenB.mintAddress)
                 ?.getFormattedTotal()
                 ?: "0"
             val request = AlarmErrorsSwapRequest(

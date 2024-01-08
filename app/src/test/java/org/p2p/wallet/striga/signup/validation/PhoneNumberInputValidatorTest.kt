@@ -11,6 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
 import java.io.File
 import java.io.InputStream
@@ -21,13 +22,19 @@ import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
-import org.p2p.wallet.utils.TestCoroutineDispatchers
-import org.p2p.wallet.utils.plantTimberToStdout
+import org.p2p.wallet.striga.signup.steps.validation.PhoneNumberInputValidator
+import org.p2p.wallet.utils.StandardTestCoroutineDispatchers
+import org.p2p.wallet.utils.TimberUnitTestInstance
 
 class PhoneNumberInputValidatorTest {
 
-    init {
-        plantTimberToStdout("PhoneNumberInputValidatorTest")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "PhoneNumberInputValidatorTest"
+        )
     }
 
     @Before
@@ -38,7 +45,7 @@ class PhoneNumberInputValidatorTest {
 
     private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()
     private val assetsRoot = File(currentWorkingDir, "build/intermediates/assets/debug")
-    private val dispatchers = TestCoroutineDispatchers()
+    private val dispatchers = StandardTestCoroutineDispatchers()
     lateinit var countryCodeRepository: CountryCodeRepository
 
     @Test

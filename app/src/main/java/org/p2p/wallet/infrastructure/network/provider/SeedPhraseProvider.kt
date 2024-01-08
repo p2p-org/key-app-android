@@ -1,13 +1,15 @@
 package org.p2p.wallet.infrastructure.network.provider
 
 import timber.log.Timber
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.infrastructure.security.SecureStorageContract
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key
 
 private const val TAG = "SeedPhraseProvider"
 
 class SeedPhraseProvider(
-    private val secureStorage: SecureStorageContract
+    private val secureStorage: SecureStorageContract,
+    private val crashLogger: CrashLogger
 ) {
 
     val isAvailable: Boolean
@@ -42,6 +44,7 @@ class SeedPhraseProvider(
             field = value
             saveSeedPhraseProviderToStorage(value)
             Timber.tag(TAG).i("updating user seed phrase provider: $value")
+            crashLogger.setCustomKey("seed_phrase_provider", value.title.ifBlank { "Not provided" })
         }
 
     private fun getSeedPhraseFromStorage(): List<String> =

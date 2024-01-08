@@ -5,7 +5,6 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
-import org.p2p.core.R
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
@@ -31,11 +30,10 @@ sealed class Token constructor(
     open val mintAddress: String,
     open val tokenName: String,
     open val iconUrl: String?,
-    open val serumV3Usdc: String?,
-    open val serumV3Usdt: String?,
     open val isWrapped: Boolean,
     open var rate: BigDecimal?,
-    open var currency: String = Constants.USD_READABLE_SYMBOL
+    open var currency: String = Constants.USD_READABLE_SYMBOL,
+    open val tokenExtensions: TokenExtensions,
 ) : Parcelable {
 
     @Parcelize
@@ -44,17 +42,16 @@ sealed class Token constructor(
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
-        val coingeckoId: String?,
+        val tokenServiceAddress: String,
+        override val tokenExtensions: TokenExtensions,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
         override val tokenName: String,
         override val iconUrl: String?,
-        override val serumV3Usdc: String?,
-        override val serumV3Usdt: String?,
         override val isWrapped: Boolean,
         override var rate: BigDecimal?,
-        override var currency: String = Constants.USD_READABLE_SYMBOL
+        override var currency: String = Constants.USD_READABLE_SYMBOL,
     ) : Token(
         publicKey = publicKey,
         tokenSymbol = tokenSymbol,
@@ -62,11 +59,10 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        serumV3Usdc = serumV3Usdc,
-        serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
         rate = rate,
-        currency = currency
+        currency = currency,
+        tokenExtensions = tokenExtensions,
     ) {
 
         @IgnoredOnParcel
@@ -81,11 +77,22 @@ sealed class Token constructor(
         val isZero: Boolean
             get() = total.isZero()
 
-        fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean =
-            visibility == TokenVisibility.HIDDEN ||
-                isZerosHidden &&
+        @IgnoredOnParcel
+        val isHidden: Boolean
+            get() = visibility == TokenVisibility.HIDDEN
+
+        @IgnoredOnParcel
+        val canTokenBeHidden: Boolean
+            get() = tokenExtensions.canTokenBeHidden != false
+
+        fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean {
+            val isHiddenByUser = visibility == TokenVisibility.HIDDEN
+            val isHiddenByDefault = isZerosHidden &&
                 isZero &&
                 visibility == TokenVisibility.DEFAULT
+            val isHidden = isHiddenByUser || isHiddenByDefault
+            return canTokenBeHidden && isHidden
+        }
 
         fun getFormattedUsdTotal(includeSymbol: Boolean = true): String? {
             return if (includeSymbol) totalInUsd?.asUsd() else totalInUsd?.formatFiat()
@@ -97,13 +104,6 @@ sealed class Token constructor(
             } else {
                 total.formatToken(decimals)
             }
-
-        fun getVisibilityIcon(isZerosHidden: Boolean): Int =
-            if (isDefinitelyHidden(isZerosHidden)) {
-                R.drawable.ic_show
-            } else {
-                R.drawable.ic_hide
-            }
     }
 
     @Parcelize
@@ -113,6 +113,7 @@ sealed class Token constructor(
         val total: BigDecimal,
         var isClaiming: Boolean = false,
         var latestActiveBundleId: String? = null,
+        val tokenServiceAddress: String = publicKey,
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
@@ -127,11 +128,10 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        serumV3Usdc = null,
-        serumV3Usdt = null,
         isWrapped = false,
         rate = rate,
-        currency = currency
+        currency = currency,
+        tokenExtensions = TokenExtensions.NONE
     ) {
 
         @IgnoredOnParcel
@@ -172,11 +172,10 @@ sealed class Token constructor(
         override val mintAddress: String,
         override val tokenName: String,
         override val iconUrl: String?,
-        override val serumV3Usdc: String?,
-        override val serumV3Usdt: String?,
         override val isWrapped: Boolean,
         override var rate: BigDecimal?,
-        override var currency: String = Constants.USD_READABLE_SYMBOL
+        override var currency: String = Constants.USD_READABLE_SYMBOL,
+        override val tokenExtensions: TokenExtensions,
     ) : Token(
         publicKey = null,
         tokenSymbol = tokenSymbol,
@@ -184,11 +183,10 @@ sealed class Token constructor(
         mintAddress = mintAddress,
         tokenName = tokenName,
         iconUrl = iconUrl,
-        serumV3Usdc = serumV3Usdc,
-        serumV3Usdt = serumV3Usdt,
         isWrapped = isWrapped,
         rate = rate,
-        currency = currency
+        currency = currency,
+        tokenExtensions = tokenExtensions
     )
 
     @IgnoredOnParcel
@@ -205,7 +203,7 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val isUSDC: Boolean
-        get() = tokenSymbol == USDC_SYMBOL
+        get() = tokenSymbol.equals(USDC_SYMBOL, ignoreCase = true)
 
     @IgnoredOnParcel
     val isUSDT: Boolean
@@ -232,26 +230,25 @@ sealed class Token constructor(
     companion object {
         fun createSOL(
             publicKey: String,
-            tokenData: TokenData,
+            tokenMetadata: TokenMetadata,
             amount: Long,
             solPrice: BigDecimal?
         ): Active {
-            val total: BigDecimal = BigDecimal(amount).divide(tokenData.decimals.toPowerValue())
+            val total: BigDecimal = BigDecimal(amount).divide(tokenMetadata.decimals.toPowerValue())
             return Active(
                 publicKey = publicKey,
-                tokenSymbol = tokenData.symbol,
-                decimals = tokenData.decimals,
-                mintAddress = tokenData.mintAddress,
+                tokenSymbol = tokenMetadata.symbol,
+                decimals = tokenMetadata.decimals,
+                mintAddress = tokenMetadata.mintAddress,
                 tokenName = SOL_NAME,
-                iconUrl = tokenData.iconUrl,
+                iconUrl = tokenMetadata.iconUrl,
                 totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },
-                coingeckoId = tokenData.coingeckoId,
-                total = total.scaleLong(tokenData.decimals),
+                total = total.scaleLong(tokenMetadata.decimals),
                 rate = solPrice,
+                tokenServiceAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN,
                 visibility = TokenVisibility.DEFAULT,
-                serumV3Usdc = tokenData.serumV3Usdc,
-                serumV3Usdt = tokenData.serumV3Usdt,
-                isWrapped = tokenData.isWrapped
+                isWrapped = tokenMetadata.isWrapped,
+                tokenExtensions = TokenExtensions()
             )
         }
     }
@@ -267,4 +264,3 @@ fun List<Token.Active>.findByMintAddress(mintAddress: String): Token.Active? =
 @JvmName("findByNullableMintAddress")
 fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
     mintAddress?.let(::findByMintAddress)
-

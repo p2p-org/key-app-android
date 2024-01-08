@@ -56,5 +56,11 @@
     <style name="WalletTheme.BottomSheet" parent="Theme.Design.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
         <item name="enableEdgeToEdge">true</item>
+        <item name="colorControlHighlight">@color/mountain</item>
+    </style>
+
+    <style name="WalletTheme.CheckboxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:buttonTint">@color/night</item>
+        <item name="android:textAppearance">@style/UiKit.TextAppearance.Regular.Text3</item>
     </style>
 </resources>

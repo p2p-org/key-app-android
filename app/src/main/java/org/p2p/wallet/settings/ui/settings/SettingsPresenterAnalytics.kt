@@ -1,7 +1,7 @@
 package org.p2p.wallet.settings.ui.settings
 
 import org.p2p.wallet.auth.analytics.AdminAnalytics
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 import org.p2p.wallet.home.analytics.BrowseAnalytics
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 

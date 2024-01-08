@@ -40,20 +40,20 @@ fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
             SCALE_VALUE_SHORT
         }
         // removing zeros, case: 0.02000 -> 0.2
-        setScale(scale, RoundingMode.HALF_EVEN).stripTrailingZeros()
+        setScale(scale, RoundingMode.DOWN).stripTrailingZeros()
     }
 }
 
 fun BigDecimal.scaleShort(): BigDecimal =
-    this.setScale(SCALE_VALUE_SHORT, RoundingMode.HALF_EVEN)
+    this.setScale(SCALE_VALUE_SHORT, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleMedium(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.HALF_EVEN)
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
-    if (this.isZero()) this else this.setScale(decimals, RoundingMode.HALF_EVEN)
+    if (this.isZero()) this else this.setScale(decimals, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
 fun BigInteger.fromLamports(decimals: Int = DEFAULT_DECIMAL): BigDecimal =
@@ -73,8 +73,18 @@ fun BigDecimal.toUsd(token: Token): BigDecimal? =
 // case: 1000.023000 -> 1 000.02
 fun BigDecimal.formatFiat(): String = formatWithDecimals(FIAT_FRACTION_LENGTH)
 
-// case: 10000.000000007900 -> 100 000.000000008
-fun BigDecimal.formatToken(decimals: Int = DEFAULT_DECIMAL): String = formatWithDecimals(decimals)
+// case 1: 10000.000000007900 -> 100 000.000000008
+// case 2: 1.0 -> 1 - default behavior
+// case 3: 1.0 -> 1.0 -> with keepInitialDecimals=true
+fun BigDecimal.formatToken(
+    decimals: Int = DEFAULT_DECIMAL,
+    exactDecimals: Boolean = false,
+    keepInitialDecimals: Boolean = false,
+): String = formatWithDecimals(
+    decimals = decimals,
+    exactDecimals = exactDecimals,
+    keepInitialDecimals = keepInitialDecimals
+)
 
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
@@ -83,10 +93,29 @@ fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECI
  * Note: setScale(0) for zero is mandatory because if the value has precision greater than 6 decimals,
  * the result of toString() will be formatted using scientific notation
  * @param decimals - number of decimals to show
+ * @param exactDecimals - format with exact number of decimals
+ * @param keepInitialDecimals - keep initial decimals
  * @return formatted string
  */
-fun BigDecimal.formatWithDecimals(decimals: Int): String = this.stripTrailingZeros().run {
-    if (isZero()) this.setScale(0).toString() else DecimalFormatter.format(this, decimals)
+fun BigDecimal.formatWithDecimals(
+    decimals: Int,
+    exactDecimals: Boolean = false,
+    keepInitialDecimals: Boolean = false,
+): String {
+    val source = if (keepInitialDecimals) this else stripTrailingZeros()
+
+    return with(source) {
+        if (isZero()) {
+            this.setScale(0).toString()
+        } else {
+            DecimalFormatter.format(
+                value = this,
+                decimals = decimals,
+                exactDecimals = exactDecimals,
+                keepInitialDecimals = keepInitialDecimals,
+            )
+        }
+    }
 }
 
 fun BigDecimal?.isNullOrZero(): Boolean = this == null || this.compareTo(BigDecimal.ZERO) == 0
@@ -105,10 +134,21 @@ fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 
-fun BigDecimal.asCurrency(currency: String): String =
-    if (lessThenMinValue()) "<$currency 0.01" else "$currency ${formatFiat()}"
+fun BigDecimal.asCurrency(currency: String): String = when {
+    isZero() -> "${currency}0"
+    lessThenMinValue() -> "<${currency}0.01"
+    else -> "${currency}${formatFiat()}"
+}
 
-fun BigDecimal.asUsd(): String = if (lessThenMinValue()) "<$ 0.01" else "$ ${formatFiat()}"
+// TODO refactor after we will migrate on currency as an entity
+fun BigDecimal.asCurrencyAfter(currency: String): String = when {
+    isZero() -> "0 $currency"
+    lessThenMinValue() -> "<0.01 $currency"
+    else -> "${formatFiat()} $currency"
+}
+
+fun BigDecimal.asUsd(): String = asCurrency(Constants.USD_SYMBOL)
+
 fun BigDecimal.asApproximateUsd(withBraces: Boolean = true): String = when {
     isZero() -> "$0"
     lessThenMinValue() -> "(<$0.01)"
@@ -120,7 +160,7 @@ fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
 fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
-): String = if (lessThenMinValue()) "<$ 0.01" else "$transactionSymbol$ ${formatFiat()}"
+): String = if (lessThenMinValue()) "<$0.01" else "$transactionSymbol$ ${formatFiat()}"
 
 fun BigDecimal.asUsdSwap(): String = when {
     isZero() -> "0 USD"
@@ -132,3 +172,4 @@ fun Int?.orZero(): Int = this ?: 0
 
 // value is in (0..0.01)
 fun BigDecimal.lessThenMinValue() = !isZero() && isLessThan(AMOUNT_MIN_VALUE.toBigDecimal())
+fun BigDecimal.moreThenMinValue() = isMoreThan(AMOUNT_MIN_VALUE.toBigDecimal())

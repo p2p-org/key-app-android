@@ -4,7 +4,6 @@ import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Single
 
-
 data class RpcResponse(
     @SerializedName("id")
     val id: Int,

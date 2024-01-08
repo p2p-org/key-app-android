@@ -7,6 +7,7 @@ import io.michaelrocks.libphonenumber.android.PhoneNumberUtil
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertTrue
+import org.junit.ClassRule
 import org.junit.Test
 import java.io.File
 import java.io.InputStream
@@ -14,13 +15,18 @@ import java.nio.file.Paths
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.R
-import org.p2p.wallet.utils.plantTimberToStdout
+import org.p2p.wallet.utils.TimberUnitTestInstance
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CountryCodeXmlParserTest {
 
-    init {
-        plantTimberToStdout("CountryCodeXmlParserTest")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "CountryCodeXmlParserTest"
+        )
     }
 
     private val currentWorkingDir = Paths.get("").toAbsolutePath().toString()

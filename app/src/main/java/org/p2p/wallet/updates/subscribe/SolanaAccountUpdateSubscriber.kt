@@ -14,33 +14,37 @@ private const val PARAMS_NUMBER = "number"
 
 class SolanaAccountUpdateSubscriber(
     private val socketUpdatesManager: SubscriptionUpdatesManager,
-    tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider
 ) : SubscriptionUpdateSubscriber {
 
-    private val request = RpcRequest(
-        method = SUBSCRIBE_METHOD_NAME,
-        params = listOf(
-            tokenKeyProvider.publicKey,
-            mapOf(
-                "commitment" to ConfirmationStatus.CONFIRMED.value,
-                "encoding" to Encoding.BASE64.encoding
+    private var request: RpcRequest? = null
+    private fun createRequest(): RpcRequest {
+        return RpcRequest(
+            method = SUBSCRIBE_METHOD_NAME,
+            params = listOf(
+                tokenKeyProvider.publicKey,
+                mapOf(
+                    "commitment" to ConfirmationStatus.CONFIRMED.value,
+                    "encoding" to Encoding.BASE64.encoding
+                )
             )
         )
-    )
-
-    private val cancelRequest = RpcMapRequest(
-        method = UNSUBSCRIBE_METHOD_NAME,
-        params = mapOf(PARAMS_NUMBER to request.id)
-    )
+    }
 
     override fun subscribe() {
+        request = createRequest()
         socketUpdatesManager.addSubscription(
-            request = request,
+            request = request ?: return,
             updateType = SocketSubscriptionUpdateType.SOL_TOKEN_UPDATED
         )
     }
 
     override fun unSubscribe() {
+        val id = request?.id ?: return
+        val cancelRequest = RpcMapRequest(
+            method = UNSUBSCRIBE_METHOD_NAME,
+            params = mapOf(PARAMS_NUMBER to id)
+        )
         socketUpdatesManager.removeSubscription(cancelRequest)
     }
 }

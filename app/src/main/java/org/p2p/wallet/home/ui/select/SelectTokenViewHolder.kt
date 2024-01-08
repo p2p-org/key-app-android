@@ -38,8 +38,8 @@ class SelectTokenViewHolder(
         .`as`(PictureDrawable::class.java)
         .listener(SvgSoftwareLayerSetter())
 
-    private val tokenImageView = binding.tokenImageView
-    private val wrappedImageView = binding.wrappedImageView
+    private val tokenImageView = binding.imageViewToken
+    private val wrappedImageView = binding.imageViewWrapped
     private val startAmountView = binding.startAmountView
     private val endAmountView = binding.endAmountView
 
@@ -71,6 +71,7 @@ class SelectTokenViewHolder(
             is Token.Eth -> {
                 // do nothing
             }
+            else -> Unit
         }
     }
 

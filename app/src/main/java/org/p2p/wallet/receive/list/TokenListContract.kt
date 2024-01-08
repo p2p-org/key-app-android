@@ -2,13 +2,13 @@ package org.p2p.wallet.receive.list
 
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 
 interface TokenListContract {
 
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)
-        fun showItems(items: List<TokenData>, scrollToUp: Boolean)
+        fun showItems(items: List<TokenMetadata>, scrollToUp: Boolean)
         fun showEmpty(searchText: String)
         fun reset()
     }

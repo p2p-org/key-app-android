@@ -1,12 +1,13 @@
 package org.p2p.wallet.auth.web3authsdk.mapper
 
 import com.google.gson.Gson
+import timber.log.Timber
+import org.p2p.core.utils.fromJsonReified
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.web3authsdk.Web3AuthApi.Web3AuthSdkInternalError
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthErrorResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
-import timber.log.Timber
-import org.p2p.core.utils.fromJsonReified
 
 private const val INTERNAL_ERROR_MESSAGE = "Web3Auth mapping failed"
 
@@ -57,5 +58,20 @@ class Web3AuthClientMapper(private val gson: Gson) {
         Timber.i(mappingError)
         Timber.i(responseJson)
         Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
+    }
+
+    fun fromNetworkGetUserData(responseJson: String): Result<GatewayOnboardingMetadata> = try {
+        val unescapedJson = responseJson.unescapeQuotes()
+        Result.success(gson.fromJsonReified<GatewayOnboardingMetadata>(unescapedJson)!!)
+    } catch (mappingError: Throwable) {
+        Timber.i(mappingError)
+        Timber.i(responseJson)
+        Result.failure(Web3AuthSdkInternalError(INTERNAL_ERROR_MESSAGE, mappingError))
+    }
+
+    private fun String.unescapeQuotes(): String {
+        return this
+            .replace("\\", "")
+            .removeSurrounding("\"")
     }
 }

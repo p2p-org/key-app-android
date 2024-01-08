@@ -3,6 +3,7 @@ package org.p2p.wallet.auth.interactor.restore
 import com.google.gson.JsonObject
 import timber.log.Timber
 import org.p2p.core.crashlytics.CrashLogger
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.OnboardingFlow.RestoreWallet
 import org.p2p.wallet.auth.model.RestoreError
@@ -19,7 +20,6 @@ import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignUpResponse
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseSource
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.core.crypto.toBase58Instance
 
 class UserRestoreInteractor(
     private val web3AuthApi: Web3AuthApi,
@@ -255,7 +255,6 @@ class UserRestoreInteractor(
         restoreFlowDataLocalRepository.userActualAccount?.also {
             tokenKeyProvider.keyPair = it.keypair
             tokenKeyProvider.publicKey = it.publicKey.toBase58()
-            crashLogger.setUserId(tokenKeyProvider.publicKey)
         } ?: error("User actual account is null, restoring a user is failed")
 
         usernameInteractor.tryRestoreUsername(tokenKeyProvider.publicKey.toBase58Instance())

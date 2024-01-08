@@ -6,8 +6,11 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadata
+import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.toLamports
 import org.p2p.uikit.utils.text.TextViewCellModel
@@ -19,7 +22,6 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
-import org.p2p.core.crypto.Base58String
 
 object JupiterSwapTestHelpers {
     val JUPITER_SOL_TOKEN = JupiterSwapToken(
@@ -30,7 +32,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
         tokenName = "Wrapped SOL",
         tokenSymbol = "SOL",
-        tags = listOf("solana", "sol", "wrapped-sol", "wrapped-solana")
+        tags = listOf("solana", "sol", "wrapped-sol", "wrapped-solana"),
+        tokenExtensions = TokenExtensions.NONE
     )
 
     val JUPITER_USDC_TOKEN = JupiterSwapToken(
@@ -41,7 +44,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
         tokenName = "USD Coin",
         tokenSymbol = "USDC",
-        tags = listOf("solana", "sol", "usdc", "usd-coin")
+        tags = listOf("solana", "sol", "usdc", "usd-coin"),
+        tokenExtensions = TokenExtensions.NONE
     )
     val DEFAULT_SWAPPABLE_TOKENS = listOf(
         JUPITER_SOL_TOKEN.tokenMint,
@@ -237,16 +241,14 @@ object JupiterSwapTestHelpers {
     ): Token.Active =
         Token.createSOL(
             "some public key",
-            TokenData(
+            TokenMetadata(
                 JUPITER_SOL_TOKEN.tokenMint.base58Value,
                 "Solana",
                 JUPITER_SOL_TOKEN.tokenSymbol,
                 iconUrl = JUPITER_SOL_TOKEN.logoUri,
                 decimals = JUPITER_SOL_TOKEN.decimals,
                 isWrapped = false,
-                serumV3Usdc = null,
-                serumV3Usdt = null,
-                coingeckoId = JUPITER_SOL_TOKEN.coingeckoId,
+                extensions = TokenMetadataExtension.NONE
             ),
             amount.toLamports(JUPITER_SOL_TOKEN.decimals).toLong(),
             rateToUsd
@@ -255,32 +257,28 @@ object JupiterSwapTestHelpers {
     fun createUSDCToken(amount: BigDecimal = BigDecimal("10.28")): Token.Active =
         Token.createSOL(
             publicKey = "some public key",
-            tokenData = TokenData(
+            tokenMetadata = TokenMetadata(
                 JUPITER_USDC_TOKEN.tokenMint.base58Value,
                 JUPITER_USDC_TOKEN.tokenName,
                 JUPITER_USDC_TOKEN.tokenSymbol,
                 iconUrl = JUPITER_USDC_TOKEN.logoUri,
                 decimals = JUPITER_USDC_TOKEN.decimals,
                 isWrapped = false,
-                serumV3Usdc = null,
-                serumV3Usdt = null,
-                coingeckoId = JUPITER_USDC_TOKEN.coingeckoId
+                extensions = TokenMetadataExtension.NONE
             ),
             amount = amount.toLamports(JUPITER_USDC_TOKEN.decimals).toLong(),
             solPrice = BigDecimal("1")
         )
 
-    fun Token.Active.toTokenData(): TokenData {
-        return TokenData(
+    fun Token.Active.toTokenData(): TokenMetadata {
+        return TokenMetadata(
             mintAddress = mintAddress,
             name = tokenName,
             symbol = tokenSymbol,
             iconUrl = iconUrl,
             decimals = decimals,
             isWrapped = isWrapped,
-            serumV3Usdc = serumV3Usdc,
-            serumV3Usdt = serumV3Usdt,
-            coingeckoId = coingeckoId
+            extensions = TokenMetadataExtension.NONE
         )
     }
 }

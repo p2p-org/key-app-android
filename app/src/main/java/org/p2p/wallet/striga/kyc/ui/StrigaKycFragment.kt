@@ -11,8 +11,6 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.home.ui.container.MainContainerFragment
-import org.p2p.wallet.striga.kyc.sdk.StrigaKycSdkFacade
-import org.p2p.wallet.striga.kyc.sdk.StrigaSdkInitParams
 import org.p2p.wallet.utils.popBackStackTo
 
 class StrigaKycFragment :
@@ -30,8 +28,6 @@ class StrigaKycFragment :
 
     override val presenter: StrigaKycContract.Presenter by inject()
 
-    private val strigaKycSdkFacade = StrigaKycSdkFacade()
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -42,10 +38,6 @@ class StrigaKycFragment :
                 }
             }
         }
-    }
-
-    override fun startKyc(initParams: StrigaSdkInitParams) {
-        strigaKycSdkFacade.startKycFlow(requireActivity(), initParams)
     }
 
     override fun navigateBack() {

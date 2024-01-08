@@ -1,108 +1,188 @@
 package org.p2p.wallet.home.ui.container
 
-import kotlinx.coroutines.CoroutineScope
+import timber.log.Timber
+import java.math.BigDecimal
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.token.filterTokensForWalletScreen
+import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.MetadataInteractor
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
-import org.p2p.wallet.common.feature_toggles.toggles.remote.SolendEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
-import org.p2p.wallet.home.analytics.HomeAnalytics
-import org.p2p.wallet.home.interactor.RefreshErrorInteractor
-import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.swap.analytics.SwapAnalytics
+import org.p2p.wallet.history.ui.history.HistoryFragment
+import org.p2p.wallet.home.deeplinks.DeeplinkHandler
+import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
+import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
+import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
+import org.p2p.wallet.home.ui.wallet.interactor.WalletStrigaInteractor
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
+import org.p2p.wallet.settings.ui.settings.SettingsFragment
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokensState
+import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.utils.unsafeLazy
 
 class MainContainerPresenter(
-    private val refreshErrorInteractor: RefreshErrorInteractor,
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
-    private val sellInteractor: SellInteractor,
-    private val swapAnalytics: SwapAnalytics,
-    private val solendFeatureToggle: SolendEnabledFeatureToggle,
-    private val sellEnabledFeatureToggle: SellEnabledFeatureToggle,
-    private val homeAnalytics: HomeAnalytics
+    private val userInteractor: UserInteractor,
+    private val walletStrigaInteractor: WalletStrigaInteractor,
+    private val balanceMapper: WalletBalanceMapper,
+    private val mainScreenAnalytics: MainScreenAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
+
+    private val deeplinkHandler by unsafeLazy {
+        DeeplinkHandler(
+            coroutineScope = this,
+            screenNavigator = view,
+            tokenServiceCoordinator = tokenServiceCoordinator,
+            userInteractor = userInteractor,
+            deeplinkTopLevelHandler = ::handleDeeplinkTarget
+        )
+    }
 
     override fun attach(view: MainContainerContract.View) {
         super.attach(view)
-        observeRefreshEvent()
+        observeInternetState()
+    }
+
+    override fun loadMainNavigation() {
+        view?.setMainNavigationConfiguration(getScreenConfiguration())
+    }
+
+    private fun getScreenConfiguration(): List<ScreenConfiguration> = buildList {
+        add(ScreenConfiguration(ScreenTab.WALLET_SCREEN, MyCryptoFragment::class))
+        add(
+            ScreenConfiguration(
+                screen = ScreenTab.SWAP_SCREEN,
+                kClass = JupiterSwapFragment::class,
+                bundle = JupiterSwapFragment.createArgs(source = SwapOpenedFrom.BOTTOM_NAVIGATION)
+            )
+        )
+        add(ScreenConfiguration(ScreenTab.HISTORY_SCREEN, HistoryFragment::class))
+        add(ScreenConfiguration(ScreenTab.SETTINGS_SCREEN, SettingsFragment::class))
     }
 
     override fun loadBottomNavigationMenu() {
-        val menuRes = when {
-            solendFeatureToggle.isFeatureEnabled -> R.menu.menu_ui_kit_bottom_navigation_earn
-            sellEnabledFeatureToggle.isFeatureEnabled -> R.menu.menu_ui_kit_bottom_navigation_sell
-            else -> R.menu.menu_ui_kit_bottom_navigation
-        }
+        view?.inflateBottomNavigationMenu(menuRes = R.menu.menu_ui_kit_bottom_navigation)
 
-        view?.inflateBottomNavigationMenu(menuRes = menuRes)
-
+        checkIncomeTransfers()
         checkDeviceShare()
-    }
-
-    override fun launchInternetObserver(coroutineScope: CoroutineScope) {
-        connectionManager.connectionStatus
-            .onEach { isConnected ->
-                if (!isConnected) view?.showConnectionError(isVisible = true)
-            }
-            .launchIn(coroutineScope)
     }
 
     override fun initializeDeeplinks() {
         val supportedTargets = setOf(
-            DeeplinkTarget.HOME,
             DeeplinkTarget.HISTORY,
             DeeplinkTarget.SETTINGS,
+            DeeplinkTarget.BUY,
+            DeeplinkTarget.SEND,
+            DeeplinkTarget.SWAP,
+            DeeplinkTarget.CASH_OUT
         )
-        deeplinksManager.subscribeOnDeeplinks(supportedTargets)
-            .onEach { view?.navigateFromDeeplink(it) }
-            .launchIn(this)
-
-        deeplinksManager.executeHomePendingDeeplink()
-        deeplinksManager.executeTransferPendingAppLink()
-    }
-
-    override fun logSwapOpened() {
-        launch {
-            val isSellEnabled = sellInteractor.isSellAvailable()
-            swapAnalytics.logSwapOpenedFromMain(isSellEnabled = isSellEnabled)
+        launchSupervisor {
+            deeplinksManager.subscribeOnDeeplinks(supportedTargets)
+                .onEach { view?.navigateFromDeeplink(it) }
+                .collect(deeplinkHandler::handle)
+            deeplinksManager.executeHomePendingDeeplink()
+            deeplinksManager.executeTransferPendingAppLink()
         }
     }
 
-    override fun logHomeOpened() {
-        homeAnalytics.logBottomNavigationHomeClicked()
+    override fun observeUserTokens() {
+        launch {
+            tokenServiceCoordinator.observeUserTokens()
+                .collect { handleTokenState(it) }
+        }
     }
 
-    override fun logEarnOpened() {
-        homeAnalytics.logBottomNavigationEarnClicked()
+    override fun logWalletOpened() {
+        mainScreenAnalytics.logMainScreenMainClick()
+    }
+
+    override fun logCryptoOpened() {
+        mainScreenAnalytics.logMainScreenCryptoClick()
     }
 
     override fun logHistoryOpened() {
-        homeAnalytics.logBottomNavigationHistoryClicked()
+        mainScreenAnalytics.logMainScreenHistoryClick()
     }
 
     override fun logSettingsOpened() {
-        homeAnalytics.logBottomNavigationSettingsClicked()
+        mainScreenAnalytics.logMainScreenSettingsClick()
     }
 
-    private fun observeRefreshEvent() {
-        refreshErrorInteractor.getRefreshEventFlow()
-            .onEach {
-                if (connectionManager.connectionStatus.value) {
-                    view?.showConnectionError(isVisible = false)
-                }
+    override fun onSendClicked() {
+        mainScreenAnalytics.logMainScreenSendClick()
+        launch {
+            val userTokens = tokenServiceCoordinator.getUserTokens()
+            val isAccountEmpty = userTokens.isEmpty() || userTokens.all { it.isZero }
+            if (isAccountEmpty) {
+                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
+                view?.navigateToSendNoTokens(validTokenToBuy)
+            } else {
+                view?.navigateToSendScreen()
+            }
+        }
+    }
+
+    private fun observeInternetState() {
+        connectionManager.connectionStatus
+            .onEach { isConnected ->
+                if (!isConnected) view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
             }
             .launchIn(this)
+    }
+
+    private fun handleDeeplinkTarget(target: DeeplinkTarget) {
+        when (target) {
+            DeeplinkTarget.SEND -> onSendClicked()
+            else -> Timber.d("Unsupported deeplink target! $target")
+        }
     }
 
     private fun checkDeviceShare() {
         val hasDifferentDeviceShare = metadataInteractor.hasDifferentDeviceShare()
         view?.showSettingsBadgeVisible(isVisible = hasDifferentDeviceShare)
+    }
+
+    private fun checkIncomeTransfers() {
+        launch {
+            walletStrigaInteractor.observeOnOffRampTokens()
+                .map { it.hasTokens }
+                .collect {
+                    view?.showWalletBadgeVisible(isVisible = it)
+                }
+        }
+    }
+
+    private fun handleTokenState(newState: UserTokensState) {
+        when (newState) {
+            is UserTokensState.Idle -> Unit
+            is UserTokensState.Loading -> Unit
+            is UserTokensState.Refreshing -> Unit
+            is UserTokensState.Error -> {
+                view?.showWalletBalance(balanceMapper.formatBalance(BigDecimal.ZERO))
+            }
+            is UserTokensState.Empty -> {
+                view?.showCryptoBadgeVisible(isVisible = false)
+                view?.showWalletBalance(balanceMapper.formatBalance(BigDecimal.ZERO))
+            }
+            is UserTokensState.Loaded -> {
+                // todo: this new filter supposed to be used for new design
+                val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
+                val balance = filteredTokens.sumOf { it.total }
+                view?.showWalletBalance(balanceMapper.formatBalance(balance))
+                view?.showWalletBalance("Wallet")
+                view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
+            }
+        }
     }
 }

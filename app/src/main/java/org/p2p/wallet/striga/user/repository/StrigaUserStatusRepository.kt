@@ -7,15 +7,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.wallet.kyc.model.StrigaKycStatusBanner
-import org.p2p.wallet.striga.StrigaUserIdProvider
-import org.p2p.wallet.striga.model.StrigaDataLayerError
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.model.toSuccessResult
-import org.p2p.wallet.striga.user.StrigaStorageContract
+import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
+import org.p2p.wallet.home.ui.wallet.mapper.model.StrigaKycStatusBanner
+import org.p2p.wallet.striga.common.StrigaUserIdProvider
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.common.model.toSuccessResult
 import org.p2p.wallet.striga.user.model.StrigaUserInitialDetails
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
 
 private const val TAG = "StrigaUserStatusRepository"
 
@@ -26,6 +27,7 @@ class StrigaUserStatusRepository(
     private val strigaUserRepository: StrigaUserRepository,
     private val strigaStorage: StrigaStorageContract,
     private val inAppFeatureFlags: InAppFeatureFlags,
+    private val strigaSignupEnabledFeatureToggle: StrigaSignupEnabledFeatureToggle,
     private val strigaUserRepositoryMapper: StrigaUserRepositoryMapper,
 ) : CoroutineScope by CoroutineScope(dispatchers.io) {
 
@@ -42,6 +44,8 @@ class StrigaUserStatusRepository(
     }
 
     fun getBannerFlow(): StateFlow<StrigaKycStatusBanner?> {
+        if (!strigaSignupEnabledFeatureToggle.isFeatureEnabled) return MutableStateFlow(null)
+
         return if (bannerMock != null) MutableStateFlow(bannerMock) else strigaBannerFlow
     }
 

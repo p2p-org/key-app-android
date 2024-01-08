@@ -8,5 +8,6 @@
         android:iconTint="@color/icons_night"
         android:iconTintMode="multiply"
         android:title="@null"
+        android:visible="false"
         app:showAsAction="always" />
 </menu>

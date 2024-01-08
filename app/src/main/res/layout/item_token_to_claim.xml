@@ -6,6 +6,7 @@
     android:id="@id/contentView"
     android:layout_width="match_parent"
     android:layout_height="72dp"
+    android:layout_marginHorizontal="12dp"
     android:background="@color/backgroundPrimary"
     android:clickable="true"
     android:focusable="true"
@@ -47,12 +48,12 @@
             android:layout_marginHorizontal="12dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textAppearance="@style/UiKit.TextAppearance.Regular.Text2"
+            android:text="@string/incoming_transfer"
+            android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text3"
             app:layout_constraintBottom_toTopOf="@id/textViewTokenTotal"
             app:layout_constraintEnd_toStartOf="@id/buttonClaim"
             app:layout_constraintStart_toEndOf="@id/imageViewToken"
-            app:layout_constraintTop_toTopOf="@id/imageViewToken"
-            tools:text="Wrapped Ethereum" />
+            app:layout_constraintTop_toTopOf="@id/imageViewToken" />
 
         <TextView
             android:id="@+id/textViewTokenTotal"

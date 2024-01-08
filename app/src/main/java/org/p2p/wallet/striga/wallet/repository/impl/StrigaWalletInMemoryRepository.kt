@@ -1,14 +1,47 @@
 package org.p2p.wallet.striga.wallet.repository.impl
 
+import org.p2p.wallet.striga.user.storage.StrigaStorageContract
+import org.p2p.wallet.striga.wallet.models.StrigaCryptoAccountDetails
 import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaUserBankingDetails
 import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
 
-class StrigaWalletInMemoryRepository {
-    var fiatAccountDetails: StrigaFiatAccountDetails? = null
-    var userWallet: StrigaUserWallet? = null
+internal class StrigaWalletInMemoryRepository(
+    private val strigaStorage: StrigaStorageContract
+) {
+    var fiatAccountDetails: StrigaFiatAccountDetails?
+        get() = cachedFiatAccountDetails ?: strigaStorage.fiatAccount?.also { cachedFiatAccountDetails = it }
+        set(value) {
+            cachedFiatAccountDetails = value
+            strigaStorage.fiatAccount = value
+        }
 
-    fun clear() {
-        fiatAccountDetails = null
-        userWallet = null
-    }
+    var cryptoAccountDetails: StrigaCryptoAccountDetails?
+        get() = cachedCryptoAccountDetails ?: strigaStorage.cryptoAccount?.also { cachedCryptoAccountDetails = it }
+        set(value) {
+            cachedCryptoAccountDetails = value
+            strigaStorage.cryptoAccount = value
+        }
+
+    var userWallet: StrigaUserWallet?
+        get() = cachedUserWallet ?: strigaStorage.userWallet?.also { cachedUserWallet = it }
+        set(value) {
+            cachedUserWallet = value
+            strigaStorage.userWallet = value
+        }
+
+    var userEurBankingDetails: StrigaUserBankingDetails?
+        get() = cachedUserBankingDetails ?: strigaStorage.bankingDetails?.also { cachedUserBankingDetails = it }
+        set(value) {
+            // no need to save empty bic and iban, try to fetch again if needed
+            if (value != null && !value.bankingBic.isNullOrEmpty() && !value.bankingIban.isNullOrEmpty()) {
+                cachedUserBankingDetails = value
+                strigaStorage.bankingDetails = value
+            }
+        }
+
+    private var cachedFiatAccountDetails: StrigaFiatAccountDetails? = null
+    private var cachedCryptoAccountDetails: StrigaCryptoAccountDetails? = null
+    private var cachedUserWallet: StrigaUserWallet? = null
+    private var cachedUserBankingDetails: StrigaUserBankingDetails? = null
 }

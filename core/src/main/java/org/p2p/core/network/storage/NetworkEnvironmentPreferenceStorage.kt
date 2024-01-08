@@ -32,6 +32,7 @@ class NetworkEnvironmentPreferenceStorage(
         NetworkEnvironment.DEVNET.endpoint -> NetworkEnvironment.DEVNET
         NetworkEnvironment.SOLANA.endpoint -> NetworkEnvironment.SOLANA
         NetworkEnvironment.RPC_POOL.endpoint -> NetworkEnvironment.RPC_POOL
+        "https://p2p.rpcpool.com" -> NetworkEnvironment.RPC_POOL
         else -> null
     }
 

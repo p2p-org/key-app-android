@@ -1,16 +1,14 @@
 package org.p2p.uikit.atoms
 
 import androidx.annotation.DrawableRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.use
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.constraintlayout.widget.ConstraintLayout
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.R
 import org.p2p.uikit.databinding.WidgetTransactionImageBinding
-import org.p2p.uikit.utils.dip
 import org.p2p.uikit.utils.inflateViewBinding
 import org.p2p.uikit.utils.withImageOrGone
 

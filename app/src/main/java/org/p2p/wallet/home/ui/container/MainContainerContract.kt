@@ -1,28 +1,36 @@
 package org.p2p.wallet.home.ui.container
 
 import androidx.annotation.MenuRes
-import kotlinx.coroutines.CoroutineScope
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
 import org.p2p.wallet.deeplinks.DeeplinkData
+import org.p2p.wallet.home.deeplinks.DeeplinkScreenNavigator
 
 interface MainContainerContract {
 
-    interface View : MvpView {
+    interface View : MvpView, DeeplinkScreenNavigator {
+        fun setMainNavigationConfiguration(screensConfiguration: List<ScreenConfiguration>)
         fun inflateBottomNavigationMenu(@MenuRes menuRes: Int)
-        fun showConnectionError(isVisible: Boolean)
         fun showSettingsBadgeVisible(isVisible: Boolean)
+        fun showCryptoBadgeVisible(isVisible: Boolean)
+        fun showWalletBadgeVisible(isVisible: Boolean)
+        fun showWalletBalance(balance: String)
         fun navigateFromDeeplink(data: DeeplinkData)
+
+        fun navigateToSendNoTokens(fallbackToken: Token)
+        fun navigateToSendScreen()
     }
 
     interface Presenter : MvpPresenter<View> {
+        fun loadMainNavigation()
         fun loadBottomNavigationMenu()
-        fun launchInternetObserver(coroutineScope: CoroutineScope)
         fun initializeDeeplinks()
-        fun logSwapOpened()
-        fun logHomeOpened()
-        fun logEarnOpened()
+        fun observeUserTokens()
+        fun logWalletOpened()
+        fun logCryptoOpened()
         fun logHistoryOpened()
         fun logSettingsOpened()
+        fun onSendClicked()
     }
 }

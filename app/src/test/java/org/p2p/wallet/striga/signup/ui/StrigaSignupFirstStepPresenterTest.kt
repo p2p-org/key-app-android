@@ -16,6 +16,7 @@ import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
 import java.io.File
 import java.io.InputStream
@@ -25,6 +26,8 @@ import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
@@ -33,24 +36,23 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeInMemoryRepository
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.signup.StrigaSignUpFirstStepContract
-import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
-import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.signup.validation.PhoneNumberInputValidator
-import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.signup.steps.first.StrigaSignUpFirstStepContract
+import org.p2p.wallet.striga.signup.steps.first.StrigaSignUpFirstStepPresenter
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupFieldState
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.signup.steps.validation.PhoneNumberInputValidator
+import org.p2p.wallet.striga.signup.steps.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.mutableListQueueOf
-import org.p2p.wallet.utils.plantTimberToStdout
 
 private val SupportedCountry = CountryCode(
     countryName = "United Kingdom",
@@ -97,8 +99,16 @@ class StrigaSignupFirstStepPresenterTest {
     private val appScope: AppScope = TestAppScope(dispatchers.ui)
 
     init {
-        plantTimberToStdout("StrigaSignupFirstStepPresenterTest")
         initCountryCodeLocalRepository()
+    }
+
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "StrigaSignupFirstStepPresenterTest"
+        )
     }
 
     private fun createPresenter(): StrigaSignUpFirstStepPresenter {
@@ -144,8 +154,9 @@ class StrigaSignupFirstStepPresenterTest {
                 signupDataRepository = signupDataRepository,
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor,
-                strigaSmsInputInteractor = mockk(relaxed = true),
-                strigaUserStatusRepository = mockk(relaxed = true)
+                strigaOtpConfirmInteractor = mockk(relaxed = true),
+                strigaUserStatusRepository = mockk(relaxed = true),
+                strigaPresetDataLocalRepository = mockk(relaxed = true),
             )
         )
     }

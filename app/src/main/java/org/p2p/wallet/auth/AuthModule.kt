@@ -17,7 +17,6 @@ import org.p2p.wallet.auth.gateway.parser.CountryCodeXmlParser
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.auth.interactor.AuthLogoutInteractor
 import org.p2p.wallet.auth.interactor.CreateWalletInteractor
-import org.p2p.wallet.auth.interactor.FileInteractor
 import org.p2p.wallet.auth.interactor.GatewayMetadataMerger
 import org.p2p.wallet.auth.interactor.MetadataChangesLogger
 import org.p2p.wallet.auth.interactor.MetadataInteractor
@@ -99,20 +98,18 @@ object AuthModule {
             AuthLogoutInteractor(
                 context = get(),
                 secureStorage = get(),
-                renBtcInteractor = get(),
                 sharedPreferences = get(),
                 tokenKeyProvider = get(),
                 sendModeProvider = get(),
-                mainLocalRepository = get(),
+                userTokensLocalRepository = get(),
                 recipientsLocalRepository = get(),
                 updatesManager = get(),
-                transactionManager = get(),
                 transactionDetailsLocalRepository = get(),
                 pushNotificationsInteractor = get(),
                 appScope = get(),
                 analytics = get(),
                 jupiterSwapStorage = get(),
-                strigaWalletInMemoryRepository = get()
+                strigaStorage = get()
             )
         }
 
@@ -183,7 +180,6 @@ object AuthModule {
         }
         singleOf(::SignUpFlowDataLocalRepository)
         factoryOf(::UserSignUpInteractor)
-        factoryOf(::FileInteractor)
         singleOf(::OnboardingInteractor)
 
         factoryOf(::OnboardingRootPresenter) bind OnboardingRootContract.Presenter::class
@@ -209,8 +205,7 @@ object AuthModule {
         factory { (timerLeftTime: Long) ->
             OnboardingGeneralErrorTimerPresenter(
                 timerLeftTime = timerLeftTime,
-                smsInputTimer = get(named(SMS_TIMER_ONBOARDING)),
-                fileInteractor = get()
+                smsInputTimer = get(named(SMS_QUALIFIER))
             )
         } bind OnboardingGeneralErrorTimerContract.Presenter::class
         factoryOf(::OnboardingGeneralErrorPresenter) bind OnboardingGeneralErrorContract.Presenter::class
@@ -221,8 +216,23 @@ object AuthModule {
         factoryOf(::TorusKeyInteractor)
         factoryOf(::UserRestoreInteractor)
         factoryOf(::GatewayMetadataMerger)
-        factoryOf(::MetadataInteractor)
         factoryOf(::MetadataChangesLogger)
         singleOf(::RestoreStateMachine)
+
+        factory {
+            MetadataInteractor(
+                gatewayServiceRepository = get(),
+                signUpDetailsStorage = get(),
+                tokenKeyProvider = get(),
+                seedPhraseProvider = get(),
+                accountStorage = get(),
+                gatewayMetadataMerger = get(),
+                ethereumInteractor = get(),
+                bridgeFeatureToggle = get(),
+                metadataChangesLogger = get(),
+                restoreFlowDataLocalRepository = get(),
+                web3AuthApi = get(),
+            )
+        }
     }
 }

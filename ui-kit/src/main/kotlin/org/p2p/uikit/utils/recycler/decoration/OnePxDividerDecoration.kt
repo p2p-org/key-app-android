@@ -87,7 +87,10 @@ class OnePxDividerDecoration(
         val position = parent.getChildAdapterPosition(child)
         val adapter = parent.adapter
         val isLastItem = adapter != null && position == adapter.itemCount - 1
-        return (position != RecyclerView.NO_POSITION && (!isLastItem || isLastItemDecorated)
-            && shouldDrawDivider(position, adapter))
+        return (
+            position != RecyclerView.NO_POSITION &&
+                (!isLastItem || isLastItemDecorated) &&
+                shouldDrawDivider(position, adapter)
+            )
     }
 }

@@ -1,69 +1,44 @@
 package org.p2p.wallet.striga.user
 
-import android.content.SharedPreferences
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import io.mockk.every
-import io.mockk.mockk
+import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
-import java.math.BigDecimal
-import org.p2p.core.BuildConfig
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.crypto.Base64String
-import org.p2p.core.network.data.transactionerrors.RpcTransactionError
-import org.p2p.core.network.data.transactionerrors.RpcTransactionErrorTypeAdapter
-import org.p2p.core.network.data.transactionerrors.RpcTransactionInstructionErrorParser
-import org.p2p.core.network.gson.Base58TypeAdapter
-import org.p2p.core.network.gson.Base64TypeAdapter
-import org.p2p.core.network.gson.BigDecimalTypeAdapter
+import org.p2p.wallet.common.EncryptedSharedPreferences
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDetails
 import org.p2p.wallet.striga.user.model.StrigaUserVerificationStatus
+import org.p2p.wallet.striga.user.storage.StrigaStorage
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountDetails
+import org.p2p.wallet.striga.wallet.models.StrigaFiatAccountStatus
+import org.p2p.wallet.striga.wallet.models.StrigaUserWallet
+import org.p2p.wallet.striga.wallet.models.ids.StrigaWalletId
+import org.p2p.wallet.utils.InMemorySharedPreferences
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.assertThat
-import org.p2p.wallet.utils.plantTimberToStdout
+import org.p2p.wallet.utils.crypto.MockedKeyStoreWrapper
 
 class StrigaStorageTest {
 
-    init {
-        plantTimberToStdout("StrigaStorageTest")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "StrigaStorageTest"
+        )
     }
 
-    private val gson: Gson
-        get() {
-            val transactionErrorTypeAdapter = RpcTransactionErrorTypeAdapter(RpcTransactionInstructionErrorParser())
-            return GsonBuilder()
-                .apply { if (BuildConfig.DEBUG) setPrettyPrinting() }
-                .registerTypeAdapter(BigDecimal::class.java, BigDecimalTypeAdapter)
-                .registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
-                .registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
-                .registerTypeAdapter(RpcTransactionError::class.java, transactionErrorTypeAdapter)
-                .setLenient()
-                .disableHtmlEscaping()
-                .create()
-        }
+    private val prefs = EncryptedSharedPreferences(
+        keyStoreWrapper = MockedKeyStoreWrapper.get(),
+        sharedPreferences = InMemorySharedPreferences(),
+        gson = Gson()
+    )
 
-    private val data = mutableMapOf<String, Any>()
-
-    private val prefs: SharedPreferences = mockk() {
-        every { getString(any(), any()) } answers {
-            data.getOrDefault(firstArg(), secondArg<String?>()) as String?
-        }
-        every { getLong(any(), any()) } answers {
-            data.getOrDefault(firstArg(), secondArg<Long?>()) as Long
-        }
-        every { edit() } returns mockk {
-            val that = this
-            every { apply() } returns Unit
-            every { putLong(any(), any()) } answers {
-                data[firstArg()] = secondArg()
-                that
-            }
-            every { putString(any(), any()) } answers {
-                data[firstArg()] = secondArg()
-                that
-            }
-        }
+    @Before
+    fun setUp() {
+        prefs.clear()
     }
 
     @Test
@@ -75,11 +50,55 @@ class StrigaStorageTest {
             kycStatus = StrigaUserVerificationStatus.REJECTED
         )
 
-        val storage = StrigaStorage(prefs, gson)
+        val storage = StrigaStorage(prefs)
         storage.userStatus = expectedStatus
 
         storage.userStatus.assertThat()
             .isNotNull()
             .isEqualTo(expectedStatus)
+    }
+
+    @Test
+    fun `GIVEN user wallet WHEN save it THEN the data is correctly saved as json`() {
+        val expectedWallet = StrigaUserWallet(
+            walletId = StrigaWalletId(value = "vituperata"),
+            userId = "liber",
+            accounts = listOf()
+        )
+
+        val storage = StrigaStorage(prefs)
+        storage.userWallet = expectedWallet
+
+        storage.userWallet.assertThat()
+            .isNotNull()
+            .isEqualTo(expectedWallet)
+    }
+
+    @Test
+    fun `GIVEN user fiat details WHEN save it THEN the data is correctly saved as json`() {
+        val expectedFiat = StrigaFiatAccountDetails(
+            currency = "accusata",
+            status = StrigaFiatAccountStatus.ACTIVE,
+            internalAccountId = "vocibus",
+            bankCountry = "Mexico",
+            bankAddress = "donec",
+            iban = "regione",
+            bic = "diam",
+            accountNumber = "debet",
+            bankName = "Corine Abbott",
+            bankAccountHolderName = "Rodger Mueller",
+            provider = "error",
+            paymentType = null,
+            isDomesticAccount = false,
+            routingCodeEntries = listOf(),
+            payInReference = null
+        )
+
+        val storage = StrigaStorage(prefs)
+        storage.fiatAccount = expectedFiat
+
+        storage.fiatAccount.assertThat()
+            .isNotNull()
+            .isEqualTo(expectedFiat)
     }
 }

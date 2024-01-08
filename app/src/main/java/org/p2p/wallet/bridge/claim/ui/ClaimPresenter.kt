@@ -7,6 +7,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.common.TextContainer
+import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.asUsd
@@ -28,11 +29,10 @@ import org.p2p.wallet.bridge.model.BridgeResult
 import org.p2p.wallet.bridge.model.BridgeResult.Error.ContractError
 import org.p2p.wallet.bridge.model.BridgeResult.Error.NotEnoughAmount
 import org.p2p.wallet.bridge.model.toBridgeAmount
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.home.ui.main.UserTokensPolling
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
-import org.p2p.wallet.transaction.model.TransactionState
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.utils.emptyString
 
 const val DEFAULT_DELAY_IN_MILLIS = 30_000L
@@ -44,8 +44,8 @@ class ClaimPresenter(
     private val claimUiMapper: ClaimUiMapper,
     private val appScope: AppScope,
     private val claimAnalytics: ClaimAnalytics,
-    private val userTokensPolling: UserTokensPolling,
-    private val alarmErrorsLogger: AlarmErrorsLogger
+    private val alarmErrorsLogger: AlarmErrorsLogger,
+    private val tokenServiceCoordinator: TokenServiceCoordinator
 ) : BasePresenter<ClaimContract.View>(), ClaimContract.Presenter {
 
     private var refreshJob: Job? = null
@@ -184,12 +184,14 @@ class ClaimPresenter(
 
                 ethereumInteractor.sendClaimBundle(signatures = signatures)
 
-                val transactionState = TransactionState.ClaimProgress(bundleId = latestBundleId)
+                val transactionState = TransactionState.Progress(
+                    description = R.string.bridge_claim_description_progress
+                )
                 transactionManager.emitTransactionState(
                     transactionId = latestBundleId,
                     state = transactionState
                 )
-                ethereumInteractor.loadWalletTokens()
+                tokenServiceCoordinator.refresh()
             } catch (e: BridgeResult.Error) {
                 Timber.e(e, "Failed to send signed bundle: ${e.message}")
                 logClaimErrorAlarm(e)

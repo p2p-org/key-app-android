@@ -12,6 +12,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.p2p.core.network.environment.TorusEnvironment
 import org.p2p.wallet.BuildConfig
+import org.p2p.wallet.auth.gateway.repository.model.GatewayOnboardingMetadata
 import org.p2p.wallet.auth.repository.AuthRepository
 import org.p2p.wallet.auth.web3authsdk.mapper.Web3AuthClientMapper
 import org.p2p.wallet.auth.web3authsdk.response.Web3AuthSignInResponse
@@ -160,7 +161,6 @@ class Web3AuthApiClient(
 
             Timber.tag(TAG).i("refreshDeviceShare triggered")
 
-            onboardingWebView.evaluateJavascript("console.log(lastFacade)", null)
             onboardingWebView.evaluateJavascript(
                 callToLastFacade(
                     jsMethodCall = "refreshDeviceShare()"
@@ -168,6 +168,41 @@ class Web3AuthApiClient(
                 null
             )
             durationTracker.startMethodCall("refreshDeviceShare")
+        }
+    }
+
+    override suspend fun getUserMetadata(): GatewayOnboardingMetadata {
+        return suspendCancellableCoroutine {
+            this.continuation = it
+
+            Timber.tag(TAG).i("getUserData triggered")
+
+            onboardingWebView.evaluateJavascript(
+                callToLastFacade(
+                    jsMethodCall = "getUserData()"
+                ),
+                null
+            )
+            durationTracker.startMethodCall("getUserData")
+        }
+    }
+
+    override suspend fun setUserMetadata(
+        metadata: GatewayOnboardingMetadata
+    ) {
+        return suspendCancellableCoroutine {
+            this.continuation = it
+
+            Timber.tag(TAG).i("setUserData triggered")
+
+            val metadataAsJsObject = gson.toJson(metadata)
+            onboardingWebView.evaluateJavascript(
+                callToLastFacade(
+                    jsMethodCall = "setUserData($metadataAsJsObject)"
+                ),
+                null
+            )
+            durationTracker.startMethodCall("setUserData")
         }
     }
 
@@ -263,6 +298,26 @@ class Web3AuthApiClient(
             Timber.tag(TAG).d(msg)
             (continuation as? CancellableContinuation<Web3AuthSignUpResponse.ShareDetailsWithMeta>)
                 ?.resumeWith(mapper.fromNetworkRefreshDeviceShare(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
+        }
+
+        @JavascriptInterface
+        fun handleGetUserData(msg: String) {
+            durationTracker.finishLastMethodCall()
+
+            Timber.tag(TAG).d(msg)
+            (continuation as? CancellableContinuation<GatewayOnboardingMetadata>)
+                ?.resumeWith(mapper.fromNetworkGetUserData(msg))
+                ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
+        }
+
+        @JavascriptInterface
+        fun handleSetUserData() {
+            durationTracker.finishLastMethodCall()
+
+            Timber.tag(TAG).d("handleSetUserData called")
+            (continuation as? CancellableContinuation<Unit>)
+                ?.resumeWith(Result.success(Unit))
                 ?: continuation?.resumeWithException(ClassCastException("Web3Auth continuation cast failed"))
         }
 

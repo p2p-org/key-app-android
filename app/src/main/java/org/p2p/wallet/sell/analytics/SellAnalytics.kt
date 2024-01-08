@@ -1,6 +1,6 @@
 package org.p2p.wallet.sell.analytics
 
-import org.p2p.wallet.common.analytics.Analytics
+import org.p2p.core.analytics.Analytics
 
 private const val SELL_CLICKED = "Sell_Clicked"
 private const val SELL_CLICKED_SERVER_ERROR = "Sell_Clicked_Server_Error"

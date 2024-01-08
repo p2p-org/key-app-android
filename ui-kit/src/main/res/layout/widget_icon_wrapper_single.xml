@@ -25,7 +25,7 @@
             tools:src="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/emojiViewIcon"
+            android:id="@+id/textViewEmoji"
             android:layout_width="28dp"
             android:layout_height="32dp"
             android:autoSizeTextType="uniform"

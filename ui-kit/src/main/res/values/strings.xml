@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="common_wallet">Wallet</string>
+    <string name="common_crypto">Crypto</string>
     <string name="common_history">History</string>
     <string name="common_send">Send</string>
     <string name="common_buy">Buy</string>
@@ -14,6 +15,9 @@
     <string name="common_swap">Swap</string>
     <string name="common_all">All</string>
     <string name="common_share">Share</string>
+    <string name="common_iban">IBAN</string>
+    <string name="common_bic">BIC</string>
+    <string name="common_withdraw">Withdraw</string>
 
     <string name="tip_button_next_title">Next</string>
     <string name="tip_button_skip_all_title">Skip all</string>

@@ -5,12 +5,14 @@ import kotlinx.coroutines.launch
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.interactor.AuthInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.user.interactor.UserInteractor
+import org.p2p.wallet.home.events.AppLoaderFacade
+import org.p2p.wallet.user.interactor.TokenMetadataInteractor
 
 class SplashPresenter(
     private val authInteractor: AuthInteractor,
     private val onboardingAnalytics: OnboardingAnalytics,
-    private val userInteractor: UserInteractor
+    private val tokenMetadataInteractor: TokenMetadataInteractor,
+    private val appLoaderFacade: AppLoaderFacade,
 ) : BasePresenter<SplashContract.View>(), SplashContract.Presenter {
 
     override fun attach(view: SplashContract.View) {
@@ -25,7 +27,7 @@ class SplashPresenter(
     private fun loadTokensList() {
         launch {
             try {
-                userInteractor.loadAllTokensData()
+                tokenMetadataInteractor.loadAllTokensMetadata()
             } catch (e: Throwable) {
                 Timber.e(e, "Error loading initial tokens data")
             } finally {
@@ -35,10 +37,17 @@ class SplashPresenter(
     }
 
     private fun openRootScreen() {
-        if (authInteractor.isAuthorized()) {
-            view?.navigateToSignIn()
-        } else {
-            view?.navigateToOnboarding()
+        launch {
+            if (authInteractor.isAuthorized()) {
+                launchAppLoaders()
+                view?.navigateToSignIn()
+            } else {
+                view?.navigateToOnboarding()
+            }
         }
+    }
+
+    private suspend fun launchAppLoaders() {
+        appLoaderFacade.load()
     }
 }

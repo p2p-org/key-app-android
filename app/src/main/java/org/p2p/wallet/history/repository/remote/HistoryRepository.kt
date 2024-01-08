@@ -1,19 +1,20 @@
 package org.p2p.wallet.history.repository.remote
 
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.common.date.dateMilli
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryPagingState
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.repository.local.PendingTransactionsLocalRepository
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.crypto.toBase58Instance
 
 class HistoryRepository(
     private val repositories: List<HistoryRemoteRepository>,
     private val dispatchers: CoroutineDispatchers,
-    private val pendingTransactionsLocalRepository: PendingTransactionsLocalRepository
+    private val pendingTransactionsLocalRepository: PendingTransactionsLocalRepository,
+    private val pendingTransactionsCleaner: HistoryPendingTransactionsCleaner
 ) : HistoryRemoteRepository {
 
     override suspend fun loadHistory(limit: Int, mintAddress: String): HistoryPagingResult {
@@ -65,30 +66,24 @@ class HistoryRepository(
         if (errorMessage.isNotEmpty()) {
             return@withContext HistoryPagingResult.Error(Throwable(errorMessage))
         }
-        val newTransactionIds = newTransactions.map { it.getHistoryTransactionId() }
-        val pendingItems = getPendingTransactions(newTransactionIds, mintAddress.toBase58Instance())
+        val pendingItems = getValidatedPendingTransactions(newTransactions, mintAddress.toBase58Instance())
 
         (pendingItems + newTransactions)
             .sortedByDescending { transaction -> transaction.date.dateMilli() }
             .let(HistoryPagingResult::Success)
     }
 
-    private suspend fun getPendingTransactions(
-        newTransactionIds: List<String>,
-        mintAddress: Base58String,
+    private suspend fun getValidatedPendingTransactions(
+        newTransactions: List<HistoryTransaction>,
+        tokenMintAddress: Base58String,
     ): List<HistoryTransaction> {
-        pendingTransactionsLocalRepository.getAllPendingTransactions(mintAddress)
-            .forEach { removePendingTransactionIfExists(it, newTransactionIds) }
-        return pendingTransactionsLocalRepository.getAllPendingTransactions(mintAddress)
-    }
+        val currentPendingTransactions = pendingTransactionsLocalRepository.getAllPendingTransactions(tokenMintAddress)
+        pendingTransactionsCleaner.removeCompletedPendingTransactions(
+            pendingTransactions = currentPendingTransactions,
+            newTransactions = newTransactions
+        )
 
-    private suspend fun removePendingTransactionIfExists(
-        localItem: HistoryTransaction,
-        newTransactionIds: List<String>
-    ) {
-        val txSignature = localItem.getHistoryTransactionId()
-        if (txSignature in newTransactionIds) {
-            pendingTransactionsLocalRepository.removePendingTransaction(txSignature)
-        }
+        val finalPendingTransactions = pendingTransactionsLocalRepository.getAllPendingTransactions(tokenMintAddress)
+        return finalPendingTransactions
     }
 }

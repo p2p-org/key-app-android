@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.insets.appleInsetPadding
 import org.p2p.core.utils.insets.consume
@@ -24,21 +25,18 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.pin.signin.SignInPinFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.username.UsernameFragment
-import org.p2p.wallet.common.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.history.ui.token.TokenHistoryFragment
-import org.p2p.wallet.home.ui.main.HomeFragment
+import org.p2p.wallet.home.ui.wallet.WalletFragment
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.newsend.ui.NewSendFragment
-import org.p2p.wallet.receive.network.ReceiveNetworkTypeFragment
+import org.p2p.wallet.send.ui.NewSendFragment
 import org.p2p.wallet.receive.solana.ReceiveSolanaFragment
 import org.p2p.wallet.restore.ui.derivable.DerivableAccountsFragment
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
-import org.p2p.wallet.utils.emptyString
 
 private const val EXTRA_OVERRIDDEN_ENTER_ANIMATION = "EXTRA_OVERRIDDEN_ENTER_ANIMATION"
 private const val EXTRA_OVERRIDDEN_EXIT_ANIMATION = "EXTRA_OVERRIDDEN_EXIT_ANIMATION"
@@ -128,7 +126,7 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is NewCreatePinFragment -> ScreenNames.OnBoarding.PIN_CREATE
         is DerivableAccountsFragment -> ScreenNames.OnBoarding.DERIVATION
         is ReserveUsernameFragment -> ScreenNames.OnBoarding.USERNAME_RESERVE
-        is HomeFragment -> ScreenNames.Main.MAIN
+        is WalletFragment -> ScreenNames.Main.MAIN
         is SettingsFragment -> ScreenNames.Settings.MAIN
         is UsernameFragment -> ScreenNames.Settings.USERCARD
         is JupiterSwapFragment -> ScreenNames.Swap.MAIN
@@ -136,9 +134,8 @@ abstract class BaseFragment(@LayoutRes layoutRes: Int) : Fragment(layoutRes), Ba
         is SignInPinFragment -> ScreenNames.Lock.SCREEN
         is HistoryFragment -> ScreenNames.Main.MAIN_HISTORY
         is ReceiveSolanaFragment -> ScreenNames.Receive.SOLANA
-        is ReceiveNetworkTypeFragment -> ScreenNames.Receive.NETWORK
         is NewSendFragment -> ScreenNames.Send.MAIN
-        else -> emptyString()
+        else -> this.toString()
     }
 
     override fun showToast(message: TextContainer) {

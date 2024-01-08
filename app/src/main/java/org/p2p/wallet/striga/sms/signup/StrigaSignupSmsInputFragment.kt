@@ -1,7 +1,5 @@
 package org.p2p.wallet.striga.sms.signup
 
-import android.os.Bundle
-import android.view.View
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.qualifier.named
@@ -12,19 +10,15 @@ import org.p2p.wallet.auth.model.RestoreFailureState
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.smsinput.BaseSmsInputFragment
 import org.p2p.wallet.smsinput.SmsInputContract
-import org.p2p.wallet.striga.di.StrigaSignupModule
+import org.p2p.wallet.striga.signup.StrigaSignupModule
 import org.p2p.wallet.striga.sms.error.StrigaSmsErrorFragment
 import org.p2p.wallet.striga.sms.error.StrigaSmsErrorViewType
+import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 
 class StrigaSignupSmsInputFragment : BaseSmsInputFragment() {
     override val presenter: SmsInputContract.Presenter by inject(named(StrigaSignupModule.SMS_QUALIFIER))
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.uiKitToolbar.setTitle(R.string.striga_sms_input_toolbar_title)
-    }
 
     override fun onBackPressed() {
         super.onBackPressed()
@@ -32,6 +26,7 @@ class StrigaSignupSmsInputFragment : BaseSmsInputFragment() {
     }
 
     override fun initView(userPhoneNumber: PhoneNumber) {
+        binding.uiKitToolbar.title = emptyString()
         binding.textViewTitle.text = getString(R.string.striga_sms_input_title)
         binding.textViewDescription.text =
             getString(R.string.striga_sms_input_description, userPhoneNumber.formattedValue)

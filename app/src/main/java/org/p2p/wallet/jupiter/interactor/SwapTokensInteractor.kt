@@ -1,15 +1,15 @@
 package org.p2p.wallet.jupiter.interactor
 
-import org.p2p.wallet.home.repository.HomeLocalRepository
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.ui.tokens.SwapTokensListMode
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
 class SwapTokensInteractor(
-    private val homeLocalRepository: HomeLocalRepository,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val swapTokensRepository: JupiterSwapTokensRepository,
     private val swapRoutesRepository: JupiterSwapRoutesRepository,
     private val swapStateManager: SwapStateManager,
@@ -30,7 +30,7 @@ class SwapTokensInteractor(
     }
 
     suspend fun getAllTokens(): List<SwapTokenModel> {
-        val userTokens = homeLocalRepository.getUserTokens()
+        val userTokens = tokenServiceCoordinator.getUserTokens()
         val jupiterTokens = swapTokensRepository.getTokens()
 
         val userTokensModel = userTokens.map(SwapTokenModel::UserToken)
@@ -47,7 +47,7 @@ class SwapTokensInteractor(
     }
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
-        val userTokens = homeLocalRepository.getUserTokens().map(SwapTokenModel::UserToken)
+        val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
         val jupiterTokens = swapTokensRepository.getTokens().map(SwapTokenModel::JupiterToken)
             .filter { it.mintAddress !in userTokens.map(SwapTokenModel.UserToken::mintAddress) }
 
@@ -81,6 +81,12 @@ class SwapTokensInteractor(
         swapTokens.filterTo(filteredList) {
             it.tokenSymbol.contains(query, ignoreCase = true) && !it.tokenSymbol.startsWith(query, ignoreCase = true) ||
                 it.tokenName.contains(query, ignoreCase = true) && !it.tokenName.startsWith(query, ignoreCase = true)
+        }
+
+        // Filter items that match the mint address in query
+        swapTokens.filterTo(filteredList) {
+            it.mintAddress.base58Value.startsWith(query, ignoreCase = true) ||
+                it.mintAddress.base58Value.contentEquals(query)
         }
 
         return filteredList

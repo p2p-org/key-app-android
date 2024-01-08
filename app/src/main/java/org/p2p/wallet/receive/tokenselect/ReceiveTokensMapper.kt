@@ -2,7 +2,7 @@ package org.p2p.wallet.receive.tokenselect
 
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.uikit.components.finance_block.MainCellModel
@@ -22,11 +22,11 @@ import org.p2p.wallet.receive.tokenselect.models.ReceiveTokenPayload
 
 object ReceiveTokensMapper {
 
-    fun TokenData.toTokenFinanceCellModel(
+    fun TokenMetadata.toTokenFinanceCellModel(
         solTokenUrl: String,
         ethTokenUrl: String
     ): AnyCellItem {
-        val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress) != null
+        val isErc20Token = ERC20Tokens.findTokenByMint(mintAddress, ERC20Tokens.MATIC) != null
         val isSol = symbol == Constants.SOL_SYMBOL
         val replacedName = if (isSol) Constants.SOL_NAME else name
         return MainCellModel(
@@ -41,7 +41,7 @@ object ReceiveTokensMapper {
                 isErc20Token = isErc20Token
             ),
             payload = ReceiveTokenPayload(
-                tokenData = this,
+                tokenMetadata = this,
                 isErc20Token = isErc20Token
             )
         )

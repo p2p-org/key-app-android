@@ -5,7 +5,7 @@
     <attr name="editable" format="boolean" />
     <attr name="labelText" format="string" />
     <attr name="hintText" format="string" />
-
+    <attr name="isDropdown" format="boolean" />
 
     <declare-styleable name="UiKitStartAmountView">
         <attr name="icon" />
@@ -93,15 +93,15 @@
         <attr name="android:layout_height" />
     </declare-styleable>
 
-
-    <declare-styleable name="UiKitEditText">
+    <declare-styleable name="PhoneNumberInputView">
         <attr name="editable" />
         <attr name="labelText" />
         <attr name="hintText" />
+        <attr name="cornerRadius" format="dimension" />
         <attr name="android:inputType" />
         <attr name="android:maxLength" />
         <attr name="android:imeOptions" />
-        <attr name="android:digits" />
+        <attr name="android:digits" format="string" />
         <attr name="android:enabled" />
         <attr name="android:text" />
         <attr name="android:hint" />
@@ -111,16 +111,64 @@
         <attr name="android:textSize" />
         <attr name="android:nextFocusDown" />
         <attr name="android:imeActionId" />
-        <attr name="isDropdown" format="boolean" />
+        <attr name="isDropdown" />
+    </declare-styleable>
+
+    <declare-styleable name="UiKitEditText">
+        <attr name="editable" />
+        <attr name="labelText" />
+        <attr name="hintText" />
+        <attr name="tipText" />
+        <attr name="tipTextColor" />
+        <attr name="cornerRadius" />
+        <attr name="android:inputType" />
+        <attr name="android:maxLength" />
+        <attr name="android:imeOptions" />
+        <attr name="android:digits" format="string" />
+        <attr name="android:enabled" />
+        <attr name="android:text" />
+        <attr name="android:hint" />
+        <attr name="android:drawableEnd" />
+        <attr name="android:textAppearance" />
+        <attr name="android:backgroundTint" />
+        <attr name="android:textSize" />
+        <attr name="android:nextFocusDown" />
+        <attr name="android:imeActionId" />
+        <attr name="isDropdown" />
+    </declare-styleable>
+
+    <declare-styleable name="NewUiKitEditText">
+        <attr name="labelText" />
+
+        <attr name="inputText" format="string" />
+        <attr name="inputTextColor" format="color" />
+        <attr name="inputHintText" format="string" />
+        <attr name="inputEndDrawable" format="reference" />
+        <attr name="inputTextAppearance" format="reference" />
+        <attr name="inputBackgroundTint" format="color" />
+
+        <attr name="tipText" format="string" />
+        <attr name="tipTextColor" format="color" />
+
+        <attr name="android:nextFocusDown" />
+        <attr name="android:inputType" />
+        <attr name="android:imeOptions" />
+        <attr name="android:digits" format="string" />
+        <attr name="android:enabled" />
     </declare-styleable>
 
     <!--    can be extended if there is need -->
     <!--    you can add icon to title, background tint etc-->
     <declare-styleable name="UiKitInformerView">
+        <attr name="android:background" />
+        <attr name="android:backgroundTint" />
         <attr name="leftIcon" />
         <attr name="leftIconTint" format="color" />
+        <attr name="leftIconBackgroundTint" format="color" />
         <attr name="title" format="string" />
+        <attr name="titleTextColor" />
         <attr name="caption" format="string" />
+        <attr name="captionTextColor" format="color" />
         <attr name="infoLine" format="string" />
         <attr name="infoLineColor" format="color" />
         <attr name="infoLinePosition" format="enum">

@@ -10,39 +10,40 @@ import io.mockk.verify
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.ClassRule
 import org.junit.Test
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.auth.repository.CountryCodeRepository
 import org.p2p.wallet.common.InAppFeatureFlags
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateWeb3Flag
-import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.wallet.striga.model.StrigaDataLayerResult
-import org.p2p.wallet.striga.onboarding.interactor.StrigaOnboardingInteractor
-import org.p2p.wallet.striga.presetpicker.interactor.StrigaPresetDataItem
-import org.p2p.wallet.striga.presetpicker.mapper.StrigaItemCellMapper
-import org.p2p.wallet.striga.signup.StrigaSignUpSecondStepContract
-import org.p2p.wallet.striga.signup.interactor.StrigaSignupInteractor
-import org.p2p.wallet.striga.signup.model.StrigaOccupation
-import org.p2p.wallet.striga.signup.model.StrigaSignupFieldState
-import org.p2p.wallet.striga.signup.model.StrigaSourceOfFunds
+import org.p2p.wallet.striga.common.model.StrigaDataLayerResult
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaOccupation
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaPresetDataItem
+import org.p2p.wallet.striga.signup.presetpicker.interactor.StrigaSourceOfFunds
+import org.p2p.wallet.striga.signup.presetpicker.mapper.StrigaItemCellMapper
 import org.p2p.wallet.striga.signup.repository.StrigaSignupDataLocalRepository
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
-import org.p2p.wallet.striga.signup.validation.StrigaSignupDataValidator
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupFieldState
+import org.p2p.wallet.striga.signup.steps.interactor.StrigaSignupInteractor
+import org.p2p.wallet.striga.signup.steps.second.StrigaSignUpSecondStepContract
+import org.p2p.wallet.striga.signup.steps.second.StrigaSignUpSecondStepPresenter
+import org.p2p.wallet.striga.signup.steps.validation.StrigaSignupDataValidator
 import org.p2p.wallet.striga.user.interactor.StrigaUserInteractor
 import org.p2p.wallet.utils.TestAppScope
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.UnconfinedTestDispatchers
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.mutableListQueueOf
-import org.p2p.wallet.utils.plantTimberToStdout
 
 private val SupportedCountry = CountryCode(
     countryName = "United Kingdom",
@@ -60,9 +61,6 @@ class StrigaSignupSecondStepPresenterTest {
 
     @MockK(relaxed = true)
     lateinit var signupDataRepository: StrigaSignupDataLocalRepository
-
-    @MockK
-    lateinit var onboardingInteractor: StrigaOnboardingInteractor
 
     @MockK(relaxed = true)
     lateinit var userInteractor: StrigaUserInteractor
@@ -84,15 +82,19 @@ class StrigaSignupSecondStepPresenterTest {
     private val dispatchers: CoroutineDispatchers = UnconfinedTestDispatchers()
     private val appScope: AppScope = TestAppScope(dispatchers.ui)
 
-    init {
-        plantTimberToStdout("StrigaSignupSecondStepPresenterTest")
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
+            defaultTag = "StrigaSignupSecondStepPresenterTest"
+        )
     }
 
     private fun createPresenter(): StrigaSignUpSecondStepPresenter {
         return StrigaSignUpSecondStepPresenter(
             dispatchers = dispatchers,
             interactor = interactor,
-            onboardingInteractor = onboardingInteractor,
             strigaItemCellMapper = strigaItemCellMapper,
             alarmErrorsLogger = alarmErrorsLogger,
         )
@@ -120,8 +122,9 @@ class StrigaSignupSecondStepPresenterTest {
                 signupDataRepository = signupDataRepository,
                 userInteractor = userInteractor,
                 metadataInteractor = metadataInteractor,
-                strigaSmsInputInteractor = mockk(relaxed = true),
-                strigaUserStatusRepository = mockk(relaxed = true)
+                strigaOtpConfirmInteractor = mockk(relaxed = true),
+                strigaUserStatusRepository = mockk(relaxed = true),
+                strigaPresetDataLocalRepository = mockk(relaxed = true),
             )
         )
     }
@@ -289,7 +292,7 @@ class StrigaSignupSecondStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.SOURCE_OF_FUNDS, sourceOfFunds.sourceName)
         )
-        coEvery { onboardingInteractor.getSourcesOfFundsByName(sourceOfFunds.sourceName) } returns sourceOfFunds
+        coEvery { interactor.getSourcesOfFundsByName(sourceOfFunds.sourceName) } returns sourceOfFunds
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 
@@ -311,7 +314,7 @@ class StrigaSignupSecondStepPresenterTest {
         val initialSignupData = listOf(
             StrigaSignupData(StrigaSignupDataType.OCCUPATION, occupation.occupationName)
         )
-        coEvery { onboardingInteractor.getOccupationByName(occupation.occupationName) } returns occupation
+        coEvery { interactor.getOccupationByName(occupation.occupationName) } returns occupation
         coEvery { signupDataRepository.getUserSignupData() } returns StrigaDataLayerResult.Success(initialSignupData)
         coEvery { countryCodeRepository.findCountryCodeByIsoAlpha2(SupportedCountry.nameCodeAlpha2) } returns SupportedCountry
 

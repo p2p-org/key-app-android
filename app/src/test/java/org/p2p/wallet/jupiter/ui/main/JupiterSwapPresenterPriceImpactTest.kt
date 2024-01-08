@@ -4,6 +4,7 @@ import io.mockk.every
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.ClassRule
 import org.junit.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
@@ -13,16 +14,19 @@ import kotlinx.coroutines.test.runTest
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.utils.CoroutineExtension
 import org.p2p.wallet.utils.SpyOnInjectMockKsExtension
+import org.p2p.wallet.utils.TimberUnitTestInstance
 import org.p2p.wallet.utils.back
 import org.p2p.wallet.utils.mutableListQueueOf
-import org.p2p.wallet.utils.plantTimberToStdout
 
 @ExperimentalCoroutinesApi
 @ExtendWith(SpyOnInjectMockKsExtension::class, CoroutineExtension::class)
 class JupiterSwapPresenterPriceImpactTest : JupiterSwapPresenterBaseTest() {
 
-    init {
-        plantTimberToStdout(
+    companion object {
+        @ClassRule
+        @JvmField
+        val timber = TimberUnitTestInstance(
+            isEnabled = false,
             defaultTag = "Swap:PriceImpact",
             excludeMessages = listOf(
                 "kotlinx.coroutines.JobCancellationException"

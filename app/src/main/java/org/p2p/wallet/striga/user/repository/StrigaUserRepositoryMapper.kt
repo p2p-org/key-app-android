@@ -5,7 +5,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import org.p2p.wallet.striga.StrigaUserConstants
-import org.p2p.wallet.striga.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupData
 import org.p2p.wallet.striga.signup.repository.model.StrigaSignupDataType
 import org.p2p.wallet.striga.user.api.request.StrigaCreateUserRequest

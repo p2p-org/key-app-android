@@ -12,6 +12,9 @@ import org.junit.Test
 import org.junit.jupiter.api.BeforeEach
 import retrofit2.HttpException
 import java.net.HttpURLConnection
+import org.p2p.wallet.striga.common.model.StrigaApiErrorCode
+import org.p2p.wallet.striga.common.model.StrigaDataLayerError
+import org.p2p.wallet.striga.common.model.StrigaDataLayerHttpErrorParser
 import org.p2p.wallet.utils.createHttpException
 
 class StrigaDataLayerHttpError400And409ParserTest {

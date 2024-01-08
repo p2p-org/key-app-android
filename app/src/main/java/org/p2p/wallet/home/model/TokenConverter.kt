@@ -2,91 +2,96 @@ package org.p2p.wallet.home.model
 
 import java.math.BigInteger
 import org.p2p.core.token.Token
-import org.p2p.core.token.TokenData
+import org.p2p.core.token.TokenExtensions
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toPowerValue
 import org.p2p.solanaj.model.types.Account
+import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.configurator.TokenExtensionsConfigurator
 import org.p2p.wallet.home.db.TokenEntity
-import org.p2p.wallet.user.local.TokenResponse
+import org.p2p.wallet.home.db.TokenExtensionEntity
 
+// TODO: We should transfer this object to class since for unit tests
 object TokenConverter {
 
-    fun fromNetwork(response: TokenResponse): TokenData =
-        TokenData(
-            mintAddress = response.address,
-            name = response.name,
-            symbol = response.symbol,
-            iconUrl = response.logoUrl,
-            decimals = response.decimals,
-            isWrapped = response.isWrapped(),
-            serumV3Usdc = response.extensions?.serumV3Usdc,
-            serumV3Usdt = response.extensions?.serumV3Usdt,
-            coingeckoId = response.extensions?.coingeckoId
-        )
-
-    fun fromNetwork(
+    fun createToken(
         mintAddress: String,
         totalLamports: BigInteger,
         accountPublicKey: String,
-        tokenData: TokenData,
-        price: TokenPrice?
+        tokenMetadata: TokenMetadata,
+        price: TokenServicePrice?
     ): Token.Active {
-        val totalInUsd = price?.let {
-            totalLamports.fromLamports(tokenData.decimals).times(it.price)
+        val tokenRate = price?.usdRate
+        val totalInUsd = if (tokenRate != null) {
+            totalLamports.fromLamports(tokenMetadata.decimals).times(tokenRate)
+        } else {
+            null
         }
-        val total = totalLamports.toBigDecimal().divide(tokenData.decimals.toPowerValue())
+        val total = totalLamports.toBigDecimal().divide(tokenMetadata.decimals.toPowerValue())
+
+        val extensions = TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions,
+            tokenTotal = total,
+            tokenRate = totalInUsd
+        ).config()
+
         return Token.Active(
             publicKey = accountPublicKey,
-            tokenSymbol = tokenData.symbol,
-            decimals = tokenData.decimals,
+            tokenSymbol = tokenMetadata.symbol,
+            decimals = tokenMetadata.decimals,
             mintAddress = mintAddress,
-            tokenName = tokenData.name,
-            iconUrl = tokenData.iconUrl,
-            coingeckoId = tokenData.coingeckoId,
-            totalInUsd = totalInUsd,
+            tokenName = tokenMetadata.name,
+            iconUrl = tokenMetadata.iconUrl,
+            // TODO: Remove [totalInUsd] from constructor fields and make it as a function by calculating total * rate
+            totalInUsd = if (extensions.isRateExceedsTheDifference) totalInUsd else total,
             total = total,
-            rate = price?.price,
+            rate = tokenRate,
             visibility = TokenVisibility.DEFAULT,
-            serumV3Usdc = tokenData.serumV3Usdc,
-            serumV3Usdt = tokenData.serumV3Usdt,
-            isWrapped = tokenData.isWrapped
+            isWrapped = tokenMetadata.isWrapped,
+            tokenServiceAddress = tokenMetadata.mintAddress,
+            tokenExtensions = extensions
+        )
+    }
+
+    fun fromNetwork(
+        tokenMetadata: TokenMetadata,
+        price: TokenServicePrice?
+    ): Token.Other {
+        val extensions = TokenExtensionsConfigurator(
+            extensions = tokenMetadata.extensions
+        ).config()
+
+        return Token.Other(
+            tokenName = tokenMetadata.name,
+            tokenSymbol = tokenMetadata.symbol,
+            decimals = tokenMetadata.decimals,
+            mintAddress = tokenMetadata.mintAddress,
+            iconUrl = tokenMetadata.iconUrl,
+            isWrapped = tokenMetadata.isWrapped,
+            rate = price?.rate?.usd,
+            tokenExtensions = extensions
         )
     }
 
     fun fromNetwork(
         account: Account,
-        tokenData: TokenData,
-        price: TokenPrice?
+        tokenMetadata: TokenMetadata,
+        price: TokenServicePrice?
     ): Token.Active {
         val data = account.account.data.parsed.info
         val mintAddress = data.mint
         val total = data.tokenAmount.amount.toBigInteger()
-        return fromNetwork(
+        return createToken(
             mintAddress = mintAddress,
             totalLamports = total,
             accountPublicKey = account.pubkey,
-            tokenData = tokenData,
+            tokenMetadata = tokenMetadata,
             price = price
         )
     }
-
-    fun fromNetwork(
-        data: TokenData,
-        price: TokenPrice?
-    ): Token.Other =
-        Token.Other(
-            tokenName = data.name,
-            tokenSymbol = data.symbol,
-            decimals = data.decimals,
-            mintAddress = data.mintAddress,
-            iconUrl = data.iconUrl,
-            serumV3Usdc = data.serumV3Usdc,
-            serumV3Usdt = data.serumV3Usdt,
-            isWrapped = data.isWrapped,
-            rate = price?.price
-        )
 
     fun toDatabase(token: Token.Active): TokenEntity =
         TokenEntity(
@@ -98,42 +103,49 @@ object TokenConverter {
             iconUrl = token.iconUrl,
             totalInUsd = token.totalInUsd,
             total = token.total,
-            coingeckoId = token.coingeckoId,
             exchangeRate = token.rate?.toString(),
             visibility = token.visibility.stringValue,
-            serumV3Usdc = token.serumV3Usdc,
-            serumV3Usdt = token.serumV3Usdt,
-            isWrapped = token.isWrapped
-        )
-
-    fun fromDatabase(entity: TokenEntity): Token.Active =
-        Token.Active(
-            publicKey = entity.publicKey,
-            tokenSymbol = entity.tokenSymbol,
-            decimals = entity.decimals,
-            mintAddress = entity.mintAddress,
-            tokenName = entity.tokenName,
-            iconUrl = entity.iconUrl,
-            totalInUsd = entity.totalInUsd,
-            coingeckoId = entity.coingeckoId,
-            total = entity.total,
-            rate = entity.exchangeRate?.toBigDecimalOrZero(),
-            visibility = TokenVisibility.parse(entity.visibility),
-            serumV3Usdc = entity.serumV3Usdc,
-            serumV3Usdt = entity.serumV3Usdt,
-            isWrapped = entity.isWrapped
-        )
-
-    fun toTokenData(token: Token): TokenData =
-        TokenData(
-            mintAddress = token.mintAddress,
-            name = token.tokenName,
-            symbol = token.tokenSymbol,
-            iconUrl = token.iconUrl,
-            decimals = token.decimals,
             isWrapped = token.isWrapped,
-            serumV3Usdc = token.serumV3Usdc,
-            serumV3Usdt = token.serumV3Usdt,
-            coingeckoId = null
+            tokenServiceAddress = token.tokenServiceAddress,
+            extensions = toDatabase(token.tokenExtensions)
+        )
+
+    fun toDatabase(tokenExtension: TokenExtensions): TokenExtensionEntity {
+        return TokenExtensionEntity(
+            ruleOfProcessingTokenPrice = tokenExtension.ruleOfProcessingTokenPrice,
+            isTokenVisibleOnWalletScreen = tokenExtension.isTokenVisibleOnWalletScreen,
+            isTokenCellVisibleOnWalletScreen = tokenExtension.isTokenCellVisibleOnWalletScreen,
+            tokenPercentDifferenceOnWalletScreen = tokenExtension.tokenPercentDifferenceOnWalletScreen,
+            isCalculateWithTotalBalance = tokenExtension.isCalculateWithTotalBalance,
+            numbersAfterDecimalPoint = tokenExtension.numbersAfterDecimalPoint,
+            canTokenBeHidden = tokenExtension.canTokenBeHidden
+        )
+    }
+
+    fun fromDatabase(entity: TokenEntity): Token.Active = Token.Active(
+        publicKey = entity.publicKey,
+        tokenSymbol = entity.tokenSymbol,
+        decimals = entity.decimals,
+        mintAddress = entity.mintAddress,
+        tokenName = entity.tokenName,
+        iconUrl = entity.iconUrl,
+        totalInUsd = entity.totalInUsd,
+        total = entity.total,
+        rate = entity.exchangeRate?.toBigDecimalOrZero(),
+        visibility = TokenVisibility.parse(entity.visibility),
+        isWrapped = entity.isWrapped,
+        tokenServiceAddress = entity.tokenServiceAddress,
+        tokenExtensions = fromDatabase(entity.extensions)
+    )
+
+    private fun fromDatabase(entity: TokenExtensionEntity?): TokenExtensions =
+        TokenExtensions(
+            ruleOfProcessingTokenPrice = entity?.ruleOfProcessingTokenPrice,
+            isTokenVisibleOnWalletScreen = entity?.isTokenVisibleOnWalletScreen,
+            isTokenCellVisibleOnWalletScreen = entity?.isTokenCellVisibleOnWalletScreen,
+            tokenPercentDifferenceOnWalletScreen = entity?.tokenPercentDifferenceOnWalletScreen,
+            isCalculateWithTotalBalance = entity?.isCalculateWithTotalBalance,
+            numbersAfterDecimalPoint = entity?.numbersAfterDecimalPoint,
+            canTokenBeHidden = entity?.canTokenBeHidden
         )
 }

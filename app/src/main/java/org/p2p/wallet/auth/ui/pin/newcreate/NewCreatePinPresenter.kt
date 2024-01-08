@@ -1,6 +1,9 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
 import android.content.SharedPreferences
+import timber.log.Timber
+import javax.crypto.Cipher
+import kotlinx.coroutines.launch
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
@@ -11,16 +14,13 @@ import org.p2p.wallet.auth.interactor.OnboardingInteractor
 import org.p2p.wallet.auth.model.BiometricStatus
 import org.p2p.wallet.auth.model.OnboardingFlow
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
-import org.p2p.wallet.common.analytics.constants.ScreenNames
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
 import org.p2p.wallet.utils.emptyString
-import timber.log.Timber
-import javax.crypto.Cipher
-import kotlinx.coroutines.launch
 
 private const val VIBRATE_DURATION = 500L
 
@@ -56,31 +56,33 @@ class NewCreatePinPresenter(
     }
 
     override fun setPinCode(pinCode: String) {
-        if (createdPin.isEmpty()) {
-            createdPin = pinCode
-            view?.showConfirmation()
-            return
-        }
+        launch {
+            if (createdPin.isEmpty()) {
+                createdPin = pinCode
+                view?.showConfirmation()
+                return@launch
+            }
 
-        if (pinCode != createdPin) {
-            view?.showConfirmationError()
-            view?.vibrate(VIBRATE_DURATION)
-            adminAnalytics.logPinRejected(ScreenNames.OnBoarding.PIN_CONFIRM)
-            return
-        }
+            if (pinCode != createdPin) {
+                view?.showConfirmationError()
+                view?.vibrate(VIBRATE_DURATION)
+                adminAnalytics.logPinRejected(ScreenNames.OnBoarding.PIN_CONFIRM)
+                return@launch
+            }
 
-        view?.lockPinKeyboard()
-        createPinCode(createdPin)
-        if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
-            createWalletAnalytics.logCreateWalletPinConfirmed()
-        } else {
-            restoreWalletAnalytics.logRestoreWalletPinConfirmed()
-        }
-        if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
-            closeCreatePinFlow()
-        } else {
-            view?.vibrate(VIBRATE_DURATION)
-            enableBiometric()
+            view?.lockPinKeyboard()
+            createPinCode(createdPin)
+            if (onboardingInteractor.currentFlow == OnboardingFlow.CreateWallet) {
+                createWalletAnalytics.logCreateWalletPinConfirmed()
+            } else {
+                restoreWalletAnalytics.logRestoreWalletPinConfirmed()
+            }
+            if (authInteractor.getBiometricStatus() < BiometricStatus.AVAILABLE) {
+                closeCreatePinFlow()
+            } else {
+                view?.vibrate(VIBRATE_DURATION)
+                enableBiometric()
+            }
         }
     }
 
@@ -101,7 +103,7 @@ class NewCreatePinPresenter(
         }
     }
 
-    private fun enableBiometric() {
+    private suspend fun enableBiometric() {
         try {
             val cipher = authInteractor.getPinEncodeCipher()
             analytics.logBioApproved()
@@ -145,7 +147,7 @@ class NewCreatePinPresenter(
         }
     }
 
-    private fun closeCreatePinFlow() {
+    private suspend fun closeCreatePinFlow() {
         // sometimes user can use seed phrase to login, we cant show item to him too
         val isUsernameAuthNotBySeedPhrase = !sharedPreferences.getBoolean(KEY_IS_AUTH_BY_SEED_PHRASE, false)
         val isUserCanRegisterUsername =
@@ -153,6 +155,7 @@ class NewCreatePinPresenter(
                 signUpDetailsStorage.getLastSignUpUserDetails() != null &&
                 isUsernameAuthNotBySeedPhrase && wasCreationFlow
 
+        authInteractor.finishSignUp()
         if (isUserCanRegisterUsername) {
             view?.navigateToRegisterUsername()
         } else {
@@ -161,9 +164,10 @@ class NewCreatePinPresenter(
     }
 
     private fun registerComplete(pinCode: String, cipher: EncodeCipher?) {
-        authInteractor.registerComplete(pinCode, cipher)
-        authInteractor.finishSignUp()
-        // TODO determine pin complexity
-        adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
+        launch {
+            authInteractor.registerComplete(pinCode, cipher)
+            // TODO determine pin complexity
+            adminAnalytics.logPinCreated(currentScreenName = analyticsInteractor.getCurrentScreenName())
+        }
     }
 }

@@ -48,13 +48,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/imageViewHelp"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="42dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/intercom_get_help"
                 android:src="@drawable/ic_help_outlined"
                 app:layout_constraintEnd_toEndOf="@id/imageViewBanner"
                 app:layout_constraintTop_toTopOf="@id/imageViewBanner" />

@@ -6,6 +6,7 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -19,24 +20,25 @@ import org.p2p.core.utils.orZero
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.wallet.newsend.analytics.NewSendAnalytics
-import org.p2p.wallet.newsend.interactor.SendInteractor
-import org.p2p.wallet.newsend.model.CalculationMode
-import org.p2p.wallet.newsend.model.FeeRelayerState
-import org.p2p.wallet.newsend.model.NewSendButtonState
-import org.p2p.wallet.newsend.model.TemporaryAccount
-import org.p2p.wallet.newsend.model.toSearchResult
+import org.p2p.wallet.send.analytics.NewSendAnalytics
+import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.send.model.CalculationMode
+import org.p2p.wallet.send.model.FeeRelayerState
+import org.p2p.wallet.send.model.NewSendButtonState
+import org.p2p.wallet.send.model.TemporaryAccount
+import org.p2p.wallet.send.model.toSearchResult
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
 import org.p2p.wallet.svl.interactor.SendViaLinkInteractor
 import org.p2p.wallet.svl.model.SendLinkGenerator
+import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.tokenservice.UserTokensState
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.unsafeLazy
 
-private const val ACCEPTABLE_RATE_DIFF = 0.02
-
 class SendViaLinkPresenter(
     private val userInteractor: UserInteractor,
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val sendInteractor: SendInteractor,
     private val sendViaLinkInteractor: SendViaLinkInteractor,
     private val resources: Resources,
@@ -74,8 +76,9 @@ class SendViaLinkPresenter(
     }
 
     private fun subscribeToSelectedTokenUpdates() {
-        userInteractor.getUserTokensFlow()
-            .map { it.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
+        tokenServiceCoordinator.observeUserTokens()
+            .filterIsInstance<UserTokensState.Loaded>()
+            .map { it.solTokens.findByMintAddress(token?.mintAddress ?: selectedToken?.mintAddress) }
             .filterNotNull()
             .onEach { token = it }
             .launchIn(this)
@@ -145,7 +148,7 @@ class SendViaLinkPresenter(
 
             checkTokenRatesAndSetSwitchAmountState(initialToken)
 
-            val solToken = if (initialToken.isSOL) initialToken else userInteractor.getUserSolToken()
+            val solToken = if (initialToken.isSOL) initialToken else tokenServiceCoordinator.getUserSolToken()
             if (solToken == null) {
                 // we cannot proceed without SOL.
                 view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
@@ -165,9 +168,9 @@ class SendViaLinkPresenter(
     }
 
     override fun onTokenClicked() {
-        newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
+        newSendAnalytics.logTokenSelectionClicked(NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
         launch {
-            val tokens = userInteractor.getUserTokens()
+            val tokens = tokenServiceCoordinator.getUserTokens()
             val result = tokens.filterNot(Token.Active::isZero)
             svlAnalytics.logTokenChangeClicked(token?.tokenSymbol.orEmpty())
             view?.showTokenSelection(tokens = result, selectedToken = token)
@@ -183,8 +186,7 @@ class SendViaLinkPresenter(
     }
 
     private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
-        val isStableCoin = token.isUSDC || token.isUSDT
-        if (token.rate == null || isStableCoin && isStableCoinRateDiffAcceptable(token)) {
+        if (token.rate == null || isStableCoinRateDiffAcceptable(token)) {
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
@@ -195,13 +197,12 @@ class SendViaLinkPresenter(
     }
 
     private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
-        val delta = token.rate.orZero() - BigDecimal.ONE
-        return delta.abs() < BigDecimal(ACCEPTABLE_RATE_DIFF)
+        return token.rate.orZero() == BigDecimal.ONE
     }
 
     override fun switchCurrencyMode() {
         val newMode = calculationMode.switchMode()
-        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, NewSendAnalytics.AnalyticsSendFlow.SELL)
+        newSendAnalytics.logSwitchCurrencyModeClicked(newMode, NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
     }
 
     override fun updateInputAmount(amount: String) {
@@ -231,7 +232,7 @@ class SendViaLinkPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        newSendAnalytics.logFreeTransactionsClicked(NewSendAnalytics.AnalyticsSendFlow.SELL)
+        newSendAnalytics.logFreeTransactionsClicked(NewSendAnalytics.AnalyticsSendFlow.SEND_VIA_LINK)
         view?.showFreeTransactionsInfo()
     }
 

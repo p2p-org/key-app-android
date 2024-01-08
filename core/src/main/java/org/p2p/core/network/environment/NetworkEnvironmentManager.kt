@@ -1,16 +1,20 @@
 package org.p2p.core.network.environment
 
-import org.p2p.core.crashlytics.CrashLogger
 import timber.log.Timber
 import kotlin.reflect.KClass
+import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.network.storage.NetworkEnvironmentStorage
-
 
 class NetworkEnvironmentManager(
     private val networkEnvironmentStorage: NetworkEnvironmentStorage,
     private val crashLogger: CrashLogger,
     private val networksFromRemoteConfig: List<NetworkEnvironment>
 ) {
+
+    companion object {
+        const val URL_PRIVACY_POLICY = "https://key.app/privacypolicy"
+        const val URL_TERMS_OF_USE = "https://key.app/termsofservice"
+    }
 
     fun interface EnvironmentManagerListener {
         fun onEnvironmentChanged(newEnvironment: NetworkEnvironment)
@@ -45,11 +49,7 @@ class NetworkEnvironmentManager(
     }
 
     private fun getDefaultAvailableNetwork(): NetworkEnvironment {
-        return if (NetworkEnvironment.RPC_POOL in availableNetworks) {
-            NetworkEnvironment.RPC_POOL
-        } else {
-            availableNetworks.first()
-        }
+        return NetworkEnvironment.RPC_POOL
     }
 
     fun loadRpcEnvironment(): RpcEnvironment = if (loadCurrentEnvironment() == NetworkEnvironment.DEVNET) {

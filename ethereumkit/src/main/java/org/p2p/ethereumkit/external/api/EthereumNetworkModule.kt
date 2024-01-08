@@ -1,7 +1,6 @@
 package org.p2p.ethereumkit.external.api
 
 import com.google.gson.Gson
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -13,7 +12,6 @@ import org.p2p.core.rpc.RPC_JSON_QUALIFIER
 import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
 import org.p2p.ethereumkit.external.api.interceptor.EthereumApiLoggingInterceptor
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
-import org.p2p.core.network.gson.GsonProvider
 
 internal const val QUALIFIER_ETH_HTTP_CLIENT = "eth_http_client"
 internal const val QUALIFIER_ETH_RETROFIT = "eth_alchemy_retrofit"
@@ -32,20 +30,14 @@ internal object EthereumNetworkModule {
     }
 
     private fun getOkHttpClient(): OkHttpClient {
-        val headersInterceptor = Interceptor { chain ->
-            val requestBuilder = chain.request().newBuilder()
-            chain.proceed(requestBuilder.build())
-        }
-
         val httpClient = OkHttpClient.Builder()
             .addInterceptor(EthereumApiLoggingInterceptor())
-            .addInterceptor(headersInterceptor)
         return httpClient.build()
     }
 
-    fun getRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
+    private fun getRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(EthereumNetworkEnvironment.ALCHEMY_DEMO.baseUrl)
+            .baseUrl(EthereumNetworkEnvironment.ALCHEMY.baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)

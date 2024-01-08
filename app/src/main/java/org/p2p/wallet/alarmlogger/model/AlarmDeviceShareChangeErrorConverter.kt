@@ -8,18 +8,18 @@ import org.p2p.wallet.alarmlogger.api.DeviceShareChangeErrorRequest
 
 class AlarmDeviceShareChangeErrorConverter(
     private val gson: Gson
-) {
+) : AlarmFeatureConverter {
 
     fun toDeviceShareChangeErrorRequest(
         userPublicKey: Base58String,
         error: DeviceShareChangeAlarmError
     ): AlarmErrorsRequest {
-        val throwable = error.error
+        val cause = error.cause
         val request = AlarmErrorsDeviceShareChangeRequest(
             userPublicKey = userPublicKey,
             deviceShareChangeError = DeviceShareChangeErrorRequest(
                 source = error.source,
-                error = throwable.message ?: throwable.localizedMessage ?: "Unknown error"
+                error = cause.message ?: cause.localizedMessage ?: "Unknown error"
             )
         )
         return AlarmErrorsRequest(
