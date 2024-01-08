@@ -3,7 +3,6 @@ package org.p2p.wallet.infrastructure
 import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import java.util.concurrent.Executors
 import org.p2p.wallet.history.repository.local.db.dao.CloseAccountTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.CreateAccountTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.RenBtcBurnOrMintTransactionsDao
@@ -13,6 +12,7 @@ import org.p2p.wallet.history.repository.local.db.dao.TransactionsDaoDelegate
 import org.p2p.wallet.history.repository.local.db.dao.TransferTransactionsDao
 import org.p2p.wallet.history.repository.local.db.dao.UnknownTransactionsDao
 import org.p2p.wallet.infrastructure.db.WalletDatabase
+import java.util.concurrent.Executors
 
 object RoomModule {
     fun create() = module {
@@ -33,8 +33,6 @@ object RoomModule {
         single { get<WalletDatabase>().recipientsDao() }
 
         single { get<WalletDatabase>().userSendLinksDao() }
-
-        single { get<WalletDatabase>().strigaSignupDao() }
 
         single {
             val allTransactionDaos: List<TransactionsDao<*>> = listOf(

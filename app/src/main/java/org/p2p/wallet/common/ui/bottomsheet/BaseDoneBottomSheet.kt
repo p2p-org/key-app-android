@@ -18,7 +18,7 @@ import org.p2p.wallet.utils.withTextOrGone
  * or X at top to close (if needed) to cover cases where you do not need logic and Presenter
  * you need to show some Info content or select something and return as a result with [setFragmentResult]
  **/
-abstract class BaseDoneBottomSheet : BaseBottomSheet(R.layout.dialog_base_done) {
+abstract class BaseDoneBottomSheet : BaseBottomSheet() {
 
     companion object {
         const val ARG_TITLE = "ARG_TITLE"

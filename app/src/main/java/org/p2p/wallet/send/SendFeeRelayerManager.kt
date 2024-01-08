@@ -103,7 +103,7 @@ class SendFeeRelayerManager(
             receiveUsd = currentAmount.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
-            recipientAddress = recipientAddress.address,
+            recipientAddress = recipientAddress.addressState.address,
             feeLimit = feeLimitInfo
         )
     }
@@ -228,10 +228,11 @@ class SendFeeRelayerManager(
         result: SearchResult,
         useCache: Boolean = true
     ): FeeCalculationState {
+        val recipient = result.addressState.address
         return sendInteractor.calculateFeesForFeeRelayer(
             feePayerToken = feePayerToken,
             token = sourceToken,
-            recipient = result.address,
+            recipient = recipient,
             useCache = useCache
         )
     }

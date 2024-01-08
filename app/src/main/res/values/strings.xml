@@ -266,7 +266,6 @@
     <string name="home_debug">Debug Settings</string>
     <string name="home_support_new_messages_count">you have %d new messages from support</string>
     <string name="home_tokens">Tokens</string>
-    <string name="home_top_up">Top up</string>
 
     <!--Wallet-->
     <string name="incoming_transfer">Incoming transfer</string>
