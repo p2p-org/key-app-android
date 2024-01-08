@@ -14,4 +14,8 @@ sealed class SwapFailure(
     data class TooSmallInputAmount(
         override val cause: Throwable
     ) : SwapFailure(cause.message.orEmpty())
+
+    data class ServerUnknownError(
+        override val cause: Throwable
+    ) : SwapFailure(cause.message.orEmpty())
 }

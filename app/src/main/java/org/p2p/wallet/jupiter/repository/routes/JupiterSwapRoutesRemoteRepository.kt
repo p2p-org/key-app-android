@@ -129,7 +129,13 @@ class JupiterSwapRoutesRemoteRepository(
             } catch (e: Throwable) {
                 false
             }
-            throw if (isTooSmallAmountError) SwapFailure.TooSmallInputAmount(e) else e
+            val isUnknownServerError = e.code() in 500..503
+
+            throw when {
+                isTooSmallAmountError -> SwapFailure.TooSmallInputAmount(e)
+                isUnknownServerError -> SwapFailure.ServerUnknownError(e)
+                else -> e
+            }
         }
     }
 
