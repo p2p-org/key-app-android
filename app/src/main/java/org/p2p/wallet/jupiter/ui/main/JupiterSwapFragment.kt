@@ -356,8 +356,8 @@ class JupiterSwapFragment :
         textViewAlert.text = text
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onPause() {
+        super.onPause()
         presenter.pauseStateManager()
     }
 

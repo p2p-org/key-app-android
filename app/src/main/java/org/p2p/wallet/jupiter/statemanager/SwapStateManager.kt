@@ -311,4 +311,12 @@ class SwapStateManager(
             .flowOn(dispatchers.io)
             .launchIn(this)
     }
+
+    fun resume() {
+        onNewAction(SwapStateAction.RefreshRoutes)
+    }
+
+    fun pause() {
+        onNewAction(SwapStateAction.CancelSwapLoading)
+    }
 }
