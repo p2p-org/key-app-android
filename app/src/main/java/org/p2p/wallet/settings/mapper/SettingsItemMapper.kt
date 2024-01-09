@@ -49,7 +49,9 @@ class SettingsItemMapper(
         if (isUsernameItemVisible) {
             addUsernameItem(username)
         }
+        /* todo: disabled country selection for now
         addCountrySelectorItem(countryName)
+         */
         add(SignOutButtonItem)
         add(SettingsSpaceSeparatorItem)
     }
