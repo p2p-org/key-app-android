@@ -31,9 +31,10 @@ class SwapTokensInteractor(
 
     suspend fun getAllTokens(): List<SwapTokenModel> {
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
+        val userTokensMints = userTokens.map { it.mintAddress }.toSet()
         val jupiterTokens = swapTokensRepository.getTokens()
             .map(SwapTokenModel::JupiterToken)
-            .filter { it.mintAddress !in userTokens.map { it.mintAddress } }
+            .filter { it.mintAddress !in userTokensMints }
 
         return userTokens + jupiterTokens
     }
@@ -45,13 +46,14 @@ class SwapTokensInteractor(
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
+        val userTokensMints = userTokens.map { it.mintAddress }.toSet()
 
         val tokenA = getCurrentTokenA()
         val tokenB = getCurrentTokenB()
 
         val availableTokenBMints = swapRoutesRepository.getSwappableTokens(sourceTokenMint = tokenA.mintAddress)
             .map(SwapTokenModel::JupiterToken)
-            .filter { it.mintAddress !in userTokens.map(SwapTokenModel.UserToken::mintAddress) }
+            .filter { it.mintAddress !in userTokensMints }
 
         val allTokensB = userTokens + availableTokenBMints
         return allTokensB.filter { it.notSelectedToken(tokenB) }
@@ -59,10 +61,9 @@ class SwapTokensInteractor(
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
         val tokenA = getCurrentTokenA()
-
-        val filteredUserTokens = tokenServiceCoordinator.getUserTokens()
-            .map(SwapTokenModel::UserToken)
-            .let { filterUserSwapTokens(it, symbolOrName) }
+        val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
+        val userTokensMints = userTokens.map { it.mintAddress }.toSet()
+        val filteredUserTokens = filterUserSwapTokens(userTokens, symbolOrName)
 
         return when (tokenMode) {
             SwapTokensListMode.TOKEN_A -> {
@@ -70,6 +71,7 @@ class SwapTokensInteractor(
                     mintAddressOrSymbol = symbolOrName
                 )
                     .map(SwapTokenModel::JupiterToken)
+                    .filter { it.mintAddress !in userTokensMints }
 
                 filteredUserTokens
                     .plus(searchedJupiterTokens)
@@ -82,6 +84,7 @@ class SwapTokensInteractor(
                     sourceTokenMint = tokenA.mintAddress
                 )
                     .map(SwapTokenModel::JupiterToken)
+                    .filter { it.mintAddress !in userTokensMints }
                 filteredUserTokens
                     .plus(searchedJupiterTokens)
                     .filter { it.notSelectedToken(tokenB) }

@@ -67,11 +67,11 @@ class SwapTokensDaoDelegate(
     ): List<JupiterSwapToken> {
         // % is needed for pattern matching
         return if (swappableForMint == null) {
-            dao.searchTokens("$mintAddressOrSymbol%")
+            dao.searchTokens("${mintAddressOrSymbol.lowercase()}%")
         } else {
             dao.searchTokensInSwappable(
                 mintAddress = swappableForMint.base58Value,
-                mintAddressOrSymbol = "$mintAddressOrSymbol%"
+                mintAddressOrSymbol = "${mintAddressOrSymbol.lowercase()}%"
             )
         }
             .toDomain()

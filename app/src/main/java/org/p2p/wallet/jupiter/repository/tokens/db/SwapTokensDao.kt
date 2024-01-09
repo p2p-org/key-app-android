@@ -9,12 +9,11 @@ import org.intellij.lang.annotations.Language
 interface SwapTokensDao {
     private companion object {
         @Language("RoomSql")
-        private const val INDEX_FOR_ADDRESS =
-            "SELECT ordinal_index FROM swap_tokens WHERE address = :mintAddress"
-
-        @Language("RoomSql")
         private const val SWAPPABLE_TOKEN_INDEXES_FOR_TOKEN =
-            "SELECT index_swappable_token FROM swap_tokens_routes WHERE index_source_token = ($INDEX_FOR_ADDRESS)"
+            "SELECT swap_tokens_routes.index_swappable_token " +
+                "FROM swap_tokens_routes " +
+                "JOIN swap_tokens ON swap_tokens_routes.index_source_token = swap_tokens.ordinal_index " +
+                "WHERE swap_tokens.address = :mintAddress "
     }
 
     @Insert
@@ -29,15 +28,14 @@ interface SwapTokensDao {
     @Query(
         "SELECT * FROM swap_tokens " +
             "WHERE ordinal_index IN ($SWAPPABLE_TOKEN_INDEXES_FOR_TOKEN) " +
-            "AND (symbol LIKE :mintAddressOrSymbol " +
-            "OR address LIKE :mintAddressOrSymbol)"
+            "AND (LOWER(symbol) LIKE :mintAddressOrSymbol OR LOWER(address) LIKE :mintAddressOrSymbol)"
     )
     suspend fun searchTokensInSwappable(mintAddress: String, mintAddressOrSymbol: String): List<SwapTokenEntity>
 
     @Query(
         "SELECT * FROM swap_tokens " +
-            "WHERE symbol LIKE :mintAddressOrSymbol " +
-            "OR address LIKE :mintAddressOrSymbol"
+            "WHERE LOWER(symbol) LIKE :mintAddressOrSymbol " +
+            "OR LOWER(address) LIKE :mintAddressOrSymbol"
     )
     suspend fun searchTokens(mintAddressOrSymbol: String): List<SwapTokenEntity>
 
