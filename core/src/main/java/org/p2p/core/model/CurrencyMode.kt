@@ -16,8 +16,8 @@ sealed interface CurrencyMode {
         override val fractionLength = FIAT_FRACTION_LENGTH
 
         object Usd : Fiat("$", Constants.USD_READABLE_SYMBOL)
-        object Eur : Fiat("€", Constants.EUR_SYMBOL)
-        object Gbp : Fiat("£", Constants.GBP_SYMBOL)
+        object Eur : Fiat("€", Constants.EUR_READABLE_SYMBOL)
+        object Gbp : Fiat("£", Constants.GBP_READABLE_SYMBOL)
     }
 
     fun getCurrencyModeSymbol(): String = when (this) {
