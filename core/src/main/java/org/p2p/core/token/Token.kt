@@ -219,7 +219,12 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val currencySymbol: String
-        get() = if (currency == Constants.USD_READABLE_SYMBOL) Constants.USD_SYMBOL else currency
+        get() = when (currency) {
+            Constants.USD_READABLE_SYMBOL -> Constants.USD_SYMBOL
+            Constants.GBP_READABLE_SYMBOL -> Constants.GBP_SYMBOL
+            Constants.EUR_READABLE_SYMBOL -> Constants.EUR_SYMBOL
+            else -> currency
+        }
 
     @IgnoredOnParcel
     val isActive: Boolean

@@ -93,11 +93,11 @@ class StrigaExchangeRepositoryTest {
 
         result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates>
 
-        result.value.findRate(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL).assertThat()
+        result.value.findRate(Constants.EUR_READABLE_SYMBOL, Constants.USDC_SYMBOL).assertThat()
             .isNotNull()
             .isEqualTo(expectedUsdcEuroRate)
 
-        result.value.findRate(Constants.USDC_SYMBOL, Constants.EUR_SYMBOL).assertThat()
+        result.value.findRate(Constants.USDC_SYMBOL, Constants.EUR_READABLE_SYMBOL).assertThat()
             .isNotNull()
             .isEqualTo(expectedUsdcEuroRate)
     }
@@ -108,7 +108,7 @@ class StrigaExchangeRepositoryTest {
 
         result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates>
 
-        result.value.findRate("UNIBUSD", Constants.EUR_SYMBOL).assertThat()
+        result.value.findRate("UNIBUSD", Constants.EUR_READABLE_SYMBOL).assertThat()
             .isNull()
     }
 
@@ -118,11 +118,11 @@ class StrigaExchangeRepositoryTest {
 
         result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates>
 
-        result.value.hasRate(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL)
+        result.value.hasRate(Constants.EUR_READABLE_SYMBOL, Constants.USDC_SYMBOL)
             .assertThat()
             .isTrue()
 
-        result.value.hasRate(Constants.USDC_SYMBOL, Constants.EUR_SYMBOL)
+        result.value.hasRate(Constants.USDC_SYMBOL, Constants.EUR_READABLE_SYMBOL)
             .assertThat()
             .isTrue()
     }
@@ -135,18 +135,18 @@ class StrigaExchangeRepositoryTest {
             result as StrigaDataLayerResult.Success<StrigaExchangePairsWithRates>
 
             // we don't see other pairs because we don't support them
-            result.value.getAvailablePairsForToken(Constants.EUR_SYMBOL).assertThat()
+            result.value.getAvailablePairsForToken(Constants.EUR_READABLE_SYMBOL).assertThat()
                 .containsExactlyInAnyOrder(
-                    Constants.ETH_SYMBOL to Constants.EUR_SYMBOL,
-                    Constants.USDC_SYMBOL to Constants.EUR_SYMBOL,
-                    Constants.USDT_SYMBOL to Constants.EUR_SYMBOL,
-                    Constants.BTC_SYMBOL to Constants.EUR_SYMBOL,
+                    Constants.ETH_SYMBOL to Constants.EUR_READABLE_SYMBOL,
+                    Constants.USDC_SYMBOL to Constants.EUR_READABLE_SYMBOL,
+                    Constants.USDT_SYMBOL to Constants.EUR_READABLE_SYMBOL,
+                    Constants.BTC_SYMBOL to Constants.EUR_READABLE_SYMBOL,
                 )
         }
 
     @Test
     fun `GIVE exchange rates WHEN getExchangeRateForPair THEN check result has a rate`() = runTest {
-        val result = repository.getExchangeRateForPair(Constants.EUR_SYMBOL, Constants.USDC_SYMBOL)
+        val result = repository.getExchangeRateForPair(Constants.EUR_READABLE_SYMBOL, Constants.USDC_SYMBOL)
 
         result as StrigaDataLayerResult.Success<StrigaExchangeRate>
 

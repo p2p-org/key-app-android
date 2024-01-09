@@ -14,6 +14,6 @@ enum class StrigaOffRampTokenType(
     ),
     TokenB(
         titleResId = R.string.striga_off_ramp_you_receive,
-        currencyName = Constants.EUR_SYMBOL,
+        currencyName = Constants.EUR_READABLE_SYMBOL,
     )
 }
