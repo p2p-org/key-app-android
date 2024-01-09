@@ -64,6 +64,8 @@ class JupiterSwapSettingsPresenter(
         rateTickerManager.observe()
             .onEach(::handleRateTickerChanges)
             .launchIn(this)
+
+        stateManager.resume()
     }
 
     private suspend fun handleFeatureState(state: SwapState, tokens: List<JupiterSwapToken>) {

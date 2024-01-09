@@ -319,11 +319,11 @@ class JupiterSwapPresenter(
     }
 
     override fun pauseStateManager() {
-        stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+        stateManager.pause()
     }
 
     override fun resumeStateManager() {
-        stateManager.onNewAction(SwapStateAction.RefreshRoutes)
+        stateManager.resume()
     }
 
     private fun handleNewFeatureState(state: SwapState) {

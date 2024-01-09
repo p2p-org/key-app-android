@@ -311,4 +311,18 @@ class SwapStateManager(
             .flowOn(dispatchers.io)
             .launchIn(this)
     }
+
+    /**
+     * Resume routes refreshing if it was cancelled by just sending new action
+     */
+    fun resume() {
+        onNewAction(SwapStateAction.RefreshRoutes)
+    }
+
+    /**
+     * Interrupt routes refreshing
+     */
+    fun pause() {
+        onNewAction(SwapStateAction.CancelSwapLoading)
+    }
 }
