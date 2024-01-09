@@ -110,12 +110,7 @@ class UserInMemoryRepository(
     override fun getTokenListFlow(): Flow<TokenListData> = tokensSearchResultFlow
 
     override fun findTokenData(mintAddress: String): TokenMetadata? {
-        val resultToken = allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
-        if (resultToken == null) {
-            Timber.tag(TAG).i("No user token found for mint $mintAddress")
-        }
-
-        return resultToken
+        return allTokensFlow.value.firstOrNull { it.mintAddress == mintAddress }
     }
 
     override fun findTokenDataBySymbol(symbol: String): TokenMetadata? {

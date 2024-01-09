@@ -1,3 +1,4 @@
+import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.androidTestImplementation
 import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.testImplementation
 import gradle.kotlin.dsl.accessors._4b7ad2363fc1fce7c774e054dc9a9300.testRuntimeOnly
 import org.gradle.kotlin.dsl.DependencyHandlerScope
@@ -294,7 +295,10 @@ object Dependencies {
             testImplementation(project(":test-utils"))
 
             // Core testing
-            coreTestingLibraries.forEach { testImplementation(it) }
+            coreTestingLibraries.forEach {
+                androidTestImplementation(it)
+                testImplementation(it)
+            }
             // Koin testing
             koinTestingLibraries.forEach { testImplementation(it) }
             // Other testing tools
