@@ -5,6 +5,7 @@ import java.math.BigInteger
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
+import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -17,7 +18,6 @@ import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.core.utils.divideSafe
 
 private const val TAG = "CalculationMode"
 
@@ -30,11 +30,7 @@ class CalculationMode(
     var onInputFractionUpdated: ((Int) -> Unit)? = null
     var onLabelsUpdated: ((switchSymbol: String, mainSymbol: String) -> Unit)? = null
 
-    private var currencyMode: CurrencyMode = sendModeProvider.sendMode
-        set(value) {
-            sendModeProvider.sendMode = value
-            field = value
-        }
+    private var currencyMode: CurrencyMode = SendModeProvider.EMPTY_TOKEN
 
     private lateinit var token: Token.Active
 

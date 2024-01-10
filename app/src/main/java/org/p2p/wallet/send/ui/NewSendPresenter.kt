@@ -130,6 +130,8 @@ class NewSendPresenter(
     }
 
     private fun initialize(view: NewSendContract.View) {
+        view.disableSwitchAmounts()
+
         calculationMode.onCalculationCompleted = view::showAroundValue
         calculationMode.onInputFractionUpdated = view::updateInputFraction
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
@@ -319,6 +321,7 @@ class NewSendPresenter(
     }
 
     private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
+        /*
         if (token.rate == null || isStableCoinRateDiffAcceptable(token)) {
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
@@ -327,6 +330,7 @@ class NewSendPresenter(
         } else {
             view?.enableSwitchAmounts()
         }
+         */
     }
 
     private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {
