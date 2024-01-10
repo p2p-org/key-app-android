@@ -2,8 +2,8 @@ package org.p2p.wallet.jupiter.statemanager
 
 import java.math.BigDecimal
 import java.math.BigInteger
-import org.p2p.core.utils.fromLamports
 import org.p2p.core.crypto.Base64String
+import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.swap.model.Slippage
@@ -24,6 +24,9 @@ sealed interface SwapState {
         val slippage: Slippage
     ) : SwapState
 
+    /**
+     * Routes for selected pair are being fetched
+     */
     data class LoadingRoutes(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
@@ -31,6 +34,9 @@ sealed interface SwapState {
         val slippage: Slippage
     ) : SwapState
 
+    /**
+     * Routes are fetched, but transaction and simulation are not ready
+     */
     data class RoutesLoaded(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
@@ -41,6 +47,9 @@ sealed interface SwapState {
         val slippage: Slippage
     ) : SwapState
 
+    /**
+     * Transaction for the loaded route (activeRouteIndex) is creating and simulating
+     */
     data class LoadingTransaction(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
@@ -51,6 +60,9 @@ sealed interface SwapState {
         val slippage: Slippage
     ) : SwapState
 
+    /**
+     * Final successful step when transaction is created and simulated for the selected route
+     */
     data class SwapLoaded(
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
