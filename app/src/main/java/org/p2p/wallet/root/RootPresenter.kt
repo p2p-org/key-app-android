@@ -52,7 +52,7 @@ class RootPresenter(
             predicate = sellEnabledFeatureToggle.isFeatureEnabled,
             value = async { sellInteractor.loadSellAvailability() }
         )
-//        add(async { swapRoutesRepository.loadAndCacheAllSwapRoutes() })
+        add(async { swapRoutesRepository.loadAndCacheAllSwapRoutes() })
         add(async { swapTokensRepository.getTokens() })
     }
         .also {

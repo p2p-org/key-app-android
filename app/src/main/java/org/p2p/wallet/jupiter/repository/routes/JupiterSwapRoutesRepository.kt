@@ -3,7 +3,6 @@ package org.p2p.wallet.jupiter.repository.routes
 import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 
 interface JupiterSwapRoutesRepository {
     /**
@@ -14,5 +13,6 @@ interface JupiterSwapRoutesRepository {
         userPublicKey: Base58String,
         validateRoutes: Boolean = true
     ): List<JupiterSwapRoute>
-    suspend fun getSwappableTokens(sourceTokenMint: Base58String): List<JupiterSwapToken>
+    suspend fun loadAndCacheAllSwapRoutes()
+    suspend fun getSwappableTokenMints(sourceTokenMint: Base58String): List<Base58String>
 }

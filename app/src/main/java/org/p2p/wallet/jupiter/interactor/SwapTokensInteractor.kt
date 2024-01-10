@@ -30,13 +30,15 @@ class SwapTokensInteractor(
     }
 
     suspend fun getAllTokens(): List<SwapTokenModel> {
-        val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
-        val userTokensMints = userTokens.map { it.mintAddress }.toSet()
+        val userTokens = tokenServiceCoordinator.getUserTokens()
         val jupiterTokens = swapTokensRepository.getTokens()
-            .map(SwapTokenModel::JupiterToken)
-            .filter { it.mintAddress !in userTokensMints }
 
-        return userTokens + jupiterTokens
+        val userTokensModel = userTokens.map(SwapTokenModel::UserToken)
+        val jupiterTokensModel = jupiterTokens.map(SwapTokenModel::JupiterToken)
+            .filter { it.mintAddress !in userTokensModel.map(SwapTokenModel.UserToken::mintAddress) }
+        val allTokens = userTokensModel + jupiterTokensModel
+
+        return allTokens
     }
 
     suspend fun getAllTokensA(): List<SwapTokenModel> {
@@ -46,53 +48,28 @@ class SwapTokensInteractor(
 
     suspend fun getAllAvailableTokensB(): List<SwapTokenModel> {
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
-        val userTokensMints = userTokens.map { it.mintAddress }.toSet()
+        val jupiterTokens = swapTokensRepository.getTokens().map(SwapTokenModel::JupiterToken)
+            .filter { it.mintAddress !in userTokens.map(SwapTokenModel.UserToken::mintAddress) }
 
         val tokenA = getCurrentTokenA()
         val tokenB = getCurrentTokenB()
+        val availableTokenBMints = swapRoutesRepository.getSwappableTokenMints(sourceTokenMint = tokenA.mintAddress)
 
-        val availableTokenBMints = swapRoutesRepository.getSwappableTokens(sourceTokenMint = tokenA.mintAddress)
-            .map(SwapTokenModel::JupiterToken)
-            .filter { it.mintAddress !in userTokensMints }
-
-        val allTokensB = userTokens + availableTokenBMints
-        return allTokensB.filter { it.notSelectedToken(tokenB) }
+        val allTokensB = userTokens + jupiterTokens
+        return allTokensB
+            .filter { it.notSelectedToken(tokenB) && it.mintAddress in availableTokenBMints }
     }
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
-        val tokenA = getCurrentTokenA()
-        val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
-        val userTokensMints = userTokens.map { it.mintAddress }.toSet()
-        val filteredUserTokens = filterUserSwapTokens(userTokens, symbolOrName)
-
-        return when (tokenMode) {
-            SwapTokensListMode.TOKEN_A -> {
-                val searchedJupiterTokens = swapTokensRepository.searchTokens(
-                    mintAddressOrSymbol = symbolOrName
-                )
-                    .map(SwapTokenModel::JupiterToken)
-                    .filter { it.mintAddress !in userTokensMints }
-
-                filteredUserTokens
-                    .plus(searchedJupiterTokens)
-                    .filter { it.notSelectedToken(tokenA) }
-            }
-            SwapTokensListMode.TOKEN_B -> {
-                val tokenB = getCurrentTokenB()
-                val searchedJupiterTokens = swapTokensRepository.searchTokensInSwappable(
-                    mintAddressOrSymbol = symbolOrName,
-                    sourceTokenMint = tokenA.mintAddress
-                )
-                    .map(SwapTokenModel::JupiterToken)
-                    .filter { it.mintAddress !in userTokensMints }
-                filteredUserTokens
-                    .plus(searchedJupiterTokens)
-                    .filter { it.notSelectedToken(tokenB) }
-            }
+        val tokens = when (tokenMode) {
+            SwapTokensListMode.TOKEN_A -> getAllTokensA()
+            SwapTokensListMode.TOKEN_B -> getAllAvailableTokensB()
         }
+
+        return filterSwapTokens(tokens, symbolOrName)
     }
 
-    private fun filterUserSwapTokens(swapTokens: List<SwapTokenModel>, query: String): List<SwapTokenModel> {
+    private fun filterSwapTokens(swapTokens: List<SwapTokenModel>, query: String): List<SwapTokenModel> {
         val filteredList = mutableListOf<SwapTokenModel>()
 
         // Filter items that start with the query
