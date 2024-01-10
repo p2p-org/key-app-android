@@ -1,6 +1,7 @@
 package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
+import com.google.gson.stream.JsonReader
 import timber.log.Timber
 import org.p2p.core.token.TokensMetadataInfo
 import org.p2p.token.service.model.UpdateTokenMetadataResult
@@ -40,8 +41,11 @@ class TokenMetadataInteractor(
 
     private suspend fun readTokensMetadataFromFile(): TokensMetadataInfo? =
         runCatching {
-            val file = externalStorageRepository.readJsonFile(filePrefix = TOKENS_FILE_NAME)
-            file?.let { gson.fromJson(it.data, TokensMetadataInfo::class.java) }
+            val tokensBufferedReader = externalStorageRepository.readJsonFileAsStream(filePrefix = TOKENS_FILE_NAME)
+                ?.let { JsonReader(it.bufferedReader()) }
+                ?: return@runCatching null
+
+            gson.fromJson<TokensMetadataInfo>(tokensBufferedReader, TokensMetadataInfo::class.java)
         }
             .onFailure { Timber.i(it, "Failed to read metadata from file") }
             .getOrNull()

@@ -32,7 +32,7 @@ class JupiterSwapStorage(
     override fun clear() {
         savedTokenAMint = null
         savedTokenBMint = null
-        swapTokensFetchDateMillis = null
+        // no need to clear swapTokensFetchDateMillis at any point
     }
 
     private fun saveTokenA(mintAddress: Base58String) {

@@ -2,6 +2,8 @@ package org.p2p.wallet.jupiter.repository.tokens
 
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
@@ -18,17 +20,22 @@ internal class JupiterSwapTokensRemoteRepository(
     private val swapStorage: JupiterSwapStorageContract,
 ) : JupiterSwapTokensRepository {
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.computation) {
         if (isCacheCanBeUsed()) {
             Timber.i("Cache is valid, using cache")
             return@withContext daoDelegate.getAllTokens()
         }
 
-        val routes = async { api.getSwapRoutesMap() }
+        val routes = async { api.getSwapRoutesMapStreaming() }
         val tokens = async { api.getSwapTokens() }
 
-        daoDelegate.insertSwapTokens(routes.await(), tokens.await())
-            .also { swapStorage.swapTokensFetchDateMillis = System.currentTimeMillis() }
+        val measuredResult = measureTimedValue {
+            daoDelegate.insertSwapTokens(routes.await(), tokens.await())
+                .also { swapStorage.swapTokensFetchDateMillis = System.currentTimeMillis() }
+        }
+        Timber.e("Insertion was ${measuredResult.duration.inWholeSeconds}")
+        measuredResult.value
     }
 
     override suspend fun searchTokens(mintAddressOrSymbol: String): List<JupiterSwapToken> {

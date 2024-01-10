@@ -1,12 +1,10 @@
 package org.p2p.wallet.jupiter.repository.tokens.db
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
+import com.google.gson.stream.JsonReader
+import okhttp3.ResponseBody
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.TokenExtensions
-import org.p2p.wallet.jupiter.api.response.JupiterAllSwapRoutesResponse
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -15,42 +13,27 @@ class SwapTokensDaoDelegate(
     private val dao: SwapTokensDao,
     private val userLocalRepository: UserLocalRepository
 ) {
+    private val tokenEntityInserter = SwapTokenEntityInserter(dao)
+    private val routeEntityInserter = SwapRouteEntityInserter(dao)
+
     suspend fun insertSwapTokens(
-        routes: JupiterAllSwapRoutesResponse,
+        routesResponse: ResponseBody,
         tokens: List<JupiterTokenResponse>
-    ): List<JupiterSwapToken> = supervisorScope {
-        val savedTokens = async {
-            val addressToIndex = routes.mintKeys
-                .mapIndexed { index, address -> address.base58Value to index }
-                .toMap()
-
-            val entities = tokens.mapNotNull {
-                SwapTokenEntity(
-                    ordinalIndex = addressToIndex[it.address] ?: return@mapNotNull null,
-                    address = it.address,
-                    chainId = it.chainId,
-                    decimals = it.decimals,
-                    logoUri = it.logoUri,
-                    name = it.name,
-                    symbol = it.symbol,
-                    coingeckoId = it.extensions?.coingeckoId
-                )
+    ): List<JupiterSwapToken> {
+        val jsonReader = JsonReader(routesResponse.charStream())
+        jsonReader.beginObject()
+        while (jsonReader.hasNext()) {
+            when (jsonReader.nextName()) {
+                "mintKeys" -> tokenEntityInserter.insertTokens(jsonReader, tokens)
+                "indexedRouteMap" -> routeEntityInserter.insertRoutes(jsonReader)
             }
-            dao.insertSwapTokens(entities)
-            entities.toDomain()
         }
-        launch {
-            routes.routeMap
-                .asSequence()
-                .forEach { (indexA, indexesB) ->
-                    val indexAToIndexBs = indexesB.map {
-                        SwapTokenRouteCrossRef(indexA.toInt(), it)
-                    }
-                    dao.insertTokenRoutes(indexAToIndexBs)
-                }
-        }
+        jsonReader.endObject()
 
-        savedTokens.await()
+        jsonReader.close()
+        routesResponse.close()
+
+        return getAllTokens()
     }
 
     suspend fun getAllTokens(): List<JupiterSwapToken> {

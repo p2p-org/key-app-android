@@ -2,7 +2,9 @@ package org.p2p.wallet.jupiter.repository.tokens.db
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import org.intellij.lang.annotations.Language
 
 @Dao
@@ -16,10 +18,12 @@ interface SwapTokensDao {
                 "WHERE swap_tokens.address = :mintAddress "
     }
 
-    @Insert
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSwapTokens(entities: List<SwapTokenEntity>)
 
-    @Insert
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTokenRoutes(routes: List<SwapTokenRouteCrossRef>)
 
     @Query("SELECT * FROM swap_tokens WHERE ordinal_index IN ($SWAPPABLE_TOKEN_INDEXES_FOR_TOKEN)")
