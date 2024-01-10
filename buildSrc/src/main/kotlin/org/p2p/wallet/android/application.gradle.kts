@@ -21,7 +21,6 @@ apply {
     from("${project.rootDir}/.scripts/analytics.gradle")
 }
 
-@Suppress("UnstableApiUsage")
 android {
     compileSdk = Versions.sdkCompileVersion
 
