@@ -149,7 +149,7 @@ class MyCryptoPresenter(
 
     private fun showUserAddressAndUsername() {
         this.username = usernameInteractor.getUsername()
-        val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress()
+        val userAddress = username?.fullUsername ?: userPublicKey.ellipsizeAddress(6)
         view?.showUserAddress(userAddress)
     }
 

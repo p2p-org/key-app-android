@@ -10,7 +10,7 @@ fun StringBuilder.appendWhitespace() {
     append(" ")
 }
 
-fun String.ellipsizeAddress() = take(4) + "…" + takeLast(4)
+fun String.ellipsizeAddress(numBeforeAndAfter: Int = 4) = take(numBeforeAndAfter) + "…" + takeLast(numBeforeAndAfter)
 
 fun String.removeWhiteSpaces(): String = replace(" ", emptyString())
 

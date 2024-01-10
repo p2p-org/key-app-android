@@ -186,13 +186,12 @@ class MyCryptoFragment :
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
-        // we don't show this screen for now
-//        with(binding.layoutToolbar) {
-//            textViewAddress.text = ellipsizedAddress
-//            textViewAddress.setOnClickListener {
-//                presenter.onAddressClicked()
-//            }
-//        }
+        with(binding.layoutToolbar) {
+            textViewAddress.text = "\uD83D\uDD17 $ellipsizedAddress"
+            textViewAddress.setOnClickListener {
+                presenter.onAddressClicked()
+            }
+        }
     }
 
     override fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int) {
