@@ -14,7 +14,7 @@ class SendModeProvider(
     private val sharedPreferences: SharedPreferences
 ) {
     companion object {
-        val EMPTY_TOKEN = CurrencyMode.Token(emptyString(), 2)
+        val EMPTY_TOKEN = CurrencyMode.Token(symbol = emptyString(), fractionLength = 2)
     }
 
     var sendMode: CurrencyMode = CurrencyMode.Fiat.Usd
