@@ -4,6 +4,7 @@ import timber.log.Timber
 import java.math.BigDecimal
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -25,7 +26,6 @@ import org.p2p.wallet.jupiter.repository.model.findTokenByMint
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.Slippage
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.emptyString
 
 class SwapContentSettingsMapper(
@@ -54,15 +54,16 @@ class SwapContentSettingsMapper(
         state: SwapState.RoutesLoaded,
         jupiterTokens: List<JupiterSwapToken>,
         solTokenForFee: JupiterSwapToken?,
+        tokenBAmount: BigDecimal?,
     ): List<AnyCellItem> = mapList(
         slippage = state.slippage,
         routes = state.routes,
         activeRouteIndex = state.activeRouteIndex,
         jupiterTokens = jupiterTokens,
-        tokenBAmount = null,
+        tokenBAmount = tokenBAmount,
         tokenB = state.tokenB,
         solTokenForFee = solTokenForFee,
-        showMinimumReceivedAmount = false,
+        showMinimumReceivedAmount = tokenBAmount != null,
     )
 
     suspend fun mapForSwapLoadedState(
