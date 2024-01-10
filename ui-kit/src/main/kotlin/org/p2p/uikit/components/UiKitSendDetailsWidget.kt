@@ -225,7 +225,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
         binding.textViewAmountTypeSwitchLabel.isVisible = true
     }
 
-    private fun disableSwitchAmounts() {
+    fun disableSwitchAmounts() {
         binding.imageViewSwitchTo.isVisible = false
         binding.viewSwitchToClickArea.isInvisible = true
         binding.textViewAmountTypeSwitchLabel.isVisible = false

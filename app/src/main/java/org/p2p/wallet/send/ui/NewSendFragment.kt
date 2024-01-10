@@ -18,6 +18,7 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
+import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
@@ -26,7 +27,6 @@ import org.p2p.wallet.send.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.send.ui.stub.SendNoAccountFragment
-import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.SendSwapTransactionProgressHandler
 import org.p2p.wallet.utils.addFragment
@@ -191,7 +191,7 @@ class NewSendFragment :
     }
 
     override fun disableSwitchAmounts() {
-        binding.widgetSendDetails.disableFiat()
+        binding.widgetSendDetails.disableSwitchAmounts()
     }
 
     override fun enableSwitchAmounts() {
