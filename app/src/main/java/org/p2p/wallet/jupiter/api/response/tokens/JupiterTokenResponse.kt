@@ -10,7 +10,7 @@ data class JupiterTokenResponse(
     @SerializedName("decimals")
     val decimals: Int,
     @SerializedName("extensions")
-    val extensions: JupiterTokenExtensionsResponse?,
+    val extensions: JupiterTokenExtensions?,
     @SerializedName("logoURI")
     val logoUri: String?,
     @SerializedName("name")

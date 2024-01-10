@@ -1,7 +1,5 @@
 package org.p2p.wallet.swap.interactor.orca
 
-import timber.log.Timber
-import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.swap.model.orca.OrcaPools
 import org.p2p.wallet.swap.model.orca.OrcaRoute
@@ -9,6 +7,8 @@ import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaSwapInfo
 import org.p2p.wallet.swap.model.orca.OrcaTokens
 import org.p2p.wallet.swap.repository.OrcaSwapRepository
+import timber.log.Timber
+import kotlinx.coroutines.withContext
 
 // TODO: Move cache to repositories and remove singleton from this class in koin tree
 class OrcaInfoInteractor(
@@ -36,7 +36,7 @@ class OrcaInfoInteractor(
             val tokenNames = mutableMapOf<String, String>()
             tokens.forEach { (key, value) -> tokenNames[value.mint] = key }
 
-            Timber.d("Orca swap info loaded: ${tokenNames.size}")
+            Timber.d("Orca swap info loaded: $tokenNames")
 
             info = OrcaSwapInfo(
                 routes = routes,
