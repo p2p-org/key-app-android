@@ -9,7 +9,6 @@ import retrofit2.http.Streaming
 import java.math.BigInteger
 import org.p2p.wallet.jupiter.api.request.CreateSwapTransactionRequest
 import org.p2p.wallet.jupiter.api.response.CreateSwapTransactionResponse
-import org.p2p.wallet.jupiter.api.response.JupiterAllSwapRoutesResponse
 import org.p2p.wallet.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 
@@ -31,10 +30,7 @@ interface SwapJupiterApi {
         @Query("slippageBps") slippageBps: Int
     ): SwapJupiterQuoteResponse
 
-    @GET("v4/indexed-route-map")
-    suspend fun getSwapRoutesMap(): JupiterAllSwapRoutesResponse
-
     @Streaming
     @GET("v4/indexed-route-map")
-    suspend fun getSwapRoutesMapStreaming(): ResponseBody
+    suspend fun getSwapRoutesMap(): ResponseBody
 }

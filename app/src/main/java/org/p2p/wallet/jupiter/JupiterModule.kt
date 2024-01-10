@@ -1,6 +1,5 @@
 package org.p2p.wallet.jupiter
 
-import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -22,10 +21,10 @@ import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesMapper
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRemoteRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensInMemoryRepository
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensLocalRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
-import org.p2p.wallet.jupiter.repository.tokens.db.SwapDatabase
-import org.p2p.wallet.jupiter.repository.tokens.db.SwapTokensDaoDelegate
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
@@ -89,9 +88,7 @@ object JupiterModule : InjectionModule {
         factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
 
         factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
-        factoryOf(::SwapTokensDaoDelegate)
-        single { SwapDatabase.create(androidContext()).swapTokensDao }
-//        singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
+        singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 
         factoryOf(::JupiterSwapSendTransactionDelegate)
         factoryOf(::JupiterSwapInteractor)
