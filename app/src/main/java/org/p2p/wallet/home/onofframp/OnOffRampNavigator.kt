@@ -9,7 +9,6 @@ import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.offramp.ui.StrigaOffRampFragment
 import org.p2p.wallet.utils.replaceFragment
-import org.p2p.wallet.utils.replaceFragmentForResult
 
 class OnOffRampNavigator(
     private val settingsInteractor: SettingsInteractor,
@@ -19,21 +18,23 @@ class OnOffRampNavigator(
         get() = settingsInteractor.userCountryCode == null
 
     fun navigateToAddMoney(sourceFragment: Fragment) = with(sourceFragment) {
-        if (isCountryNotSelected) {
-            val fragment = OnOffRampCountrySelectionFragment.create(NavigationDestination())
-            replaceFragmentForResult(
-                target = fragment,
-                requestKey = OnOffRampCountrySelectionFragment.REQUEST_KEY,
-                onResult = { _, bundle ->
-                    if (bundle.getBoolean(OnOffRampCountrySelectionFragment.RESULT_KEY_COUNTRY_SELECTED, false)) {
-                        showAddMoneyDialog(sourceFragment)
-                    }
-                    sourceFragment.clearResultListener()
-                }
-            )
-        } else {
-            showAddMoneyDialog(sourceFragment)
-        }
+        // todo: disabled since we don't need selecting country as yet
+//        if (isCountryNotSelected) {
+//            val fragment = OnOffRampCountrySelectionFragment.create(NavigationDestination())
+//            replaceFragmentForResult(
+//                target = fragment,
+//                requestKey = OnOffRampCountrySelectionFragment.REQUEST_KEY,
+//                onResult = { _, bundle ->
+//                    if (bundle.getBoolean(OnOffRampCountrySelectionFragment.RESULT_KEY_COUNTRY_SELECTED, false)) {
+//                        showAddMoneyDialog(sourceFragment)
+//                    }
+//                    sourceFragment.clearResultListener()
+//                }
+//            )
+//        } else {
+//            showAddMoneyDialog(sourceFragment)
+//        }
+        showAddMoneyDialog(sourceFragment)
     }
 
     /**
