@@ -53,35 +53,38 @@ class ActionButtonsView @JvmOverloads constructor(
     }
 }
 
+/**
+ * Order of elements is used to display these buttons in the same order
+ */
 enum class ActionButton(
     @IdRes val viewId: Int,
     @StringRes val textRes: Int,
     @DrawableRes val iconRes: Int
 ) {
+    RECEIVE_BUTTON(
+        viewId = R.id.buttonReceive,
+        textRes = R.string.home_receive,
+        iconRes = R.drawable.ic_receive
+    ),
+    SELL_BUTTON(
+        viewId = R.id.actionButtonSell,
+        textRes = R.string.home_sell,
+        iconRes = R.drawable.ic_dollar_sign
+    ),
+    SWAP_BUTTON(
+        viewId = R.id.actionButtonSwap,
+        textRes = R.string.home_swap,
+        iconRes = R.drawable.ic_swap
+    ),
     BUY_BUTTON(
         viewId = R.id.actionButtonBuy,
         textRes = R.string.home_buy,
         iconRes = R.drawable.ic_plus
     ),
-    RECEIVE_BUTTON(
-        viewId = R.id.buttonReceive,
-        textRes = R.string.home_receive,
-        iconRes = R.drawable.ic_receive_simple
-    ),
     SEND_BUTTON(
         viewId = R.id.actionButtonSend,
         textRes = R.string.home_send,
-        iconRes = R.drawable.ic_send_medium
-    ),
-    SWAP_BUTTON(
-        viewId = R.id.actionButtonSwap,
-        textRes = R.string.home_swap,
-        iconRes = R.drawable.ic_swap_medium
-    ),
-    SELL_BUTTON(
-        viewId = R.id.actionButtonSell,
-        textRes = R.string.home_sell,
-        iconRes = R.drawable.ic_action_sell
+        iconRes = R.drawable.ic_arrow_up
     ),
     TOP_UP_BUTTON(
         viewId = R.id.actionButtonTopUp,

@@ -198,10 +198,11 @@ class MyCryptoPresenter(
 
     private fun prepareAndShowActionButtons() {
         val buttons = listOf(
-            ActionButton.BUY_BUTTON,
             ActionButton.RECEIVE_BUTTON,
-            ActionButton.SEND_BUTTON,
-            ActionButton.SWAP_BUTTON
+            ActionButton.SELL_BUTTON,
+            ActionButton.SWAP_BUTTON,
+            ActionButton.BUY_BUTTON,
+            ActionButton.SEND_BUTTON
         )
         view?.showActionButtons(buttons)
     }
@@ -223,6 +224,10 @@ class MyCryptoPresenter(
     override fun onSwapClicked() {
         cryptoScreenAnalytics.logCryptoSwapClick()
         view?.navigateToSwap()
+    }
+
+    override fun onSellClicked() {
+        view?.navigateToSell()
     }
 
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
