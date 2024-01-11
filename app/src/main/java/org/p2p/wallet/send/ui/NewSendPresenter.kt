@@ -21,6 +21,7 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.core.model.TitleValue
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
+import org.p2p.core.token.sortedWithPreferredStableCoins
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -210,13 +211,15 @@ class NewSendPresenter(
      * Get user's soul if nothing is there
      */
     private suspend fun getNonZeroUserTokensOrSoul(): List<Token.Active> {
-        return tokenServiceCoordinator.getUserTokens().filterNot {
-            if (it.isSOL) {
-                false
-            } else {
-                it.isZero
+        return tokenServiceCoordinator.getUserTokens()
+            .filterNot {
+                if (it.isSOL) {
+                    false
+                } else {
+                    it.isZero
+                }
             }
-        }
+            .sortedWithPreferredStableCoins()
     }
 
     private fun setupDefaultFields(inputAmount: BigDecimal) {
