@@ -32,9 +32,9 @@ class SwapTokensInteractor(
     suspend fun getAllTokens(): List<SwapTokenModel> {
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
         val userTokensMints = userTokens.map { it.mintAddress }.toSet()
-        val jupiterTokens = swapTokensRepository.getTokens()
+        val jupiterTokens = swapTokensRepository
+            .findTokensExcludingMints(userTokensMints)
             .map(SwapTokenModel::JupiterToken)
-            .filter { it.mintAddress !in userTokensMints }
 
         return userTokens + jupiterTokens
     }

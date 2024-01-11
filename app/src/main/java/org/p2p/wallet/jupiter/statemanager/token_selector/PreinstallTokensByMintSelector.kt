@@ -5,10 +5,8 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
@@ -22,34 +20,27 @@ class PreinstallTokensByMintSelector(
 ) : SwapInitialTokenSelector {
 
     override suspend fun getTokenPair(): Pair<SwapTokenModel, SwapTokenModel> = withContext(dispatchers.io) {
-        val jupiterTokensJob = async { jupiterTokensRepository.getTokens() }
         val userTokensJob = async { tokenServiceCoordinator.getUserTokens() }
-        val jupiterTokens: List<JupiterSwapToken> = jupiterTokensJob.await()
         val userTokens: List<Token.Active> = userTokensJob.await()
 
-        val jupiterUsdc = jupiterTokens.first { it.tokenMint.base58Value == Constants.USDC_MINT }
-        val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == Constants.WRAPPED_SOL_MINT }
+        val jupiterUsdc = jupiterTokensRepository.requireUsdc()
+        val jupiterSol = jupiterTokensRepository.requireWrappedSol()
         val defaultTokenA = SwapTokenModel.JupiterToken(jupiterUsdc)
         val defaultTokenB = SwapTokenModel.JupiterToken(jupiterSol)
 
         // search in user tokens first
         val tokenA = userTokens.findByTokenMint(preinstallTokenAMint)
-            ?: jupiterTokens.findByTokenMint(preinstallTokenAMint)
+            ?: jupiterTokensRepository.findTokenByMint(preinstallTokenAMint)?.let(SwapTokenModel::JupiterToken)
             ?: defaultTokenA
 
         val tokenB = userTokens.findByTokenMint(preinstallTokenBMint)
-            ?: jupiterTokens.findByTokenMint(preinstallTokenBMint)
+            ?: jupiterTokensRepository.findTokenByMint(preinstallTokenBMint)?.let(SwapTokenModel::JupiterToken)
             ?: defaultTokenB
 
         savedSelectedSwapTokenStorage.savedTokenAMint = tokenA.mintAddress
         savedSelectedSwapTokenStorage.savedTokenBMint = tokenB.mintAddress
 
         tokenA to tokenB
-    }
-
-    private fun List<JupiterSwapToken>.findByTokenMint(tokenMint: Base58String): SwapTokenModel.JupiterToken? {
-        return firstOrNull { it.tokenMint == tokenMint }
-            ?.let(SwapTokenModel::JupiterToken)
     }
 
     private fun List<Token.Active>.findByTokenMint(tokenMint: Base58String): SwapTokenModel.UserToken? {

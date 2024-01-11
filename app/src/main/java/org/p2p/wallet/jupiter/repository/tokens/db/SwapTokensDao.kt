@@ -4,48 +4,49 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
-import org.intellij.lang.annotations.Language
 
 @Dao
 interface SwapTokensDao {
-    private companion object {
-        @Language("RoomSql")
-        private const val SWAPPABLE_TOKEN_INDEXES_FOR_TOKEN =
-            "SELECT swap_tokens_routes.index_swappable_token " +
-                "FROM swap_tokens_routes " +
-                "JOIN swap_tokens ON swap_tokens_routes.index_source_token = swap_tokens.ordinal_index " +
-                "WHERE swap_tokens.address = :mintAddress "
-    }
 
-    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSwapTokens(entities: List<SwapTokenEntity>)
 
-    @Transaction
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTokenRoutes(routes: List<SwapTokenRouteCrossRef>)
-
-    @Query("SELECT * FROM swap_tokens WHERE ordinal_index IN ($SWAPPABLE_TOKEN_INDEXES_FOR_TOKEN)")
+    @Query("SELECT * FROM swap_tokens WHERE address = :mintAddress")
     suspend fun getSwappableTokens(mintAddress: String): List<SwapTokenEntity>
 
     @Query(
-        "SELECT * FROM swap_tokens " +
-            "WHERE ordinal_index IN ($SWAPPABLE_TOKEN_INDEXES_FOR_TOKEN) " +
-            "AND (LOWER(symbol) LIKE :mintAddressOrSymbol OR LOWER(address) LIKE :mintAddressOrSymbol)"
+        """
+            SELECT * 
+            FROM swap_tokens
+            WHERE (LOWER(symbol) LIKE :mintAddressOrSymbol OR LOWER(address) LIKE :mintAddressOrSymbol)
+        """
     )
-    suspend fun searchTokensInSwappable(mintAddress: String, mintAddressOrSymbol: String): List<SwapTokenEntity>
+    suspend fun searchTokensInSwappable(mintAddressOrSymbol: String): List<SwapTokenEntity>
 
     @Query(
-        "SELECT * FROM swap_tokens " +
-            "WHERE LOWER(symbol) LIKE :mintAddressOrSymbol " +
-            "OR LOWER(address) LIKE :mintAddressOrSymbol"
+        """
+           SELECT * FROM swap_tokens 
+           WHERE LOWER(symbol) LIKE :mintAddressOrSymbol 
+           OR LOWER(address) LIKE :mintAddressOrSymbol
+        """
     )
     suspend fun searchTokens(mintAddressOrSymbol: String): List<SwapTokenEntity>
+
+    @Query("SELECT * FROM swap_tokens WHERE address = :mintAddress")
+    suspend fun findTokenByMint(mintAddress: String): SwapTokenEntity?
+
+    @Query("SELECT * FROM swap_tokens WHERE LOWER(symbol) = :symbol")
+    suspend fun findTokenBySymbol(symbol: String): SwapTokenEntity?
+
+    @Query("SELECT * FROM swap_tokens WHERE address NOT IN (:userTokensMints)")
+    fun findTokensExcludingMints(userTokensMints: Set<String>): List<SwapTokenEntity>
+
+    @Query("SELECT * FROM swap_tokens WHERE address IN (:userTokensMints)")
+    fun findTokensIncludingMints(userTokensMints: Set<String>): List<SwapTokenEntity>
 
     @Query("SELECT * from swap_tokens where address = :mintAddress")
     suspend fun getSwapToken(mintAddress: String): SwapTokenEntity?
 
-    @Query("SELECT * from swap_tokens ")
+    @Query("SELECT * from swap_tokens")
     suspend fun getAllSwapTokens(): List<SwapTokenEntity>
 }

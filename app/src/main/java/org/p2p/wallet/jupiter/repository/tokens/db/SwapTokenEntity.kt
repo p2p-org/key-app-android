@@ -19,6 +19,7 @@ data class SwapTokenEntity(
     val logoUri: String?,
     @ColumnInfo(name = "name")
     val name: String,
+    // todo: add index to the symbol
     @ColumnInfo(name = "symbol")
     val symbol: String,
     @ColumnInfo(name = "ext_coingecko_id")

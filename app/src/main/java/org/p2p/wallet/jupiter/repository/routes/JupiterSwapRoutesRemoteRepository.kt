@@ -69,7 +69,9 @@ class JupiterSwapRoutesRemoteRepository(
 
     override suspend fun getSwappableTokens(sourceTokenMint: Base58String): List<JupiterSwapToken> {
         return withContext(dispatchers.computation) {
-            daoDelegate.getSwappableTokens(sourceTokenMint)
+            // todo: decided not to check routes before actual swap is made
+//            daoDelegate.getSwappableTokens(sourceTokenMint)
+            daoDelegate.getAllTokens()
         }
             .also { Timber.i("Getting swappable tokens ${it.size}") }
     }
