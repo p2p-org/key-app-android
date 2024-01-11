@@ -32,11 +32,13 @@ object TokenConverter {
         }
         val total = totalLamports.toBigDecimal().divide(tokenMetadata.decimals.toPowerValue())
 
-        val extensions = TokenExtensionsConfigurator(
-            extensions = tokenMetadata.extensions,
-            tokenTotal = total,
-            tokenRate = totalInUsd
-        ).config()
+//        val extensions = TokenExtensionsConfigurator(
+//            extensions = tokenMetadata.extensions,
+//            tokenTotal = total,
+//            tokenRate = totalInUsd
+//        ).config()
+
+        val extensions = TokenExtensions.NONE
 
         return Token.Active(
             publicKey = accountPublicKey,
