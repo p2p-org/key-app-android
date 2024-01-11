@@ -81,15 +81,15 @@ internal class JupiterSwapTokensRemoteRepository(
 
     @OptIn(ExperimentalTime::class)
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.computation) {
-        if (isCacheCanBeUsed()) {
-            Timber.i("Cache is valid, using cache")
-            return@withContext daoDelegate.getAllTokens().also {
-                Timber.d("Cache has come")
-            }
-        }
-
         // avoid parallel loading
         getAllMutex.withLock {
+            if (isCacheCanBeUsed()) {
+                Timber.i("Cache is valid, using cache")
+                return@withLock daoDelegate.getAllTokens().also {
+                    Timber.d("Cache has come")
+                }
+            }
+
             val tokens = async { api.getSwapTokens() }
 
             val measuredResult = measureTimedValue {
