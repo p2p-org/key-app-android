@@ -52,15 +52,20 @@ class TokenHistoryPresenter(
     private fun initialize() {
         view?.renderTokenAmounts(token)
 
-        val actionButtons = mutableListOf(
-            ActionButton.RECEIVE_BUTTON,
-            ActionButton.SEND_BUTTON,
-            ActionButton.SWAP_BUTTON
-        )
+        val actionButtons = buildList {
+            this += ActionButton.RECEIVE_BUTTON
+            this += ActionButton.SWAP_BUTTON
+            this += ActionButton.SEND_BUTTON
 
-        if (token.isSOL || token.isUSDC) {
-            actionButtons.add(0, ActionButton.BUY_BUTTON)
-        }
+            // moonpay accepts only SOL for selling
+            if (token.isSOL) {
+                this += ActionButton.SELL_BUTTON
+            }
+            // SOL or USDC can be bought
+            if (token.isSOL || token.isUSDC) {
+                this += ActionButton.BUY_BUTTON
+            }
+        }.sorted()
 
         view?.showActionButtons(actionButtons)
     }

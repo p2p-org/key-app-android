@@ -43,6 +43,7 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.ui.SearchOpenedFromScreen
 import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -168,6 +169,9 @@ class MyCryptoFragment :
             ActionButton.SWAP_BUTTON -> {
                 presenter.onSwapClicked()
             }
+            ActionButton.SELL_BUTTON -> {
+                presenter.onSellClicked()
+            }
             else -> Timber.d("Unsupported Action! $clickedButton")
         }
     }
@@ -242,6 +246,10 @@ class MyCryptoFragment :
 
     override fun navigateToSwap() {
         replaceFragment(JupiterSwapFragment.create(source = SwapOpenedFrom.MAIN_SCREEN))
+    }
+
+    override fun navigateToSell() {
+        replaceFragment(SellPayloadFragment.create())
     }
 
     private fun onVisibilityToggleClicked() {
