@@ -10,24 +10,25 @@ import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import kotlinx.coroutines.runBlocking
-import org.p2p.solanaj.model.types.Encoding
-import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.crypto.toBase64Instance
 import org.p2p.core.network.data.ErrorCode
 import org.p2p.core.network.data.ServerException
 import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.core.network.data.transactionerrors.TransactionInstructionError
+import org.p2p.solanaj.model.types.Encoding
+import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.assertThat
 import org.p2p.wallet.utils.generateRandomBytes
 import org.p2p.wallet.utils.stub
-import org.p2p.core.crypto.toBase58Instance
 
 class JupiterSendSwapTransactionDelegateTest {
 
@@ -47,7 +48,11 @@ class JupiterSendSwapTransactionDelegateTest {
     }
     private val swapTransactionRepository: JupiterSwapTransactionRepository = mockk()
 
-    private val stubJupiterSwapRoute = mockk<JupiterSwapRoute>(relaxed = true)
+    private val rpcBlockhashRepository: RpcBlockhashRepository = mockk {
+        coEvery { getRecentBlockhash() }.returns(mockk(relaxed = true))
+    }
+
+    private val stubJupiterSwapRoute = mockk<JupiterSwapRouteV6>(relaxed = true)
 
     private lateinit var sendSwapTransactionDelegate: JupiterSwapSendTransactionDelegate
 
@@ -59,7 +64,8 @@ class JupiterSendSwapTransactionDelegateTest {
             rpcSolanaRepository = rpcSolanaRepository,
             swapTransactionRepository = swapTransactionRepository,
             tokenKeyProvider = tokenKeyProvider,
-            relaySdkFacade = relaySdkFacade
+            relaySdkFacade = relaySdkFacade,
+            rpcBlockhashRepository = rpcBlockhashRepository
         )
     }
 
@@ -107,7 +113,7 @@ class JupiterSendSwapTransactionDelegateTest {
                 .andThen("")
         }
         swapTransactionRepository.stub {
-            coEvery { createSwapTransactionForRoute(any(), any()) }
+            coEvery { createSwapTransactionForRoute(any<JupiterSwapRouteV6>(), any()) }
                 .returns(stubTransaction)
         }
 
@@ -116,7 +122,7 @@ class JupiterSendSwapTransactionDelegateTest {
 
         // THEN
         result.assertThat().assertIsSuccess()
-        coVerify { swapTransactionRepository.createSwapTransactionForRoute(any(), any()) }
+        coVerify { swapTransactionRepository.createSwapTransactionForRoute(any<JupiterSwapRouteV6>(), any()) }
         coVerify(exactly = 2) {
             rpcSolanaRepository.sendTransaction(any(), Encoding.BASE64)
         }
@@ -131,7 +137,7 @@ class JupiterSendSwapTransactionDelegateTest {
                 .andThenThrows(createCustomInstructionError(6022L))
         }
         swapTransactionRepository.stub {
-            coEvery { createSwapTransactionForRoute(any(), any()) }
+            coEvery { createSwapTransactionForRoute(any<JupiterSwapRouteV6>(), any()) }
                 .returns(stubTransaction)
         }
 
@@ -142,7 +148,7 @@ class JupiterSendSwapTransactionDelegateTest {
         result.assertThat()
             .isInstanceOf(JupiterSwapTokensResult.Failure::class)
         coVerify(exactly = 2) {
-            swapTransactionRepository.createSwapTransactionForRoute(any(), any())
+            swapTransactionRepository.createSwapTransactionForRoute(any<JupiterSwapRouteV6>(), any())
         }
         coVerify(exactly = 2) {
             rpcSolanaRepository.sendTransaction(any(), Encoding.BASE64)
