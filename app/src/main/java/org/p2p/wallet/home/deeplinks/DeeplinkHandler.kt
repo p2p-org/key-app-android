@@ -61,8 +61,8 @@ class DeeplinkHandler(
                     tokenBMint = emptyString().toBase58Instance(),
                     amountA = "0",
                     strictWarning = SwapStrictTokenWarning(
-                        notStrictTokenASymbol = parsedData.nonStrictTokenA,
-                        notStrictTokenBSymbol = parsedData.nonStrictTokenB
+                        notStrictTokenASymbol = parsedData.nonStrictTokenASymbol,
+                        notStrictTokenBSymbol = parsedData.nonStrictTokenBSymbol
                     ),
                     source = SwapOpenedFrom.MAIN_SCREEN
                 )

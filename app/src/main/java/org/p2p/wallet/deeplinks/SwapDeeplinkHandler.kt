@@ -8,6 +8,9 @@ import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
+import org.p2p.wallet.deeplinks.SwapDeeplinkHandler.SwapTokenSearchResult.TokenFoundByMint
+import org.p2p.wallet.deeplinks.SwapDeeplinkHandler.SwapTokenSearchResult.TokenFoundBySymbol
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 sealed interface SwapDeeplinkData {
@@ -17,8 +20,8 @@ sealed interface SwapDeeplinkData {
     ) : SwapDeeplinkData
 
     data class NonStrictTokensFound(
-        val nonStrictTokenA: String?,
-        val nonStrictTokenB: String?
+        val nonStrictTokenASymbol: String?,
+        val nonStrictTokenBSymbol: String?
     ) : SwapDeeplinkData
 
     object TokensNotFound : SwapDeeplinkData
@@ -28,6 +31,11 @@ class SwapDeeplinkHandler(
     private val context: Context,
     private val swapTokensRepository: JupiterSwapTokensRepository
 ) {
+    private sealed class SwapTokenSearchResult(val token: JupiterSwapToken) {
+        class TokenFoundByMint(token: JupiterSwapToken) : SwapTokenSearchResult(token)
+        class TokenFoundBySymbol(token: JupiterSwapToken) : SwapTokenSearchResult(token)
+    }
+
     /**
      * https://s.key.app/...
      * or keyapp://s/... if came from website
@@ -68,27 +76,74 @@ class SwapDeeplinkHandler(
 
         Timber.i("Tokens from deeplink: $inputMintOrSymbol $outputMintOrSymbol")
 
-        val inputToken = swapTokensRepository.findTokenBySymbol(inputMintOrSymbol)
-            ?: swapTokensRepository.findTokenByMint(inputMintOrSymbol.toBase58Instance())
+        val inputTokenSearch = findToken(inputMintOrSymbol)
+        val outputTokenSearch = findToken(inputMintOrSymbol)
 
-        val outputToken = swapTokensRepository.findTokenBySymbol(outputMintOrSymbol)
-            ?: swapTokensRepository.findTokenByMint(outputMintOrSymbol.toBase58Instance())
-
-        if (inputToken == null || outputToken == null) {
+        if (inputTokenSearch == null || outputTokenSearch == null) {
             Timber.e(IllegalArgumentException("Tokens from deeplink not found: $inputMintOrSymbol $outputMintOrSymbol"))
             return SwapDeeplinkData.TokensNotFound
         }
 
-        return if (inputToken.isStrictToken && outputToken.isStrictToken) {
-            SwapDeeplinkData.TokensFound(
-                tokenAMint = inputToken.tokenMint,
-                tokenBMint = outputToken.tokenMint,
-            )
-        } else {
-            SwapDeeplinkData.NonStrictTokensFound(
-                nonStrictTokenA = inputToken.takeUnless { it.isStrictToken }?.tokenSymbol,
-                nonStrictTokenB = outputToken.takeUnless { it.isStrictToken }?.tokenSymbol
-            )
+        val inputToken = inputTokenSearch.token
+        val outputToken = outputTokenSearch.token
+
+        return when {
+            inputTokenSearch is TokenFoundBySymbol && outputTokenSearch is TokenFoundBySymbol -> {
+                if (inputToken.isStrictToken && outputToken.isStrictToken) {
+                    // from=SOL to=USDC
+                    SwapDeeplinkData.TokensFound(
+                        tokenAMint = inputToken.tokenMint,
+                        tokenBMint = outputToken.tokenMint,
+                    )
+                } else {
+                    // from=SOL to=DEDE
+                    SwapDeeplinkData.NonStrictTokensFound(
+                        nonStrictTokenASymbol = inputToken.takeUnless { it.isStrictToken }?.tokenSymbol,
+                        nonStrictTokenBSymbol = outputToken.takeUnless { it.isStrictToken }?.tokenSymbol
+                    )
+                }
+            }
+            inputTokenSearch is TokenFoundBySymbol && outputTokenSearch is TokenFoundByMint -> {
+                if (!inputToken.isStrictToken) {
+                    // from=DEDE to=3hfhh33JJ12adaqq
+                    SwapDeeplinkData.NonStrictTokensFound(
+                        nonStrictTokenASymbol = inputToken.tokenSymbol,
+                        nonStrictTokenBSymbol = null
+                    )
+                } else {
+                    // from=SOL to=3hfhh33JJ12adaqq
+                    SwapDeeplinkData.TokensFound(
+                        tokenAMint = inputToken.tokenMint,
+                        tokenBMint = outputToken.tokenMint,
+                    )
+                }
+            }
+            inputTokenSearch is TokenFoundByMint && outputTokenSearch is TokenFoundBySymbol -> {
+                if (!outputToken.isStrictToken) {
+                    SwapDeeplinkData.NonStrictTokensFound(
+                        nonStrictTokenASymbol = null,
+                        nonStrictTokenBSymbol = outputToken.tokenSymbol
+                    )
+                } else {
+                    SwapDeeplinkData.TokensFound(
+                        tokenAMint = inputToken.tokenMint,
+                        tokenBMint = outputToken.tokenMint,
+                    )
+                }
+            }
+            else -> {
+                SwapDeeplinkData.TokensFound(
+                    tokenAMint = inputToken.tokenMint,
+                    tokenBMint = outputToken.tokenMint,
+                )
+            }
         }
+    }
+
+    private suspend fun findToken(inputMintOrSymbol: String): SwapTokenSearchResult? {
+        return swapTokensRepository.findTokenBySymbol(inputMintOrSymbol)
+            ?.let(::TokenFoundBySymbol)
+            ?: swapTokensRepository.findTokenByMint(inputMintOrSymbol.toBase58Instance())
+                ?.let(::TokenFoundByMint)
     }
 }
