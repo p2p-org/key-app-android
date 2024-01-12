@@ -84,9 +84,32 @@ class SwapDeeplinkHandler(
             return SwapDeeplinkData.TokensNotFound
         }
 
+        return createStrictSwapOrWithWarning(inputTokenSearch, outputTokenSearch)
+    }
+
+    /**
+     * A token can be strict, or non-strict (like DEDE)
+     * all the available combinations:
+     *
+     * SOL USDC -> no warning
+     *
+     * SOL DEDE -> warning
+     * DEDE SOL -> warning
+     *
+     * SOL some_mint -> no warning
+     * DEDE some_mint -> warning
+     *
+     * some_mint SOL -> no warning
+     * some_mint DEDE -> warning
+     *
+     * some_mint some_mint -> no warning
+     */
+    private fun createStrictSwapOrWithWarning(
+        inputTokenSearch: SwapTokenSearchResult,
+        outputTokenSearch: SwapTokenSearchResult,
+    ): SwapDeeplinkData {
         val inputToken = inputTokenSearch.token
         val outputToken = outputTokenSearch.token
-
         return when {
             inputTokenSearch is TokenFoundBySymbol && outputTokenSearch is TokenFoundBySymbol -> {
                 if (inputToken.isStrictToken && outputToken.isStrictToken) {
