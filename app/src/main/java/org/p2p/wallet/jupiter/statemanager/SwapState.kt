@@ -5,7 +5,7 @@ import java.math.BigInteger
 import org.p2p.core.crypto.Base64String
 import org.p2p.core.utils.fromLamports
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.swap.model.Slippage
 
 sealed interface SwapState {
@@ -41,8 +41,7 @@ sealed interface SwapState {
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
-        val routes: List<JupiterSwapRoute>,
-        val activeRouteIndex: Int,
+        val route: JupiterSwapRouteV6,
         val amountTokenB: BigDecimal,
         val slippage: Slippage
     ) : SwapState
@@ -54,8 +53,7 @@ sealed interface SwapState {
         val tokenA: SwapTokenModel,
         val tokenB: SwapTokenModel,
         val amountTokenA: BigDecimal,
-        val routes: List<JupiterSwapRoute>,
-        val activeRouteIndex: Int,
+        val route: JupiterSwapRouteV6,
         val amountTokenB: BigDecimal,
         val slippage: Slippage
     ) : SwapState
@@ -68,8 +66,7 @@ sealed interface SwapState {
         val tokenB: SwapTokenModel,
         val lamportsTokenA: BigInteger,
         val lamportsTokenB: BigInteger,
-        val routes: List<JupiterSwapRoute>,
-        val activeRouteIndex: Int,
+        val route: JupiterSwapRouteV6,
         val jupiterSwapTransaction: Base64String,
         val slippage: Slippage
     ) : SwapState {
@@ -97,7 +94,7 @@ sealed interface SwapState {
     }
 }
 
-val SwapState.activeRoute: JupiterSwapRoute?
+val SwapState.activeRoute: JupiterSwapRouteV6?
     get() = when (this) {
         SwapState.InitialLoading,
         is SwapState.LoadingRoutes,
@@ -106,9 +103,9 @@ val SwapState.activeRoute: JupiterSwapRoute?
 
         is SwapState.SwapException -> previousFeatureState.activeRoute
 
-        is SwapState.LoadingTransaction -> routes.getOrNull(activeRouteIndex)
-        is SwapState.RoutesLoaded -> routes.getOrNull(activeRouteIndex)
-        is SwapState.SwapLoaded -> routes.getOrNull(activeRouteIndex)
+        is SwapState.LoadingTransaction -> route
+        is SwapState.RoutesLoaded -> route
+        is SwapState.SwapLoaded -> route
     }
 
 val SwapState.currentSlippage: Slippage?

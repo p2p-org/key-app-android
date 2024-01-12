@@ -12,6 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.create
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.wallet.jupiter.api.SwapJupiterApi
+import org.p2p.wallet.jupiter.api.SwapJupiterV6Api
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapSendTransactionDelegate
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
@@ -28,6 +29,9 @@ import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMapper
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesRemoteV6Repository
+import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Mapper
+import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
@@ -70,9 +74,11 @@ import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensBMapper
 import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensCommonMapper
 import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensPresenter
 
-object JupiterModule : InjectionModule {
+object JupiterSwapModule : InjectionModule {
 
     const val JUPITER_RETROFIT_QUALIFIER = "JUPITER_RETROFIT_QUALIFIER"
+    const val JUPITER_RETROFIT_V6_QUALIFIER = "JUPITER_RETROFIT_V6_QUALIFIER"
+
     override fun create() = module {
         singleOf(::SwapCoroutineScope)
         single { get<Retrofit>(named(JUPITER_RETROFIT_QUALIFIER)).create<SwapJupiterApi>() }
@@ -133,6 +139,13 @@ object JupiterModule : InjectionModule {
         initJupiterSwapStateManager()
         initJupiterSwapTokensList()
         initJupiterSwapSettings()
+        initV6Api()
+    }
+
+    private fun Module.initV6Api() {
+        factory { get<Retrofit>(named(JUPITER_RETROFIT_V6_QUALIFIER)).create<SwapJupiterV6Api>() }
+        factoryOf(::JupiterSwapRoutesRemoteV6Repository) bind JupiterSwapRoutesV6Repository::class
+        factoryOf(::JupiterSwapRoutesV6Mapper)
     }
 
     private fun Module.initJupiterSwapStateManager() {

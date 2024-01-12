@@ -1,12 +1,12 @@
 package org.p2p.wallet.jupiter.repository.routes
 
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.jupiter.api.request.JupiterSwapFeesRequest
 import org.p2p.wallet.jupiter.api.request.SwapRouteRequest
 import org.p2p.wallet.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.core.crypto.toBase58Instance
 
 class JupiterSwapRoutesMapper {
 

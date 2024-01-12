@@ -14,6 +14,21 @@ data class Base58String(val base58Value: String) : Parcelable {
     override fun toString(): String = base58Value
 
     fun convertToBase64(): Base64String = decodeToBytes().copyOf().toBase64Instance()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Base58String
+
+        if (!base58Value.equals(other.base58Value, ignoreCase = true)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return base58Value.hashCode()
+    }
 }
 
 fun String.toBase58Instance(): Base58String = Base58String(this)

@@ -40,10 +40,6 @@ class SwapLoadingSettingsMapper(
                 rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
                     text = TextViewCellModel.Raw(
                         text = TextContainer(R.string.swap_settings_route_best),
-                    ),
-                    firstIcon = ImageViewCellModel(
-                        icon = DrawableContainer(R.drawable.ic_chevron_right),
-                        iconTint = R.color.icons_mountain,
                     )
                 ),
                 payload = SwapSettingsPayload.ROUTE,

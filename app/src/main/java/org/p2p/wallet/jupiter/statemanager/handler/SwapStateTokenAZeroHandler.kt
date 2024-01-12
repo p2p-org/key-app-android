@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
-import org.p2p.wallet.jupiter.statemanager.SwapStateManager.Companion.DEFAULT_ACTIVE_ROUTE_ORDINAL
 import org.p2p.wallet.jupiter.statemanager.SwapStateRoutesRefresher
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 
@@ -34,7 +33,6 @@ class SwapStateTokenAZeroHandler(
                     tokenB = oldState.tokenB,
                     amountTokenA = action.newAmount,
                     slippage = oldState.slippage,
-                    activeRouteIndex = DEFAULT_ACTIVE_ROUTE_ORDINAL
                 )
             }
             is SwapStateAction.TokenAChanged -> {
@@ -61,7 +59,6 @@ class SwapStateTokenAZeroHandler(
             }
             SwapStateAction.RefreshRoutes,
             SwapStateAction.EmptyAmountTokenA,
-            is SwapStateAction.ActiveRouteChanged,
             SwapStateAction.CancelSwapLoading -> return
         }
     }

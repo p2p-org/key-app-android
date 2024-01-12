@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.baseCellDelegate
 import org.p2p.uikit.components.info_block.InfoBlockCellModel
@@ -29,11 +30,9 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.ui.bottomsheet.BaseBottomSheet
 import org.p2p.wallet.databinding.DialogSwapInfoBinding
 import org.p2p.wallet.databinding.ItemSwapInfoBannerBinding
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
@@ -49,7 +48,7 @@ enum class SwapInfoType {
     NETWORK_FEE, ACCOUNT_FEE, LIQUIDITY_FEE, MINIMUM_RECEIVED
 }
 
-private typealias LoadRateBox = Triple<JupiterSwapMarketInformation, MainCellModel, SwapRateLoaderState>
+private typealias LoadRateBox = Triple<JupiterSwapRoutePlanV6, MainCellModel, SwapRateLoaderState>
 
 class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
 
@@ -135,20 +134,24 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             SwapState.InitialLoading,
             is SwapState.LoadingRoutes,
             is SwapState.TokenANotZero,
-            is SwapState.TokenAZero -> flowOf(mapper.mapEmptyLiquidityFee())
-            is SwapState.SwapException -> handleFeatureState(state.previousFeatureState, tokens)
+            is SwapState.TokenAZero -> {
+                flowOf(mapper.mapEmptyLiquidityFee())
+            }
+            is SwapState.SwapException -> {
+                handleFeatureState(state.previousFeatureState, tokens)
+            }
             is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
-                val route: JupiterSwapRoute = when (state) {
-                    is SwapState.RoutesLoaded -> state.routes.getOrNull(state.activeRouteIndex)
-                    is SwapState.SwapLoaded -> state.routes.getOrNull(state.activeRouteIndex)
-                    else -> null
-                } ?: return flowOf(mapper.mapEmptyLiquidityFee())
+                val route = when (state) {
+                    is SwapState.RoutesLoaded -> state.route
+                    is SwapState.SwapLoaded -> state.route
+                    else -> return flowOf(mapper.mapEmptyLiquidityFee())
+                }
                 flow {
                     val rateLoaderList = mutableListOf<Flow<LoadRateBox>>()
-                    val feeCells = route.marketInfos.map { marketInfo ->
-                        val loadingCell = mapper.getLiquidityFeeCell(marketInfo, tokens)
-                        rateLoaderList += getRateLoaderFlow(marketInfo, tokens, loadingCell)
+                    val feeCells = route.routePlans.map { plan ->
+                        val loadingCell = mapper.getLiquidityFeeCell(plan, tokens)
+                        rateLoaderList += getRateLoaderFlow(plan, tokens, loadingCell)
                         loadingCell
                     }
                     var fullUiList = mapper.mapEmptyLiquidityFee().plus(feeCells)
@@ -156,12 +159,12 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
 
                     rateLoaderList.merge()
                         .collect {
-                            val marketInfo = it.first
+                            val routePlan = it.first
                             val loadingCell = it.second
                             val rateLoaderState = it.third
                             val indexOf = fullUiList.indexOf(loadingCell)
                             if (indexOf >= 0) {
-                                val newCell = mapper.updateLiquidityFee(marketInfo, loadingCell, rateLoaderState)
+                                val newCell = mapper.updateLiquidityFee(routePlan, loadingCell, rateLoaderState)
                                 val newList = fullUiList.toMutableList()
                                     .apply { set(indexOf, newCell) }
                                 fullUiList = newList
@@ -170,23 +173,25 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
                         }
                 }
             }
-            is SwapState.LoadingTransaction -> flow {
-                val fullUiList = mapper.mapLoadingLiquidityFee(
-                    allTokens = tokens,
-                    route = state.routes.getOrNull(state.activeRouteIndex)
-                )
-                emit(fullUiList)
+            is SwapState.LoadingTransaction -> {
+                flow {
+                    val fullUiList = mapper.mapLoadingLiquidityFee(
+                        allTokens = tokens,
+                        route = state.route
+                    )
+                    emit(fullUiList)
+                }
             }
         }
     }
 
     private fun getRateLoaderFlow(
-        marketInfo: JupiterSwapMarketInformation,
+        routePlan: JupiterSwapRoutePlanV6,
         tokens: List<SwapTokenModel>,
         loadingCell: MainCellModel,
     ): Flow<LoadRateBox> {
-        val lpToken = tokens.find { it.mintAddress == marketInfo.liquidityFee.mint }
-        val loadingCellFlow = flowOf(marketInfo to loadingCell)
+        val lpToken = tokens.find { it.mintAddress == routePlan.feeMint }
+        val loadingCellFlow = flowOf(routePlan to loadingCell)
         val rateLoaderFlow = lpToken?.let { stateManager.getTokenRate(lpToken) }
             ?: flowOf(SwapRateLoaderState.Error)
         return loadingCellFlow.combine(rateLoaderFlow) { a, b ->

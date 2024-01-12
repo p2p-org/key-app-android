@@ -85,8 +85,7 @@ class JupiterSwapSettingsPresenter(
                 val solToken = tokens.firstOrNull { it.isSol() }
                 currentContentList = contentMapper.mapForSwapLoadedState(
                     slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRouteIndex,
+                    route = state.route,
                     jupiterTokens = tokens,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
@@ -97,8 +96,7 @@ class JupiterSwapSettingsPresenter(
                 val solToken = tokens.firstOrNull { it.isSol() }
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRouteIndex,
+                    route = state.route,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
@@ -109,8 +107,7 @@ class JupiterSwapSettingsPresenter(
                 rateTickerManager.handleJupiterRates(state)
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRouteIndex,
+                    route = state.route,
                     jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,

@@ -2,6 +2,8 @@ package org.p2p.wallet.jupiter.repository.tokens
 
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
@@ -27,8 +29,12 @@ internal class JupiterSwapTokensRemoteRepository(
     private val tokenServiceInteractor: TokenServiceRepository
 ) : JupiterSwapTokensRepository {
 
+    private val lock = Mutex()
+
     override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.io) {
-        getSwapTokensFromCache() ?: fetchTokensFromRemote().also(::saveToStorage)
+        lock.withLock {
+            getSwapTokensFromCache() ?: fetchTokensFromRemote().also(::saveToStorage)
+        }
     }
 
     private fun getSwapTokensFromCache(): List<JupiterSwapToken>? {
@@ -145,5 +151,13 @@ internal class JupiterSwapTokensRemoteRepository(
 
     private fun Sequence<JupiterSwapToken>.filterTokensByAvailability(): Sequence<JupiterSwapToken> {
         return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen != false }
+    }
+
+    override suspend fun findTokenBySymbol(symbol: String): JupiterSwapToken? {
+        return getTokens().firstOrNull { it.tokenSymbol.equals(symbol, ignoreCase = true) }
+    }
+
+    override suspend fun findTokenByMint(mintAddress: Base58String): JupiterSwapToken? {
+        return getTokens().firstOrNull { it.tokenMint == mintAddress }
     }
 }

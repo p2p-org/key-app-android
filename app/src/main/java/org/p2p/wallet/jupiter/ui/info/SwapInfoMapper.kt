@@ -22,8 +22,8 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 
 class SwapInfoMapper {
@@ -60,31 +60,32 @@ class SwapInfoMapper {
 
     fun mapLoadingLiquidityFee(
         allTokens: List<SwapTokenModel>,
-        route: JupiterSwapRoute? = null,
+        route: JupiterSwapRouteV6? = null,
     ): List<AnyCellItem> = buildList {
         addAll(mapEmptyLiquidityFee())
         if (route == null) return@buildList
-        route.marketInfos.forEach { marketInfo ->
-            this += getLiquidityFeeCell(marketInfo, allTokens)
+
+        route.routePlans.forEach { routePlan ->
+            this += getLiquidityFeeCell(routePlan, allTokens)
         }
     }
 
     fun getLiquidityFeeCell(
-        marketInfo: JupiterSwapMarketInformation,
+        routePlan: JupiterSwapRoutePlanV6,
         allTokens: List<SwapTokenModel>
     ): MainCellModel {
-        val label = marketInfo.label
-        val liquidityToken = allTokens.find { marketInfo.liquidityFee.mint == it.mintAddress }
-        val liquidityFee = marketInfo.liquidityFee
+        val label = routePlan.label
+        val liquidityToken = allTokens.find { routePlan.feeMint == it.mintAddress }
+        val liquidityFee = routePlan.feeAmount
 
-        val feePercent = liquidityFee.formattedPercent.toPlainString() + "%"
+        val feePercent = routePlan.percent + "%"
         val firstLineText = TextViewCellModel.Raw(
             text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePercent),
             maxLines = 2
         )
 
         val secondLineText = liquidityToken?.let {
-            val feeInTokenLamports = liquidityFee.amountInLamports.fromLamports(it.decimals)
+            val feeInTokenLamports = liquidityFee.fromLamports(it.decimals)
             TextViewCellModel.Raw(
                 text = TextContainer("$feeInTokenLamports ${it.tokenSymbol}")
             )
@@ -161,7 +162,7 @@ class SwapInfoMapper {
     )
 
     fun updateLiquidityFee(
-        marketInfo: JupiterSwapMarketInformation,
+        marketInfo: JupiterSwapRoutePlanV6,
         oldCell: MainCellModel,
         state: SwapRateLoaderState
     ): MainCellModel {
@@ -173,7 +174,7 @@ class SwapInfoMapper {
             is SwapRateLoaderState.Loaded -> {
                 val rate = state.rate
                 val token = state.token
-                val feeInUsd = marketInfo.liquidityFee.amountInLamports
+                val feeInUsd = marketInfo.feeAmount
                     .fromLamports(token.decimals)
                     .multiply(rate)
                     .asUsdSwap()

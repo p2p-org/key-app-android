@@ -1,17 +1,18 @@
 package org.p2p.wallet.jupiter.interactor
 
 import timber.log.Timber
-import org.p2p.solanaj.model.types.Encoding
-import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.network.data.ServerException
 import org.p2p.core.network.data.transactionerrors.RpcTransactionError
-import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
-import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
-import org.p2p.wallet.sdk.facade.RelaySdkFacade
-import org.p2p.core.crypto.toBase58Instance
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.model.types.Encoding
+import org.p2p.solanaj.rpc.RpcSolanaRepository
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
+import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
+import org.p2p.wallet.sdk.facade.RelaySdkFacade
 
 private const val TAG = "JupiterSendSwapTransactionDelegate"
 
@@ -20,6 +21,7 @@ private const val WHIRPOOLS_INVALID_TIMESTAMP_ERROR_CODE = 6022L
 
 class JupiterSwapSendTransactionDelegate(
     private val rpcSolanaRepository: RpcSolanaRepository,
+    private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val relaySdkFacade: RelaySdkFacade
@@ -27,7 +29,7 @@ class JupiterSwapSendTransactionDelegate(
     private var retryCount: Int = 0
 
     suspend fun sendSwapTransaction(
-        swapRoute: JupiterSwapRoute,
+        swapRoute: JupiterSwapRouteV6,
         jupiterTransaction: Base64String
     ): JupiterSwapTokensResult = try {
         retryCount++
@@ -36,14 +38,12 @@ class JupiterSwapSendTransactionDelegate(
             .getEncodedKeyPair()
             .toBase58Instance()
 
-        // empty string because swap transaction already has recent blockhash
-        // if pass our own recent blockhash, there is an error
-        val noBlockhashValue = null
+        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
 
         val signedSwapTransaction = relaySdkFacade.signTransaction(
             transaction = jupiterTransaction,
             keyPair = userAccountKeypair,
-            recentBlockhash = noBlockhashValue
+            recentBlockhash = recentBlockhash
         ).transaction.convertToBase64()
 
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(
@@ -75,7 +75,7 @@ class JupiterSwapSendTransactionDelegate(
         retryCount = 0
     }
 
-    private suspend fun generateNewSwapTransaction(route: JupiterSwapRoute): Base64String? = try {
+    private suspend fun generateNewSwapTransaction(route: JupiterSwapRouteV6): Base64String? = try {
         swapTransactionRepository.createSwapTransactionForRoute(route, tokenKeyProvider.publicKeyBase58)
     } catch (generationFailed: Throwable) {
         Timber.tag(TAG).i(generationFailed)

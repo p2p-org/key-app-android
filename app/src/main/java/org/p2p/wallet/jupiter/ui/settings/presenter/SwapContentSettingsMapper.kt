@@ -20,11 +20,10 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.model.findTokenByMint
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.utils.emptyString
 
@@ -35,15 +34,13 @@ class SwapContentSettingsMapper(
 
     suspend fun mapForLoadingTransactionState(
         slippage: Slippage,
-        routes: List<JupiterSwapRoute>,
-        activeRoute: Int,
+        route: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>,
         tokenB: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
-        routes = routes,
-        activeRouteIndex = activeRoute,
+        route = route,
         jupiterTokens = jupiterTokens,
         tokenBAmount = null,
         tokenB = tokenB,
@@ -57,8 +54,7 @@ class SwapContentSettingsMapper(
         tokenBAmount: BigDecimal?,
     ): List<AnyCellItem> = mapList(
         slippage = state.slippage,
-        routes = state.routes,
-        activeRouteIndex = state.activeRouteIndex,
+        route = state.route,
         jupiterTokens = jupiterTokens,
         tokenBAmount = tokenBAmount,
         tokenB = state.tokenB,
@@ -68,16 +64,14 @@ class SwapContentSettingsMapper(
 
     suspend fun mapForSwapLoadedState(
         slippage: Slippage,
-        routes: List<JupiterSwapRoute>,
-        activeRoute: Int,
+        route: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
     ): List<AnyCellItem> = mapList(
         slippage = slippage,
-        routes = routes,
-        activeRouteIndex = activeRoute,
+        route = route,
         jupiterTokens = jupiterTokens,
         tokenBAmount = tokenBAmount,
         tokenB = tokenB,
@@ -86,19 +80,17 @@ class SwapContentSettingsMapper(
 
     private suspend fun mapList(
         slippage: Slippage,
-        routes: List<JupiterSwapRoute>,
-        activeRouteIndex: Int,
+        route: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>,
         tokenBAmount: BigDecimal?,
         tokenB: SwapTokenModel,
         solTokenForFee: JupiterSwapToken?,
         showMinimumReceivedAmount: Boolean = true,
     ): List<AnyCellItem> = buildList {
-        addRouteCell(routes, activeRouteIndex, jupiterTokens)
+        addRouteCell(route, jupiterTokens)
 
         this += commonMapper.getNetworkFeeCell()
 
-        val route: JupiterSwapRoute? = routes.getOrNull(activeRouteIndex)
         val accountFee: SwapSettingFeeBox? = swapFeeBuilder.buildAccountFeeBox(route, solTokenForFee)
         val liquidityFeeList: List<SwapSettingFeeBox>? = swapFeeBuilder.buildLiquidityFeeListBox(route, jupiterTokens)
 
@@ -107,7 +99,7 @@ class SwapContentSettingsMapper(
             addAccountFeeCell(accountFee)
         }
         if (liquidityFeeList != null) {
-            addLiquidityFeeCell(routes, activeRouteIndex, jupiterTokens, liquidityFeeList)
+            addLiquidityFeeCell(route, jupiterTokens, liquidityFeeList)
         }
         if (accountFee != null && liquidityFeeList != null) {
             addEstimatedFeeCell(accountFee, liquidityFeeList)
@@ -116,46 +108,39 @@ class SwapContentSettingsMapper(
     }
 
     private fun MutableList<AnyCellItem>.addRouteCell(
-        routes: List<JupiterSwapRoute>,
-        activeRouteIndex: Int,
+        route: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>,
     ) {
-        val isBestRoute = activeRouteIndex == SwapStateManager.DEFAULT_ACTIVE_ROUTE_ORDINAL
-        val activeRoute = routes.getOrNull(activeRouteIndex)
+        val routeAsString = formatRouteString(route, jupiterTokens)
+
         this += MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
                     text = TextContainer(R.string.swap_settings_route_title),
                 ),
                 secondLineText = TextViewCellModel.Raw(
-                    text = TextContainer(formatRouteString(activeRoute, jupiterTokens))
+                    text = TextContainer(routeAsString)
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = if (isBestRoute) {
-                    TextViewCellModel.Raw(text = TextContainer(R.string.swap_settings_route_best))
-                } else {
-                    null
-                },
-                firstIcon = ImageViewCellModel(
-                    icon = DrawableContainer(R.drawable.ic_chevron_right),
-                    iconTint = R.color.icons_mountain,
-                )
+                text = TextViewCellModel.Raw(text = TextContainer(R.string.swap_settings_route_best)),
             ),
             payload = SwapSettingsPayload.ROUTE,
             styleType = MainCellStyle.BASE_CELL,
         )
     }
 
-    private fun formatRouteString(activeRoute: JupiterSwapRoute?, jupiterTokens: List<JupiterSwapToken>): String {
+    private fun formatRouteString(
+        activeRoute: JupiterSwapRouteV6?,
+        jupiterTokens: List<JupiterSwapToken>
+    ): String {
         if (activeRoute == null) return emptyString()
-        val marketInfos = activeRoute.marketInfos
         return buildString {
-            marketInfos.forEachIndexed { index, marketInfo ->
-                append(jupiterTokens.findTokenSymbolByMint(marketInfo.inputMint))
+            activeRoute.routePlans.forEachIndexed { index, routePlan ->
+                append(jupiterTokens.findTokenSymbolByMint(routePlan.inputMint))
                 append(" → ")
-                if (index == marketInfos.lastIndex) {
-                    append(jupiterTokens.findTokenSymbolByMint(marketInfo.outputMint))
+                if (index == activeRoute.routePlans.lastIndex) {
+                    append(jupiterTokens.findTokenSymbolByMint(routePlan.outputMint))
                 }
             }
         }
@@ -228,13 +213,10 @@ class SwapContentSettingsMapper(
     }
 
     private fun MutableList<AnyCellItem>.addLiquidityFeeCell(
-        routes: List<JupiterSwapRoute>,
-        activeRouteIndex: Int,
+        activeRoute: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>,
         liquidityFeeList: List<SwapSettingFeeBox>
     ) {
-        val activeRoute = routes.getOrNull(activeRouteIndex)
-
         val liquidityFeeInTokens = formatLiquidityFeeString(activeRoute, jupiterTokens)
 
         val someAmountsUsdNotLoaded = liquidityFeeList.any { it.amountUsd == null }
@@ -270,22 +252,20 @@ class SwapContentSettingsMapper(
     }
 
     private fun formatLiquidityFeeString(
-        route: JupiterSwapRoute?,
+        route: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>
     ): String {
-        if (route == null) return emptyString()
-
         return buildString {
-            route.marketInfos.forEachIndexed { index, marketInfo ->
-                val lpFee = marketInfo.liquidityFee
-                val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@forEachIndexed
+            route.routePlans.forEachIndexed { index, routePlan ->
+                val lpFee = routePlan.feeAmount
+                val lpToken = jupiterTokens.findTokenByMint(routePlan.feeMint) ?: return@forEachIndexed
 
-                val feeAmount = lpFee.amountInLamports
+                val feeAmount = lpFee
                     .fromLamports(lpToken.decimals)
                     .formatToken(lpToken.decimals)
                 val fee = "$feeAmount ${lpToken.tokenSymbol}"
                 append(fee)
-                if (index != route.marketInfos.lastIndex) {
+                if (index != route.routePlans.lastIndex) {
                     append(", ")
                 }
             }
