@@ -376,7 +376,13 @@ class JupiterSwapPresenter(
         Timber.i(state.featureException)
 
         checkPriceImpact()
-        rateTickerManager.handleSwapException(state)
+
+        when (state.previousFeatureState) {
+            is SwapState.RoutesLoaded -> rateTickerManager.handleJupiterRates(state.previousFeatureState)
+            is SwapState.SwapLoaded -> rateTickerManager.handleJupiterRates(state.previousFeatureState)
+            else -> rateTickerManager.handleSwapException(state)
+        }
+
         val (widgetAState, _) = mapWidgetStates(state.previousFeatureState)
         when (val featureException = state.featureException) {
             is SwapFeatureException.SameTokens -> {
@@ -524,6 +530,7 @@ class JupiterSwapPresenter(
     }
 
     private fun handleRoutesLoaded(state: SwapState.RoutesLoaded) {
+        rateTickerManager.handleJupiterRates(state)
         mapWidgetStates(state)
         updateWidgets()
     }
