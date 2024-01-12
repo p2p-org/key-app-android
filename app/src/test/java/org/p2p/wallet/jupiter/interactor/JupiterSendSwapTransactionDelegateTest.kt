@@ -22,6 +22,7 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
+import org.p2p.wallet.jupiter.repository.routes.JupiterSwapTransactionRpcErrorMapper
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
@@ -65,7 +66,8 @@ class JupiterSendSwapTransactionDelegateTest {
             swapTransactionRepository = swapTransactionRepository,
             tokenKeyProvider = tokenKeyProvider,
             relaySdkFacade = relaySdkFacade,
-            rpcBlockhashRepository = rpcBlockhashRepository
+            rpcBlockhashRepository = rpcBlockhashRepository,
+            rpcErrorMapper = JupiterSwapTransactionRpcErrorMapper()
         )
     }
 
