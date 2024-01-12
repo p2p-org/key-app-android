@@ -22,6 +22,7 @@ import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesMapper
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRemoteRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
+import org.p2p.wallet.jupiter.repository.routes.JupiterSwapTransactionRpcErrorMapper
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensInMemoryRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensLocalRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
@@ -97,6 +98,7 @@ object JupiterSwapModule : InjectionModule {
         singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class
 
         factoryOf(::JupiterSwapSendTransactionDelegate)
+        factoryOf(::JupiterSwapTransactionRpcErrorMapper)
         factoryOf(::JupiterSwapInteractor)
         factoryOf(::SwapUserTokensChangeHandler)
         factoryOf(::MinimumSolAmountValidator)

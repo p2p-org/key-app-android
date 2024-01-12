@@ -200,15 +200,15 @@ class JupiterSwapPresenterTokenAmountChangeTest : JupiterSwapPresenterBaseTest()
             homeRepoAllTokens = mutableListOf(firstToken, secondToken)
             homeRepoUserTokens = homeRepoAllTokens
             jupiterSwapRoutesRepoGetSwapRoutesForSwapPair = { pair, pk ->
-                    JupiterSwapTestHelpers.createSwapRoute(
-                        TestSwapRouteData(
-                            swapPair = pair,
-                            userPublicKey = pk,
-                            ratio = JupiterSwapTestHelpers.getRateFromUsd(secondToken.rate!!),
-                            inDecimals = firstToken.decimals,
-                            outDecimals = secondToken.decimals
-                        )
+                JupiterSwapTestHelpers.createSwapRoute(
+                    TestSwapRouteData(
+                        swapPair = pair,
+                        userPublicKey = pk,
+                        ratio = JupiterSwapTestHelpers.getRateFromUsd(secondToken.rate!!),
+                        inDecimals = firstToken.decimals,
+                        outDecimals = secondToken.decimals
                     )
+                )
             }
         }
         presenter.attach(view)

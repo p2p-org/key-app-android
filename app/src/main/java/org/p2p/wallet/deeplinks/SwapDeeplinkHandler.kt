@@ -14,13 +14,14 @@ sealed interface SwapDeeplinkData {
     data class TokensFound(
         val tokenAMint: Base58String,
         val tokenBMint: Base58String,
-    ): SwapDeeplinkData
+    ) : SwapDeeplinkData
 
-    data class NotStrictTokensFound(
+    data class NonStrictTokensFound(
         val nonStrictTokenA: String?,
         val nonStrictTokenB: String?
-    ): SwapDeeplinkData
-    object TokensNotFound: SwapDeeplinkData
+    ) : SwapDeeplinkData
+
+    object TokensNotFound : SwapDeeplinkData
 }
 
 class SwapDeeplinkHandler(
@@ -84,7 +85,7 @@ class SwapDeeplinkHandler(
                 tokenBMint = outputMintOrSymbol.toBase58Instance(),
             )
         } else {
-            SwapDeeplinkData.NotStrictTokensFound(
+            SwapDeeplinkData.NonStrictTokensFound(
                 nonStrictTokenA = inputToken.takeUnless { it.isStrictToken }?.tokenSymbol,
                 nonStrictTokenB = outputToken.takeUnless { it.isStrictToken }?.tokenSymbol
             )

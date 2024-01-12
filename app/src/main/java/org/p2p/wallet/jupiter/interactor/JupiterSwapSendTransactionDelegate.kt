@@ -4,25 +4,23 @@ import timber.log.Timber
 import org.p2p.core.crypto.Base64String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.network.data.ServerException
-import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
+import org.p2p.wallet.jupiter.repository.routes.JupiterSwapTransactionRpcErrorMapper
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 
 private const val TAG = "JupiterSendSwapTransactionDelegate"
 
-private const val JUPITER_LOW_SLIPPAGE_ERROR_CODE = 6001L
-private const val WHIRPOOLS_INVALID_TIMESTAMP_ERROR_CODE = 6022L
-
 class JupiterSwapSendTransactionDelegate(
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
+    private val rpcErrorMapper: JupiterSwapTransactionRpcErrorMapper,
     private val tokenKeyProvider: TokenKeyProvider,
     private val relaySdkFacade: RelaySdkFacade
 ) {
@@ -54,7 +52,7 @@ class JupiterSwapSendTransactionDelegate(
 
         JupiterSwapTokensResult.Success(firstTransactionSignature)
     } catch (blockchainError: ServerException) {
-        val swapFailure = handleBlockchainError(blockchainError)
+        val swapFailure = rpcErrorMapper.mapRpcError(blockchainError)
 
         when (swapFailure.cause) {
             is JupiterSwapTokensResult.Failure.InvalidTimestampRpcError -> {
@@ -81,35 +79,4 @@ class JupiterSwapSendTransactionDelegate(
         Timber.tag(TAG).i(generationFailed)
         null
     }
-
-    private fun handleBlockchainError(
-        blockchainError: ServerException
-    ): JupiterSwapTokensResult.Failure {
-        Timber.tag(TAG).i(blockchainError, "Failed swapping transaction")
-
-        val domainErrorType = blockchainError.domainErrorType
-        return when {
-            domainErrorType !is RpcTransactionError.InstructionError -> {
-                blockchainError
-            }
-            domainErrorType.isLowSlippageError() -> {
-                JupiterSwapTokensResult.Failure.LowSlippageRpcError(blockchainError)
-            }
-            domainErrorType.isInvalidTimestampError() -> {
-                JupiterSwapTokensResult.Failure.InvalidTimestampRpcError(blockchainError)
-            }
-            else -> {
-                blockchainError
-            }
-        }.let(JupiterSwapTokensResult::Failure)
-    }
-
-    private fun RpcTransactionError.InstructionError.isLowSlippageError(): Boolean =
-        extractCustomErrorCodeOrNull() == JUPITER_LOW_SLIPPAGE_ERROR_CODE
-
-    /**
-     * @see [org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult.Failure.InvalidTimestampRpcError]
-     */
-    private fun RpcTransactionError.InstructionError.isInvalidTimestampError(): Boolean =
-        extractCustomErrorCodeOrNull() == WHIRPOOLS_INVALID_TIMESTAMP_ERROR_CODE
 }

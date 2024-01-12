@@ -8,7 +8,6 @@ import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.data.ServerException
-import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
@@ -24,14 +23,12 @@ import org.p2p.wallet.sdk.facade.RelaySdkFacade
 
 private const val TAG = "JupiterSwapRouteValidator"
 
-private const val JUPITER_LOW_SLIPPAGE_ERROR_CODE = 6001L
-private const val WHIRPOOLS_INVALID_TIMESTAMP_ERROR_CODE = 6022L
-
 class JupiterSwapRouteValidator(
     private val dispatchers: CoroutineDispatchers,
     private val rpcSolanaRepository: RpcSolanaRepository,
     private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
+    private val rpcErrorMapper: JupiterSwapTransactionRpcErrorMapper,
     private val relaySdkFacade: RelaySdkFacade,
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapRoutesValidationEnabled: SwapRoutesValidationEnabledFeatureToggle
@@ -140,22 +137,12 @@ class JupiterSwapRouteValidator(
                 encoding = Encoding.BASE64
             )
         } catch (blockchainError: ServerException) {
-            val swapFailure = handleBlockchainError(blockchainError)
-
-            when (swapFailure.cause) {
-                is JupiterSwapTokensResult.Failure.InvalidTimestampRpcError -> {
-                    TransactionSimulationResult(
-                        isSimulationSuccess = true,
-                        errorIfSimulationFailed = null
-                    )
-                }
-                else -> {
-                    TransactionSimulationResult(
-                        isSimulationSuccess = false,
-                        errorIfSimulationFailed = null
-                    )
-                }
-            }
+            val swapFailure = rpcErrorMapper.mapRpcError(blockchainError)
+            TransactionSimulationResult(
+                // invalidTimestamp is random and doesn't show real error
+                isSimulationSuccess = swapFailure.cause is JupiterSwapTokensResult.Failure.InvalidTimestampRpcError,
+                errorIfSimulationFailed = null
+            )
         } catch (error: Throwable) {
             Timber.i(error, "Something went wrong while validating route")
             TransactionSimulationResult(
@@ -164,33 +151,4 @@ class JupiterSwapRouteValidator(
             )
         }
     }
-
-    private fun handleBlockchainError(
-        blockchainError: ServerException
-    ): JupiterSwapTokensResult.Failure {
-        val domainErrorType = blockchainError.domainErrorType
-        return when {
-            domainErrorType !is RpcTransactionError.InstructionError -> {
-                blockchainError
-            }
-            domainErrorType.isLowSlippageError() -> {
-                JupiterSwapTokensResult.Failure.LowSlippageRpcError(blockchainError)
-            }
-            domainErrorType.isInvalidTimestampError() -> {
-                JupiterSwapTokensResult.Failure.InvalidTimestampRpcError(blockchainError)
-            }
-            else -> {
-                blockchainError
-            }
-        }.let(JupiterSwapTokensResult::Failure)
-    }
-
-    private fun RpcTransactionError.InstructionError.isLowSlippageError(): Boolean =
-        extractCustomErrorCodeOrNull() == JUPITER_LOW_SLIPPAGE_ERROR_CODE
-
-    /**
-     * @see [org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult.Failure.InvalidTimestampRpcError]
-     */
-    private fun RpcTransactionError.InstructionError.isInvalidTimestampError(): Boolean =
-        extractCustomErrorCodeOrNull() == WHIRPOOLS_INVALID_TIMESTAMP_ERROR_CODE
 }

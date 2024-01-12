@@ -181,31 +181,34 @@ class JupiterSwapFragment :
             strictWarning?.notStrictTokenASymbol != null ||
                 strictWarning?.notStrictTokenBSymbol != null
         val strictWarning = strictWarning
-
         if (strictWarning != null && atLeastOneIsNotStrict) {
-            val body = if (strictWarning.notStrictTokenASymbol != null && strictWarning.notStrictTokenBSymbol != null) {
-                getString(
-                    R.string.swap_main_strict_warning_multiple_body,
-                    strictWarning.notStrictTokenASymbol,
-                    strictWarning.notStrictTokenBSymbol
-                )
-            } else {
-                val singleTokenSymbol = strictWarning.notStrictTokenASymbol ?: strictWarning.notStrictTokenBSymbol
-                getString(
-                    R.string.swap_main_strict_warning_single_body,
-                    singleTokenSymbol,
-                )
-            }
-            MaterialAlertDialogBuilder(requireContext())
-                .setCancelable(false)
-                .setIcon(R.drawable.ic_warning_solid)
-                .setTitle(getString(R.string.swap_main_strict_warning_title))
-                .setMessage(body)
-                .setPositiveButton("Okay") { dialog, _ -> dialog.dismiss() }
-                .show()
+            showStrictDialog(strictWarning)
         }
 
         presenter.resumeStateManager()
+    }
+
+    private fun showStrictDialog(strictWarning: SwapStrictTokenWarning) {
+        val body = if (strictWarning.notStrictTokenASymbol != null && strictWarning.notStrictTokenBSymbol != null) {
+            getString(
+                R.string.swap_main_strict_warning_multiple_body,
+                strictWarning.notStrictTokenASymbol,
+                strictWarning.notStrictTokenBSymbol
+            )
+        } else {
+            val singleTokenSymbol = strictWarning.notStrictTokenASymbol ?: strictWarning.notStrictTokenBSymbol
+            getString(
+                R.string.swap_main_strict_warning_single_body,
+                singleTokenSymbol,
+            )
+        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setCancelable(false)
+            .setIcon(R.drawable.ic_warning_solid)
+            .setTitle(getString(R.string.swap_main_strict_warning_title))
+            .setMessage(body)
+            .setPositiveButton("Okay") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

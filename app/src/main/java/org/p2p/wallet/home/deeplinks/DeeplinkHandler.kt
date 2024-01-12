@@ -44,7 +44,7 @@ class DeeplinkHandler(
     }
 
     private suspend fun handleSwapDeeplink(data: DeeplinkData) {
-        when(val parsedData = swapDeeplinkHandler.parseDeeplink(data)) {
+        when (val parsedData = swapDeeplinkHandler.parseDeeplink(data)) {
             is SwapDeeplinkData.TokensFound -> {
                 screenNavigator?.showSwapWithArgs(
                     tokenAMint = parsedData.tokenAMint,
@@ -54,7 +54,7 @@ class DeeplinkHandler(
                     source = SwapOpenedFrom.MAIN_SCREEN
                 )
             }
-            is SwapDeeplinkData.NotStrictTokensFound -> {
+            is SwapDeeplinkData.NonStrictTokensFound -> {
                 // pass empty strings to rollback tokens to default values
                 screenNavigator?.showSwapWithArgs(
                     tokenAMint = emptyString().toBase58Instance(),
