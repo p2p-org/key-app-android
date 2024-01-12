@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onCompletion
-import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
@@ -24,9 +23,9 @@ private const val EXTRA_TAB_SCREEN = "EXTRA_TAB_SCREEN"
 
 class AppDeeplinksManager(
     private val context: Context,
+    private val swapDeeplinkHandler: SwapDeeplinkHandler,
     private val intercomDeeplinkManager: IntercomDeeplinkManager
 ) {
-
     companion object {
         const val NOTIFICATION_TYPE = "eventType"
     }
@@ -92,7 +91,7 @@ class AppDeeplinksManager(
 
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
                 val isTransferScheme = isTransferDeeplink(data)
-                val isSwapScheme = isSwapDeeplink(data)
+                val isSwapScheme = swapDeeplinkHandler.isSwapDeeplink(data)
 
                 when {
                     isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
@@ -118,19 +117,6 @@ class AppDeeplinksManager(
         val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
         return data.host == transferHostMain && data.scheme == transferSchemeMain ||
             data.host == transferHostAlternative && data.scheme == transferSchemeAlternative
-    }
-
-    /**
-     * https://s.key.app/...
-     * or keyapp://s/... if came from website
-     */
-    private fun isSwapDeeplink(data: Uri): Boolean {
-        val transferHostMain = context.getString(R.string.transfer_app_host_swap)
-        val transferSchemeMain = "https"
-        val transferHostAlternative = "s"
-        val transferSchemeAlternative = context.getString(R.string.transfer_app_scheme_alternative)
-        return (data.host == transferHostMain && data.scheme == transferSchemeMain) ||
-            (data.host == transferHostAlternative && data.scheme == transferSchemeAlternative)
     }
 
     fun buildIntent(notificationType: NotificationType): Intent {
@@ -229,20 +215,7 @@ class AppDeeplinksManager(
     }
 
     private fun handleSwapDeeplink(intent: Intent) {
-        val data = intent.data ?: return
-        val target = DeeplinkTarget.fromScreenTab(ScreenTab.SWAP_SCREEN)
-
-        target?.let { deeplinkTarget ->
-            val deeplinkData = DeeplinkData(
-                target = deeplinkTarget,
-                pathSegments = data.pathSegments,
-                args = data.queryParameterNames
-                    .filter { !data.getQueryParameter(it).isNullOrBlank() }
-                    .associateWith { data.getQueryParameter(it)!! },
-                intent = intent
-            )
-            notify(deeplinkData)
-        }
+        swapDeeplinkHandler.createSwapDeeplinkData(intent)?.also(::notify)
     }
 
     private fun switchToMainTabIfPossible(intent: Intent) {

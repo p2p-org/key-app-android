@@ -50,6 +50,7 @@ koverReport {
 }
 
 android {
+    namespace = "org.p2p.wallet"
     applicationVariants.all {
         outputs
             .map { it as BaseVariantOutputImpl }

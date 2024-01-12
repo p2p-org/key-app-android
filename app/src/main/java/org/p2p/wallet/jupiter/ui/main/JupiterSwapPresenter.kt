@@ -41,7 +41,7 @@ import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
@@ -443,7 +443,7 @@ class JupiterSwapPresenter(
         analytics.logChangeTokenBAmountChanged(state.tokenB, state.amountTokenB.toString())
         rateTickerManager.handleJupiterRates(state)
 
-        showRoutesForDebug(state.routes[state.activeRouteIndex], state.slippage)
+        showRoutesForDebug(state.route, state.slippage)
 
         mapWidgetStates(state)
         updateWidgets()
@@ -676,15 +676,15 @@ class JupiterSwapPresenter(
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 
-    private fun showRoutesForDebug(bestRoute: JupiterSwapRoute, slippage: Slippage) {
+    private fun showRoutesForDebug(bestRoute: JupiterSwapRouteV6, slippage: Slippage) {
         val info = buildString {
             append("Route: ")
 
-            bestRoute.marketInfos.forEachIndexed { index, info ->
+            bestRoute.routePlans.forEachIndexed { index, plan ->
                 if (index == 0) {
-                    val fromTokenData = userLocalRepository.findTokenData(info.inputMint.base58Value)?.symbol
+                    val fromTokenData = userLocalRepository.findTokenData(plan.inputMint.base58Value)?.symbol
                         ?: "(UNKNOWN)"
-                    val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value)?.symbol
+                    val toTokenData = userLocalRepository.findTokenData(plan.outputMint.base58Value)?.symbol
                         ?: "(UNKNOWN)"
                     append(fromTokenData)
                     append(" -> ")
@@ -692,7 +692,7 @@ class JupiterSwapPresenter(
                     return@forEachIndexed
                 }
 
-                val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value)?.symbol
+                val toTokenData = userLocalRepository.findTokenData(plan.outputMint.base58Value)?.symbol
                     ?: "(UNKNOWN)"
 
                 append(" -> ")
@@ -703,7 +703,7 @@ class JupiterSwapPresenter(
             appendLine()
             append("Slippage: ${slippage.percentValue}")
             appendLine()
-            append("KeyApp fee: ${bestRoute.keyAppFeeInLamports}")
+            append("KeyApp fee: NONE for v6")
         }
 
         view?.showDebugInfo(

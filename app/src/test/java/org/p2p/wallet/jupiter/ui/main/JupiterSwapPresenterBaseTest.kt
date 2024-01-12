@@ -44,11 +44,12 @@ import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
@@ -104,6 +105,9 @@ open class JupiterSwapPresenterBaseTest {
     lateinit var homeLocalRepository: TokenServiceCoordinator
 
     @MockK
+    lateinit var jupiterSwapRoutesV6Repository: JupiterSwapRoutesV6Repository
+
+    @MockK
     lateinit var jupiterSwapRoutesRepository: JupiterSwapRoutesRepository
 
     @MockK
@@ -152,7 +156,7 @@ open class JupiterSwapPresenterBaseTest {
 
     protected fun initJupiterSwapTransactionRepository() {
         coEvery {
-            jupiterSwapTransactionRepository.createSwapTransactionForRoute(any(), any())
+            jupiterSwapTransactionRepository.createSwapTransactionForRoute(any<JupiterSwapRouteV6>(), any())
         } answers {
             Base64String(
                 "AsBPhpRjCGc81fONY4ChQ6/fHF99+z7+6+ROO9b8Ootp4M4Xx1ysqHcV6YTslJcMpGxMArR3KsxJTNElkYxxJgo" +
@@ -237,7 +241,7 @@ open class JupiterSwapPresenterBaseTest {
         swapStateRoutesRefresher = spyk(
             SwapStateRoutesRefresher(
                 tokenKeyProvider = tokenKeyProvider,
-                swapRoutesRepository = jupiterSwapRoutesRepository,
+                swapRoutesRepository = jupiterSwapRoutesV6Repository,
                 swapTransactionRepository = jupiterSwapTransactionRepository,
                 minSolBalanceValidator = MinimumSolAmountValidator(
                     rpcAmountRepository = rpcAmountRepository
@@ -365,11 +369,11 @@ open class JupiterSwapPresenterBaseTest {
     }
 
     private fun initSwapRoutesRepository(
-        routesGetter: (JupiterSwapPair, Base58String) -> List<JupiterSwapRoute>,
+        routesGetter: (JupiterSwapPair, Base58String) -> JupiterSwapRouteV6,
         swappableTokenMintsGetter: (Base58String) -> List<Base58String>
     ) {
         coEvery {
-            jupiterSwapRoutesRepository.getSwapRoutesForSwapPair(any(), any())
+            jupiterSwapRoutesV6Repository.getSwapRoutesForSwapPair(any(), any(), any())
         } answers {
             routesGetter(arg(0), arg(1))
         }

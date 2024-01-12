@@ -17,7 +17,6 @@ import org.p2p.wallet.databinding.DialogSwapSelectRoutesBinding
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.statemanager.SwapState
-import org.p2p.wallet.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.utils.args
@@ -74,9 +73,9 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet(R.layout.dialog_swap_select_
         is SwapState.TokenAZero,
         is SwapState.TokenANotZero,
         is SwapState.LoadingRoutes -> mapper.mapLoadingList()
-        is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.routes, state.activeRouteIndex, state.tokenB)
-        is SwapState.RoutesLoaded -> mapper.mapRoutesList(state.routes, state.activeRouteIndex, state.tokenB)
-        is SwapState.SwapLoaded -> mapper.mapRoutesList(state.routes, state.activeRouteIndex, state.tokenB)
+        is SwapState.LoadingTransaction -> mapper.mapRoutesList(state.route, state.tokenB)
+        is SwapState.RoutesLoaded -> mapper.mapRoutesList(state.route, state.tokenB)
+        is SwapState.SwapLoaded -> mapper.mapRoutesList(state.route, state.tokenB)
 
         is SwapState.SwapException -> getRoutesList(state.previousFeatureState)
     }
@@ -85,8 +84,6 @@ class SwapSelectRoutesBottomSheet : BaseBottomSheet(R.layout.dialog_swap_select_
         val route = (item.payload as? JupiterSwapRoute) ?: return
         analytics.logSwapRouteChanged(route)
 
-        val routePosition = binding.recyclerViewRoutes.findContainingViewHolder(view)?.bindingAdapterPosition ?: return
-        stateManager.onNewAction(SwapStateAction.ActiveRouteChanged(routePosition))
         dismiss()
         // for now expecting JupiterSwapSettingsFragment behind, else ref to result api
         popBackStack()

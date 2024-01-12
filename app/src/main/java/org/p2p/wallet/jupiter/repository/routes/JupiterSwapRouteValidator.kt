@@ -7,14 +7,18 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.network.data.ServerException
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.TransactionSimulationResult
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SwapRoutesValidationEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 
 private const val TAG = "JupiterSwapRouteValidator"
@@ -22,7 +26,9 @@ private const val TAG = "JupiterSwapRouteValidator"
 class JupiterSwapRouteValidator(
     private val dispatchers: CoroutineDispatchers,
     private val rpcSolanaRepository: RpcSolanaRepository,
+    private val rpcBlockhashRepository: RpcBlockhashRepository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
+    private val rpcErrorMapper: JupiterSwapTransactionRpcErrorMapper,
     private val relaySdkFacade: RelaySdkFacade,
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapRoutesValidationEnabled: SwapRoutesValidationEnabledFeatureToggle
@@ -100,6 +106,49 @@ class JupiterSwapRouteValidator(
         } catch (error: Throwable) {
             Timber.i(error, "Something went wrong while validating route")
             TransactionSimulationResult(false, null)
+        }
+    }
+
+    suspend fun validateRouteV6(
+        route: JupiterSwapRouteV6,
+    ): JupiterSwapRouteV6? {
+        if (!swapRoutesValidationEnabled.isFeatureEnabled) {
+            return route
+        }
+
+        Timber.tag(TAG).i("Validating routes")
+        return if (simulateRouteV6(route).isSimulationSuccess) route else null
+    }
+
+    private suspend fun simulateRouteV6(route: JupiterSwapRouteV6): TransactionSimulationResult {
+        return try {
+            val userAccount = Account(tokenKeyProvider.keyPair)
+            val routeTransaction = swapTransactionRepository.createSwapTransactionForRoute(route, userPublicKey)
+            val latestBlockhash = rpcBlockhashRepository.getRecentBlockhash()
+            val signedSwapTransaction = relaySdkFacade.signTransaction(
+                transaction = routeTransaction,
+                keyPair = userAccount.getEncodedKeyPair().toBase58Instance(),
+                // empty string because swap transaction already has recent blockhash
+                // if pass our own recent blockhash, there is an error
+                recentBlockhash = latestBlockhash
+            ).transaction.convertToBase64()
+            rpcSolanaRepository.simulateTransaction(
+                serializedTransaction = signedSwapTransaction.base64Value,
+                encoding = Encoding.BASE64
+            )
+        } catch (blockchainError: ServerException) {
+            val swapFailure = rpcErrorMapper.mapRpcError(blockchainError)
+            TransactionSimulationResult(
+                // invalidTimestamp is random and doesn't show real error
+                isSimulationSuccess = swapFailure.cause is JupiterSwapTokensResult.Failure.InvalidTimestampRpcError,
+                errorIfSimulationFailed = null
+            )
+        } catch (error: Throwable) {
+            Timber.i(error, "Something went wrong while validating route")
+            TransactionSimulationResult(
+                isSimulationSuccess = false,
+                errorIfSimulationFailed = error.message
+            )
         }
     }
 }

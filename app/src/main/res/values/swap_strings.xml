@@ -15,10 +15,19 @@
     <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
     <string name="swap_main_confirm_button">Swap %s → %s</string>
     <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
-    <string name="swap_main_high_fee_alert">The fee is more than the defined slippage %s due to one-time account creation fee by Solana blockchain</string>
+    <string name="swap_main_high_fee_alert">The fee is more than the defined slippage %s</string>
     <string name="swap_main_slippage_changed">🤖 We changed slippage to %s</string>
     <string name="swap_main_slippage_changed_details_button">OPEN DETAILS</string>
     <string name="swap_main_enter_amount">Enter amount</string>
+    
+    <string name="swap_main_strict_warning_title">Be safe and careful</string>
+    <string name="swap_main_strict_warning_single_body">
+        The token %s from your swap link seems suspicious, therefore we’ve refreshed swap pair to default
+    </string>
+    <string name="swap_main_strict_warning_multiple_body">
+        Tokens %s and %s from your swap link seem suspicious, therefore we’ve refreshed swap pair to default
+    </string>
+
 
     <string name="swap_tokens_token_a_toolbar">Token you pay</string>
     <string name="swap_tokens_token_b_toolbar">Token you receive</string>

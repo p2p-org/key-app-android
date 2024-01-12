@@ -14,6 +14,7 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
+import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
 import org.p2p.wallet.history.ui.history.HistoryFragment
 import org.p2p.wallet.home.deeplinks.DeeplinkHandler
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
@@ -36,6 +37,7 @@ class MainContainerPresenter(
     private val userInteractor: UserInteractor,
     private val walletStrigaInteractor: WalletStrigaInteractor,
     private val balanceMapper: WalletBalanceMapper,
+    private val swapDeeplinkHandler: SwapDeeplinkHandler,
     private val mainScreenAnalytics: MainScreenAnalytics
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
@@ -45,6 +47,7 @@ class MainContainerPresenter(
             screenNavigator = view,
             tokenServiceCoordinator = tokenServiceCoordinator,
             userInteractor = userInteractor,
+            swapDeeplinkHandler = swapDeeplinkHandler,
             deeplinkTopLevelHandler = ::handleDeeplinkTarget
         )
     }
@@ -90,7 +93,8 @@ class MainContainerPresenter(
         launchSupervisor {
             deeplinksManager.subscribeOnDeeplinks(supportedTargets)
                 .onEach { view?.navigateFromDeeplink(it) }
-                .collect(deeplinkHandler::handle)
+                .onEach { deeplinkHandler.handle(it) }
+                .launchIn(this)
             deeplinksManager.executeHomePendingDeeplink()
             deeplinksManager.executeTransferPendingAppLink()
         }

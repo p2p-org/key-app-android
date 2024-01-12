@@ -17,6 +17,7 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 
 class SwapSelectRoutesMapper {
 
@@ -33,36 +34,33 @@ class SwapSelectRoutesMapper {
     }
 
     fun mapRoutesList(
-        routes: List<JupiterSwapRoute>,
-        activeRouteIndex: Int,
+        routes: JupiterSwapRouteV6,
         tokenB: SwapTokenModel
     ): List<AnyCellItem> = buildList {
-        val bestRouteOutAmount = routes.first().outAmountInLamports
-
-        routes.forEachIndexed { index, route ->
-            val rightIcon = if (index == activeRouteIndex) getActiveRouteIcon() else null
-
-            this += MainCellModel(
-                leftSideCellModel = LeftSideCellModel.IconWithText(
-                    firstLineText = TextViewCellModel.Raw(
-                        text = formatRouteName(
-                            route = route
-                        )
-                    ),
-                    secondLineText = TextViewCellModel.Raw(
-                        text = formatPriceDiffText(
-                            currentRoute = route,
-                            currentIndex = index,
-                            bestOutAmount = bestRouteOutAmount,
-                            tokenB = tokenB
-                        )
-                    )
-                ),
-                rightSideCellModel = rightIcon,
-                payload = route,
-                styleType = MainCellStyle.BASE_CELL,
-            )
-        }
+//        routes.forEachIndexed { index, route ->
+//            val rightIcon = if (index == activeRouteIndex) getActiveRouteIcon() else null
+//
+//            this += MainCellModel(
+//                leftSideCellModel = LeftSideCellModel.IconWithText(
+//                    firstLineText = TextViewCellModel.Raw(
+//                        text = formatRouteName(
+//                            route = route
+//                        )
+//                    ),
+//                    secondLineText = TextViewCellModel.Raw(
+//                        text = formatPriceDiffText(
+//                            currentRoute = route,
+//                            currentIndex = index,
+//                            bestOutAmount = bestRouteOutAmount,
+//                            tokenB = tokenB
+//                        )
+//                    )
+//                ),
+//                rightSideCellModel = rightIcon,
+//                payload = route,
+//                styleType = MainCellStyle.BASE_CELL,
+//            )
+//        }
     }
 
     private fun getActiveRouteIcon(): RightSideCellModel.SingleTextTwoIcon {

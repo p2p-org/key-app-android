@@ -8,10 +8,11 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
-import org.p2p.core.utils.fromLamports
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isZero
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.model.findTokenByMint
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
@@ -23,21 +24,16 @@ class JupiterSwapFeeBuilder(
 ) {
 
     suspend fun buildAccountFeeBox(
-        activeRoute: JupiterSwapRoute?,
+        activeRoute: JupiterSwapRouteV6,
         solToken: JupiterSwapToken?,
     ): SwapSettingFeeBox? {
         solToken ?: return null
+        if (activeRoute.ataFee.isZero()) return null
 
-        val feeAmountLamports: BigDecimal =
-            activeRoute?.fees
-                ?.totalFeeAndDepositsInSol
-                ?.fromLamports(solToken.decimals)
-                ?: return null
-
+        val feeAmountLamports: BigDecimal = activeRoute.ataFee.fromLamports(solToken.decimals)
         val solTokenRate: BigDecimal? = loadRateForToken(solToken)?.rate
 
-        val feeUsd: BigDecimal? =
-            solTokenRate?.let { feeAmountLamports.multiply(it) }
+        val feeUsd: BigDecimal? = solTokenRate?.let { feeAmountLamports.multiply(it) }
 
         return SwapSettingFeeBox(
             amountLamports = feeAmountLamports,
@@ -47,25 +43,22 @@ class JupiterSwapFeeBuilder(
     }
 
     suspend fun buildLiquidityFeeListBox(
-        activeRoute: JupiterSwapRoute?,
+        activeRoute: JupiterSwapRouteV6,
         jupiterTokens: List<JupiterSwapToken>,
     ): List<SwapSettingFeeBox>? = withContext(dispatchers.io) {
         activeRoute ?: return@withContext null
 
-        val lpTokensRates = activeRoute.marketInfos.map { marketInfo ->
-            val lpFee = marketInfo.liquidityFee
-            jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
-            val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
+        val lpTokensRates = activeRoute.routePlans.map { routePlan ->
+            val lpToken = jupiterTokens.findTokenByMint(routePlan.feeMint) ?: return@withContext null
             async { loadRateForToken(lpToken) }
         }
             .awaitAll()
             .filterNotNull()
 
-        activeRoute.marketInfos.map { marketInfo ->
-            val lpFee = marketInfo.liquidityFee
-            val lpToken = jupiterTokens.findTokenByMint(lpFee.mint) ?: return@withContext null
-            val tokenRate: BigDecimal? = lpTokensRates.find { it.token.mintAddress == lpFee.mint }?.rate
-            val amountLamports = lpFee.amountInLamports.fromLamports(lpToken.decimals)
+        activeRoute.routePlans.map { routePlan ->
+            val lpToken = jupiterTokens.findTokenByMint(routePlan.feeMint) ?: return@withContext null
+            val tokenRate: BigDecimal? = lpTokensRates.find { it.token.mintAddress == routePlan.feeMint }?.rate
+            val amountLamports = routePlan.feeAmount.fromLamports(lpToken.decimals)
             val amountUsd = tokenRate?.let { amountLamports.multiply(it) }
 
             SwapSettingFeeBox(

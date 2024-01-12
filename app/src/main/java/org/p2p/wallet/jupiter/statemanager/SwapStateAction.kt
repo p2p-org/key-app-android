@@ -5,8 +5,6 @@ import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.swap.model.Slippage
 
 sealed interface SwapStateAction {
-    data class ActiveRouteChanged(val ordinalRouteNumber: Int) : SwapStateAction
-
     data class SlippageChanged(val newSlippageValue: Slippage) : SwapStateAction
 
     object InitialLoading : SwapStateAction

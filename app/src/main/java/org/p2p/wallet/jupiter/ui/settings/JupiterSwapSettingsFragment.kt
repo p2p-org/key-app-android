@@ -23,7 +23,6 @@ import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.ui.info.SwapInfoBottomSheet
 import org.p2p.wallet.jupiter.ui.info.SwapInfoType
-import org.p2p.wallet.jupiter.ui.routes.SwapSelectRoutesBottomSheet
 import org.p2p.wallet.jupiter.ui.settings.adapter.SwapSettingsDecorator
 import org.p2p.wallet.jupiter.ui.settings.view.swapCustomSlippageDelegate
 import org.p2p.wallet.utils.args
@@ -94,7 +93,7 @@ class JupiterSwapSettingsFragment :
 
     override fun showRouteDialog() {
         analytics.logChangeRouteClicked()
-        SwapSelectRoutesBottomSheet.show(childFragmentManager, stateManagerKey)
+//        SwapSelectRoutesBottomSheet.show(childFragmentManager, stateManagerKey)
     }
 
     override fun applyWindowInsets(rootView: View) {
