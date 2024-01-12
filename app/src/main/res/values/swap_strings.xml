@@ -20,7 +20,7 @@
     <string name="swap_main_slippage_changed_details_button">OPEN DETAILS</string>
     <string name="swap_main_enter_amount">Enter amount</string>
     
-    <string name="swap_main_strict_warning_title">Be save and careful</string>
+    <string name="swap_main_strict_warning_title">Be safe and careful</string>
     <string name="swap_main_strict_warning_single_body">
         The token %s from your swap link seems suspicious, therefore we’ve refreshed swap pair to default
     </string>

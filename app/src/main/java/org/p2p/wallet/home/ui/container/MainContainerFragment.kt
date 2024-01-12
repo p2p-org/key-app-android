@@ -194,7 +194,6 @@ class MainContainerFragment :
         strictWarning: SwapStrictTokenWarning?,
         source: SwapOpenedFrom
     ) {
-
         replaceFragment(
             JupiterSwapFragment.create(
                 tokenAMint = tokenAMint,

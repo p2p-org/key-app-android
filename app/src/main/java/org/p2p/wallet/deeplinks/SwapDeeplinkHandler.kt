@@ -81,8 +81,8 @@ class SwapDeeplinkHandler(
 
         return if (inputToken.isStrictToken && outputToken.isStrictToken) {
             SwapDeeplinkData.TokensFound(
-                tokenAMint = inputMintOrSymbol.toBase58Instance(),
-                tokenBMint = outputMintOrSymbol.toBase58Instance(),
+                tokenAMint = inputToken.tokenMint,
+                tokenBMint = outputToken.tokenMint,
             )
         } else {
             SwapDeeplinkData.NonStrictTokensFound(
