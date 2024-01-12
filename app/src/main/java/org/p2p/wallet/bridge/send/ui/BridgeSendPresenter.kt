@@ -27,10 +27,10 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.getFeeList
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
@@ -105,7 +105,7 @@ class BridgeSendPresenter(
             is SendState.Static.ReadyToSend -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                handleUpdateFee(token = bridgeToken, sendFee = state.fee, isInputEmpty = false)
                 handleUpdateTotal(sendFee = state.fee)
 
                 updateButtons(
@@ -117,7 +117,7 @@ class BridgeSendPresenter(
             is SendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                handleUpdateFee(token = bridgeToken, sendFee = state.fee, isInputEmpty = false)
                 handleUpdateTotal(sendFee = state.fee)
                 updateButtons(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
@@ -128,7 +128,7 @@ class BridgeSendPresenter(
             is SendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.inputAmount.orZero())
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = true)
+                handleUpdateFee(token = bridgeToken, sendFee = state.fee, isInputEmpty = true)
                 handleUpdateTotal(sendFee = state.fee)
                 updateButtons(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
@@ -207,6 +207,8 @@ class BridgeSendPresenter(
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
 
     private fun initialize(view: BridgeSendContract.View) {
+        view.disableSwitchAmounts()
+
         calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
         calculationMode.onInputFractionUpdated = { view.updateInputFraction(it) }
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
@@ -302,9 +304,14 @@ class BridgeSendPresenter(
         }
     }
 
-    private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
+    private fun BridgeSendContract.View.handleUpdateFee(
+        token: SendToken.Bridge,
+        sendFee: SendFee?,
+        isInputEmpty: Boolean
+    ) {
         val bridgeFee = sendFee as? SendFee.Bridge
-        val fees = bridgeSendUiMapper.getFeesFormatted(
+        val fees = bridgeSendUiMapper.getFeesFormattedToken(
+            token = token,
             bridgeFee = bridgeFee,
             isInputEmpty = isInputEmpty
         )
