@@ -142,7 +142,7 @@ class OnboardingGeneralErrorFragment :
             setText(R.string.onboarding_general_error_bug_report_button_title)
             setIconResource(R.drawable.ic_caution)
             setOnClickListener { IntercomService.showMessenger() }
-            isVisible = true
+            isVisible = false
         }
         with(buttonSecondaryFirst) {
             setText(R.string.restore_starting_screen)

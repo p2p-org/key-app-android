@@ -97,7 +97,7 @@
     <string name="onboarding_general_error_starting_screen_button_title">Starting screen</string>
     <string name="onboarding_general_error_bug_report_button_title">Support</string>
     <string name="onboarding_general_error_critical_error_title">Well well</string>
-    <string name="onboarding_general_error_critical_error_sub_title">You’ve find a seldon page 🦄 It’s like a unicorn, but it’s a crush. We’re already fixing it.\n\nIf you wish to report the issue, use error code #%d</string>
+    <string name="onboarding_general_error_critical_error_sub_title">You’ve found a seldom page 🦄 It’s like a unicorn, but it’s a crash. We’re already fixing it.\n\nIf you wish to report the issue, use error code #%d</string>
 
     <!--Common Restore-->
     <string name="restore_title">Restore your wallet</string>
