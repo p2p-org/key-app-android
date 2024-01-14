@@ -7,8 +7,8 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 interface JupiterSwapTokensRepository {
     suspend fun findTokensExcludingMints(mintsToExclude: Set<Base58String>): List<JupiterSwapToken>
     suspend fun findTokensIncludingMints(mintsToInclude: Set<Base58String>): List<JupiterSwapToken>
-    suspend fun findTokenByMint(mintAddress: Base58String?): JupiterSwapToken?
-    suspend fun requireTokenByMint(mintAddress: Base58String?): JupiterSwapToken
+    suspend fun findTokenByMint(mintAddress: Base58String): JupiterSwapToken?
+    suspend fun requireTokenByMint(mintAddress: Base58String): JupiterSwapToken
     suspend fun findTokenBySymbol(symbol: String): JupiterSwapToken?
 
     /**

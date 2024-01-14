@@ -88,7 +88,8 @@ object JupiterModule : InjectionModule {
         singleOf(::JupiterSwapRoutesInMemoryRepository) bind JupiterSwapRoutesLocalRepository::class
         factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
 
-        factoryOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
+        // single to keep tokens in on place
+        singleOf(::JupiterSwapTokensRemoteRepository) bind JupiterSwapTokensRepository::class
         factoryOf(::SwapTokensDaoDelegate)
         single { SwapDatabase.create(androidContext()).swapTokensDao }
 //        singleOf(::JupiterSwapTokensInMemoryRepository) bind JupiterSwapTokensLocalRepository::class

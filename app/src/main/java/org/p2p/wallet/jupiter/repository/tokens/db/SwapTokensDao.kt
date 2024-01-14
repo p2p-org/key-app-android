@@ -11,18 +11,6 @@ interface SwapTokensDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSwapTokens(entities: List<SwapTokenEntity>)
 
-    @Query("SELECT * FROM swap_tokens WHERE address = :mintAddress")
-    suspend fun getSwappableTokens(mintAddress: String): List<SwapTokenEntity>
-
-    @Query(
-        """
-            SELECT * 
-            FROM swap_tokens
-            WHERE (LOWER(symbol) LIKE :mintAddressOrSymbol OR LOWER(address) LIKE :mintAddressOrSymbol)
-        """
-    )
-    suspend fun searchTokensInSwappable(mintAddressOrSymbol: String): List<SwapTokenEntity>
-
     @Query(
         """
            SELECT * FROM swap_tokens 
@@ -32,21 +20,19 @@ interface SwapTokensDao {
     )
     suspend fun searchTokens(mintAddressOrSymbol: String): List<SwapTokenEntity>
 
-    @Query("SELECT * FROM swap_tokens WHERE address = :mintAddress")
+    @Query("SELECT * FROM swap_tokens WHERE LOWER(address) = LOWER(:mintAddress)")
     suspend fun findTokenByMint(mintAddress: String): SwapTokenEntity?
 
-    @Query("SELECT * FROM swap_tokens WHERE LOWER(symbol) = :symbol")
+    @Query("SELECT * FROM swap_tokens WHERE LOWER(symbol) = LOWER(:symbol)")
     suspend fun findTokenBySymbol(symbol: String): SwapTokenEntity?
 
     @Query("SELECT * FROM swap_tokens WHERE address NOT IN (:userTokensMints)")
-    fun findTokensExcludingMints(userTokensMints: Set<String>): List<SwapTokenEntity>
+    suspend fun findTokensExcludingMints(userTokensMints: Set<String>): List<SwapTokenEntity>
 
-    @Query("SELECT * FROM swap_tokens WHERE address IN (:userTokensMints)")
-    fun findTokensIncludingMints(userTokensMints: Set<String>): List<SwapTokenEntity>
+    @Query("SELECT * FROM swap_tokens WHERE address IN (:mints)")
+    suspend fun findTokensByMints(mints: Set<String>): List<SwapTokenEntity>
 
-    @Query("SELECT * from swap_tokens where address = :mintAddress")
-    suspend fun getSwapToken(mintAddress: String): SwapTokenEntity?
-
+    // todo: should be done with pagination
     @Query("SELECT * from swap_tokens")
     suspend fun getAllSwapTokens(): List<SwapTokenEntity>
 }

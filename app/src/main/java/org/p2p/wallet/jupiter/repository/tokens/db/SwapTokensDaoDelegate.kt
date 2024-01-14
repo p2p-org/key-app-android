@@ -1,7 +1,5 @@
 package org.p2p.wallet.jupiter.repository.tokens.db
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.TokenExtensions
@@ -15,9 +13,7 @@ class SwapTokensDaoDelegate(
 ) {
     private val tokenEntityInserter = SwapTokenEntityInserter(dao)
 
-    suspend fun insertSwapTokens(
-        tokens: List<JupiterTokenResponse>
-    ): List<JupiterSwapToken> {
+    suspend fun insertSwapTokens(tokens: List<JupiterTokenResponse>): List<JupiterSwapToken> {
         tokenEntityInserter.insertTokens(tokens)
 
         return getAllTokens()
@@ -27,27 +23,16 @@ class SwapTokensDaoDelegate(
         return dao.getAllSwapTokens().toDomain()
     }
 
-    suspend fun getSwappableTokens(mintAddress: Base58String): List<JupiterSwapToken> {
-        return dao.getSwappableTokens(mintAddress.base58Value).toDomain()
-    }
-
     suspend fun searchTokens(
         mintAddressOrSymbol: String,
-        swappableForMint: Base58String? = null
     ): List<JupiterSwapToken> {
         // % is needed for pattern matching
-        return if (swappableForMint == null) {
-            dao.searchTokens("${mintAddressOrSymbol.lowercase()}%")
-        } else {
-            dao.searchTokensInSwappable(
-                mintAddressOrSymbol = "${mintAddressOrSymbol.lowercase()}%"
-            )
-        }
+        return dao.searchTokens("${mintAddressOrSymbol}%")
             .toDomain()
     }
 
     private suspend fun List<SwapTokenEntity>.toDomain(): List<JupiterSwapToken> {
-        return mapNotNull { it.toDomain() }
+        return map { it.toDomain() }
             .asSequence()
             .filterTokensByAvailability()
             .filter { it.tokenSymbol.isNotBlank() }
@@ -55,16 +40,16 @@ class SwapTokensDaoDelegate(
     }
 
     private suspend fun SwapTokenEntity.toDomain(): JupiterSwapToken {
-        val token = userLocalRepository.findTokenByMint(address)
+        val appTokens = userLocalRepository.findTokenByMint(address)
         return JupiterSwapToken(
-            tokenMint = token?.mintAddress?.toBase58Instance() ?: address.toBase58Instance(),
+            tokenMint = appTokens?.mintAddress?.toBase58Instance() ?: address.toBase58Instance(),
             chainId = chainId,
-            decimals = token?.decimals ?: decimals,
+            decimals = appTokens?.decimals ?: decimals,
             coingeckoId = coingeckoId,
-            logoUri = token?.iconUrl ?: logoUri.orEmpty(),
-            tokenName = token?.tokenName ?: name,
-            tokenSymbol = token?.tokenSymbol ?: symbol,
-            tokenExtensions = token?.tokenExtensions ?: TokenExtensions.NONE
+            logoUri = appTokens?.iconUrl ?: logoUri.orEmpty(),
+            tokenName = appTokens?.tokenName ?: name,
+            tokenSymbol = appTokens?.tokenSymbol ?: symbol,
+            tokenExtensions = appTokens?.tokenExtensions ?: TokenExtensions.NONE
         )
     }
 
@@ -72,23 +57,15 @@ class SwapTokensDaoDelegate(
         return filter { it.tokenExtensions.isTokenCellVisibleOnWalletScreen != false }
     }
 
-    suspend fun findTokenByMint(mintAddress: Base58String): JupiterSwapToken? = withContext(Dispatchers.IO) {
+    suspend fun findTokenByMint(mintAddress: Base58String): JupiterSwapToken? =
         dao.findTokenByMint(mintAddress.base58Value)?.toDomain()
-    }
 
-    suspend fun findTokenBySymbol(symbol: String): JupiterSwapToken? = withContext(Dispatchers.IO) {
+    suspend fun findTokenBySymbol(symbol: String): JupiterSwapToken? =
         dao.findTokenBySymbol(symbol.trim().lowercase())?.toDomain()
-    }
 
-    suspend fun findTokensExcludingMints(
-        excludingMints: Set<String>
-    ): List<JupiterSwapToken> = withContext(Dispatchers.IO) {
+    suspend fun findTokensExcludingMints(excludingMints: Set<String>): List<JupiterSwapToken> =
         dao.findTokensExcludingMints(excludingMints).toDomain()
-    }
 
-    suspend fun findTokensIncludingMints(
-        includingMints: Set<String>
-    ): List<JupiterSwapToken> = withContext(Dispatchers.IO) {
-        dao.findTokensIncludingMints(includingMints).toDomain()
-    }
+    suspend fun findTokensByMints(mints: Set<String>): List<JupiterSwapToken> =
+        dao.findTokensByMints(mints).toDomain()
 }

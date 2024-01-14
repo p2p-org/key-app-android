@@ -40,19 +40,16 @@ internal class JupiterSwapTokensRemoteRepository(
 
         ensureCache()
         val mints = mintsToInclude.map { it.base58Value }.toSet()
-        return daoDelegate.findTokensIncludingMints(mints)
+        return daoDelegate.findTokensByMints(mints)
     }
 
-    override suspend fun findTokenByMint(mintAddress: Base58String?): JupiterSwapToken? {
-        if (mintAddress == null) return null
-
+    override suspend fun findTokenByMint(mintAddress: Base58String): JupiterSwapToken? {
         ensureCache()
         return daoDelegate.findTokenByMint(mintAddress)
     }
 
-    override suspend fun requireTokenByMint(mintAddress: Base58String?): JupiterSwapToken {
-        return findTokenByMint(mintAddress)
-            ?: error("Token $mintAddress not found in jupiter tokens")
+    override suspend fun requireTokenByMint(mintAddress: Base58String): JupiterSwapToken {
+        return findTokenByMint(mintAddress) ?: error("Token $mintAddress not found in jupiter tokens")
     }
 
     override suspend fun requireUsdc(): JupiterSwapToken {
@@ -111,7 +108,7 @@ internal class JupiterSwapTokensRemoteRepository(
         sourceTokenMint: Base58String
     ): List<JupiterSwapToken> {
         ensureCache()
-        return daoDelegate.searchTokens(mintAddressOrSymbol, sourceTokenMint)
+        return daoDelegate.searchTokens(mintAddressOrSymbol)
     }
 
     private suspend fun ensureCache() {

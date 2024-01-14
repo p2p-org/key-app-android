@@ -7,9 +7,7 @@ import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 class SwapTokenEntityInserter(
     private val dao: SwapTokensDao
 ) {
-    suspend fun insertTokens(
-        tokens: List<JupiterTokenResponse>
-    ) {
+    suspend fun insertTokens(tokens: List<JupiterTokenResponse>) {
         supervisorScope {
             val chunkSize = 600
             var chunkOffset = 0
