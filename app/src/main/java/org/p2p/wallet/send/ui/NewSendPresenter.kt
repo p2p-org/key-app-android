@@ -21,6 +21,7 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.core.model.TitleValue
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
+import org.p2p.core.token.sortedWithPreferredStableCoins
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleShort
@@ -130,6 +131,8 @@ class NewSendPresenter(
     }
 
     private fun initialize(view: NewSendContract.View) {
+        view.disableSwitchAmounts()
+
         calculationMode.onCalculationCompleted = view::showAroundValue
         calculationMode.onInputFractionUpdated = view::updateInputFraction
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
@@ -160,7 +163,7 @@ class NewSendPresenter(
             calculationMode.updateToken(token)
             checkTokenRatesAndSetSwitchAmountState(token)
 
-            val userTokens = getNonZeroUserTokens()
+            val userTokens = getNonZeroUserTokensOrSoul()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
@@ -172,7 +175,8 @@ class NewSendPresenter(
     private fun setupInitialToken(view: NewSendContract.View) {
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
-            val userNonZeroTokens = getNonZeroUserTokens()
+            // todo: check this logic as user definitely may have empty account, we should not error by this reason
+            val userNonZeroTokens = getNonZeroUserTokensOrSoul()
             if (userNonZeroTokens.isEmpty()) {
                 Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
                 // we cannot proceed if user tokens are not loaded
@@ -203,8 +207,19 @@ class NewSendPresenter(
         }
     }
 
-    private suspend fun getNonZeroUserTokens(): List<Token.Active> {
-        return tokenServiceCoordinator.getUserTokens().filterNot { it.isZero }
+    /**
+     * Get user's soul if nothing is there
+     */
+    private suspend fun getNonZeroUserTokensOrSoul(): List<Token.Active> {
+        return tokenServiceCoordinator.getUserTokens()
+            .filterNot {
+                if (it.isSOL) {
+                    false
+                } else {
+                    it.isZero
+                }
+            }
+            .sortedWithPreferredStableCoins()
     }
 
     private fun setupDefaultFields(inputAmount: BigDecimal) {
@@ -319,6 +334,7 @@ class NewSendPresenter(
     }
 
     private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
+        /*
         if (token.rate == null || isStableCoinRateDiffAcceptable(token)) {
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
@@ -327,6 +343,7 @@ class NewSendPresenter(
         } else {
             view?.enableSwitchAmounts()
         }
+         */
     }
 
     private fun isStableCoinRateDiffAcceptable(token: Token.Active): Boolean {

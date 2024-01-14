@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import com.google.gson.JsonObject
 import io.mockk.every
 import timber.log.Timber
 import java.math.BigDecimal
@@ -14,10 +15,8 @@ import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.toLamports
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMode
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
@@ -165,53 +164,31 @@ object JupiterSwapTestHelpers {
         return (source * percent).toBigInteger()
     }
 
-    fun createSwapRoute(data: TestSwapRouteData): JupiterSwapRoute {
+    fun createSwapRoute(data: TestSwapRouteData): JupiterSwapRouteV6 {
         val amountIn = data.amountIn.toLamports(data.inDecimals)
         val amountOut = data.amountOut.toLamports(data.outDecimals)
 
-        return JupiterSwapRoute(
-            amountInLamports = amountIn,
+        return JupiterSwapRouteV6(
             inAmountInLamports = amountIn,
             outAmountInLamports = amountOut,
-            priceImpactPct = data.priceImpact,
-            marketInfos = listOf(
-                JupiterSwapMarketInformation(
+            routePlans = listOf(
+                JupiterSwapRoutePlanV6(
                     inputMint = data.inputMint,
                     outputMint = data.outputMint,
-                    notEnoughLiquidity = false,
-                    inAmountInLamports = amountIn,
-                    outAmountInLamports = amountOut,
-                    priceImpactPct = data.priceImpact,
-                    id = "86eq4kdBkUCHGdCC2SfcqGHRCBGhp2M89aCmuvvxaXsm",
+                    outAmount = amountOut,
+                    ammKey = "86eq4kdBkUCHGdCC2SfcqGHRCBGhp2M89aCmuvvxaXsm",
                     label = "Lifinity V2",
-                    minInAmountInLamports = null,
-                    minOutAmountInLamports = null,
-
-                    liquidityFee = JupiterSwapMarketInformation.LpFee(
-                        amountInLamports = BigInteger("400000"),
-                        mint = JUPITER_SOL_TOKEN.tokenMint,
-                        percent = BigDecimal("0.00040")
-                    ),
-                    platformFee = JupiterSwapMarketInformation.PlatformFee(
-                        amountInLamports = BigInteger("0"),
-                        mint = data.outputMint,
-                        percent = BigDecimal("0.0")
-                    )
+                    feeAmount = BigInteger("400000"),
+                    feeMint = JUPITER_SOL_TOKEN.tokenMint,
+                    percent = "100"
                 )
             ),
             slippageBps = data.slippageBps,
             otherAmountThreshold = amountOut.minusPercent(data.slippage.doubleValue).toString(),
-            swapMode = JupiterSwapMode.EXACT_IN,
-            fees = JupiterSwapFees(
-                signatureFee = BigInteger("0"),
-                openOrdersDeposits = listOf(),
-                ataDeposits = listOf(),
-                totalFeeAndDepositsInSol = BigInteger("0"),
-                minimumSolForTransaction = BigInteger("0")
-            ),
-            keyAppFeeInLamports = BigInteger.ZERO,
-            keyAppRefundableFee = "0",
-            keyAppHash = "86cdfab8becfda70a17bac0c2b0704a3afe5458812a60af2e93154d11dc34abe"
+            swapMode = "EXACT_IN",
+            ataFee = BigInteger.ZERO,
+            priceImpactPercent = data.priceImpact,
+            originalRoute = JsonObject()
         )
     }
 

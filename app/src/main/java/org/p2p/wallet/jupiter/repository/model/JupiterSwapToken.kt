@@ -15,6 +15,9 @@ data class JupiterSwapToken(
     val tokenExtensions: TokenExtensions,
 ) {
     fun isSol(): Boolean = tokenMint.base58Value == Constants.WRAPPED_SOL_MINT
+
+    val isStrictToken: Boolean
+        get() = !tags.contains("unknown")
 }
 
 fun List<JupiterSwapToken>.findTokenByMint(mint: Base58String): JupiterSwapToken? {

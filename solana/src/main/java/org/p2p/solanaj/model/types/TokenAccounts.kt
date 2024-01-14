@@ -14,4 +14,7 @@ data class Account(
 
     @SerializedName("pubkey")
     val pubkey: String
-)
+) {
+    val tokenMintAddress: String
+        get() = account.data.parsed.info.mint
+}

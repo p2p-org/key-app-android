@@ -9,11 +9,20 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.jupiter.api.request.CreateSwapTransactionV6Request
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 
 class JupiterSwapTransactionMapper {
 
     fun toNetwork(route: JupiterSwapRoute, userPublicKey: Base58String): CreateSwapTransactionRequest {
         return route.toRequest(userPublicKey)
+    }
+
+    fun toNetwork(route: JupiterSwapRouteV6, userPublicKey: Base58String): CreateSwapTransactionV6Request = route.run {
+        return CreateSwapTransactionV6Request(
+            route = route.originalRoute,
+            userPublicKey = userPublicKey
+        )
     }
 
     fun fromNetwork(response: CreateSwapTransactionResponse): Base64String {

@@ -12,7 +12,7 @@ class StrigaExchangeRepositoryMapper {
             Constants.USDC_SYMBOL,
             Constants.USDT_SYMBOL,
             Constants.ETH_SYMBOL,
-            Constants.EUR_SYMBOL,
+            Constants.EUR_READABLE_SYMBOL,
             Constants.BTC_SYMBOL,
         )
     }

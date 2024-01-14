@@ -29,12 +29,7 @@ class AlarmSwapErrorConverter(
             val diffRoutesTime = swapProfiler.getRouteFetchedTimeDiffSeconds()
             val diffTxTime = swapProfiler.getTxCreatedTimeDiffSeconds()
 
-            val activeRouteJson: String =
-                routes[activeRouteIndex]
-                    .let { transactionMapper.toNetwork(it, userPublicKey) }
-                    .route
-                    .let(gson::toJsonObject)
-                    .toString()
+            val activeRouteJson: String = route.originalRoute.toString()
 
             val swapErrorStr = if (swapError is ServerException) {
                 swapError.jsonErrorBody?.toString()

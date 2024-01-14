@@ -31,10 +31,9 @@ import org.p2p.wallet.home.ui.wallet.WalletModule
 import org.p2p.wallet.infrastructure.InfrastructureModule
 import org.p2p.wallet.infrastructure.network.NetworkModule
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
-import org.p2p.wallet.jupiter.JupiterModule
+import org.p2p.wallet.jupiter.JupiterSwapModule
 import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.moonpay.ui.BuyModule
-import org.p2p.wallet.send.SendModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.ReceiveModule
@@ -43,6 +42,7 @@ import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
 import org.p2p.wallet.sdk.di.AppSdkModule
 import org.p2p.wallet.sell.SellModule
+import org.p2p.wallet.send.SendModule
 import org.p2p.wallet.settings.SettingsModule
 import org.p2p.wallet.striga.StrigaModule
 import org.p2p.wallet.swap.SwapModule
@@ -98,7 +98,7 @@ object AppModule {
                 MainContainerModule.create(),
                 CryptoModule.create(),
                 WalletModule.create(),
-                JupiterModule.create(),
+                JupiterSwapModule.create(),
                 PushNotificationsModule.create(),
                 ReceiveModule.create(),
                 RestoreModule.create(),

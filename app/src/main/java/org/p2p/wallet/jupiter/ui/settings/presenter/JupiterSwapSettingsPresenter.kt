@@ -57,11 +57,15 @@ class JupiterSwapSettingsPresenter(
         rateTickerManager.observe()
             .onEach(::handleRateTickerChanges)
             .launchIn(this)
+
+        stateManager.resume()
     }
 
     private suspend fun handleFeatureState(state: SwapState) {
         featureState = state
-        if (isSelectedCustom == null) isSelectedCustom = state.getCurrentSlippage() is Slippage.Custom
+        if (isSelectedCustom == null) {
+            isSelectedCustom = state.getCurrentSlippage() is Slippage.Custom
+        }
         val contentList = getContentListByFeatureState(state)
         currentContentList = contentList
         view?.bindSettingsList(currentContentList)
@@ -75,8 +79,7 @@ class JupiterSwapSettingsPresenter(
                 val solToken = swapTokensRepository.requireWrappedSol()
                 currentContentList = contentMapper.mapForSwapLoadedState(
                     slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRouteIndex,
+                    route = state.route,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
@@ -85,17 +88,18 @@ class JupiterSwapSettingsPresenter(
             is SwapState.LoadingTransaction -> {
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRouteIndex,
+                    route = state.route,
                     tokenB = state.tokenB,
                     solTokenForFee = jupiterSolToken,
                 )
             }
             is SwapState.RoutesLoaded -> {
+                val solToken = tokens.firstOrNull { it.isSol() }
+                rateTickerManager.handleJupiterRates(state)
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
-                    routes = state.routes,
-                    activeRoute = state.activeRouteIndex,
+                    route = state.route,
+                    jupiterTokens = tokens,
                     tokenB = state.tokenB,
                     solTokenForFee = jupiterSolToken,
                 )
@@ -103,7 +107,15 @@ class JupiterSwapSettingsPresenter(
             is SwapState.SwapException -> {
                 val previousState = state.previousFeatureState
                 if (previousState is SwapState.RoutesLoaded) {
-                    currentContentList = contentMapper.mapForRoutesLoadedState(previousState, jupiterSolToken)
+                    val solToken = tokens.firstOrNull(JupiterSwapToken::isSol)
+                    currentContentList = contentMapper.mapForRoutesLoadedState(
+                        state = previousState,
+                        jupiterTokens = tokens,
+                        solTokenForFee = solToken,
+                        tokenBAmount = previousState.amountTokenB
+                    )
+                } else {
+                    rateTickerManager.handleSwapException(state)
                 }
             }
             SwapState.InitialLoading,

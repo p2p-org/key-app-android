@@ -32,7 +32,8 @@ import org.p2p.wallet.infrastructure.network.interceptor.MoonpayInterceptor
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.network.ssl.CertificateManager
-import org.p2p.wallet.jupiter.JupiterModule.JUPITER_RETROFIT_QUALIFIER
+import org.p2p.wallet.jupiter.JupiterSwapModule.JUPITER_RETROFIT_QUALIFIER
+import org.p2p.wallet.jupiter.JupiterSwapModule.JUPITER_RETROFIT_V6_QUALIFIER
 import org.p2p.wallet.push_notifications.PushNotificationsModule.NOTIFICATION_SERVICE_RETROFIT_QUALIFIER
 import org.p2p.wallet.updates.NetworkConnectionStateProvider
 
@@ -123,6 +124,15 @@ object NetworkModule : InjectionModule {
             getRetrofit(
                 baseUrl = baseUrl,
                 tag = null,
+                interceptor = null
+            )
+        }
+
+        single(named(JUPITER_RETROFIT_V6_QUALIFIER)) {
+            val baseUrl = "https://quote-api.jup.ag/"
+            getRetrofit(
+                baseUrl = baseUrl,
+                tag = "SwapApiV6",
                 interceptor = null
             )
         }

@@ -86,7 +86,7 @@ class HistoryFragment :
                 tokenAMint = sourceTokenMint.toBase58Instance(),
                 tokenBMint = destinationTokenMint.toBase58Instance(),
                 amountA = Constants.ZERO_AMOUNT,
-                source = openedFrom
+                source = openedFrom,
             )
         )
     }

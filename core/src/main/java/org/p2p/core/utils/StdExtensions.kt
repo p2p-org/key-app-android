@@ -14,6 +14,8 @@ import java.lang.reflect.Type
 
 typealias MillisSinceEpoch = Long // to replace ambiguous Long in some places connected to dates
 
+fun String.isLettersOnly(): Boolean = all(Char::isLetter)
+
 fun <T> List<T>.merge(second: List<T>): List<T> = this + second
 
 fun <T> MutableList<T>.addIf(predicate: Boolean, value: T) {

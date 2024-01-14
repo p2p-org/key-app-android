@@ -17,6 +17,7 @@ import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toLamports
@@ -219,7 +220,12 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val currencySymbol: String
-        get() = if (currency == Constants.USD_READABLE_SYMBOL) Constants.USD_SYMBOL else currency
+        get() = when (currency) {
+            Constants.USD_READABLE_SYMBOL -> Constants.USD_SYMBOL
+            Constants.GBP_READABLE_SYMBOL -> Constants.GBP_SYMBOL
+            Constants.EUR_READABLE_SYMBOL -> Constants.EUR_SYMBOL
+            else -> currency
+        }
 
     @IgnoredOnParcel
     val isActive: Boolean
@@ -264,3 +270,20 @@ fun List<Token.Active>.findByMintAddress(mintAddress: String): Token.Active? =
 @JvmName("findByNullableMintAddress")
 fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
     mintAddress?.let(::findByMintAddress)
+
+fun List<Token.Active>.sortedWithPreferredStableCoins(): List<Token.Active> {
+    return sortedWith(
+        compareBy<Token.Active> {
+            when (it.tokenSymbol) {
+                USDC_SYMBOL -> 1
+                USDT_SYMBOL -> 2
+                else -> 3
+            }
+        }
+            .thenComparing(
+                compareByDescending {
+                    it.totalInUsd.orZero()
+                }
+            )
+    )
+}

@@ -13,6 +13,7 @@ import org.p2p.core.utils.validators.BankingBicValidator
 import org.p2p.core.utils.validators.BankingIbanValidator
 import org.p2p.wallet.appsflyer.AppsFlyerService
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
+import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomPushService
@@ -50,6 +51,8 @@ object InfrastructureModule : InjectionModule {
 
         singleOf(::AppDeeplinksManager)
         singleOf(::AppNotificationManager)
+
+        factoryOf(::SwapDeeplinkHandler)
 
         singleOf(::DefaultDispatchers) bind CoroutineDispatchers::class
 
