@@ -11,7 +11,6 @@ import org.p2p.core.room.RoomConverters
 @Database(
     entities = [
         SwapTokenEntity::class,
-        SwapTokenRouteCrossRef::class
     ],
     version = SwapDatabase.DATABASE_VERSION,
     exportSchema = false
@@ -20,7 +19,7 @@ import org.p2p.core.room.RoomConverters
 abstract class SwapDatabase : RoomDatabase() {
 
     companion object {
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
         private const val DATABASE_NAME = "p2p.wallet.swap_db"
         fun create(context: Context): SwapDatabase =
             Room.databaseBuilder(context, SwapDatabase::class.java, DATABASE_NAME)

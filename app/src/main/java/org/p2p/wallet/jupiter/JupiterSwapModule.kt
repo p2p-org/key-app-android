@@ -18,14 +18,10 @@ import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapSendTransactionDelegate
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRouteValidator
-import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesInMemoryRepository
-import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesLocalRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesMapper
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRemoteRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapTransactionRpcErrorMapper
-import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensInMemoryRepository
-import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensLocalRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRemoteRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.repository.tokens.db.SwapDatabase
@@ -94,7 +90,6 @@ object JupiterSwapModule : InjectionModule {
 
         factoryOf(::JupiterSwapRouteValidator)
         factoryOf(::JupiterSwapRoutesRemoteRepository) bind JupiterSwapRoutesRepository::class
-        singleOf(::JupiterSwapRoutesInMemoryRepository) bind JupiterSwapRoutesLocalRepository::class
         factoryOf(::JupiterSwapTransactionRemoteRepository) bind JupiterSwapTransactionRepository::class
 
         // single to keep tokens in on place

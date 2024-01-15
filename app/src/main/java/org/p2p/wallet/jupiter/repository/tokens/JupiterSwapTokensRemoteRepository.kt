@@ -7,8 +7,6 @@ import kotlin.time.measureTimedValue
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
@@ -28,6 +26,34 @@ internal class JupiterSwapTokensRemoteRepository(
 ) : JupiterSwapTokensRepository {
 
     private val getAllMutex = Mutex()
+
+    @OptIn(ExperimentalTime::class)
+    override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.computation) {
+        // avoid parallel loading
+        getAllMutex.withLock {
+            if (isCacheCanBeUsed()) {
+                Timber.i("Cache is valid, using cache")
+                return@withLock daoDelegate.getAllTokens().also {
+                    Timber.d("Cache has come")
+                }
+            }
+
+            val tokens = async { api.getSwapTokens() }
+
+            val measuredResult = measureTimedValue {
+                daoDelegate.insertSwapTokens(tokens.await())
+                    .also { swapStorage.swapTokensFetchDateMillis = System.currentTimeMillis() }
+            }
+            Timber.i("Insertion was ${measuredResult.duration.inWholeSeconds}")
+            measuredResult.value
+        }
+    }
+
+    private fun isCacheCanBeUsed(): Boolean {
+        val fetchTokensDate = swapStorage.swapTokensFetchDateMillis ?: return false
+        val now = System.currentTimeMillis()
+        return (now - fetchTokensDate) <= TimeUnit.DAYS.toMillis(1) // check day has passed
+    }
 
     override suspend fun findTokensExcludingMints(mintsToExclude: Set<Base58String>): List<JupiterSwapToken> {
         if (mintsToExclude.isEmpty()) return emptyList()
@@ -78,27 +104,7 @@ internal class JupiterSwapTokensRemoteRepository(
         }
     }
 
-    @OptIn(ExperimentalTime::class)
-    override suspend fun getTokens(): List<JupiterSwapToken> = withContext(dispatchers.computation) {
-        // avoid parallel loading
-        getAllMutex.withLock {
-            if (isCacheCanBeUsed()) {
-                Timber.i("Cache is valid, using cache")
-                return@withLock daoDelegate.getAllTokens().also {
-                    Timber.d("Cache has come")
-                }
-            }
 
-            val tokens = async { api.getSwapTokens() }
-
-            val measuredResult = measureTimedValue {
-                daoDelegate.insertSwapTokens(tokens.await())
-                    .also { swapStorage.swapTokensFetchDateMillis = System.currentTimeMillis() }
-            }
-            Timber.e("Insertion was ${measuredResult.duration.inWholeSeconds}")
-            measuredResult.value
-        }
-    }
 
     override suspend fun searchTokens(mintAddressOrSymbol: String): List<JupiterSwapToken> {
         ensureCache()
@@ -117,11 +123,5 @@ internal class JupiterSwapTokensRemoteRepository(
         if (!isCacheCanBeUsed()) {
             getTokens()
         }
-    }
-
-    private fun isCacheCanBeUsed(): Boolean {
-        val fetchTokensDate = swapStorage.swapTokensFetchDateMillis ?: return false
-        val now = System.currentTimeMillis()
-        return (now - fetchTokensDate) <= TimeUnit.DAYS.toMillis(1) // check day has passed
     }
 }

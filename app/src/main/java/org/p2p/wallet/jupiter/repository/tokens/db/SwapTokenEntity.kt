@@ -2,12 +2,15 @@ package org.p2p.wallet.jupiter.repository.tokens.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "swap_tokens")
+// if it works slow - try to use @DatabaseView
+@Entity(
+    tableName = "swap_tokens",
+    indices = [Index("symbol"), Index("address")]
+)
 data class SwapTokenEntity(
-    @ColumnInfo(name = "ordinal_index")
-    val ordinalIndex: Int,
     @PrimaryKey
     @ColumnInfo(name = "address")
     val address: String,
@@ -19,9 +22,10 @@ data class SwapTokenEntity(
     val logoUri: String?,
     @ColumnInfo(name = "name")
     val name: String,
-    // todo: add index to the symbol
     @ColumnInfo(name = "symbol")
     val symbol: String,
+    @ColumnInfo(name = "tags")
+    val tagsAsJsonList: String,
     @ColumnInfo(name = "ext_coingecko_id")
     val coingeckoId: String?,
 )

@@ -1,11 +1,13 @@
 package org.p2p.wallet.jupiter.repository.tokens.db
 
+import org.json.JSONArray
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.TokenExtensions
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.toStringSet
 
 class SwapTokensDaoDelegate(
     private val dao: SwapTokensDao,
@@ -49,7 +51,8 @@ class SwapTokensDaoDelegate(
             logoUri = appTokens?.iconUrl ?: logoUri.orEmpty(),
             tokenName = appTokens?.tokenName ?: name,
             tokenSymbol = appTokens?.tokenSymbol ?: symbol,
-            tokenExtensions = appTokens?.tokenExtensions ?: TokenExtensions.NONE
+            tags = JSONArray(tagsAsJsonList).toStringSet(),
+            tokenExtensions = appTokens?.tokenExtensions ?: TokenExtensions.NONE,
         )
     }
 
