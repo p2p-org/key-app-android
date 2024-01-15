@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 
 public class TokenProgram {
     public static final PublicKey PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    public static final PublicKey PROGRAM_ID_TOKEN2022 = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
     public static final PublicKey ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
             "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
