@@ -388,7 +388,8 @@ class NewBuyPresenter(
         val enteredAmountLowerThanMax = loadedBuyCurrency.maxAmount
             ?.let { maxCurrencyAmount -> enteredAmountBigDecimal <= maxCurrencyAmount }
             ?: true
-        val enteredAmountHigherThanMin = enteredAmountBigDecimal >= loadedBuyCurrency.minAmount
+
+        val enteredAmountHigherThanMin = enteredAmountBigDecimal >= DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
 
         if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
             handleEnteredAmountValid(buyCurrencyInfo)
@@ -429,9 +430,9 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
-        val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
+        val minAmount = DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
         val maxAmount = loadedBuyCurrency.maxAmount
-        val minAmount = loadedBuyCurrency.minAmount
+        val isAmountLower = amount.toBigDecimal() < minAmount
         val symbol = selectedCurrency.code.symbolFromCode()
         val minAmountMessage = resources.getString(R.string.buy_min_transaction_format)
             .format("$symbol $minAmount")
