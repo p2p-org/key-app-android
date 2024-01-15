@@ -77,7 +77,7 @@ class SwapDeeplinkHandler(
         Timber.i("Tokens from deeplink: $inputMintOrSymbol $outputMintOrSymbol")
 
         val inputTokenSearch = findToken(inputMintOrSymbol)
-        val outputTokenSearch = findToken(inputMintOrSymbol)
+        val outputTokenSearch = findToken(outputMintOrSymbol)
 
         if (inputTokenSearch == null || outputTokenSearch == null) {
             Timber.e(IllegalArgumentException("Tokens from deeplink not found: $inputMintOrSymbol $outputMintOrSymbol"))
