@@ -29,7 +29,7 @@ class SwapTokensDaoDelegate(
         mintAddressOrSymbol: String,
     ): List<JupiterSwapToken> {
         // % is needed for pattern matching
-        return dao.searchTokens("${mintAddressOrSymbol}%")
+        return dao.searchTokens("$mintAddressOrSymbol%")
             .toDomain()
     }
 

@@ -130,7 +130,7 @@ class SwapContentSettingsMapper(
         )
     }
 
-    private suspend fun formatRouteString(activeRoute: JupiterSwapRouteV6?, ): String {
+    private suspend fun formatRouteString(activeRoute: JupiterSwapRouteV6?): String {
         if (activeRoute == null) return emptyString()
         return buildString {
             activeRoute.routePlans.forEachIndexed { index, routePlan ->
