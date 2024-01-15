@@ -9,11 +9,13 @@ import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.updates.subscribe.SolanaAccountUpdateSubscriber
 import org.p2p.wallet.updates.subscribe.SplTokenProgramSubscriber
 import org.p2p.wallet.updates.subscribe.SubscriptionUpdateSubscriber
+import org.p2p.wallet.updates.subscribe.Token2022ProgramSubscriber
 
 object HomeEventsModule : InjectionModule {
 
     override fun create(): Module = module {
         singleOf(::SplTokenProgramSubscriber) bind SubscriptionUpdateSubscriber::class
+        singleOf(::Token2022ProgramSubscriber) bind SubscriptionUpdateSubscriber::class
         singleOf(::SolanaAccountUpdateSubscriber) bind SubscriptionUpdateSubscriber::class
 
         singleOf(::OnboardingMetadataLoader) bind AppLoader::class

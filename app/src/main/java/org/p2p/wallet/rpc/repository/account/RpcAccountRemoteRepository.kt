@@ -69,23 +69,32 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
     override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {
         require(owner.toBase58().isNotBlank()) { "Owner ID cannot be blank" }
 
-        val programId = TokenProgram.PROGRAM_ID
-        val programIdParam = HashMap<String, String>()
-        programIdParam["programId"] = programId.toBase58()
-
-        val config = RequestConfiguration(
-            encoding = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED,
-            commitment = RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
+        val programIds = listOf(
+            TokenProgram.PROGRAM_ID,
+            TokenProgram.PROGRAM_ID_TOKEN2022
         )
 
-        val params = listOf(
-            owner.toBase58(),
-            programIdParam,
-            config
-        )
+        val result = mutableListOf<TokenAccounts>()
+        for (programId in programIds) {
+            val programIdParam = HashMap<String, String>()
+            programIdParam["programId"] = programId.toBase58()
 
-        val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
-        return api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
+            val config = RequestConfiguration(
+                encoding = RpcConstants.REQUEST_PARAMETER_VALUE_JSON_PARSED,
+                commitment = RpcConstants.REQUEST_PARAMETER_VALUE_CONFIRMED
+            )
+
+            val params = listOf(
+                owner.toBase58(),
+                programIdParam,
+                config
+            )
+
+            val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
+            result += api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
+        }
+
+        return TokenAccounts(result.flatMap { it.accounts })
     }
 
     override suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo {
