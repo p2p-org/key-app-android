@@ -8,6 +8,13 @@ private const val KEY_TOKEN_A_MINT = "KEY_TOKEN_A_MINT"
 private const val KEY_TOKEN_B_MINT = "KEY_TOKEN_B_MINT"
 private const val KEY_SWAP_TOKENS_FETCH_DATE = "KEY_SWAP_TOKENS_FETCH_DATE"
 
+@Deprecated("delete after couple of releases")
+const val KEY_ROUTES_FETCH_DATE = "KEY_ROUTES_FETCH_DATE"
+@Deprecated("delete after couple of releases")
+const val KEY_ROUTES_MINTS = "KEY_ROUTES_MINTS"
+@Deprecated("delete after couple of releases")
+const val KEY_SWAP_TOKENS = "KEY_SWAP_TOKENS"
+
 class JupiterSwapStorage(
     private val sharedPreferences: SharedPreferences,
 ) : JupiterSwapStorageContract {
@@ -47,7 +54,7 @@ class JupiterSwapStorage(
         sharedPreferences.edit { putLong(KEY_SWAP_TOKENS_FETCH_DATE, dateMillis) }
     }
 
-    private fun remove(key: String) {
+    override fun remove(key: String) {
         sharedPreferences.edit { remove(key) }
     }
 }

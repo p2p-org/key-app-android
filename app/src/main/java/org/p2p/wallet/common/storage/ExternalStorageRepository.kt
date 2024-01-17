@@ -7,4 +7,5 @@ interface ExternalStorageRepository {
     suspend fun readJsonFile(filePrefix: String): ExternalFile?
     suspend fun readJsonFileAsStream(filePrefix: String): InputStream?
     suspend fun saveAsJsonFile(stream: InputStream, fileName: String): Long
+    suspend fun deleteJsonFile(filePrefix: String)
 }

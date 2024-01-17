@@ -1,7 +1,6 @@
 package org.p2p.wallet.jupiter.interactor
 
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
@@ -11,7 +10,6 @@ import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 class SwapTokensInteractor(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val swapTokensRepository: JupiterSwapTokensRepository,
-    private val swapRoutesRepository: JupiterSwapRoutesRepository,
     private val swapStateManager: SwapStateManager,
     private val jupiterSwapInteractor: JupiterSwapInteractor,
 ) {
@@ -51,7 +49,7 @@ class SwapTokensInteractor(
         val tokenA = getCurrentTokenA()
         val tokenB = getCurrentTokenB()
 
-        val availableTokenBMints = swapRoutesRepository.getSwappableTokens(sourceTokenMint = tokenA.mintAddress)
+        val availableTokenBMints = swapTokensRepository.getSwappableTokens(sourceTokenMint = tokenA.mintAddress)
             .map(SwapTokenModel::JupiterToken)
             .filter { it.mintAddress !in userTokensMints }
 

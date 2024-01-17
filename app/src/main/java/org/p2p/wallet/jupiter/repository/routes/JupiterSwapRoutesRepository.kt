@@ -5,6 +5,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 
+@Deprecated("Old v4 swap logic")
 interface JupiterSwapRoutesRepository {
     /**
      * @param validateRoutes - if true validate routes and return only valid ones

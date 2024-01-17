@@ -17,6 +17,7 @@ import org.p2p.wallet.utils.retryOnException
 
 private const val TAG = "JupiterSwapRoutesRemoteRepository"
 
+@Deprecated("Old v4 swap logic")
 class JupiterSwapRoutesRemoteRepository(
     private val api: SwapJupiterApi,
     private val dispatchers: CoroutineDispatchers,

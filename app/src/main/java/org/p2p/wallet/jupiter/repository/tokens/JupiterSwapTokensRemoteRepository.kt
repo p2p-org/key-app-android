@@ -49,6 +49,9 @@ internal class JupiterSwapTokensRemoteRepository(
         }
     }
 
+    // temp solution, we don't check is token swappable right now
+    override suspend fun getSwappableTokens(sourceTokenMint: Base58String): List<JupiterSwapToken> = getTokens()
+
     private fun isCacheCanBeUsed(): Boolean {
         val fetchTokensDate = swapStorage.swapTokensFetchDateMillis ?: return false
         val now = System.currentTimeMillis()

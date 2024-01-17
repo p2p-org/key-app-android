@@ -28,5 +28,7 @@ interface JupiterSwapTokensRepository {
         sourceTokenMint: Base58String
     ): List<JupiterSwapToken>
 
+    suspend fun getSwappableTokens(sourceTokenMint: Base58String): List<JupiterSwapToken>
+
     suspend fun filterIntersectedTokens(userTokens: List<Token.Active>): List<Token.Active>
 }

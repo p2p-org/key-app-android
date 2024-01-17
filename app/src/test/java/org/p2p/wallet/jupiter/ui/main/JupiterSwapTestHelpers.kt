@@ -31,7 +31,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
         tokenName = "Wrapped SOL",
         tokenSymbol = "SOL",
-        tokenExtensions = TokenExtensions.NONE
+        tokenExtensions = TokenExtensions.NONE,
+        tags = emptySet()
     )
 
     val JUPITER_USDC_TOKEN = JupiterSwapToken(
@@ -42,7 +43,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
         tokenName = "USD Coin",
         tokenSymbol = "USDC",
-        tokenExtensions = TokenExtensions.NONE
+        tokenExtensions = TokenExtensions.NONE,
+        tags = emptySet()
     )
     val DEFAULT_SWAPPABLE_TOKENS = listOf(
         JUPITER_SOL_TOKEN.tokenMint,
@@ -50,7 +52,9 @@ object JupiterSwapTestHelpers {
     )
 
     val SOL_TO_USD_RATE = BigDecimal("20.74")
-    val USD_TO_SOL_RATE = BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(SOL_TO_USD_RATE, RoundingMode.UP).setScale(18)
+    val USD_TO_SOL_RATE = BigDecimal.ONE.setScale(18, RoundingMode.UP)
+        .divide(SOL_TO_USD_RATE, RoundingMode.UP)
+        .setScale(18)
 
     fun SwapButtonState.toReadableString(): String {
         return when (this) {

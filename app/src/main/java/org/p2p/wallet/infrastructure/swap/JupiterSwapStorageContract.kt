@@ -9,4 +9,5 @@ interface JupiterSwapStorageContract {
     var swapTokensFetchDateMillis: Long?
 
     fun clear()
+    fun remove(key: String)
 }
