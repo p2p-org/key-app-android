@@ -54,17 +54,28 @@
         app:layout_constraintTop_toTopOf="@+id/textViewWidgetTitle"
         tools:text="12.30 SOL" />
 
+    <org.p2p.uikit.atoms.UiKitRoundedImageView
+        android:id="@+id/imageViewTokenIcon"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginVertical="12dp"
+        android:layout_marginStart="16dp"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewBalance"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewWidgetTitle"
+        app:layout_constraintVertical_bias="0.515"
+        tools:srcCompat="@tools:sample/avatars" />
+
     <TextView
         android:id="@+id/textViewCurrencyName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="4dp"
         android:textAppearance="@style/UiKit.TextAppearance.Regular.LargeTitle"
-        app:layout_constraintBottom_toTopOf="@+id/textViewBalance"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewWidgetTitle"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewTokenIcon"
+        app:layout_constraintStart_toEndOf="@+id/imageViewTokenIcon"
+        app:layout_constraintTop_toTopOf="@+id/imageViewTokenIcon"
         tools:text="USD" />
 
     <androidx.appcompat.widget.AppCompatImageView

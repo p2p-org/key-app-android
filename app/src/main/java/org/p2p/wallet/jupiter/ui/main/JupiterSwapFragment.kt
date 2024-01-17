@@ -62,6 +62,7 @@ import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -234,13 +235,25 @@ class JupiterSwapFragment :
         }
 
         toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.settingsMenuItem) {
-                openSwapSettingsScreen()
-                true
-            } else {
-                false
+            when (item.itemId) {
+                R.id.settingsMenuItem -> {
+                    openSwapSettingsScreen()
+                    true
+                }
+                R.id.shareMenuItem -> {
+                    presenter.onShareClicked()
+                    true
+                }
+                else -> {
+                    false
+                }
             }
         }
+    }
+
+    override fun showShareDialog(tokenAMint: Base58String, tokenBMint: Base58String) {
+        val shareUrl = "https://s.key.app/swap?from=%s?to=%s".format(tokenAMint.base58Value, tokenBMint.base58Value)
+        requireContext().shareText(shareUrl)
     }
 
     private fun setupWidgetsActionCallbacks() = with(binding) {

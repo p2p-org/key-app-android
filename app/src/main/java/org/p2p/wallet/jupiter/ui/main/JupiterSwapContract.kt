@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import org.p2p.core.crypto.Base58String
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -27,6 +28,7 @@ interface JupiterSwapContract {
         fun hideFullScreenError()
         fun showDebugInfo(debugInfo: TextViewCellModel)
         fun showKeyboard()
+        fun showShareDialog(tokenAMint: Base58String, tokenBMint: Base58String)
     }
 
     interface Presenter : MvpPresenter<View> {
@@ -43,5 +45,6 @@ interface JupiterSwapContract {
         fun onTryAgainClick()
         fun pauseStateManager()
         fun resumeStateManager()
+        fun onShareClicked()
     }
 }
