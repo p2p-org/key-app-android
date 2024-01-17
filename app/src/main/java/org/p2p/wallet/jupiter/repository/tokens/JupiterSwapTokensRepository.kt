@@ -1,14 +1,34 @@
 package org.p2p.wallet.jupiter.repository.tokens
 
 import org.p2p.core.crypto.Base58String
-import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.core.token.Token
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 
 interface JupiterSwapTokensRepository {
+    suspend fun requireTokenByMint(mintAddress: Base58String): JupiterSwapToken
+    suspend fun requireUsdc(): JupiterSwapToken
+    suspend fun requireWrappedSol(): JupiterSwapToken
+
+    /**
+     * !! Avoid using this function, loading all tokens can take 5-10 seconds
+     * it's better to use [findTokenByMint] or [requireTokenByMint] or whatever you need
+     * @todo make this function available only with pagination
+     */
     suspend fun getTokens(): List<JupiterSwapToken>
-    suspend fun getTokenRate(token: JupiterSwapToken): TokenServicePrice?
-    suspend fun getTokensRates(tokens: List<JupiterSwapToken>): Map<Base58String, TokenServicePrice>
 
     suspend fun findTokenBySymbol(symbol: String): JupiterSwapToken?
     suspend fun findTokenByMint(mintAddress: Base58String): JupiterSwapToken?
+
+    suspend fun findTokensExcludingMints(mintsToExclude: Set<Base58String>): List<JupiterSwapToken>
+    suspend fun findTokensIncludingMints(mintsToInclude: Set<Base58String>): List<JupiterSwapToken>
+
+    suspend fun searchTokens(mintAddressOrSymbol: String): List<JupiterSwapToken>
+    suspend fun searchTokensInSwappable(
+        mintAddressOrSymbol: String,
+        sourceTokenMint: Base58String
+    ): List<JupiterSwapToken>
+
+    suspend fun getSwappableTokens(sourceTokenMint: Base58String): List<JupiterSwapToken>
+
+    suspend fun filterIntersectedTokens(userTokens: List<Token.Active>): List<Token.Active>
 }

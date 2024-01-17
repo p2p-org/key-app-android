@@ -7,6 +7,7 @@ import java.math.BigInteger
 /**
  * @param keyAppFeeInLamports fee in lamports of out token
  */
+@Deprecated("Old v4 swap logic")
 data class JupiterSwapRoute(
     val inAmountInLamports: BigInteger,
     val outAmountInLamports: BigInteger,

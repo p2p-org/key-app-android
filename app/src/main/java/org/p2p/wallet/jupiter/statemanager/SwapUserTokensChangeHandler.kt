@@ -6,7 +6,7 @@ import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
-class SwapUserTokensChangeHandler constructor(
+class SwapUserTokensChangeHandler(
     private val swapInteractor: JupiterSwapInteractor,
     private val swapTokensRepository: JupiterSwapTokensRepository,
 ) {
@@ -20,12 +20,10 @@ class SwapUserTokensChangeHandler constructor(
         if (tokenA == null || tokenB == null) return currentState
 
         val updatedTokenA = userTokens.find { it.mintAddress == tokenA.mintAddress.base58Value }
-        val jupiterTokenA = swapTokensRepository.getTokens()
-            .find { it.tokenMint == tokenA.mintAddress }
+        val jupiterTokenA = swapTokensRepository.findTokenByMint(tokenA.mintAddress)
 
         val updatedTokenB = userTokens.find { it.mintAddress == tokenB.mintAddress.base58Value }
-        val jupiterTokenB = swapTokensRepository.getTokens()
-            .find { it.tokenMint == tokenB.mintAddress }
+        val jupiterTokenB = swapTokensRepository.findTokenByMint(tokenB.mintAddress)
 
         val isNewTokenAAmount = tokenA is SwapTokenModel.UserToken &&
             updatedTokenA?.totalInLamports != tokenA.tokenAmountInLamports

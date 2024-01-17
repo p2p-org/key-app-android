@@ -8,7 +8,12 @@ import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.common.feature_toggles.remote_config.AppFirebaseRemoteConfig
+import org.p2p.wallet.common.storage.ExternalStorageRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
+import org.p2p.wallet.infrastructure.swap.KEY_ROUTES_FETCH_DATE
+import org.p2p.wallet.infrastructure.swap.KEY_ROUTES_MINTS
+import org.p2p.wallet.infrastructure.swap.KEY_SWAP_TOKENS
 import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 
@@ -22,6 +27,8 @@ class AppCreatedAction(
     private val tokenKeyProvider: TokenKeyProvider,
     private val crashLogger: CrashLogger,
     private val intercomPushService: IntercomPushService,
+    private val swapStorage: JupiterSwapStorageContract,
+    private val fileRepository: ExternalStorageRepository,
     private val appScope: AppScope,
 ) : KoinComponent {
 
@@ -33,6 +40,8 @@ class AppCreatedAction(
         remoteConfig.loadRemoteConfig(onConfigLoaded = { toggles ->
             toggles.forEach { (toggleKey, toggleValue) -> crashLogger.setCustomKey(toggleKey, toggleValue) }
         })
+
+        removeDeprecatedData()
 
         tryRestoreUsername()
     }
@@ -65,6 +74,15 @@ class AppCreatedAction(
             } catch (error: Throwable) {
                 Timber.e(error, "AppOnCreated tryRestoreUsername failed")
             }
+        }
+    }
+
+    private fun removeDeprecatedData() {
+        appScope.launch {
+            fileRepository.deleteJsonFile("swap_routes.json")
+            swapStorage.remove(KEY_SWAP_TOKENS)
+            swapStorage.remove(KEY_ROUTES_MINTS)
+            swapStorage.remove(KEY_ROUTES_FETCH_DATE)
         }
     }
 }

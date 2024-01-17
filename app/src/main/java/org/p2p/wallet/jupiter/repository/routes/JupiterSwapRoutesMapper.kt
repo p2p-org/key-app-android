@@ -8,6 +8,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
 
+@Deprecated("Old v4 swap logic")
 class JupiterSwapRoutesMapper {
 
     fun fromNetwork(response: SwapJupiterQuoteResponse): List<JupiterSwapRoute> = response.routes

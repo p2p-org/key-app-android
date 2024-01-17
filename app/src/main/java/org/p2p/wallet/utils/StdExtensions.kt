@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import org.bouncycastle.crypto.modes.ChaCha20Poly1305
+import org.json.JSONArray
 import java.math.BigDecimal
 import org.p2p.core.utils.orZero
 
@@ -45,3 +46,9 @@ fun ChaCha20Poly1305.processBytesKt(
 fun BigDecimal?.compareTo(other: BigDecimal?): Int = this.orZero().compareTo(other.orZero())
 
 fun JsonArray.getOrNull(index: Int): JsonElement? = if (index >= size()) null else get(index)
+
+fun JSONArray.toStringSet(): Set<String> = buildSet {
+    for (i in 0 until length()) {
+        this += getString(i)
+    }
+}
