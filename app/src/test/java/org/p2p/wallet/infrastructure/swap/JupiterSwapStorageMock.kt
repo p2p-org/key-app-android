@@ -12,4 +12,8 @@ class JupiterSwapStorageMock(
         savedTokenBMint = null
         swapTokensFetchDateMillis = null
     }
+
+    override fun remove(key: String) {
+        // do nothing
+    }
 }

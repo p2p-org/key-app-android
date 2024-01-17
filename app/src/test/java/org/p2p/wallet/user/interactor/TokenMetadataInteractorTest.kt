@@ -2,6 +2,7 @@ package org.p2p.wallet.user.interactor
 
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
+import com.google.gson.stream.JsonReader
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -73,8 +74,9 @@ internal class TokenMetadataInteractorTest {
     fun `GIVEN existent json file and NoUpdate WHEN loadAllTokensData THEN cache is not updated`() = runTest {
         // GIVEN
         val expectedMetadata = TokensMetadataInfo(emptyString(), emptyList())
-        every { gson.fromJson(metadataJson, TokensMetadataInfo::class.java) }.returns(expectedMetadata)
-        coEvery { externalStorageRepository.readJsonFile(any()) }.returns(ExternalFile(metadataJson))
+
+        every { gson.fromJson<TokensMetadataInfo>(any<JsonReader>(), TokensMetadataInfo::class.java) }.returns(expectedMetadata)
+        coEvery { externalStorageRepository.readJsonFileAsStream(any()) }.returns(mockk())
         coEvery { metadataRepository.loadSolTokensMetadata(any()) }.returns(UpdateTokenMetadataResult.NoUpdate)
 
         // WHEN

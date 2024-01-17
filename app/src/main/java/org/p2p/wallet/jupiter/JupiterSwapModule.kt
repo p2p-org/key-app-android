@@ -214,7 +214,6 @@ object JupiterSwapModule : InjectionModule {
             SwapTokensInteractor(
                 tokenServiceCoordinator = get(),
                 swapTokensRepository = get(),
-                swapRoutesRepository = get(),
                 jupiterSwapInteractor = get(),
                 swapStateManager = getSwapStateManager(
                     initialTokensData = SwapInitialTokensData.NO_DATA,
