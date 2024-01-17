@@ -1,5 +1,6 @@
 package org.p2p.solanaj.programs;
 
+import org.p2p.core.utils.Constants;
 import org.p2p.solanaj.core.AbstractData;
 import org.p2p.solanaj.core.AccountMeta;
 import org.p2p.solanaj.core.PublicKey;
@@ -16,9 +17,12 @@ import androidx.annotation.NonNull;
 
 public class TokenProgram {
     public static final PublicKey PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-    public static final PublicKey PROGRAM_ID_TOKEN2022 = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+    public static final PublicKey TOKEN_2022_PROGRAM_ID = new PublicKey(Constants.SOLANA_TOKEN_2022_PROGRAM_ID);
     public static final PublicKey ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
             "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+
+    // indices for instructions:
+    // https://github.com/solana-labs/solana-program-library/blob/master/token/js/src/instructions/index.ts
 
     public static final int INSTRUCTION_INDEX_INITIALIZE_MINT = 0;
     public static final int INSTRUCTION_INDEX_INITIALIZE_ACCOUNT = 1;
@@ -29,8 +33,10 @@ public class TokenProgram {
     public static final int INSTRUCTION_INDEX_TRANSFER_CHECKED = 12;
     public static final int INSTRUCTION_INDEX_BURN_CHECKED = 15;
 
-    public static TransactionInstruction initializeMintInstruction(PublicKey tokenProgramId, PublicKey mint,
-                                                                   int decimals, PublicKey authority, PublicKey freezeAuthority) {
+    public static TransactionInstruction initializeMintInstruction(
+            PublicKey tokenProgramId, PublicKey mint,
+            int decimals, PublicKey authority, PublicKey freezeAuthority
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(mint, false, true));
         keys.add(new AccountMeta(Sysvar.SYSVAR_RENT_ADDRESS, false, false));
@@ -49,8 +55,10 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction initializeAccountInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                                      PublicKey mint, PublicKey owner) {
+    public static TransactionInstruction initializeAccountInstruction(
+            PublicKey tokenProgramId, PublicKey account,
+            PublicKey mint, PublicKey owner
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(mint, false, false));
@@ -110,8 +118,10 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction mintToInstruction(PublicKey tokenProgramId, PublicKey mint,
-                                                           PublicKey destination, PublicKey authority, BigInteger amount) {
+    public static TransactionInstruction mintToInstruction(
+            PublicKey tokenProgramId, PublicKey mint,
+            PublicKey destination, PublicKey authority, BigInteger amount
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(mint, false, true));
         keys.add(new AccountMeta(destination, false, true));
@@ -129,8 +139,10 @@ public class TokenProgram {
         return new TransactionInstruction(tokenProgramId, keys, bos.toByteArray());
     }
 
-    public static TransactionInstruction closeAccountInstruction(PublicKey tokenProgramId, PublicKey account,
-                                                                 PublicKey destination, PublicKey owner) {
+    public static TransactionInstruction closeAccountInstruction(
+            PublicKey tokenProgramId, PublicKey account,
+            PublicKey destination, PublicKey owner
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(destination, false, true));
@@ -192,8 +204,10 @@ public class TokenProgram {
         return new TransactionInstruction(associatedProgramId, keys, data);
     }
 
-    public static TransactionInstruction createBurnCheckedInstruction(PublicKey tokenProgramId, PublicKey mint,
-                                                                      PublicKey account, PublicKey owner, BigInteger amount, int decimals) {
+    public static TransactionInstruction createBurnCheckedInstruction(
+            PublicKey tokenProgramId, PublicKey mint,
+            PublicKey account, PublicKey owner, BigInteger amount, int decimals
+    ) {
         ArrayList<AccountMeta> keys = new ArrayList<AccountMeta>();
         keys.add(new AccountMeta(account, false, true));
         keys.add(new AccountMeta(mint, false, true));

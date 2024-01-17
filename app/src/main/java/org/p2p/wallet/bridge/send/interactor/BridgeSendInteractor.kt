@@ -2,34 +2,34 @@ package org.p2p.wallet.bridge.send.interactor
 
 import java.math.BigDecimal
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.crypto.toBase64Instance
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.SolAddress
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenVisibility
+import org.p2p.core.utils.Constants
+import org.p2p.core.wrapper.eth.EthAddress
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.repository.EthereumRepository
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.rpc.RpcSolanaRepository
-import org.p2p.core.crypto.Base64String
-import org.p2p.core.crypto.toBase64Instance
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.model.BridgeSendTransaction
+import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.bridge.send.repository.EthereumSendRepository
 import org.p2p.wallet.feerelayer.model.FeeRelayerSignTransaction
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.repository.FeeRelayerRepository
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.core.token.TokenExtensions
-import org.p2p.core.utils.Constants
-import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.wallet.bridge.send.model.BridgeSendTransactionDetails
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
+import org.p2p.wallet.user.interactor.UserInteractor
 
 class BridgeSendInteractor(
     private val ethereumSendRepository: EthereumSendRepository,
@@ -71,6 +71,7 @@ class BridgeSendInteractor(
             total = BigDecimal.ZERO,
             tokenSymbol = token.tokenSymbol,
             decimals = token.decimals,
+            programId = token.programId,
             mintAddress = token.mintAddress,
             tokenName = token.tokenName,
             iconUrl = token.iconUrl,

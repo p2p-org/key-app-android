@@ -2,6 +2,9 @@ package org.p2p.wallet.rpc.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
+import java.nio.ByteBuffer
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.Base64Utils
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.PreparedTransaction
@@ -9,8 +12,8 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.model.types.ConfirmationStatus
-import org.p2p.core.crypto.Base64String
-import org.p2p.core.crypto.Base64Utils
+import org.p2p.solanaj.utils.ShortvecEncoding
+import org.p2p.solanaj.utils.TweetNaclFast
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
@@ -63,10 +66,54 @@ class TransactionInteractor(
         }
     }
 
+    fun signAndSerializeGeneratedTransaction(
+        signer: Account,
+        unsignedTransaction: ByteArray,
+    ): ByteArray {
+        // decode the number of signatures (assuming it's 1 byte for <= 127 signatures)
+        val existingSignatures = ShortvecEncoding.decodeLength(unsignedTransaction)
+        require(existingSignatures == 2) {
+            "Pre-generated transaction must contain exactly 2 signatures: 1 fee payer, 2nd - ours (to be replaced)"
+        }
+
+        // calculate offsets
+        val signaturesOffset = 1
+        val messageOffset = signaturesOffset + existingSignatures * Transaction.SIGNATURE_LENGTH
+
+        // extract and keep all existing signatures
+        val signatures = (0 until existingSignatures).map { i ->
+            unsignedTransaction.copyOfRange(
+                signaturesOffset + i * Transaction.SIGNATURE_LENGTH,
+                signaturesOffset + (i + 1) * Transaction.SIGNATURE_LENGTH
+            )
+        }.toMutableList()
+
+        // extract the message part
+        val message = unsignedTransaction.copyOfRange(messageOffset, unsignedTransaction.size)
+
+        // create a new signature for the message part
+        val signatureProvider = TweetNaclFast.Signature(ByteArray(0), signer.keypair)
+        val newSignature = signatureProvider.detached(message)
+
+        // replace the last signature with the new one
+        signatures[signatures.size - 1] = newSignature
+
+        // allocate buffer for the final transaction
+        val capacity = signaturesOffset + signatures.size * Transaction.SIGNATURE_LENGTH + message.size
+        val out = ByteBuffer.allocate(capacity)
+
+        // put the signatures count, signatures, and message into the buffer
+        out.put(ShortvecEncoding.encodeLength(signatures.size))
+        signatures.forEach(out::put)
+        out.put(message)
+
+        return out.array()
+    }
+
     suspend fun sendTransaction(
         signedTransaction: Base64String,
         isSimulation: Boolean,
-        preflightCommitment: ConfirmationStatus = ConfirmationStatus.FINALIZED
+        preflightCommitment: ConfirmationStatus = ConfirmationStatus.CONFIRMED
     ): String {
         return if (isSimulation) {
             rpcTransactionRepository.simulateTransaction(signedTransaction.base64Value)

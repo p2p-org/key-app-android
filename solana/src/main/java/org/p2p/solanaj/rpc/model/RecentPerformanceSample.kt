@@ -5,4 +5,7 @@ class RecentPerformanceSample(
     val numberOfTransactions: Int,
     val samplePeriodInSeconds: Int,
     val slot: Int
-)
+) {
+    val currentEpoch: Int
+        get() = numberOfSlots / 432000
+}

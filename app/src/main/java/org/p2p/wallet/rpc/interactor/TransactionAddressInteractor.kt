@@ -21,11 +21,16 @@ class TransactionAddressInteractor(
 
     suspend fun findSplTokenAddressData(
         destinationAddress: PublicKey,
-        mintAddress: String
+        mintAddress: String,
+        programId: PublicKey = TokenProgram.PROGRAM_ID,
     ): TransactionAddressData {
         val associatedAddress = try {
             Timber.tag(ADDRESS_TAG).i("Searching SPL token address for ${destinationAddress.toBase58()}")
-            findSplTokenAddress(destinationAddress, mintAddress)
+            findSplTokenAddress(
+                destinationAddress = destinationAddress,
+                mintAddress = mintAddress,
+                programId = programId,
+            )
         } catch (e: CancellationException) {
             throw e
         } catch (e: IllegalStateException) {
@@ -40,7 +45,8 @@ class TransactionAddressInteractor(
             useCache = false
         )
         val value = accountInfo?.value
-        val accountExists = value?.owner == TokenProgram.PROGRAM_ID.toString() && value.data != null
+        val targetProgramId = programId.toBase58()
+        val accountExists = value?.owner == targetProgramId && value.data != null
         return TransactionAddressData(
             destinationAddress = associatedAddress,
             shouldCreateAccount = !accountExists
@@ -50,7 +56,8 @@ class TransactionAddressInteractor(
     @Throws(IllegalStateException::class)
     private suspend fun findSplTokenAddress(
         destinationAddress: PublicKey,
-        mintAddress: String
+        mintAddress: String,
+        programId: PublicKey = TokenProgram.PROGRAM_ID,
     ): PublicKey {
         val accountInfo = userAccountRepository.getAccountInfo(
             account = destinationAddress.toBase58(),
@@ -68,7 +75,11 @@ class TransactionAddressInteractor(
         val value = accountInfo?.value
         if (value == null || value.data?.get(0).isNullOrEmpty()) {
             Timber.tag(ADDRESS_TAG).i("No information found, generating associated token address")
-            return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
+            return TokenTransaction.getAssociatedTokenAddress(
+                mint = mintAddress.toPublicKey(),
+                owner = destinationAddress,
+                programId = programId
+            )
         }
 
         // detect if destination address is already a SPL Token address
@@ -82,7 +93,11 @@ class TransactionAddressInteractor(
             Timber.tag(ADDRESS_TAG).i("Destination address is SOL address. Getting the associated token address")
 
             // create associated token address
-            return TokenTransaction.getAssociatedTokenAddress(mintAddress.toPublicKey(), destinationAddress)
+            return TokenTransaction.getAssociatedTokenAddress(
+                mintAddress.toPublicKey(),
+                destinationAddress,
+                programId
+            )
         }
 
         throw IllegalStateException("Wallet address is not valid")

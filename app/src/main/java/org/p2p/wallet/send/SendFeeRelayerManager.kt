@@ -12,6 +12,9 @@ import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getInterestBearingConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getTransferFeeConfig
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
@@ -30,13 +33,15 @@ import org.p2p.wallet.send.model.FeeRelayerStateError.InsufficientFundsToCoverFe
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.user.interactor.UserInteractor
 
 private const val TAG = "SendFeeRelayerManager"
 
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor,
-    private val userInteractor: UserInteractor
+    private val userInteractor: UserInteractor,
+    private val networkObserver: SolanaNetworkObserver,
 ) {
 
     var onStateUpdated: ((FeeRelayerState) -> Unit)? = null
@@ -94,8 +99,21 @@ class SendFeeRelayerManager(
     fun buildTotalFee(
         sourceToken: Token.Active,
         calculationMode: CalculationMode,
+        tokenExtensions: Map<String, AccountInfoTokenExtensionConfig>
     ): SendFeeTotal {
         val currentAmount = calculationMode.getCurrentAmount()
+
+        val transferFee: BigDecimal? = tokenExtensions
+            .getTransferFeeConfig()
+            // todo: fix getting epoch, currently it doesn't work!
+            ?.getActualTransferFee(networkObserver.getCurrentEpoch())
+            ?.transferFeePercent
+
+        val interestBearing: BigDecimal? = tokenExtensions
+            .getInterestBearingConfig()
+            ?.currentRate
+            ?.toBigDecimal()
+
         return SendFeeTotal(
             currentAmount = currentAmount,
             currentAmountUsd = calculationMode.getCurrentAmountUsd(),
@@ -104,7 +122,9 @@ class SendFeeRelayerManager(
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
             recipientAddress = recipientAddress.address,
-            feeLimit = feeLimitInfo
+            feeLimit = feeLimitInfo,
+            transferFee = transferFee,
+            interestBearingRate = interestBearing
         )
     }
 
@@ -137,7 +157,11 @@ class SendFeeRelayerManager(
 
             when (feeState) {
                 is FeeCalculationState.NoFees -> {
-                    currentState = UpdateFee(solanaFee = null, feeLimitInfo = feeLimitInfo)
+                    currentState = UpdateFee(
+                        solanaFee = null,
+                        feeLimitInfo = feeLimitInfo,
+                        tokenExtensions = sendInteractor.getTokenExtensions(sourceToken)
+                    )
                     sendInteractor.setFeePayerToken(sourceToken)
                 }
                 is FeeCalculationState.PoolsNotFound -> {
@@ -146,18 +170,23 @@ class SendFeeRelayerManager(
                         source = sourceToken,
                         feeRelayerFee = feeState.feeInSol
                     )
-                    currentState = UpdateFee(solanaFee = solanaFee, feeLimitInfo = feeLimitInfo)
-                    sendInteractor.switchFeePayerToSol(solToken)
+                    currentState = UpdateFee(
+                        solanaFee = solanaFee,
+                        feeLimitInfo = feeLimitInfo,
+                        tokenExtensions = sendInteractor.getTokenExtensions(sourceToken)
+                    )
+                    sendInteractor.setFeePayerToken(solToken)
                 }
                 is FeeCalculationState.Success -> {
                     sendInteractor.setFeePayerToken(feePayer)
                     val inputAmount = tokenAmount.toLamports(sourceToken.decimals)
-                    showFeeDetails(
+                    setFeeDetailsState(
                         sourceToken = sourceToken,
                         feeRelayerFee = feeState.fee,
                         feePayerToken = feePayer,
                         inputAmount = inputAmount,
-                        strategy = strategy
+                        strategy = strategy,
+                        tokenExtensions = feeState.tokenExtensions
                     )
                 }
                 is FeeCalculationState.Error -> {
@@ -236,18 +265,19 @@ class SendFeeRelayerManager(
         )
     }
 
-    private suspend fun showFeeDetails(
+    private suspend fun setFeeDetailsState(
         sourceToken: Token.Active,
         feeRelayerFee: FeeRelayerFee,
         feePayerToken: Token.Active,
         inputAmount: BigInteger,
-        strategy: FeePayerSelectionStrategy
+        strategy: FeePayerSelectionStrategy,
+        tokenExtensions: Map<String, AccountInfoTokenExtensionConfig>
     ) {
         val fee = buildSolanaFee(feePayerToken, sourceToken, feeRelayerFee)
 
         if (strategy == FeePayerSelectionStrategy.NO_ACTION) {
             validateFunds(sourceToken, fee, inputAmount)
-            currentState = UpdateFee(fee, feeLimitInfo)
+            currentState = UpdateFee(fee, feeLimitInfo, tokenExtensions)
         } else {
             validateAndSelectFeePayer(sourceToken, fee, inputAmount, strategy)
         }
@@ -317,7 +347,7 @@ class SendFeeRelayerManager(
                 Timber.tag(TAG).i(
                     "Switching to SOL ${fee.feePayerToken.tokenSymbol} -> ${solToken.tokenSymbol}"
                 )
-                sendInteractor.switchFeePayerToSol(solToken)
+                sendInteractor.setFeePayerToken(solToken)
             }
             is FeePayerState.ReduceInputAmount -> {
                 Timber.tag(TAG).i(
@@ -351,19 +381,33 @@ class SendFeeRelayerManager(
             null
         }
 
+        val tokenExtensions = sendInteractor.getTokenExtensions(sourceToken)
+
         when (feeState) {
             is FeeCalculationState.NoFees -> {
-                currentState = UpdateFee(solanaFee = null, feeLimitInfo = feeLimitInfo)
+                currentState = UpdateFee(
+                    solanaFee = null,
+                    feeLimitInfo = feeLimitInfo,
+                    tokenExtensions = tokenExtensions
+                )
             }
             is FeeCalculationState.PoolsNotFound -> {
                 val solanaFee = buildSolanaFee(solToken, sourceToken, feeState.feeInSol)
-                currentState = UpdateFee(solanaFee = solanaFee, feeLimitInfo = feeLimitInfo)
+                currentState = UpdateFee(
+                    solanaFee = solanaFee,
+                    feeLimitInfo = feeLimitInfo,
+                    tokenExtensions = tokenExtensions
+                )
                 sendInteractor.setFeePayerToken(solToken)
             }
             is FeeCalculationState.Success -> {
                 val fee = buildSolanaFee(newFeePayer, sourceToken, feeState.fee)
                 validateFunds(sourceToken, fee, inputAmount)
-                currentState = UpdateFee(fee, feeLimitInfo)
+                currentState = UpdateFee(
+                    solanaFee = fee,
+                    feeLimitInfo = feeLimitInfo,
+                    tokenExtensions = tokenExtensions
+                )
             }
             is FeeCalculationState.Error -> {
                 handleError(FeesCalculationError(cause = feeState.error))
