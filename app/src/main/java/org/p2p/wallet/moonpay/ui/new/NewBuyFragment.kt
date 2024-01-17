@@ -8,27 +8,28 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.FocusField
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewBuyBinding
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.model.PaymentMethod
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 import org.p2p.wallet.moonpay.ui.bottomsheet.BuyDetailsBottomSheet
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.getDrawableCompat
 import org.p2p.wallet.utils.getParcelableCompat
+import org.p2p.wallet.utils.getSerializableCompat
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.showUrlInCustomTabs
 import org.p2p.wallet.utils.unsafeLazy
@@ -120,8 +121,8 @@ class NewBuyFragment :
             }
 
             result.containsKey(KEY_RESULT_CURRENCY) -> {
-                result.getParcelableCompat<BuyCurrency.Currency>(KEY_RESULT_CURRENCY)?.let {
-                    setCurrencyCode(it.code)
+                result.getSerializableCompat<FiatCurrency>(KEY_RESULT_CURRENCY)?.let {
+                    setCurrencyCode(it.abbriviation)
                     presenter.setCurrency(it)
                 }
             }
@@ -143,7 +144,7 @@ class NewBuyFragment :
 
         amountsView.apply {
             tokenSymbol = this@NewBuyFragment.token.tokenSymbol
-            currencyCode = Constants.USD_READABLE_SYMBOL
+            currencyCode = FiatCurrency.USD.abbriviation.uppercase()
 
             setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
             setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
@@ -182,7 +183,7 @@ class NewBuyFragment :
         )
     }
 
-    override fun showCurrency(currencies: List<BuyCurrency.Currency>, selectedCurrency: BuyCurrency.Currency) {
+    override fun showCurrency(currencies: List<FiatCurrency>, selectedCurrency: FiatCurrency) {
         SelectCurrencyBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.buy_select_currency_title),
@@ -194,7 +195,7 @@ class NewBuyFragment :
     }
 
     override fun setCurrencyCode(selectedCurrencyCode: String) {
-        binding.amountsView.currencyCode = selectedCurrencyCode
+        binding.amountsView.currencyCode = selectedCurrencyCode.uppercase()
     }
 
     override fun showLoading(isLoading: Boolean) {
@@ -255,7 +256,7 @@ class NewBuyFragment :
     override fun navigateToMoonpay(
         amount: String,
         selectedToken: Token,
-        selectedCurrency: BuyCurrency.Currency,
+        selectedCurrency: FiatCurrency,
         paymentMethod: String?
     ) {
         val solSymbol = Constants.SOL_SYMBOL.lowercase()
@@ -265,7 +266,7 @@ class NewBuyFragment :
             amount = amount,
             walletAddress = tokenKeyProvider.publicKey,
             tokenSymbol = tokenSymbol,
-            currencyCode = selectedCurrency.code.lowercase(),
+            currencyCode = selectedCurrency.abbriviation.lowercase(),
             paymentMethod = paymentMethod
         )
         try {
