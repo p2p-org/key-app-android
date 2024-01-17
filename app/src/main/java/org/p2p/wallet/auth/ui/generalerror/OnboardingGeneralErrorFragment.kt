@@ -139,6 +139,8 @@ class OnboardingGeneralErrorFragment :
             state.errorCode
         )
         with(buttonRestoreByGoogle) {
+            // hide intercom button for now
+            isVisible = false
             setText(R.string.onboarding_general_error_bug_report_button_title)
             setIconResource(R.drawable.ic_caution)
             setOnClickListener { IntercomService.showMessenger() }
