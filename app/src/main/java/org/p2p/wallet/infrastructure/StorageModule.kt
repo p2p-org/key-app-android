@@ -68,7 +68,7 @@ object StorageModule {
             SecureStorageContract::class
         factory { AccountStorage(get(named(PREFS_ACCOUNT))) } bind
             AccountStorageContract::class
-        single { JupiterSwapStorage(androidPreferences(PREFS_SWAP), gson = get()) } bind
+        single { JupiterSwapStorage(androidPreferences(PREFS_SWAP),) } bind
             JupiterSwapStorageContract::class
         factory { StrigaStorage(get(named(PREFS_STRIGA))) } bind
             StrigaStorageContract::class

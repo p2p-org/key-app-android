@@ -2,8 +2,8 @@ package org.p2p.wallet.jupiter.statemanager.token_selector
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import org.p2p.core.token.Token
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -18,14 +18,12 @@ class PreinstallTokenASelector(
 ) : SwapInitialTokenSelector {
 
     override suspend fun getTokenPair(): Pair<SwapTokenModel, SwapTokenModel> = withContext(dispatchers.io) {
-        val jupiterTokensJob = async { jupiterTokensRepository.getTokens() }
         val userTokensJob = async { tokenServiceCoordinator.getUserTokens() }
-        val jupiterTokens = jupiterTokensJob.await()
         val userTokens = userTokensJob.await()
 
         val tokenA: SwapTokenModel = SwapTokenModel.UserToken(preinstallTokenA)
         val tokenB: SwapTokenModel = getTokenB(
-            jupiterTokens = jupiterTokens,
+            jupiterTokensRepository = jupiterTokensRepository,
             userTokens = userTokens,
             preferSol = !preinstallTokenA.isSOL,
             savedSwapTokenB = savedSelectedSwapTokenStorage.savedTokenBMint

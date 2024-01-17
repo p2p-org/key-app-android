@@ -2,13 +2,13 @@ package org.p2p.wallet.jupiter.interactor.model
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.USDC_SYMBOL
 import org.p2p.core.utils.Constants.USDT_SYMBOL
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.crypto.toBase58Instance
 
 sealed interface SwapTokenModel {
 
@@ -20,7 +20,7 @@ sealed interface SwapTokenModel {
 
     fun isStableCoin(): Boolean = tokenSymbol == USDC_SYMBOL || tokenSymbol == USDT_SYMBOL
 
-    fun isSol(): Boolean = mintAddress.base58Value == WRAPPED_SOL_MINT
+    fun isWrappedSol(): Boolean = mintAddress.base58Value == WRAPPED_SOL_MINT
 
     fun equalsByMint(other: SwapTokenModel?): Boolean = this.mintAddress == other?.mintAddress
 

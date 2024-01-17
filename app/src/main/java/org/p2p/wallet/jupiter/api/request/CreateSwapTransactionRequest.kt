@@ -1,9 +1,10 @@
 package org.p2p.wallet.jupiter.api.request
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMode
 import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapMode
 
+@Deprecated("Old v4 swap logic")
 data class CreateSwapTransactionRequest(
     @SerializedName("route")
     val route: SwapRouteRequest,
@@ -11,6 +12,7 @@ data class CreateSwapTransactionRequest(
     val userPublicKey: Base58String
 )
 
+@Deprecated("Old v4 swap logic")
 data class SwapRouteRequest(
     @SerializedName("inAmount")
     val inAmount: String,
@@ -40,6 +42,7 @@ data class SwapRouteRequest(
     val keyAppFees: KeyAppFees
 ) {
 
+    @Deprecated("Old v4 swap logic")
     data class MarketInfoRequest(
         @SerializedName("id")
         val id: String,
@@ -66,6 +69,7 @@ data class SwapRouteRequest(
         @SerializedName("platformFee")
         val platformFee: PlatformFeeRequest
     ) {
+        @Deprecated("Old v4 swap logic")
         data class LpFeeRequest(
             @SerializedName("amount")
             val amount: String,
@@ -74,7 +78,7 @@ data class SwapRouteRequest(
             @SerializedName("pct")
             val pct: Double
         )
-
+        @Deprecated("Old v4 swap logic")
         data class PlatformFeeRequest(
             @SerializedName("amount")
             val amountInLamports: String,
@@ -84,7 +88,7 @@ data class SwapRouteRequest(
             val pct: Double
         )
     }
-
+    @Deprecated("Old v4 swap logic")
     data class KeyAppFees(
         @SerializedName("fee")
         val fee: String,
@@ -94,7 +98,7 @@ data class SwapRouteRequest(
         val hash: String
     )
 }
-
+@Deprecated("Old v4 swap logic")
 data class JupiterSwapFeesRequest(
     @SerializedName("signatureFee")
     val signatureFeeInLamports: Long,

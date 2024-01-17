@@ -273,15 +273,9 @@ open class JupiterSwapPresenterBaseTest {
 
     private fun initJupiterSwapTokenRepository(
         allTokens: List<JupiterSwapToken>,
-        tokenRate: (JupiterSwapToken) -> TokenServicePrice?,
         tokenRates: (List<JupiterSwapToken>) -> Map<Base58String, TokenServicePrice>,
     ) {
         coEvery { jupiterSwapTokensRepository.getTokens() } returns allTokens
-
-        coEvery { jupiterSwapTokensRepository.getTokenRate(any()) } answers {
-            val token: JupiterSwapToken = arg(0)
-            tokenRate(token)
-        }
         coEvery { tokenServiceRepository.loadPriceForTokens(any(), any()) } answers {
             val tokens: List<JupiterSwapToken> = arg(0)
             tokenRates(tokens)
@@ -377,11 +371,6 @@ open class JupiterSwapPresenterBaseTest {
         } answers {
             routesGetter(arg(0), arg(1))
         }
-        coEvery {
-            jupiterSwapRoutesRepository.getSwappableTokenMints(any())
-        } answers {
-            swappableTokenMintsGetter(arg(0))
-        }
     }
 
     private fun initSwapRateTickerManager() {
@@ -449,7 +438,6 @@ open class JupiterSwapPresenterBaseTest {
 
         initJupiterSwapTokenRepository(
             allTokens = data.jupiterSwapTokensRepoGetTokens,
-            tokenRate = data.jupiterSwapTokensRepoGetTokenRate,
             tokenRates = data.jupiterSwapTokensRepoGetTokensRate
         )
         initRpcAmountRepository()

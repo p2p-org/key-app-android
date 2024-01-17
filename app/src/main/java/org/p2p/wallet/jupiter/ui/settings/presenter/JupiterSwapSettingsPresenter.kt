@@ -4,8 +4,6 @@ import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -52,13 +50,8 @@ class JupiterSwapSettingsPresenter(
     override fun attach(view: JupiterSwapSettingsContract.View) {
         super.attach(view)
 
-        val jupiterTokens = flow { emit(swapTokensRepository.getTokens()) }
         stateManager.observe()
-            .combine(jupiterTokens) { state: SwapState, tokens: List<JupiterSwapToken> ->
-                this.jupiterTokens = tokens
-                state to tokens
-            }
-            .mapLatest { handleFeatureState(it.first, it.second) }
+            .mapLatest { handleFeatureState(it) }
             .launchIn(this)
 
         rateTickerManager.observe()
@@ -68,59 +61,53 @@ class JupiterSwapSettingsPresenter(
         stateManager.resume()
     }
 
-    private suspend fun handleFeatureState(state: SwapState, tokens: List<JupiterSwapToken>) {
+    private suspend fun handleFeatureState(state: SwapState) {
         featureState = state
         if (isSelectedCustom == null) {
             isSelectedCustom = state.getCurrentSlippage() is Slippage.Custom
         }
-        val contentList = getContentListByFeatureState(state, tokens)
+        val contentList = getContentListByFeatureState(state)
         currentContentList = contentList
         view?.bindSettingsList(currentContentList)
+        val jupiterSolToken = swapTokensRepository.requireWrappedSol()
         when (state) {
             is SwapState.LoadingRoutes -> {
                 rateTickerManager.handleRoutesLoading(state)
             }
             is SwapState.SwapLoaded -> {
                 rateTickerManager.handleJupiterRates(state)
-                val solToken = tokens.firstOrNull { it.isSol() }
+                val solToken = swapTokensRepository.requireWrappedSol()
                 currentContentList = contentMapper.mapForSwapLoadedState(
                     slippage = state.slippage,
                     route = state.route,
-                    jupiterTokens = tokens,
                     tokenBAmount = state.amountTokenB,
                     tokenB = state.tokenB,
                     solTokenForFee = solToken,
                 )
             }
             is SwapState.LoadingTransaction -> {
-                val solToken = tokens.firstOrNull { it.isSol() }
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     route = state.route,
-                    jupiterTokens = tokens,
                     tokenB = state.tokenB,
-                    solTokenForFee = solToken,
+                    solTokenForFee = jupiterSolToken,
                 )
             }
             is SwapState.RoutesLoaded -> {
-                val solToken = tokens.firstOrNull { it.isSol() }
                 rateTickerManager.handleJupiterRates(state)
                 currentContentList = contentMapper.mapForLoadingTransactionState(
                     slippage = state.slippage,
                     route = state.route,
-                    jupiterTokens = tokens,
                     tokenB = state.tokenB,
-                    solTokenForFee = solToken,
+                    solTokenForFee = jupiterSolToken,
                 )
             }
             is SwapState.SwapException -> {
                 val previousState = state.previousFeatureState
                 if (previousState is SwapState.RoutesLoaded) {
-                    val solToken = tokens.firstOrNull(JupiterSwapToken::isSol)
                     currentContentList = contentMapper.mapForRoutesLoadedState(
                         state = previousState,
-                        jupiterTokens = tokens,
-                        solTokenForFee = solToken,
+                        solTokenForFee = jupiterSolToken,
                         tokenBAmount = previousState.amountTokenB
                     )
                 } else {
@@ -223,7 +210,6 @@ class JupiterSwapSettingsPresenter(
 
     private fun getContentListByFeatureState(
         state: SwapState,
-        tokens: List<JupiterSwapToken>
     ): List<AnyCellItem> {
         return when (state) {
             SwapState.InitialLoading -> {
@@ -242,7 +228,7 @@ class JupiterSwapSettingsPresenter(
                 loadingMapper.mapLoadingList()
             }
             is SwapState.SwapException -> {
-                getContentListByFeatureState(state.previousFeatureState, tokens)
+                getContentListByFeatureState(state.previousFeatureState)
             }
         }
     }

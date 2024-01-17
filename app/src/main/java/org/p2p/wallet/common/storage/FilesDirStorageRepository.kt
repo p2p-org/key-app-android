@@ -43,7 +43,6 @@ class FilesDirStorageRepository(
         }
     }
 
-    // TODO: return optional InputStream instead of big raw string
     override suspend fun readJsonFile(filePrefix: String): ExternalFile? = withContext(dispatchers.io) {
         val filesDirectory = context.filesDir
         val file = filesDirectory.listFiles { file ->
@@ -89,6 +88,25 @@ class FilesDirStorageRepository(
                 Timber.e(e, "Error reading json file: $filePrefix")
                 null
             }
+        }
+    }
+
+    override suspend fun deleteJsonFile(filePrefix: String): Unit = withContext(dispatchers.io) {
+        val filesDirectory = context.filesDir
+        val file = filesDirectory.listFiles { file ->
+            file.name.startsWith(filePrefix)
+        }
+            ?.firstOrNull()
+
+        if (file == null || !file.exists()) {
+            Timber.i("Error deleting json file: $filePrefix - file does not exist")
+            return@withContext
+        }
+
+        try {
+            context.deleteFile(file.name)
+        } catch (e: Throwable) {
+            Timber.e(e, "Error deleting json file: $filePrefix")
         }
     }
 }

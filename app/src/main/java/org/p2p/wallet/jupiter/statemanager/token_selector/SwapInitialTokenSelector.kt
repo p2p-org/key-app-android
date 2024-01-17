@@ -2,9 +2,8 @@ package org.p2p.wallet.jupiter.statemanager.token_selector
 
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
 data class SwapInitialTokensData(
     val token: Token.Active?,
@@ -20,8 +19,8 @@ interface SwapInitialTokenSelector {
 
     suspend fun getTokenPair(): Pair<SwapTokenModel, SwapTokenModel>
 
-    fun getTokenB(
-        jupiterTokens: List<JupiterSwapToken>,
+    suspend fun getTokenB(
+        jupiterTokensRepository: JupiterSwapTokensRepository,
         userTokens: List<Token.Active>,
         preferSol: Boolean,
         savedSwapTokenB: Base58String?
@@ -29,7 +28,7 @@ interface SwapInitialTokenSelector {
         return when {
             savedSwapTokenB != null -> {
                 val savedSelectedUserToken = userTokens.firstOrNull { it.mintAddress == savedSwapTokenB.base58Value }
-                val savedSelectedJupiterToken = jupiterTokens.first { it.tokenMint == savedSwapTokenB }
+                val savedSelectedJupiterToken = jupiterTokensRepository.requireTokenByMint(savedSwapTokenB)
                 if (savedSelectedUserToken != null) {
                     SwapTokenModel.UserToken(savedSelectedUserToken)
                 } else {
@@ -38,7 +37,7 @@ interface SwapInitialTokenSelector {
             }
             preferSol -> {
                 val userSol = userTokens.firstOrNull { it.isSOL }
-                val jupiterSol = jupiterTokens.first { it.tokenMint.base58Value == Constants.WRAPPED_SOL_MINT }
+                val jupiterSol = jupiterTokensRepository.requireWrappedSol()
                 if (userSol != null) {
                     SwapTokenModel.UserToken(userSol)
                 } else {
@@ -47,7 +46,7 @@ interface SwapInitialTokenSelector {
             }
             else -> {
                 val userUsdc = userTokens.firstOrNull { it.isUSDC }
-                val jupiterUsdc = jupiterTokens.first { it.tokenSymbol == Constants.USDC_SYMBOL }
+                val jupiterUsdc = jupiterTokensRepository.requireUsdc()
                 if (userUsdc != null) {
                     SwapTokenModel.UserToken(userUsdc)
                 } else {
