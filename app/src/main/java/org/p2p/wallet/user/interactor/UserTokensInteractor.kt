@@ -150,6 +150,6 @@ class UserTokensInteractor(
         map { newToken ->
             // saving visibility state which user could change by this moment
             val oldToken = cachedTokens.find { oldTokens -> oldTokens.publicKey == newToken.publicKey }
-            newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility )
+            newToken.copy(visibility = oldToken?.visibility ?: newToken.visibility)
         }
 }
