@@ -105,6 +105,7 @@ class SwapWidgetMapper {
             availableAmount = availableAmount(token),
             balance = balance(token),
             currencyName = tokenName(token),
+            tokenUrl = token.iconUrl,
             amount = tokenAmount(token, tokenAmount),
             fiatAmount = null,
             amountMaxDecimals = token.decimals,
@@ -128,6 +129,7 @@ class SwapWidgetMapper {
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
             availableAmount = null,
+            tokenUrl = token.iconUrl,
             balance = balance(token),
             currencyName = tokenName(token),
             amount = tokenAmount(token, tokenAmount),
@@ -136,9 +138,7 @@ class SwapWidgetMapper {
         )
     }
 
-    fun mapTokenBLoading(
-        token: SwapTokenModel,
-    ): SwapWidgetModel.Content =
+    fun mapTokenBLoading(token: SwapTokenModel): SwapWidgetModel.Content =
         SwapWidgetModel.Content(
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),

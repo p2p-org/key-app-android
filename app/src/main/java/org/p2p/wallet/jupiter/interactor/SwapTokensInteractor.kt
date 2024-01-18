@@ -15,15 +15,17 @@ class SwapTokensInteractor(
 ) {
     suspend fun getCurrentTokenA(): SwapTokenModel {
         return swapStateManager.getStateValue { state ->
-            val (tokenA, _) = jupiterSwapInteractor.getSwapTokenPair(state)
-            tokenA ?: error("Illegal swap state, can't find selected token A for the list: $state")
+            requireNotNull(jupiterSwapInteractor.getSwapTokenPair(state)?.first) {
+                "Illegal swap state, can't find selected token A for the list: $state"
+            }
         }
     }
 
     suspend fun getCurrentTokenB(): SwapTokenModel {
         return swapStateManager.getStateValue { state ->
-            val (_, tokenB) = jupiterSwapInteractor.getSwapTokenPair(state)
-            tokenB ?: error("Illegal swap state, can't find selected token B for the list: $state")
+            requireNotNull(jupiterSwapInteractor.getSwapTokenPair(state)?.second) {
+                "Illegal swap state, can't find selected token B for the list: $state"
+            }
         }
     }
 

@@ -13,6 +13,9 @@ import android.util.TypedValue
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import android.widget.TextView
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.emptyString
@@ -31,12 +34,14 @@ import org.p2p.wallet.databinding.WidgetSwapBinding
 class SwapWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : ConstraintLayout(context, attrs) {
+) : ConstraintLayout(context, attrs), KoinComponent {
 
     private val binding = inflateViewBinding<WidgetSwapBinding>()
     private val initInputType: Int
     private var internalOnAmountChanged: ((newAmount: String) -> Unit)? = null
     private var currentAmountCell: TextViewCellModel? = null
+    private val glideManager: GlideManager by inject()
+
     var onAmountChanged: (newAmount: String) -> Unit = {}
     var onAllAmountClick: () -> Unit = {}
     var onChangeTokenClick: () -> Unit = {}
@@ -128,6 +133,9 @@ class SwapWidget @JvmOverloads constructor(
         textViewCurrencyName.setOnClickListener { onChangeTokenClick() }
         textViewChangeCurrency.setOnClickListener { onChangeTokenClick() }
         textViewCurrencyName.bindOrGone(model.currencyName)
+
+        glideManager.load(imageViewTokenIcon, model.tokenUrl)
+
         if (model.amount is TextViewCellModel.Skeleton) {
             bindLoadingInput(model.amount)
         } else {

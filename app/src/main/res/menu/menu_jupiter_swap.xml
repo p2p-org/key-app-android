@@ -8,4 +8,11 @@
         android:iconTint="@color/icons_night"
         android:title="@string/main_swap_slippage"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/shareMenuItem"
+        android:icon="@drawable/ic_share_blue"
+        android:iconTint="@color/icons_night"
+        android:title="@string/common_share"
+        app:showAsAction="always" />
 </menu>
