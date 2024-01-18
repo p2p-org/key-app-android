@@ -58,6 +58,7 @@ import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
+import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetTokenFormatter
 import org.p2p.wallet.jupiter.ui.routes.SwapSelectRoutesMapper
 import org.p2p.wallet.jupiter.ui.settings.JupiterSwapSettingsContract
 import org.p2p.wallet.jupiter.ui.settings.presenter.JupiterSwapFeeBuilder
@@ -106,6 +107,7 @@ object JupiterSwapModule : InjectionModule {
         factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
         factoryOf(::SwapWidgetMapper)
+        factoryOf(::SwapWidgetTokenFormatter)
         factoryOf(::SwapButtonMapper)
         factoryOf(::SwapRateTickerMapper)
 

@@ -597,15 +597,15 @@ class JupiterSwapPresenter(
                 )
 
             is SwapState.TokenAZero ->
-                widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null) to
-                    widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+                widgetMapper.mapTokenA(token = state.tokenA, enteredTokenAmount = null) to
+                    widgetMapper.mapTokenB(token = state.tokenB, enteredTokenAmount = null)
 
             is SwapState.TokenANotZero ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
                     token = state.tokenA,
                     tokenAmount = state.amountTokenA
-                ) to widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+                ) to widgetMapper.mapTokenB(token = state.tokenB, enteredTokenAmount = null)
 
             is SwapState.SwapException ->
                 mapWidgetStates(state.previousFeatureState)

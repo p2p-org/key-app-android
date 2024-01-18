@@ -2,6 +2,7 @@ package org.p2p.wallet.jupiter.statemanager.token_selector
 
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
+import org.p2p.core.token.findSolOrNull
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
@@ -36,7 +37,7 @@ interface SwapInitialTokenSelector {
                 }
             }
             preferSol -> {
-                val userSol = userTokens.firstOrNull { it.isSOL }
+                val userSol = userTokens.findSolOrNull()
                 val jupiterSol = jupiterTokensRepository.requireWrappedSol()
                 if (userSol != null) {
                     SwapTokenModel.UserToken(userSol)
