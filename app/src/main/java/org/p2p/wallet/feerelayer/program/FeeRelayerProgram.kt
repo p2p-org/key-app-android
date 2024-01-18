@@ -206,7 +206,6 @@ object FeeRelayerProgram {
         }
     }
 
-    // todo: check program id !!
     fun topUpSwapDirectInstruction(
         feeRelayerProgramId: PublicKey,
         feePayer: PublicKey,
@@ -259,7 +258,6 @@ object FeeRelayerProgram {
         return TransactionInstruction(feeRelayerProgramId, keys, bos.toByteArray())
     }
 
-    // todo: check program id !!
     fun topUpWithSPLSwapTransitiveInstruction(
         feeRelayerProgramId: PublicKey,
         feePayer: PublicKey,
@@ -356,9 +354,8 @@ object FeeRelayerProgram {
         return TransactionInstruction(programId, keys, bos.toByteArray())
     }
 
-    // todo: check program id !!
     fun createTransitTokenAccountInstruction(
-        programId: PublicKey,
+        feeRelayerProgramId: PublicKey,
         feePayer: PublicKey,
         userAuthority: PublicKey,
         transitTokenAccount: PublicKey,
@@ -377,10 +374,9 @@ object FeeRelayerProgram {
         val bos = ByteArrayOutputStream()
         bos.write(3)
 
-        return TransactionInstruction(programId, keys, bos.toByteArray())
+        return TransactionInstruction(feeRelayerProgramId, keys, bos.toByteArray())
     }
 
-    // todo: check program id !!
     private fun splSwapTransitiveInstruction(
         programId: PublicKey,
         feePayer: PublicKey,
