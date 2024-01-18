@@ -165,14 +165,31 @@ class SwapDeeplinkHandler(
     }
 
     private suspend fun findToken(inputMintOrSymbol: String): SwapTokenSearchResult? {
-        if (inputMintOrSymbol == Constants.SOL_SYMBOL) {
-            return swapTokensRepository.findTokenByMint(Constants.WRAPPED_SOL_MINT.toBase58Instance())
-                ?.let(::TokenFoundBySymbol)
+        // search for popular tokens first, there are specific rules for that
+        val popularToken = findBySymbolInPopularTokens(inputMintOrSymbol)
+        if (popularToken != null) {
+            return popularToken
         }
 
         return swapTokensRepository.findTokenBySymbol(inputMintOrSymbol)
             ?.let(::TokenFoundBySymbol)
             ?: swapTokensRepository.findTokenByMint(inputMintOrSymbol.toBase58Instance())
                 ?.let(::TokenFoundByMint)
+    }
+
+    /**
+     * Search most popular and secure tokens separately
+     * because sometime SOL symbol in query can lead to different token instead of SOLANA
+     */
+    private suspend fun findBySymbolInPopularTokens(inputMintOrSymbol: String): TokenFoundBySymbol? {
+        return when (inputMintOrSymbol) {
+            Constants.SOL_SYMBOL -> Constants.WRAPPED_SOL_MINT.toBase58Instance()
+            Constants.USDT_SYMBOL -> Constants.USDT_MINT.toBase58Instance()
+            Constants.USDC_SYMBOL -> Constants.USDC_SYMBOL.toBase58Instance()
+            // is not popular
+            else -> null
+        }
+            ?.let { swapTokensRepository.findTokenByMint(it) }
+            ?.let(::TokenFoundBySymbol)
     }
 }
