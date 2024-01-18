@@ -16,7 +16,7 @@ object AccountInfoTokenExtensionsMapper {
 
     fun AccountInfoParsed.parseTokenExtensions(): TokenExtensionsMap {
         val gson = GsonProvider().provide()
-        val extensions = data.parsed.info.extensions?.associateBy { it.name } ?: emptyMap()
+        val extensions = data.parsed.info.extensions?.associateBy { it.name }.orEmpty()
 
         return extensions.mapNotNull {
             if (it.value.state == null) return@mapNotNull null
