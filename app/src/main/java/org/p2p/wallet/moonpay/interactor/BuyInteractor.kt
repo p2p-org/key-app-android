@@ -60,14 +60,14 @@ class BuyInteractor(
         baseCurrencyCode: FiatCurrency,
         paymentMethod: String,
     ): MoonpayBuyResult {
-        val minBuyAmount = getMinAmountForPair(baseCurrencyCode.abbriviation, tokenToBuy.tokenSymbol)
+        val minBuyAmount = getMinAmountForPair(baseCurrencyCode.abbreviation, tokenToBuy.tokenSymbol)
 
         return try {
             val response = moonpayRepository.getBuyCurrencyData(
                 baseCurrencyAmount = baseCurrencyAmount,
                 quoteCurrencyAmount = quoteCurrencyAmount,
                 tokenToBuy = tokenToBuy,
-                baseCurrencyCode = baseCurrencyCode.abbriviation,
+                baseCurrencyCode = baseCurrencyCode.abbreviation,
                 paymentMethod = paymentMethod
             )
 
@@ -115,7 +115,7 @@ class BuyInteractor(
                 baseCurrencyAmount = CURRENCY_AMOUNT_FOR_PRICE_REQUEST,
                 quoteCurrencyAmount = null,
                 tokenToBuy = token,
-                baseCurrencyCode = currency.abbriviation.lowercase(),
+                baseCurrencyCode = currency.abbreviation.lowercase(),
                 paymentMethod = DEFAULT_PAYMENT_TYPE
             )
             val result = MoonpayBuyQuote(

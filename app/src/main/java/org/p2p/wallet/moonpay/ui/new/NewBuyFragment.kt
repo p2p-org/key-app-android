@@ -122,7 +122,7 @@ class NewBuyFragment :
 
             result.containsKey(KEY_RESULT_CURRENCY) -> {
                 result.getSerializableCompat<FiatCurrency>(KEY_RESULT_CURRENCY)?.let {
-                    setCurrencyCode(it.abbriviation)
+                    setCurrencyCode(it.abbreviation)
                     presenter.setCurrency(it)
                 }
             }
@@ -144,7 +144,7 @@ class NewBuyFragment :
 
         amountsView.apply {
             tokenSymbol = this@NewBuyFragment.token.tokenSymbol
-            currencyCode = FiatCurrency.USD.abbriviation.uppercase()
+            currencyCode = FiatCurrency.USD.abbreviation.uppercase()
 
             setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
             setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
@@ -266,7 +266,7 @@ class NewBuyFragment :
             amount = amount,
             walletAddress = tokenKeyProvider.publicKey,
             tokenSymbol = tokenSymbol,
-            currencyCode = selectedCurrency.abbriviation.lowercase(),
+            currencyCode = selectedCurrency.abbreviation.lowercase(),
             paymentMethod = paymentMethod
         )
         try {

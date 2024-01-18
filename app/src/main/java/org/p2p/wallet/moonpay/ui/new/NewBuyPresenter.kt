@@ -120,7 +120,7 @@ class NewBuyPresenter(
             validatePaymentMethod()
 
             if (!fiatToken.isNullOrBlank()) {
-                currenciesToSelect.firstOrNull { it.abbriviation.lowercase() == fiatToken.lowercase() }
+                currenciesToSelect.firstOrNull { it.abbreviation.lowercase() == fiatToken.lowercase() }
                     ?.also { selectCurrency(it) }
             }
 
@@ -181,7 +181,7 @@ class NewBuyPresenter(
         buyInteractor.getQuotesByCurrency(selectedCurrency).forEach { quote ->
             tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
                 it.rate = quote.price
-                it.currency = quote.currency.abbriviation.uppercase()
+                it.currency = quote.currency.abbreviation.uppercase()
             }
         }
         view?.showTokensToBuy(selectedToken, tokensToBuy)
@@ -205,13 +205,13 @@ class NewBuyPresenter(
     }
 
     private fun selectCurrency(currency: FiatCurrency) {
-        view?.setCurrencyCode(currency.abbriviation)
+        view?.setCurrencyCode(currency.abbreviation)
         setCurrency(currency, byUser = false)
     }
 
     override fun setCurrency(currency: FiatCurrency, byUser: Boolean) {
         if (byUser) {
-            buyAnalytics.logBuyCurrencyChanged(selectedCurrency.abbriviation, currency.abbriviation)
+            buyAnalytics.logBuyCurrencyChanged(selectedCurrency.abbreviation, currency.abbreviation)
         }
         selectedCurrency = currency
 
@@ -230,7 +230,7 @@ class NewBuyPresenter(
     }
 
     private fun isValidCurrencyForPay(): Boolean {
-        val selectedCurrencyCode = selectedCurrency.abbriviation
+        val selectedCurrencyCode = selectedCurrency.abbreviation
         val currentPaymentMethod = selectedPaymentMethod ?: return false
 
         if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
