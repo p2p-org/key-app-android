@@ -32,9 +32,10 @@ class UserTokensRemoteRepository(
     private suspend fun mapAccountsToTokens(publicKey: PublicKey, accounts: List<Account>): List<Token.Active> {
         val tokens = accounts.mapNotNull { token ->
             val mintAddress = token.account.data.parsed.info.mint
+            val programId = token.account.owner
 
             if (mintAddress == Constants.WRAPPED_SOL_MINT) {
-                // Hiding Wrapped Sol account because we are adding native SOL lower
+                // Hiding Wrapped Sol account because we are adding native SOL below
                 return@mapNotNull null
             }
 
@@ -45,6 +46,7 @@ class UserTokensRemoteRepository(
                 networkChain = TokenServiceNetwork.SOLANA
             )
             TokenConverter.fromNetwork(
+                programId = programId,
                 account = token,
                 tokenMetadata = tokenData,
                 price = tokenPrice

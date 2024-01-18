@@ -1,5 +1,9 @@
 package org.p2p.wallet.feerelayer.program
 
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.math.BigInteger
+import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Sysvar
@@ -8,11 +12,7 @@ import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.utils.ByteUtils
 import org.p2p.wallet.feerelayer.model.SwapData
-import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.wallet.utils.toPublicKey
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.math.BigInteger
 
 object FeeRelayerProgram {
 
@@ -355,7 +355,7 @@ object FeeRelayerProgram {
     }
 
     fun createTransitTokenAccountInstruction(
-        programId: PublicKey,
+        feeRelayerProgramId: PublicKey,
         feePayer: PublicKey,
         userAuthority: PublicKey,
         transitTokenAccount: PublicKey,
@@ -374,7 +374,7 @@ object FeeRelayerProgram {
         val bos = ByteArrayOutputStream()
         bos.write(3)
 
-        return TransactionInstruction(programId, keys, bos.toByteArray())
+        return TransactionInstruction(feeRelayerProgramId, keys, bos.toByteArray())
     }
 
     private fun splSwapTransitiveInstruction(

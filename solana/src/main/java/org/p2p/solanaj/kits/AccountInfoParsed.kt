@@ -20,6 +20,11 @@ data class AccountInfoParsed(
 ) {
 
     var address: String? = null
+
+    data class RootValue(
+        @SerializedName("value")
+        val value: AccountInfoParsed
+    )
 }
 
 data class Info(
@@ -42,7 +47,21 @@ data class Info(
     val mint: String,
 
     @SerializedName("tokenAmount")
-    val tokenAmount: TokenAmount
+    val tokenAmount: TokenAmount,
+
+    // !! upd: Jan 15, 2024 !! //
+
+    @SerializedName("isNative")
+    val isNative: Boolean,
+
+    @SerializedName("owner")
+    val owner: String,
+
+    @SerializedName("state")
+    val state: String,
+
+    @SerializedName("extensions")
+    val extensions: List<AccountInfoTokenExtension>? = emptyList()
 )
 
 data class Parsed(

@@ -1,6 +1,7 @@
 package org.p2p.wallet.rpc.interactor
 
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -14,10 +15,14 @@ class CloseAccountInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun close(addressToClose: String): String {
+    // todo: check programId !!
+    suspend fun close(
+        addressToClose: String,
+        programId: PublicKey = TokenProgram.PROGRAM_ID,
+    ): String {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         val instruction = TokenProgram.closeAccountInstruction(
-            TokenProgram.PROGRAM_ID,
+            programId,
             addressToClose.toPublicKey(),
             owner,
             owner

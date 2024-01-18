@@ -34,12 +34,13 @@ object MainContainerModule : InjectionModule {
                 addressInteractor = get(),
                 feeRelayerInteractor = get(),
                 feeRelayerAccountInteractor = get(),
-                feeRelayerTopUpInteractor = get(),
                 orcaInfoInteractor = get(),
                 amountRepository = get(),
                 transactionInteractor = get(),
                 tokenKeyProvider = get(),
-                dispatchers = get()
+                dispatchers = get(),
+                sendServiceRepository = get(),
+                getFeesInPayingTokenUseCase = get(),
             )
         }
         factoryOf(::SearchInteractor)

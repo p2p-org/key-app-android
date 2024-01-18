@@ -25,6 +25,9 @@ data class TokenEntity(
     @ColumnInfo(name = COLUMN_MINT_ADDRESS)
     val mintAddress: String,
 
+    @ColumnInfo(name = COLUMN_PROGRAM_ID)
+    val programId: String? = null,
+
     @ColumnInfo(name = COLUMN_TOKEN_NAME)
     val tokenName: String,
 
@@ -58,6 +61,7 @@ data class TokenEntity(
         const val COLUMN_SYMBOL = "symbol"
         const val COLUMN_DECIMALS = "decimals"
         const val COLUMN_MINT_ADDRESS = "mint_address"
+        const val COLUMN_PROGRAM_ID = "program_id"
         const val COLUMN_TOKEN_NAME = "token_name"
         const val COLUMN_ICON_URL = "icon_url"
         const val COLUMN_PRICE = "price"

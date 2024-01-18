@@ -29,6 +29,7 @@ sealed class Token constructor(
     open val tokenSymbol: String,
     open val decimals: Int,
     open val mintAddress: String,
+    open val programId: String? = null,
     open val tokenName: String,
     open val iconUrl: String?,
     open val isWrapped: Boolean,
@@ -48,6 +49,7 @@ sealed class Token constructor(
         override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
+        override val programId: String?,
         override val tokenName: String,
         override val iconUrl: String?,
         override val isWrapped: Boolean,
@@ -58,6 +60,7 @@ sealed class Token constructor(
         tokenSymbol = tokenSymbol,
         decimals = decimals,
         mintAddress = mintAddress,
+        programId = programId,
         tokenName = tokenName,
         iconUrl = iconUrl,
         isWrapped = isWrapped,
@@ -199,6 +202,10 @@ sealed class Token constructor(
         get() = mintAddress != WRAPPED_SOL_MINT
 
     @IgnoredOnParcel
+    val isToken2022: Boolean
+        get() = programId == Constants.SOLANA_TOKEN_2022_PROGRAM_ID
+
+    @IgnoredOnParcel
     val isRenBTC: Boolean
         get() = tokenSymbol == REN_BTC_SYMBOL
 
@@ -246,6 +253,7 @@ sealed class Token constructor(
                 tokenSymbol = tokenMetadata.symbol,
                 decimals = tokenMetadata.decimals,
                 mintAddress = tokenMetadata.mintAddress,
+                programId = null,
                 tokenName = SOL_NAME,
                 iconUrl = tokenMetadata.iconUrl,
                 totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },

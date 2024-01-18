@@ -22,13 +22,13 @@ import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.send.model.SEND_LINK_FORMAT
-import org.p2p.wallet.send.model.TemporaryAccount
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
+import org.p2p.wallet.send.model.SEND_LINK_FORMAT
+import org.p2p.wallet.send.model.TemporaryAccount
 import org.p2p.wallet.svl.model.SendLinkGenerator
 import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.user.interactor.UserTokensInteractor
@@ -79,6 +79,7 @@ class ReceiveViaLinkInteractor(
         } ?: return checkSolBalance(temporaryAccount)
 
         val info = activeAccount.account.data.parsed.info
+        val programId = activeAccount.account.owner
         val tokenData = userLocalRepository.findTokenData(info.mint) ?: run {
             Timber.e(ReceiveViaLinkError("No token data found for mint ${info.mint}"))
             return TemporaryAccountState.ParsingFailed
@@ -87,6 +88,7 @@ class ReceiveViaLinkInteractor(
         val tokenPrice = fetchPriceForToken(tokenData.mintAddress)
 
         val token = TokenConverter.fromNetwork(
+            programId = programId,
             account = activeAccount,
             tokenMetadata = tokenData,
             price = tokenPrice

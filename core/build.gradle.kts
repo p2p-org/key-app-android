@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("org.p2p.wallet.android.library")
     id("kotlin-kapt")

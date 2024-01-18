@@ -7,6 +7,7 @@ import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.crypto.toBase64Instance
+import org.p2p.solanaj.core.toBase58Instance
 import org.p2p.solanaj.model.types.RpcNotificationResultResponse
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
@@ -17,8 +18,8 @@ private const val TAG = "TokensBalanceUpdateManager"
 
 /**
  * This handler receives two types of updates:
- * 1. SPL Token balance update
- * 2. A New SPL Token receive
+ * 1. SPL/Token2022 Token balance update
+ * 2. A New SPL/Token2022 Token receive
  *
  * In both cases we update or create a new user token by getting metadata, price and other things.
  * */
@@ -38,13 +39,17 @@ class SplTokenProgramUpdateHandler(
         val updatedTokenData = TokenProgram.AccountInfoData.decode(programData.decodeToBytes())
 
         val amount = updatedTokenData.amount
+        val programId = updatedTokenData.owner.toBase58Instance()
         userTokensInteractor.updateOrCreateUserToken(
+            programId = programId,
             newBalanceLamports = amount,
             mintAddress = updatedTokenData.mint.toBase58().toBase58Instance(),
             publicKey = response.accountPublicKey.toBase58Instance()
         )
 
-        Timber.tag(TAG).d("SPL Token data received, lamports: $amount, mint: ${updatedTokenData.mint}")
+        Timber.tag(TAG).d(
+            "SPL Token data received, lamports: $amount, mint: ${updatedTokenData.mint}, programId: $programId"
+        )
     }
 }
 

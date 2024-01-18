@@ -6,9 +6,10 @@ import java.nio.ByteBuffer
 import org.p2p.solanaj.utils.ShortvecEncoding
 import org.p2p.solanaj.utils.TweetNaclFast
 
-private const val SIGNATURE_LENGTH = 64
-
 class Transaction {
+    companion object {
+        const val SIGNATURE_LENGTH = 64
+    }
 
     private val message: Message = Message()
     private val signatures = mutableListOf<Signature>()

@@ -1,8 +1,15 @@
 package org.p2p.wallet.rpc.repository.account
 
+import com.google.gson.JsonSyntaxException
 import timber.log.Timber
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import org.p2p.core.network.data.EmptyDataException
 import org.p2p.solanaj.core.PublicKey
+import org.p2p.solanaj.kits.AccountInfoParsed
 import org.p2p.solanaj.kits.MultipleAccountsInfo
 import org.p2p.solanaj.kits.Pool
 import org.p2p.solanaj.model.types.AccountInfo
@@ -17,6 +24,43 @@ import org.p2p.wallet.rpc.RpcConstants
 import org.p2p.wallet.rpc.api.RpcAccountApi
 
 class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRepository {
+
+    private val accountInfoParsedCache = mutableMapOf<String, AccountInfoParsed>()
+
+    override suspend fun getAccountInfoParsed(account: String, useCache: Boolean): AccountInfoParsed? {
+        if (useCache && accountInfoParsedCache.containsKey(account)) {
+            return accountInfoParsedCache[account]
+        }
+
+        try {
+            val params = listOf(
+                account,
+                RequestConfiguration(encoding = Encoding.JSON_PARSED.encoding)
+            )
+            val rpcRequest = RpcRequest("getAccountInfo", params)
+            val response = api.getAccountInfoParsed(rpcRequest)
+            return response.result.value
+        } catch (e: EmptyDataException) {
+            Timber.i("`getAccountInfo` responded with empty data, returning null")
+            return null
+        } catch (e: JsonSyntaxException) {
+            // todo: make RpcInterceptor handle this type of error
+            //      this happens when json parsed result is base64 empty string:
+            //      "data": [
+            //          "",
+            //          "base64"
+            //      ]
+            if (
+                e.message?.contains("result.value.data") == true &&
+                e.message?.contains("Expected BEGIN_OBJECT") == true
+            ) {
+                Timber.i("`getAccountInfo` responded with empty data, returning null")
+                return null
+            } else {
+                throw e
+            }
+        }
+    }
 
     override suspend fun getAccountInfo(account: String): AccountInfo? =
         try {
@@ -66,15 +110,15 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         emptyList()
     }
 
-    override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {
+    override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts = withContext(Dispatchers.IO) {
         require(owner.toBase58().isNotBlank()) { "Owner ID cannot be blank" }
 
         val programIds = listOf(
             TokenProgram.PROGRAM_ID,
-            TokenProgram.PROGRAM_ID_TOKEN2022
+            TokenProgram.TOKEN_2022_PROGRAM_ID
         )
 
-        val result = mutableListOf<TokenAccounts>()
+        val results = mutableListOf<Deferred<TokenAccounts>>()
         for (programId in programIds) {
             val programIdParam = HashMap<String, String>()
             programIdParam["programId"] = programId.toBase58()
@@ -91,10 +135,12 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
             )
 
             val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
-            result += api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result
+            results += async { api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result }
         }
 
-        return TokenAccounts(result.flatMap { it.accounts })
+        TokenAccounts(
+            accounts = results.awaitAll().flatMap { it.accounts }
+        )
     }
 
     override suspend fun getMultipleAccounts(publicKeys: List<PublicKey>): MultipleAccountsInfo {

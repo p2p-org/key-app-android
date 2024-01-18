@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
 import org.p2p.uikit.utils.toast
@@ -78,6 +79,8 @@ class NewSendDetailsBottomSheet :
             setRecipientAddress()
             setRecipientReceiveAmount()
             setTransactionFee()
+            setTransferFee()
+            setInterestBearingRate()
             setAccountCreation()
             setTotal()
         }
@@ -153,6 +156,34 @@ class NewSendDetailsBottomSheet :
                     setTextColor(colorMint)
                     getString(R.string.send_free_fee_format, state.feeLimit.remaining)
                 }
+            }
+        }
+    }
+
+    private fun DialogNewSendDetailsBinding.setTransferFee() {
+        if (state.transferFeePercent == null) return
+
+        with(layoutTransferFee) {
+            root.isVisible = true
+            imageViewIcon.setImageResource(R.drawable.ic_lightning)
+            textViewTitle.text = getString(R.string.send_transactions_details_transfer_fee)
+            textViewSubtitle.apply {
+                val percent = state.transferFeePercent!!.formatToken(2, exactDecimals = true)
+                text = "$percent%"
+            }
+        }
+    }
+
+    private fun DialogNewSendDetailsBinding.setInterestBearingRate() {
+        if (state.interestBearingPercent == null) return
+
+        with(layoutInterestBearing) {
+            root.isVisible = true
+            imageViewIcon.setImageResource(R.drawable.ic_lightning)
+            textViewTitle.text = getString(R.string.send_transactions_details_interest_bearing)
+            textViewSubtitle.apply {
+                val percent = state.interestBearingPercent!!.formatToken(2, exactDecimals = true)
+                text = "$percent%"
             }
         }
     }

@@ -9,6 +9,9 @@ enum class Encoding(
     @SerializedName("base64")
     BASE64("base64"),
 
+    @SerializedName("jsonParsed")
+    JSON_PARSED("jsonParsed"),
+
     @Deprecated("Slow for solana, use Base 64")
     @SerializedName("base58")
     BASE58("base58");

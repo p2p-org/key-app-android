@@ -16,6 +16,10 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
  * [SendSolanaFee] can be null only if total fees is Zero. (transaction fee and account creation fee)
  * */
 
+/**
+ * @param transferFeePercent percentage (e.g. 6.65)
+ * @param interestBearingPercent percentage (e.g. 6.65)
+ */
 @Parcelize
 class SendFeeTotal constructor(
     val currentAmount: BigDecimal,
@@ -25,7 +29,9 @@ class SendFeeTotal constructor(
     val sendFee: SendSolanaFee?,
     val feeLimit: TransactionFeeLimits,
     val sourceSymbol: String,
-    val recipientAddress: String
+    val recipientAddress: String,
+    val transferFeePercent: BigDecimal? = null,
+    val interestBearingPercent: BigDecimal? = null
 ) : Parcelable {
 
     fun getFeesInToken(isInputEmpty: Boolean): FeesStringFormat {

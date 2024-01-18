@@ -58,6 +58,7 @@ class UserTokensInteractor(
     }
 
     suspend fun updateOrCreateUserToken(
+        programId: Base58String,
         newBalanceLamports: BigInteger,
         mintAddress: Base58String,
         publicKey: Base58String
@@ -67,6 +68,7 @@ class UserTokensInteractor(
         val tokenToUpdate = if (splToken == null) {
             // User received a new SPL token and we need to create and save it
             createNewToken(
+                programId = programId,
                 mintAddress = mintAddress,
                 newBalanceLamports = newBalanceLamports,
                 accountPublicKey = publicKey
@@ -125,6 +127,7 @@ class UserTokensInteractor(
         userTokensLocalRepository.setTokenHidden(mintAddress, visibility)
 
     private suspend fun createNewToken(
+        programId: Base58String,
         mintAddress: Base58String,
         newBalanceLamports: BigInteger,
         accountPublicKey: Base58String
@@ -138,6 +141,7 @@ class UserTokensInteractor(
         )
 
         return TokenConverter.createToken(
+            programId = programId.base58Value,
             mintAddress = mintAddress.base58Value,
             totalLamports = newBalanceLamports,
             accountPublicKey = accountPublicKey.base58Value,

@@ -83,7 +83,8 @@ class NewSendPresenter(
     private val appScope: AppScope,
     sendModeProvider: SendModeProvider,
     private val historyInteractor: HistoryInteractor,
-    private val tokenServiceCoordinator: TokenServiceCoordinator
+    private val tokenServiceCoordinator: TokenServiceCoordinator,
+    private val sendFeeRelayerManager: SendFeeRelayerManager
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private val flow: NewSendAnalytics.AnalyticsSendFlow = if (openedFrom == SendOpenedFrom.SELL_FLOW) {
@@ -103,7 +104,6 @@ class NewSendPresenter(
         sendModeProvider = sendModeProvider,
         lessThenMinString = resources.getString(R.string.common_less_than_minimum)
     )
-    private val feeRelayerManager = SendFeeRelayerManager(sendInteractor, userInteractor)
 
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
@@ -140,10 +140,10 @@ class NewSendPresenter(
             view.setMainAmountLabel(mainSymbol)
         }
 
-        feeRelayerManager.onStateUpdated = { newState ->
+        sendFeeRelayerManager.onStateUpdated = { newState ->
             handleFeeRelayerStateUpdate(newState, view)
         }
-        feeRelayerManager.onFeeLoading = { loadingState ->
+        sendFeeRelayerManager.onFeeLoading = { loadingState ->
             when (loadingState) {
                 is FeeLoadingState.Instant -> view.showFeeViewLoading(isLoading = loadingState.isLoading)
                 is FeeLoadingState.Delayed -> view.showDelayedFeeViewLoading(isLoading = loadingState.isLoading)
@@ -167,7 +167,7 @@ class NewSendPresenter(
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            val currentState = feeRelayerManager.getState()
+            val currentState = sendFeeRelayerManager.getState()
             handleFeeRelayerStateUpdate(currentState, view)
         }
     }
@@ -239,9 +239,10 @@ class NewSendPresenter(
         view: NewSendContract.View
     ) {
         val sourceToken = requireToken()
-        val total = feeRelayerManager.buildTotalFee(
+        val total = sendFeeRelayerManager.buildTotalFee(
             sourceToken = sourceToken,
-            calculationMode = calculationMode
+            calculationMode = calculationMode,
+            tokenExtensions = feeRelayerState.tokenExtensions
         )
 
         val feesLabel = total.getFeesInToken(calculationMode.isCurrentInputEmpty()).format(resources)
@@ -297,7 +298,7 @@ class NewSendPresenter(
         view.setFeeLabel(resources.getString(R.string.send_fees))
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
 
-        feeRelayerManager.initialize(initialToken, solToken, recipientAddress)
+        sendFeeRelayerManager.initialize(initialToken, solToken, recipientAddress)
         executeSmartSelection(
             token = requireToken(),
             feePayerToken = requireToken(),
@@ -305,7 +306,7 @@ class NewSendPresenter(
             useCache = false
         )
 
-        updateButton(sourceToken = initialToken, feeRelayerState = feeRelayerManager.getState())
+        updateButton(sourceToken = initialToken, feeRelayerState = sendFeeRelayerManager.getState())
     }
 
     override fun onTokenClicked() {
@@ -320,7 +321,7 @@ class NewSendPresenter(
 
         showMaxButtonIfNeeded()
         view?.showFeeViewVisible(isVisible = true)
-        updateButton(requireToken(), feeRelayerManager.getState())
+        updateButton(requireToken(), sendFeeRelayerManager.getState())
 
         /*
          * Calculating if we can pay with current token instead of already selected fee payer token
@@ -369,7 +370,7 @@ class NewSendPresenter(
         calculationMode.updateInputAmount(amount)
         view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
-        updateButton(requireToken(), feeRelayerManager.getState())
+        updateButton(requireToken(), sendFeeRelayerManager.getState())
 
         newSendAnalytics.setMaxButtonClicked(isClicked = false)
 
@@ -426,7 +427,7 @@ class NewSendPresenter(
     }
 
     override fun onFeeInfoClicked() {
-        val currentState = feeRelayerManager.getState()
+        val currentState = sendFeeRelayerManager.getState()
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
@@ -434,9 +435,10 @@ class NewSendPresenter(
             newSendAnalytics.logFreeTransactionsClicked(flow)
             view?.showFreeTransactionsInfo()
         } else {
-            val total = feeRelayerManager.buildTotalFee(
+            val total = sendFeeRelayerManager.buildTotalFee(
                 sourceToken = requireToken(),
-                calculationMode = calculationMode
+                calculationMode = calculationMode,
+                tokenExtensions = currentState.tokenExtensions
             )
             view?.showTransactionDetails(total)
         }
@@ -468,9 +470,10 @@ class NewSendPresenter(
         // the internal id for controlling the transaction state
         val internalTransactionId = UUID.randomUUID().toString()
 
-        val total = feeRelayerManager.buildTotalFee(
+        val total = sendFeeRelayerManager.buildTotalFee(
             sourceToken = requireToken(),
-            calculationMode = calculationMode
+            calculationMode = calculationMode,
+            tokenExtensions = emptyMap()
         )
 
         appScope.launch {
@@ -491,7 +494,8 @@ class NewSendPresenter(
                 )
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+//                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
+                val result = sendInteractor.sendTransactionV2(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
 
                 tokenServiceCoordinator.refresh()
@@ -537,7 +541,7 @@ class NewSendPresenter(
     ) {
         feePayerJob?.cancel()
         feePayerJob = launch {
-            feeRelayerManager.executeSmartSelection(
+            sendFeeRelayerManager.executeSmartSelection(
                 sourceToken = token,
                 feePayerToken = feePayerToken,
                 strategy = strategy,
@@ -548,7 +552,7 @@ class NewSendPresenter(
     }
 
     private fun showMaxButtonIfNeeded() {
-        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(feeRelayerManager.getMinRentExemption())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(sendFeeRelayerManager.getMinRentExemption())
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
@@ -574,7 +578,7 @@ class NewSendPresenter(
             searchResult = recipientAddress,
             calculationMode = calculationMode,
             feeRelayerState = feeRelayerState,
-            minRentExemption = feeRelayerManager.getMinRentExemption(),
+            minRentExemption = sendFeeRelayerManager.getMinRentExemption(),
             resources = resources
         )
 
@@ -595,7 +599,7 @@ class NewSendPresenter(
 
     private fun buildDebugInfo(solanaFee: SendSolanaFee?) {
         launch {
-            val debugInfo = feeRelayerManager.buildDebugInfo(solanaFee)
+            val debugInfo = sendFeeRelayerManager.buildDebugInfo(solanaFee)
             view?.showDebugInfo(debugInfo)
         }
     }
@@ -607,7 +611,7 @@ class NewSendPresenter(
         token ?: throw SendFatalError("Token can't be null")
 
     private fun logSendClicked(token: Token.Active, amountInToken: String, amountInUsd: String) {
-        val solanaFee = (feeRelayerManager.getState() as? FeeRelayerState.UpdateFee)?.solanaFee
+        val solanaFee = (sendFeeRelayerManager.getState() as? FeeRelayerState.UpdateFee)?.solanaFee
         newSendAnalytics.logSendConfirmButtonClicked(
             tokenName = token.tokenName,
             amountInToken = amountInToken,
@@ -625,7 +629,7 @@ class NewSendPresenter(
         if (token == null) return
 
         launch {
-            val fee = feeRelayerManager.getState().getFee()
+            val fee = sendFeeRelayerManager.getState().getFee()
             val accountCreationFee = fee?.accountCreationFeeDecimals?.toPlainString()
             val transactionFee = fee?.transactionDecimals?.toPlainString()
             alertErrorsLogger.triggerSendAlarm(
