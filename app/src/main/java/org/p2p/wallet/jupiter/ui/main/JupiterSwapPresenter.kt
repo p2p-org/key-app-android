@@ -329,7 +329,7 @@ class JupiterSwapPresenter(
     override fun onShareClicked() {
         val tokenPair = currentFeatureState?.getTokensPair() ?: return
 
-        view?.showShareDialog(
+        view?.showSwapLinkShareDialog(
             tokenAMint = tokenPair.first.mintAddress,
             tokenBMint = tokenPair.second.mintAddress
         )

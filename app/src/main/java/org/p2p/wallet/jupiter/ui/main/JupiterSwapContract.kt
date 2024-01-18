@@ -28,7 +28,7 @@ interface JupiterSwapContract {
         fun hideFullScreenError()
         fun showDebugInfo(debugInfo: TextViewCellModel)
         fun showKeyboard()
-        fun showShareDialog(tokenAMint: Base58String, tokenBMint: Base58String)
+        fun showSwapLinkShareDialog(tokenAMint: Base58String, tokenBMint: Base58String)
     }
 
     interface Presenter : MvpPresenter<View> {

@@ -253,8 +253,8 @@ class JupiterSwapFragment :
         }
     }
 
-    override fun showShareDialog(tokenAMint: Base58String, tokenBMint: Base58String) {
-        val shareUrl = "https://s.key.app/swap?from=%s?to=%s".format(tokenAMint.base58Value, tokenBMint.base58Value)
+    override fun showSwapLinkShareDialog(tokenAMint: Base58String, tokenBMint: Base58String) {
+        val shareUrl = "https://s.key.app/swap?from=%s&to=%s".format(tokenAMint.base58Value, tokenBMint.base58Value)
         requireContext().shareText(shareUrl)
     }
 
