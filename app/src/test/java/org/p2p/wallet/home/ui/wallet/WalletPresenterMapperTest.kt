@@ -15,6 +15,7 @@ import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.STRIGA_FIAT_DECIMALS
 import org.p2p.core.utils.fromLamports
+import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.home.ui.main.delegates.striga.onramp.StrigaOnRampCellModel
 import org.p2p.wallet.home.ui.wallet.mapper.WalletMapper
@@ -87,7 +88,8 @@ class WalletPresenterMapperTest {
                 total = BigDecimal("1.0"),
                 visibility = TokenVisibility.SHOWN,
                 tokenExtensions = TokenExtensions(),
-                tokenServiceAddress = "publicKey"
+                tokenServiceAddress = "publicKey",
+                programId = TokenProgram.PROGRAM_ID.toBase58()
             ),
             walletId = StrigaWalletId("walletId"),
             accountId = StrigaAccountId("accountId"),
