@@ -6,6 +6,7 @@ import android.net.Uri
 import timber.log.Timber
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.deeplinks.SwapDeeplinkHandler.SwapTokenSearchResult.TokenFoundByMint
@@ -164,6 +165,11 @@ class SwapDeeplinkHandler(
     }
 
     private suspend fun findToken(inputMintOrSymbol: String): SwapTokenSearchResult? {
+        if (inputMintOrSymbol == Constants.SOL_SYMBOL) {
+            return swapTokensRepository.findTokenByMint(Constants.WRAPPED_SOL_MINT.toBase58Instance())
+                ?.let(::TokenFoundBySymbol)
+        }
+
         return swapTokensRepository.findTokenBySymbol(inputMintOrSymbol)
             ?.let(::TokenFoundBySymbol)
             ?: swapTokensRepository.findTokenByMint(inputMintOrSymbol.toBase58Instance())

@@ -121,7 +121,7 @@ class JupiterSwapFragment :
     private val initialAmountA: String? by args(EXTRA_INITIAL_AMOUNT_A)
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
-    private val strictWarning: SwapStrictTokenWarning? by args(EXTRA_STRICT_WARNING)
+    private var strictWarning: SwapStrictTokenWarning? by args(EXTRA_STRICT_WARNING)
 
     private val binding: FragmentJupiterSwapBinding by viewBinding()
 
@@ -184,6 +184,8 @@ class JupiterSwapFragment :
         val strictWarning = strictWarning
         if (strictWarning != null && atLeastOneIsNotStrict) {
             showStrictDialog(strictWarning)
+            // remove dialog data when it's shown first time
+            this.strictWarning = null
         }
 
         presenter.resumeStateManager()
