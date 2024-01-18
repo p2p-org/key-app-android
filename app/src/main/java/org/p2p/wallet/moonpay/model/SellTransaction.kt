@@ -1,12 +1,12 @@
 package org.p2p.wallet.moonpay.model
 
+import org.threeten.bp.ZonedDateTime
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.moonpay.MoonpayHistoryTransaction
-import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionFailureReason
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.core.crypto.Base58String
-import org.threeten.bp.ZonedDateTime
 
 sealed class SellTransaction(
     val status: SellTransactionStatus
@@ -15,7 +15,7 @@ sealed class SellTransaction(
     abstract val transactionId: String
     abstract val amounts: SellTransactionAmounts
     abstract val userAddress: Base58String
-    abstract val selectedFiat: SellTransactionFiatCurrency
+    abstract val selectedFiat: FiatCurrency
     abstract val updatedAt: String
 
     fun isCancelled(): Boolean {
@@ -34,7 +34,7 @@ sealed class SellTransaction(
         override val transactionId: String,
         override val amounts: SellTransactionAmounts,
         override val userAddress: Base58String,
-        override val selectedFiat: SellTransactionFiatCurrency,
+        override val selectedFiat: FiatCurrency,
         override val updatedAt: String,
         val moonpayDepositWalletAddress: Base58String,
     ) : SellTransaction(SellTransactionStatus.WAITING_FOR_DEPOSIT)
@@ -43,7 +43,7 @@ sealed class SellTransaction(
         override val metadata: SellTransactionMetadata,
         override val transactionId: String,
         override val amounts: SellTransactionAmounts,
-        override val selectedFiat: SellTransactionFiatCurrency,
+        override val selectedFiat: FiatCurrency,
         override val userAddress: Base58String,
         override val updatedAt: String,
     ) : SellTransaction(SellTransactionStatus.PENDING)
@@ -52,7 +52,7 @@ sealed class SellTransaction(
         override val metadata: SellTransactionMetadata,
         override val transactionId: String,
         override val amounts: SellTransactionAmounts,
-        override val selectedFiat: SellTransactionFiatCurrency,
+        override val selectedFiat: FiatCurrency,
         override val userAddress: Base58String,
         override val updatedAt: String,
     ) : SellTransaction(SellTransactionStatus.COMPLETED)
@@ -61,7 +61,7 @@ sealed class SellTransaction(
         override val metadata: SellTransactionMetadata,
         override val transactionId: String,
         override val amounts: SellTransactionAmounts,
-        override val selectedFiat: SellTransactionFiatCurrency,
+        override val selectedFiat: FiatCurrency,
         override val userAddress: Base58String,
         val failureReason: SellTransactionFailureReason?,
         override val updatedAt: String,

@@ -1,15 +1,15 @@
 package org.p2p.wallet.moonpay.extensions
 
+import java.math.BigDecimal
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.model.SellTransactionAmounts
 import org.p2p.wallet.moonpay.model.SellTransactionMetadata
-import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.core.crypto.toBase58Instance
-import java.math.BigDecimal
 
 object SellStubs {
     private val EMPTY_METADATA = SellTransactionMetadata(
@@ -36,7 +36,7 @@ object SellStubs {
             amountInFiat = BigDecimal.ZERO
         ),
         userAddress = Constants.SOL_MINT.toBase58Instance(),
-        selectedFiat = SellTransactionFiatCurrency.USD,
+        selectedFiat = FiatCurrency.USD,
         moonpayDepositWalletAddress = Constants.SOL_MINT.toBase58Instance(),
         updatedAt = emptyString()
     )
@@ -46,7 +46,7 @@ object SellStubs {
         status = SellTransactionStatus.WAITING_FOR_DEPOSIT,
         "2",
         "23",
-        SellTransactionFiatCurrency.USD.uiSymbol,
+        FiatCurrency.USD.uiSymbol,
         Constants.SOL_MINT
     )
 }

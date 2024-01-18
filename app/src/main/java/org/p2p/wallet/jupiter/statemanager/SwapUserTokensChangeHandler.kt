@@ -15,9 +15,8 @@ class SwapUserTokensChangeHandler(
         // org/p2p/wallet/user/interactor/UserInteractor.kt:128
         // tokens cleared each time on update, emit empty list
         if (userTokens.isEmpty()) return currentState
-        val (tokenA, tokenB) = swapInteractor.getSwapTokenPair(currentState)
+        val (tokenA, tokenB) = swapInteractor.getSwapTokenPair(currentState) ?: return currentState
         // SwapState.InitialLoading
-        if (tokenA == null || tokenB == null) return currentState
 
         val updatedTokenA = userTokens.find { it.mintAddress == tokenA.mintAddress.base58Value }
         val jupiterTokenA = swapTokensRepository.findTokenByMint(tokenA.mintAddress)

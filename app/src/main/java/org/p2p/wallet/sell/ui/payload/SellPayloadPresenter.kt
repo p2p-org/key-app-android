@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.utils.MOONPAY_DECIMAL
 import org.p2p.core.utils.formatFiat
@@ -31,13 +32,12 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.MoonpaySellError
 import org.p2p.wallet.moonpay.model.MoonpayWidgetUrlBuilder
 import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 import org.p2p.wallet.moonpay.repository.sell.MoonpayExternalCustomerIdProvider
-import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.sell.interactor.SellInteractor
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.sell.ui.payload.SellPayloadContract.ViewState
 import org.p2p.wallet.utils.emptyString
-import org.p2p.core.crypto.toBase58Instance
 
 private const val SELL_QUOTE_REQUEST_DEBOUNCE_TIME = 10_000L
 private const val SELL_QUOTE_NEW_AMOUNT_DELAY = 1_000L
@@ -340,19 +340,19 @@ class SellPayloadPresenter(
         }
     }
 
-    private fun SellTransactionFiatCurrency.toCurrencyMode(): CurrencyMode.Fiat {
+    private fun FiatCurrency.toCurrencyMode(): CurrencyMode.Fiat {
         return when (this) {
-            SellTransactionFiatCurrency.USD -> CurrencyMode.Fiat.Usd
-            SellTransactionFiatCurrency.EUR -> CurrencyMode.Fiat.Eur
-            SellTransactionFiatCurrency.GBP -> CurrencyMode.Fiat.Gbp
+            FiatCurrency.USD -> CurrencyMode.Fiat.Usd
+            FiatCurrency.EUR -> CurrencyMode.Fiat.Eur
+            FiatCurrency.GBP -> CurrencyMode.Fiat.Gbp
         }
     }
 
-    private fun CurrencyMode.Fiat.toSellFiatCurrency(): SellTransactionFiatCurrency {
+    private fun CurrencyMode.Fiat.toSellFiatCurrency(): FiatCurrency {
         return when (this) {
-            CurrencyMode.Fiat.Usd -> SellTransactionFiatCurrency.USD
-            CurrencyMode.Fiat.Eur -> SellTransactionFiatCurrency.EUR
-            CurrencyMode.Fiat.Gbp -> SellTransactionFiatCurrency.GBP
+            CurrencyMode.Fiat.Usd -> FiatCurrency.USD
+            CurrencyMode.Fiat.Eur -> FiatCurrency.EUR
+            CurrencyMode.Fiat.Gbp -> FiatCurrency.GBP
         }
     }
 

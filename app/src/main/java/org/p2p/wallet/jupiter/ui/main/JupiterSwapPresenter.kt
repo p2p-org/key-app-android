@@ -326,6 +326,15 @@ class JupiterSwapPresenter(
         stateManager.resume()
     }
 
+    override fun onShareClicked() {
+        val tokenPair = currentFeatureState?.getTokensPair() ?: return
+
+        view?.showShareDialog(
+            tokenAMint = tokenPair.first.mintAddress,
+            tokenBMint = tokenPair.second.mintAddress
+        )
+    }
+
     private fun handleNewFeatureState(state: SwapState) {
         // log analytics only on first TokenAZero
         if (shouldLogScreenOpened && state is SwapState.TokenAZero) {
@@ -390,7 +399,7 @@ class JupiterSwapPresenter(
             }
 
             is SwapFeatureException.SmallTokenAAmount -> {
-                val tokenA = state.previousFeatureState.getTokensPair().first
+                val tokenA = state.previousFeatureState.getTokensPair()?.first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
                     oldWidgetAState = widgetAState,
@@ -405,7 +414,7 @@ class JupiterSwapPresenter(
             }
 
             is SwapFeatureException.NotValidTokenA -> {
-                val tokenA = state.previousFeatureState.getTokensPair().first
+                val tokenA = state.previousFeatureState.getTokensPair()?.first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
                     oldWidgetAState = widgetAState,
@@ -423,7 +432,7 @@ class JupiterSwapPresenter(
             }
 
             is SwapFeatureException.InsufficientSolBalance -> {
-                val tokenA = state.previousFeatureState.getTokensPair().first
+                val tokenA = state.previousFeatureState.getTokensPair()?.first
 
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
@@ -714,7 +723,7 @@ class JupiterSwapPresenter(
         )
     }
 
-    private fun SwapState.getTokensPair(): Pair<SwapTokenModel?, SwapTokenModel?> {
+    private fun SwapState.getTokensPair(): Pair<SwapTokenModel, SwapTokenModel>? {
         return swapInteractor.getSwapTokenPair(this)
     }
 

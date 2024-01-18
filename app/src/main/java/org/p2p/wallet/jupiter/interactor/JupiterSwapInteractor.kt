@@ -23,9 +23,9 @@ class JupiterSwapInteractor(
         jupiterTransaction: Base64String
     ): JupiterSwapTokensResult = swapSendSwapTransactionDelegate.sendSwapTransaction(swapRoute, jupiterTransaction)
 
-    fun getSwapTokenPair(state: SwapState): Pair<SwapTokenModel?, SwapTokenModel?> = state.run {
+    fun getSwapTokenPair(state: SwapState): Pair<SwapTokenModel, SwapTokenModel>? = state.run {
         when (this) {
-            SwapState.InitialLoading -> null to null
+            SwapState.InitialLoading -> null
 
             is SwapState.LoadingRoutes -> tokenA to tokenB
             is SwapState.LoadingTransaction -> tokenA to tokenB

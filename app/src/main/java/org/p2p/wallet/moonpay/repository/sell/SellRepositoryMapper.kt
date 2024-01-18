@@ -1,5 +1,6 @@
 package org.p2p.wallet.moonpay.repository.sell
 
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrencyAmounts
@@ -12,13 +13,12 @@ import org.p2p.wallet.moonpay.model.SellTransactionAmounts
 import org.p2p.wallet.moonpay.model.SellTransactionMetadata
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.core.crypto.Base58String
 
 class SellRepositoryMapper {
     fun fromNetwork(
         response: List<MoonpaySellTransactionShortResponse>,
         depositWallets: List<MoonpaySellTransactionDepositWalletResponse>,
-        selectedFiat: SellTransactionFiatCurrency,
+        selectedFiat: FiatCurrency,
         transactionOwnerAddress: Base58String,
     ): List<SellTransaction> = response.mapNotNull { transaction ->
         val amounts = transaction.createAmounts()
