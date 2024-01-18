@@ -3,9 +3,10 @@ package org.p2p.wallet.send.repository
 import org.p2p.core.network.gson.GsonProvider
 import org.p2p.solanaj.kits.AccountInfoParsed
 import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig
+import org.p2p.solanaj.kits.TokenExtensionsMap
 
 object AccountInfoTokenExtensionsMapper {
-    fun AccountInfoParsed.parseTokenExtensions(): Map<String, AccountInfoTokenExtensionConfig> {
+    fun AccountInfoParsed.parseTokenExtensions(): TokenExtensionsMap {
         val gson = GsonProvider().provide()
         val extensions = data.parsed.info.extensions?.associateBy { it.name } ?: emptyMap()
 

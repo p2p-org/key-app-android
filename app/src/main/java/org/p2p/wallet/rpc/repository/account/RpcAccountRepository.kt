@@ -10,7 +10,7 @@ import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.TokenAccounts
 
 interface RpcAccountRepository {
-    suspend fun getAccountInfoParsed(account: String): AccountInfoParsed?
+    suspend fun getAccountInfoParsed(account: String, useCache: Boolean = true): AccountInfoParsed?
     suspend fun getAccountInfo(account: String): AccountInfo?
     suspend fun getAccountsInfo(accounts: List<String>): List<Pair<String, AccountInfo>>
     suspend fun getProgramAccounts(publicKey: PublicKey, config: RequestConfiguration): List<ProgramAccount>

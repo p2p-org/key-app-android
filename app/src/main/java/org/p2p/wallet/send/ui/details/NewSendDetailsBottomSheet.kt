@@ -161,28 +161,28 @@ class NewSendDetailsBottomSheet :
     }
 
     private fun DialogNewSendDetailsBinding.setTransferFee() {
-        if (state.transferFee == null) return
+        if (state.transferFeePercent == null) return
 
         with(layoutTransferFee) {
             root.isVisible = true
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
             textViewTitle.text = getString(R.string.send_transactions_details_transfer_fee)
             textViewSubtitle.apply {
-                val percent = state.transferFee!!.formatToken(2, exactDecimals = true)
+                val percent = state.transferFeePercent!!.formatToken(2, exactDecimals = true)
                 text = "$percent%"
             }
         }
     }
 
     private fun DialogNewSendDetailsBinding.setInterestBearingRate() {
-        if (state.interestBearingRate == null) return
+        if (state.interestBearingPercent == null) return
 
         with(layoutInterestBearing) {
             root.isVisible = true
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
-            textViewTitle.text = getString(R.string.send_transactions_details_transfer_fee)
+            textViewTitle.text = getString(R.string.send_transactions_details_interest_bearing)
             textViewSubtitle.apply {
-                val percent = state.interestBearingRate!!.formatToken(2, exactDecimals = true)
+                val percent = state.interestBearingPercent!!.formatToken(2, exactDecimals = true)
                 text = "$percent%"
             }
         }

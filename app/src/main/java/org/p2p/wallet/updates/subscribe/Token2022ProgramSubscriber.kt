@@ -25,7 +25,7 @@ class Token2022ProgramSubscriber(
         return RpcRequest(
             method = SUBSCRIBE_METHOD_NAME,
             params = listOf(
-                SystemProgram.TOKEN2022_PROGRAM_ID.toBase58(),
+                SystemProgram.TOKEN2022_PROGRAM_ID,
                 mapOf(
                     "commitment" to ConfirmationStatus.CONFIRMED.value,
                     "encoding" to Encoding.BASE64.encoding,

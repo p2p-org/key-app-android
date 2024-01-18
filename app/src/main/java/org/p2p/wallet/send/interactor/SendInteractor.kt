@@ -2,7 +2,6 @@ package org.p2p.wallet.send.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
-import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
@@ -12,24 +11,17 @@ import org.p2p.core.crypto.toBase64Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
-import org.p2p.core.utils.isZero
 import org.p2p.solanaj.core.Account
-import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
 import org.p2p.solanaj.core.toBase58Instance
-import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig
 import org.p2p.solanaj.programs.SystemProgram
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerAccountInteractor
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
-import org.p2p.wallet.feerelayer.model.FeeCalculationState
-import org.p2p.wallet.feerelayer.model.FeePoolsState
-import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.feerelayer.model.RelayAccount
 import org.p2p.wallet.feerelayer.model.RelayInfo
@@ -38,14 +30,13 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
-import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
+import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.model.SendFatalError
 import org.p2p.wallet.send.model.SendTransactionFailed
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
 import org.p2p.wallet.send.model.send_service.SendRentPayerMode
 import org.p2p.wallet.send.model.send_service.SendTransferMode
-import org.p2p.wallet.send.repository.AccountInfoTokenExtensionsMapper.parseTokenExtensions
 import org.p2p.wallet.send.repository.SendServiceRepository
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
@@ -56,14 +47,13 @@ class SendInteractor(
     private val addressInteractor: TransactionAddressInteractor,
     private val feeRelayerInteractor: FeeRelayerInteractor,
     private val feeRelayerAccountInteractor: FeeRelayerAccountInteractor,
-    private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val transactionInteractor: TransactionInteractor,
     private val amountRepository: RpcAmountRepository,
-    private val accountRepository: RpcAccountRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val dispatchers: CoroutineDispatchers,
     private val sendServiceRepository: SendServiceRepository,
+    private val getFeesInPayingTokenUseCase: GetFeesInPayingTokenUseCase,
 ) {
 
     /*
@@ -91,127 +81,6 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    // Fees calculator
-    suspend fun calculateFeesForFeeRelayer(
-        feePayerToken: Token.Active,
-        token: Token.Active,
-        recipient: String,
-        useCache: Boolean = true
-    ): FeeCalculationState {
-        try {
-            val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
-            val minRentExemption: BigInteger =
-                amountRepository.getMinBalanceForRentExemption(TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH)
-
-            var transactionFee = BigInteger.ZERO
-
-            // owner's signature
-            transactionFee += lamportsPerSignature
-
-            // feePayer's signature
-            if (!feePayerToken.isSOL) {
-                Timber.i("Fee payer is not sol, adding $lamportsPerSignature for fee")
-                transactionFee += lamportsPerSignature
-            }
-
-            val shouldCreateAccount = checkAccountCreationIsRequired(token, recipient)
-            Timber.i("Should create account = $shouldCreateAccount")
-
-            val expectedFee = FeeAmount(
-                transaction = transactionFee,
-                accountBalances = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
-            )
-
-            val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
-
-            if (fees.total.isZero()) {
-                Timber.i("Total fees are zero!")
-                return FeeCalculationState.NoFees
-            }
-
-            val poolsStateFee = getFeesInPayingToken(
-                feePayerToken = feePayerToken,
-                transactionFeeInSOL = fees.transaction,
-                accountCreationFeeInSOL = fees.accountBalances
-            )
-
-            return when (poolsStateFee) {
-                is FeePoolsState.Calculated -> {
-                    Timber.i("FeePoolsState is calculated")
-                    FeeCalculationState.Success(
-                        fee = FeeRelayerFee(
-                            feeInSol = fees,
-                            feeInSpl = poolsStateFee.feeInSpl,
-                            expectedFee = expectedFee
-                        ),
-                        tokenExtensions = getTokenExtensions(token)
-                    )
-                }
-
-                is FeePoolsState.Failed -> {
-                    Timber.i("FeePoolsState is failed")
-                    FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
-                }
-            }
-        } catch (e: CancellationException) {
-            Timber.i("Fee calculation cancelled")
-            return FeeCalculationState.Cancelled
-        } catch (e: Throwable) {
-            Timber.i(e, "Failed to calculateFeesForFeeRelayer")
-            return FeeCalculationState.Error(e)
-        }
-    }
-
-    private suspend fun getFeesInPayingToken(
-        feePayerToken: Token.Active,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): FeePoolsState {
-        Timber.i("Fetching fees in paying token: ${feePayerToken.mintAddress}")
-        if (feePayerToken.isSOL) {
-            val fee = FeeAmount(
-                transaction = transactionFeeInSOL,
-                accountBalances = accountCreationFeeInSOL
-            )
-            return FeePoolsState.Calculated(fee)
-        }
-
-        return feeRelayerInteractor.calculateFeeInPayingToken(
-            feeInSOL = FeeAmount(
-                transaction = transactionFeeInSOL,
-                accountBalances = accountCreationFeeInSOL,
-                //todo: calculate real transferFee
-                transferFee = BigInteger.ZERO
-            ),
-            payingFeeTokenMint = feePayerToken.mintAddress
-        )
-    }
-
-    private suspend fun getFeesInPayingTokenNullable(
-        token: Token.Active,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): Pair<String, FeeAmount>? = try {
-        Timber.i("getFeesInPayingTokenNullable for ${token.mintAddress}")
-        val feeInSpl = getFeesInPayingToken(
-            feePayerToken = token,
-            transactionFeeInSOL = transactionFeeInSOL,
-            accountCreationFeeInSOL = accountCreationFeeInSOL
-        )
-
-        if (feeInSpl is FeePoolsState.Calculated) {
-            Timber.i("Fees found for ${token.mintAddress}")
-            token.tokenSymbol to feeInSpl.feeInSpl
-        } else {
-            Timber.i("Fees are null found for ${token.mintAddress}")
-            null
-        }
-    } catch (e: IllegalStateException) {
-        Timber.i(e, "No fees found for token ${token.mintAddress}")
-        // ignoring tokens without fees
-        null
-    }
-
     /*
     * The request is too complex
     * Wrapped each request into deferred
@@ -227,7 +96,13 @@ class SendInteractor(
         val fees = userTokens
             .map { token ->
                 // converting SOL fee in token lamports to verify the balance coverage
-                async { getFeesInPayingTokenNullable(token, transactionFeeInSOL, accountCreationFeeInSOL) }
+                async {
+                    getFeesInPayingTokenUseCase.executeNullable(
+                        token,
+                        transactionFeeInSOL,
+                        accountCreationFeeInSOL
+                    )
+                }
             }
             .awaitAll()
             .filterNotNull()
@@ -267,7 +142,13 @@ class SendInteractor(
         val fees = userTokens
             .map { token ->
                 // converting SOL fee in token lamports to verify the balance coverage
-                async { getFeesInPayingTokenNullable(token, transactionFeeInSOL, accountCreationFeeInSOL) }
+                async {
+                    getFeesInPayingTokenUseCase.executeNullable(
+                        token,
+                        transactionFeeInSOL,
+                        accountCreationFeeInSOL
+                    )
+                }
             }
             .awaitAll()
             .filterNotNull()
@@ -344,35 +225,14 @@ class SendInteractor(
             error("You can not send tokens to yourself")
         }
 
-        val feePayerMode: Pair<SendFeePayerMode, Base58String?>
-        val rentPayerMode: Pair<SendRentPayerMode, Base58String?>
-
-        // deciding what fees user will pay
-        // todo: this fee calculation is wrong, needs to be fixed ASAP!
-//        val compensatingTokenMints = sendServiceRepository.getCompensationTokens().toSet()
-//        if(token.mintAddress.toBase58Instance() in compensatingTokenMints) {
-//            feePayerMode = SendFeePayerMode.Service to null
-//            rentPayerMode = SendRentPayerMode.Service to null
-//        } else {
-        // todo: especially this must be checked since we decided not to use fee relayer anymore
-        val useFeeRelayer = !shouldUseNativeSwap(feePayerToken.mintAddress)
-
-        feePayerMode = if (useFeeRelayer) {
-            SendFeePayerMode.Service to null
-        } else if (feePayerToken.isSOL) {
-            SendFeePayerMode.UserSol to null
-        } else {
-            SendFeePayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
-        }
-        rentPayerMode = if (feePayerToken.isSOL) {
-            SendRentPayerMode.UserSol to null
-        } else {
-            SendRentPayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
-        }
+        // selecting fee payer
+        val feePayerMode: Pair<SendFeePayerMode, Base58String?> = decideWhoPaysNetworkFee()
+        val rentPayerMode: Pair<SendRentPayerMode, Base58String?> = decideWhoPaysAccountCreationFees()
 
         val signer = Account(tokenKeyProvider.keyPair)
 
         val generatedTransaction = sendServiceRepository.generateTransactions(
+            // user_wallet must be signer, not a token account
             userWallet = signer.publicKey.toBase58Instance(),
             amountLamports = lamports,
             recipient = destinationAddress.toBase58Instance(),
@@ -385,9 +245,9 @@ class SendInteractor(
         )
 
         try {
-            val signedTransaction = transactionInteractor.signAndSerializeGeneratedTransaction(
+            val signedTransaction = transactionInteractor.signGeneratedTransaction(
                 signer = signer,
-                unsignedTransaction = generatedTransaction.transaction.decodeToBytes(),
+                generatedTransaction = generatedTransaction,
             )
             transactionInteractor.sendTransaction(
                 signedTransaction = signedTransaction.toBase64Instance(),
@@ -625,21 +485,24 @@ class SendInteractor(
         return noFreeTransactionsLeft && isSol
     }
 
-    suspend fun getTokenExtensions(token: Token.Active): Map<String, AccountInfoTokenExtensionConfig> {
-        // request token extensions to extract: transfer fee and interest bearing configs
-        val tokenInfo = accountRepository.getAccountInfoParsed(token.mintAddress)
-        return (tokenInfo?.parseTokenExtensions() ?: emptyMap()).also {
-            Timber.d("Token ${token.tokenSymbol} (${token.mintAddress}) extensions: $it")
+    private suspend fun decideWhoPaysNetworkFee(): Pair<SendFeePayerMode, Base58String?> {
+        // deciding what fees user will pay
+        val useFeeRelayer = !shouldUseNativeSwap(feePayerToken.mintAddress)
+
+        return if (useFeeRelayer) {
+            SendFeePayerMode.Service to null
+        } else if (feePayerToken.isSOL) {
+            SendFeePayerMode.UserSol to null
+        } else {
+            SendFeePayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
         }
     }
 
-    private suspend fun checkAccountCreationIsRequired(
-        token: Token.Active,
-        recipient: String
-    ): Boolean {
-        return token.mintAddress != WRAPPED_SOL_MINT && addressInteractor.findSplTokenAddressData(
-            mintAddress = token.mintAddress,
-            destinationAddress = recipient.toPublicKey()
-        ).shouldCreateAccount
+    private fun decideWhoPaysAccountCreationFees(): Pair<SendRentPayerMode, Base58String?> {
+        return if (feePayerToken.isSOL) {
+            SendRentPayerMode.UserSol to null
+        } else {
+            SendRentPayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
+        }
     }
 }

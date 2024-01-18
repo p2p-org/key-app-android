@@ -5,16 +5,17 @@ import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.utils.divideSafe
-import org.p2p.core.utils.isZero
+
+typealias TokenExtensionsMap = Map<String, AccountInfoTokenExtensionConfig>
 
 sealed interface AccountInfoTokenExtensionConfig {
 
     companion object {
-        fun Map<String, AccountInfoTokenExtensionConfig>.getTransferFeeConfig(): TransferFeeConfig? {
+        fun TokenExtensionsMap.getTransferFeeConfig(): TransferFeeConfig? {
             return this[TransferFeeConfig.NAME] as? TransferFeeConfig
         }
 
-        fun Map<String, AccountInfoTokenExtensionConfig>.getInterestBearingConfig(): InterestBearingConfig? {
+        fun TokenExtensionsMap.getInterestBearingConfig(): InterestBearingConfig? {
             return this[InterestBearingConfig.NAME] as? InterestBearingConfig
         }
     }
@@ -41,17 +42,6 @@ sealed interface AccountInfoTokenExtensionConfig {
                 get() = transferFeeBasisPoints.toBigDecimal().setScale(4)
                     .divideSafe("10000".toBigDecimal().setScale(4))
                     .multiply("100".toBigDecimal().setScale(4))
-
-            fun calculateFee(preFee: BigInteger): BigInteger {
-                if (transferFeeBasisPoints == 0 || preFee.isZero()) {
-                    return BigInteger.ZERO
-                }
-                val transferFeeBasisPoints = transferFeeBasisPoints.toBigInteger()
-                val numerator = preFee * transferFeeBasisPoints
-                val rawFee = numerator.divideSafe(BigInteger("10000"))
-
-                return minOf(rawFee, maximumFee)
-            }
         }
 
         fun getActualTransferFee(currentEpoch: Int): TransferFeeConfigData? {

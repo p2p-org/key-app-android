@@ -17,8 +17,8 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
  * */
 
 /**
- * @param transferFee percentage (e.g. 6.65)
- * @param interestBearingRate percentage (e.g. 6.65)
+ * @param transferFeePercent percentage (e.g. 6.65)
+ * @param interestBearingPercent percentage (e.g. 6.65)
  */
 @Parcelize
 class SendFeeTotal constructor(
@@ -30,8 +30,8 @@ class SendFeeTotal constructor(
     val feeLimit: TransactionFeeLimits,
     val sourceSymbol: String,
     val recipientAddress: String,
-    val transferFee: BigDecimal? = null,
-    val interestBearingRate: BigDecimal? = null
+    val transferFeePercent: BigDecimal? = null,
+    val interestBearingPercent: BigDecimal? = null
 ) : Parcelable {
 
     fun getFeesInToken(isInputEmpty: Boolean): FeesStringFormat {

@@ -1,13 +1,14 @@
 package org.p2p.solanaj.rpc
 
+import org.p2p.core.crypto.Base64String
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.Encoding
+import org.p2p.solanaj.model.types.EpochInfo
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
-import org.p2p.core.crypto.Base64String
 
 interface RpcSolanaRepository {
     suspend fun getAccountInfo(stateKey: PublicKey): AccountInfo
@@ -25,4 +26,6 @@ interface RpcSolanaRepository {
     ): List<SignatureInformationResponse>
 
     suspend fun sendSerializedTransaction(serializedTransaction: Base64String, encoding: Encoding): String
+
+    suspend fun getEpochInfo(useCache: Boolean = true): EpochInfo
 }

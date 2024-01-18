@@ -25,31 +25,42 @@ import org.p2p.wallet.rpc.api.RpcAccountApi
 
 class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRepository {
 
-    override suspend fun getAccountInfoParsed(account: String): AccountInfoParsed? =
+    private val accountInfoParsedCache = mutableMapOf<String, AccountInfoParsed>()
+
+    override suspend fun getAccountInfoParsed(account: String, useCache: Boolean): AccountInfoParsed? {
+        if (useCache && accountInfoParsedCache.containsKey(account)) {
+            return accountInfoParsedCache[account]
+        }
+
         try {
             val params = listOf(
                 account,
-                RequestConfiguration(encoding = "jsonParsed")
+                RequestConfiguration(encoding = Encoding.JSON_PARSED.encoding)
             )
             val rpcRequest = RpcRequest("getAccountInfo", params)
             val response = api.getAccountInfoParsed(rpcRequest)
-            response.result.value
+            return response.result.value
         } catch (e: EmptyDataException) {
             Timber.i("`getAccountInfo` responded with empty data, returning null")
-            null
+            return null
         } catch (e: JsonSyntaxException) {
-            // todo: make interceptor which would check error responses
-            //       and throw EmptyDataException as it works in RpcInterceptor
+            // todo: make RpcInterceptor handle this type of error
+            //      this happens when json parsed result is base64 empty string:
+            //      "data": [
+            //          "",
+            //          "base64"
+            //      ]
             if (
                 e.message?.contains("result.value.data") == true &&
                 e.message?.contains("Expected BEGIN_OBJECT") == true
             ) {
                 Timber.i("`getAccountInfo` responded with empty data, returning null")
-                null
+                return null
             } else {
                 throw e
             }
         }
+    }
 
     override suspend fun getAccountInfo(account: String): AccountInfo? =
         try {

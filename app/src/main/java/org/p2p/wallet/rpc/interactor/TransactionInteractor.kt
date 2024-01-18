@@ -18,6 +18,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 import org.p2p.wallet.rpc.repository.history.RpcTransactionRepository
+import org.p2p.wallet.send.model.send_service.GeneratedTransaction
 import org.p2p.wallet.utils.toPublicKey
 
 class TransactionInteractor(
@@ -66,36 +67,39 @@ class TransactionInteractor(
         }
     }
 
-    fun signAndSerializeGeneratedTransaction(
+    fun signGeneratedTransaction(
         signer: Account,
-        unsignedTransaction: ByteArray,
+        generatedTransaction: GeneratedTransaction,
     ): ByteArray {
-        // decode the number of signatures (assuming it's 1 byte for <= 127 signatures)
-        val existingSignatures = ShortvecEncoding.decodeLength(unsignedTransaction)
+        val transactionData = generatedTransaction.transaction.decodeToBytes()
+        // decode the number of signatures
+        val existingSignatures = ShortvecEncoding.decodeLength(transactionData)
         require(existingSignatures == 2) {
             "Pre-generated transaction must contain exactly 2 signatures: 1 fee payer, 2nd - ours (to be replaced)"
         }
 
-        // calculate offsets
+        // calculate offsets, assuming it's 1 byte for <= 127 signatures
         val signaturesOffset = 1
+        // message goes right after signatures count length and signatures itself (64 bytes each)
         val messageOffset = signaturesOffset + existingSignatures * Transaction.SIGNATURE_LENGTH
 
         // extract and keep all existing signatures
         val signatures = (0 until existingSignatures).map { i ->
-            unsignedTransaction.copyOfRange(
+            transactionData.copyOfRange(
                 signaturesOffset + i * Transaction.SIGNATURE_LENGTH,
                 signaturesOffset + (i + 1) * Transaction.SIGNATURE_LENGTH
             )
         }.toMutableList()
 
         // extract the message part
-        val message = unsignedTransaction.copyOfRange(messageOffset, unsignedTransaction.size)
+        val message = transactionData.copyOfRange(messageOffset, transactionData.size)
 
         // create a new signature for the message part
         val signatureProvider = TweetNaclFast.Signature(ByteArray(0), signer.keypair)
         val newSignature = signatureProvider.detached(message)
 
-        // replace the last signature with the new one
+        // replace the last signature (supposed to be replaced as send-service generates invalid sig for us)
+        // with the new one
         signatures[signatures.size - 1] = newSignature
 
         // allocate buffer for the final transaction

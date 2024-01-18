@@ -17,6 +17,9 @@ import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.send.api.SendServiceApi
+import org.p2p.wallet.send.interactor.usecase.CalculateToken2022TransferFeeUseCase
+import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
+import org.p2p.wallet.send.interactor.usecase.GetTokenExtensionsUseCase
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.send.repository.RecipientsLocalRepository
@@ -96,6 +99,12 @@ object SendModule : InjectionModule {
         factoryOf(::ReceiveViaLinkPresenter) bind ReceiveViaLinkContract.Presenter::class
         factoryOf(::ReceiveViaLinkInteractor)
         factoryOf(::ReceiveViaLinkMapper)
+
+        // todo: this is a last resort solution, because logic is too complex and needs to be refactored
+        //       these use cases extracted to avoid circular dependencies between SendInteractor and SendFeeRelayerManager
+        factoryOf(::GetFeesInPayingTokenUseCase)
+        factoryOf(::CalculateToken2022TransferFeeUseCase)
+        factoryOf(::GetTokenExtensionsUseCase)
     }
 
     private fun Module.initDataLayer() {
