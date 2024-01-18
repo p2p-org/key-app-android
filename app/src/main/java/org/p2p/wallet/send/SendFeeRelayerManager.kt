@@ -19,6 +19,7 @@ import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getInteres
 import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getTransferFeeConfig
 import org.p2p.solanaj.kits.TokenExtensionsMap
 import org.p2p.solanaj.programs.TokenProgram
+import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -44,7 +45,6 @@ import org.p2p.wallet.send.model.FeeRelayerStateError.InsufficientFundsToCoverFe
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -53,7 +53,7 @@ private const val TAG = "SendFeeRelayerManager"
 class SendFeeRelayerManager(
     private val sendInteractor: SendInteractor,
     private val userInteractor: UserInteractor,
-    private val networkObserver: SolanaNetworkObserver,
+    private val solanaRepository: RpcSolanaRepository,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val amountRepository: RpcAmountRepository,
     private val addressInteractor: TransactionAddressInteractor,
@@ -76,6 +76,7 @@ class SendFeeRelayerManager(
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
     private var initializeCompleted = false
+    private var currentSolanaEpoch: Int = 0
 
     private var minRentExemption: BigInteger = BigInteger.ZERO
 
@@ -107,6 +108,7 @@ class SendFeeRelayerManager(
         Timber.tag(TAG).i("initialize for SendFeeRelayerManager with token ${initialToken.mintAddress}")
         minRentExemption = sendInteractor.getMinRelayRentExemption()
         feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
+        currentSolanaEpoch = solanaRepository.getEpochInfo(useCache = true).epoch
         sendInteractor.initialize(initialToken)
     }
 
@@ -123,8 +125,7 @@ class SendFeeRelayerManager(
 
         val transferFeePercent: BigDecimal? = tokenExtensions
             .getTransferFeeConfig()
-            // todo: fix getting epoch, currently it doesn't work!
-            ?.getActualTransferFee(networkObserver.getCurrentEpoch())
+            ?.getActualTransferFee(currentSolanaEpoch)
             ?.transferFeePercent
 
         val interestBearingPercent: BigDecimal? = tokenExtensions
