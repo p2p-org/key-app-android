@@ -6,6 +6,14 @@ import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig
 import org.p2p.solanaj.kits.TokenExtensionsMap
 
 object AccountInfoTokenExtensionsMapper {
+
+    private val configClassMap = mapOf(
+        AccountInfoTokenExtensionConfig.TransferFeeConfig.NAME
+            to AccountInfoTokenExtensionConfig.TransferFeeConfig::class.java,
+        AccountInfoTokenExtensionConfig.InterestBearingConfig.NAME
+            to AccountInfoTokenExtensionConfig.InterestBearingConfig::class.java,
+    )
+
     fun AccountInfoParsed.parseTokenExtensions(): TokenExtensionsMap {
         val gson = GsonProvider().provide()
         val extensions = data.parsed.info.extensions?.associateBy { it.name } ?: emptyMap()

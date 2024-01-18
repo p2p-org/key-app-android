@@ -98,9 +98,9 @@ class SendInteractor(
                 // converting SOL fee in token lamports to verify the balance coverage
                 async {
                     getFeesInPayingTokenUseCase.executeNullable(
-                        token,
-                        transactionFeeInSOL,
-                        accountCreationFeeInSOL
+                        token = token,
+                        transactionFeeInSOL = transactionFeeInSOL,
+                        accountCreationFeeInSOL = accountCreationFeeInSOL
                     )
                 }
             }
@@ -144,9 +144,9 @@ class SendInteractor(
                 // converting SOL fee in token lamports to verify the balance coverage
                 async {
                     getFeesInPayingTokenUseCase.executeNullable(
-                        token,
-                        transactionFeeInSOL,
-                        accountCreationFeeInSOL
+                        token = token,
+                        transactionFeeInSOL = transactionFeeInSOL,
+                        accountCreationFeeInSOL = accountCreationFeeInSOL
                     )
                 }
             }
@@ -221,8 +221,8 @@ class SendInteractor(
     ): String = withContext(dispatchers.io) {
         val sender = token.publicKey
 
-        if (sender == destinationAddress.toBase58()) {
-            error("You can not send tokens to yourself")
+        require(sender != destinationAddress.toBase58()) {
+            "You can not send tokens to yourself"
         }
 
         // selecting fee payer
@@ -231,7 +231,7 @@ class SendInteractor(
 
         val signer = Account(tokenKeyProvider.keyPair)
 
-        val generatedTransaction = sendServiceRepository.generateTransactions(
+        val generatedTransaction = sendServiceRepository.generateTransaction(
             // user_wallet must be signer, not a token account
             userWallet = signer.publicKey.toBase58Instance(),
             amountLamports = lamports,
@@ -293,41 +293,45 @@ class SendInteractor(
 
         Timber.tag(TAG).i("feePayer = $feePayer; useFeeRelayer=$useFeeRelayer")
 
-        return if (token.isSOL) {
-            prepareNativeSol(
-                destinationAddress = receiver.toPublicKey(),
-                lamports = amount,
-                feePayerPublicKey = feePayer,
-                recentBlockhash = recentBlockhash,
-                lamportsPerSignature = lamportsPerSignature
-            )
-        } else if (token.isToken2022) {
-            prepareSplToken(
-                mintAddress = token.mintAddress,
-                decimals = token.decimals,
-                fromPublicKey = sender,
-                destinationAddress = receiver,
-                amount = amount,
-                feePayerPublicKey = feePayer,
-                transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
-                recentBlockhash = recentBlockhash,
-                lamportsPerSignature = lamportsPerSignature,
-                minBalanceForRentExemption = minRentExemption,
-                programId = TokenProgram.TOKEN_2022_PROGRAM_ID,
-            ).first
-        } else {
-            prepareSplToken(
-                mintAddress = token.mintAddress,
-                decimals = token.decimals,
-                fromPublicKey = sender,
-                destinationAddress = receiver,
-                amount = amount,
-                feePayerPublicKey = feePayer,
-                transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
-                recentBlockhash = recentBlockhash,
-                lamportsPerSignature = lamportsPerSignature,
-                minBalanceForRentExemption = minRentExemption
-            ).first
+        return when {
+            token.isSOL -> {
+                prepareNativeSol(
+                    destinationAddress = receiver.toPublicKey(),
+                    lamports = amount,
+                    feePayerPublicKey = feePayer,
+                    recentBlockhash = recentBlockhash,
+                    lamportsPerSignature = lamportsPerSignature
+                )
+            }
+            token.isToken2022 -> {
+                prepareSplToken(
+                    mintAddress = token.mintAddress,
+                    decimals = token.decimals,
+                    fromPublicKey = sender,
+                    destinationAddress = receiver,
+                    amount = amount,
+                    feePayerPublicKey = feePayer,
+                    transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
+                    recentBlockhash = recentBlockhash,
+                    lamportsPerSignature = lamportsPerSignature,
+                    minBalanceForRentExemption = minRentExemption,
+                    programId = TokenProgram.TOKEN_2022_PROGRAM_ID,
+                ).first
+            }
+            else -> {
+                prepareSplToken(
+                    mintAddress = token.mintAddress,
+                    decimals = token.decimals,
+                    fromPublicKey = sender,
+                    destinationAddress = receiver,
+                    amount = amount,
+                    feePayerPublicKey = feePayer,
+                    transferChecked = useFeeRelayer, // create transferChecked instruction when using fee relayer
+                    recentBlockhash = recentBlockhash,
+                    lamportsPerSignature = lamportsPerSignature,
+                    minBalanceForRentExemption = minRentExemption
+                ).first
+            }
         }
     }
 
@@ -489,12 +493,16 @@ class SendInteractor(
         // deciding what fees user will pay
         val useFeeRelayer = !shouldUseNativeSwap(feePayerToken.mintAddress)
 
-        return if (useFeeRelayer) {
-            SendFeePayerMode.Service to null
-        } else if (feePayerToken.isSOL) {
-            SendFeePayerMode.UserSol to null
-        } else {
-            SendFeePayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
+        return when {
+            useFeeRelayer -> {
+                SendFeePayerMode.Service to null
+            }
+            feePayerToken.isSOL -> {
+                SendFeePayerMode.UserSol to null
+            }
+            else -> {
+                SendFeePayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
+            }
         }
     }
 

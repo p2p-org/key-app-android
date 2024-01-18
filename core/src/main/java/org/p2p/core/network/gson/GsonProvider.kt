@@ -37,8 +37,8 @@ class GsonProvider {
             registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
             registerTypeAdapter(SolAddress::class.java, SolAddressTypeAdapter())
             registerTypeAdapter(HexString::class.java, HexStringTypeAdapter())
-            registerTypeAdapter(Base64String::class.java, Base64StringTypeAdapter())
-            registerTypeAdapter(Base58String::class.java, Base58StringTypeAdapter())
+            registerTypeAdapter(Base64String::class.java, Base64TypeAdapter)
+            registerTypeAdapter(Base58String::class.java, Base58TypeAdapter)
             registerTypeHierarchyAdapter(DefaultBlockParameter::class.java, DefaultBlockParameterTypeAdapter())
         }
             .create()

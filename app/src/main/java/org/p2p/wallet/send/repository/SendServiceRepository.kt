@@ -10,7 +10,7 @@ import org.p2p.wallet.send.model.send_service.SendTransferMode
 interface SendServiceRepository {
     suspend fun getCompensationTokens(): List<Base58String>
 
-    suspend fun generateTransactions(
+    suspend fun generateTransaction(
         userWallet: Base58String,
         amountLamports: BigInteger,
         recipient: Base58String,

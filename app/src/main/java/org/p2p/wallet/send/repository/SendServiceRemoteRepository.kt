@@ -18,8 +18,7 @@ class SendServiceRemoteRepository(
 ) : SendServiceRepository {
     override suspend fun getCompensationTokens(): List<Base58String> {
         return try {
-            val params = listOf<String>()
-            val rpcRequest = RpcRequest("get_compensation_tokens", params)
+            val rpcRequest = RpcRequest("get_compensation_tokens", emptyList())
             val response = api.getCompensationTokens(rpcRequest)
             response.result
         } catch (e: EmptyDataException) {
@@ -28,7 +27,7 @@ class SendServiceRemoteRepository(
         }
     }
 
-    override suspend fun generateTransactions(
+    override suspend fun generateTransaction(
         userWallet: Base58String,
         amountLamports: BigInteger,
         recipient: Base58String,

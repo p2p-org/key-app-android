@@ -110,7 +110,7 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
         emptyList()
     }
 
-    override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts {
+    override suspend fun getTokenAccountsByOwner(owner: PublicKey): TokenAccounts = withContext(Dispatchers.IO) {
         require(owner.toBase58().isNotBlank()) { "Owner ID cannot be blank" }
 
         val programIds = listOf(
@@ -135,12 +135,10 @@ class RpcAccountRemoteRepository(private val api: RpcAccountApi) : RpcAccountRep
             )
 
             val rpcRequest = RpcRequest("getTokenAccountsByOwner", params)
-            results += withContext(Dispatchers.IO) {
-                async { api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result }
-            }
+            results += async { api.getTokenAccountsByOwner(rpcRequest = rpcRequest).result }
         }
 
-        return TokenAccounts(
+        TokenAccounts(
             accounts = results.awaitAll().flatMap { it.accounts }
         )
     }

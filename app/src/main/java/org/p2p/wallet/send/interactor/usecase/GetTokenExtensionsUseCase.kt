@@ -12,7 +12,7 @@ class GetTokenExtensionsUseCase(
 
     suspend fun execute(token: Token.Active): TokenExtensionsMap {
         val tokenInfo = accountRepository.getAccountInfoParsed(token.mintAddress)
-        return (tokenInfo?.parseTokenExtensions() ?: emptyMap()).also {
+        return tokenInfo?.parseTokenExtensions().orEmpty().also {
             Timber.d("Token ${token.tokenSymbol} (${token.mintAddress}) extensions: $it")
         }
     }

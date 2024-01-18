@@ -10,10 +10,6 @@ import com.google.gson.stream.JsonWriter
 import java.lang.reflect.Type
 import java.math.BigInteger
 import java.util.Optional
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.crypto.Base64String
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.core.crypto.toBase64Instance
 import org.p2p.core.model.DefaultBlockParameter
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
@@ -215,45 +211,5 @@ internal class OptionalTypeAdapter<T : Any>(
             return Optional.empty()
         }
         return Optional.of(gson.fromJson(reader, type))
-    }
-}
-
-internal class Base64StringTypeAdapter() : TypeAdapter<Base64String?>() {
-    override fun write(writer: JsonWriter, value: Base64String?) {
-        if (value == null) {
-            writer.nullValue()
-        } else {
-            val stringValue = value.base64Value
-            writer.value(stringValue)
-        }
-    }
-
-    override fun read(reader: JsonReader): Base64String? {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull()
-            return null
-        }
-        val stringValue = reader.nextString()
-        return stringValue?.toBase64Instance()
-    }
-}
-
-internal class Base58StringTypeAdapter() : TypeAdapter<Base58String?>() {
-    override fun write(writer: JsonWriter, value: Base58String?) {
-        if (value == null) {
-            writer.nullValue()
-        } else {
-            val stringValue = value.base58Value
-            writer.value(stringValue)
-        }
-    }
-
-    override fun read(reader: JsonReader): Base58String? {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull()
-            return null
-        }
-        val stringValue = reader.nextString()
-        return stringValue?.toBase58Instance()
     }
 }
