@@ -1,12 +1,12 @@
 package org.p2p.wallet.auth.ui.restore_error
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
@@ -119,17 +119,17 @@ class RestoreErrorScreenFragment :
             buttonState.iconResId?.let { buttonRestoreByGoogle.setIconResource(it) }
             buttonState.iconTintResId?.let { buttonRestoreByGoogle.setIconTintResource(it) }
             setButtonAction(buttonRestoreByGoogle, buttonState.buttonAction)
-            buttonRestoreByGoogle.isVisible = true
+            buttonRestoreByGoogle.isVisible = buttonState.isVisible
         }
         state.primaryFirstButton?.let { buttonState ->
             buttonPrimaryFirst.setText(buttonState.titleResId)
             setButtonAction(buttonPrimaryFirst, buttonState.buttonAction)
-            buttonPrimaryFirst.isVisible = true
+            buttonPrimaryFirst.isVisible = buttonState.isVisible
         }
         state.secondaryFirstButton?.let { buttonState ->
             buttonSecondaryFirst.setText(buttonState.titleResId)
             setButtonAction(buttonSecondaryFirst, buttonState.buttonAction)
-            buttonSecondaryFirst.isVisible = true
+            buttonSecondaryFirst.isVisible = buttonState.isVisible
         }
     }
 

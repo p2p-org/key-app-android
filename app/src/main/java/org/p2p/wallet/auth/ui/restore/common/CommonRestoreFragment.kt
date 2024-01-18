@@ -1,7 +1,5 @@
 package org.p2p.wallet.auth.ui.restore.common
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.addCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -9,6 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import android.os.Bundle
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.systemAndIme
@@ -201,7 +201,6 @@ class CommonRestoreFragment :
         with(binding) {
             buttonRestoreByGoogle.isVisible = isVisible
             if (!isVisible) {
-
                 buttonPhone.apply {
                     backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.bg_snow)
                     setTextColor(getColor(R.color.text_night))

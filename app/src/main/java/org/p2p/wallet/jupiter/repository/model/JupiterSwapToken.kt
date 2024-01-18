@@ -18,7 +18,7 @@ data class JupiterSwapToken(
     fun isWrappedSol(): Boolean = tokenMint.base58Value == Constants.WRAPPED_SOL_MINT
 
     val isStrictToken: Boolean
-        get() = !tags.contains("unknown")
+        get() = isWrappedSol() || !tags.contains("unknown")
 }
 
 @Deprecated("Use search via repository")
