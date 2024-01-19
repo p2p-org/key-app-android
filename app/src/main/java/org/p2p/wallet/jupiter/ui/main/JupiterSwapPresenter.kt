@@ -335,7 +335,7 @@ class JupiterSwapPresenter(
         )
     }
 
-    private fun handleNewFeatureState(state: SwapState) {
+    private suspend fun handleNewFeatureState(state: SwapState) {
         // log analytics only on first TokenAZero
         if (shouldLogScreenOpened && state is SwapState.TokenAZero) {
             analytics.logStartScreen(
@@ -361,7 +361,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun handleOtherException(state: SwapState.SwapException.OtherException) {
+    private suspend fun handleOtherException(state: SwapState.SwapException.OtherException) {
         rateTickerManager.handleSwapException(state)
         mapWidgetStates(state)
         retryAction = {
@@ -381,7 +381,7 @@ class JupiterSwapPresenter(
         view?.setRatioState(ratioState)
     }
 
-    private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
+    private suspend fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
         Timber.i(state.featureException)
 
         checkPriceImpact()
@@ -448,7 +448,7 @@ class JupiterSwapPresenter(
         updateWidgets()
     }
 
-    private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
+    private suspend fun handleSwapLoaded(state: SwapState.SwapLoaded) {
         analytics.logChangeTokenBAmountChanged(state.tokenB, state.amountTokenB.toString())
         rateTickerManager.handleJupiterRates(state)
 
@@ -507,7 +507,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
+    private suspend fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
@@ -516,7 +516,7 @@ class JupiterSwapPresenter(
         getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
 
-    private fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
+    private suspend fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
         rateTickerManager.handleRoutesLoading(state)
 
         mapWidgetStates(state)
@@ -525,7 +525,7 @@ class JupiterSwapPresenter(
         getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
     }
 
-    private fun handleTokenAZero(state: SwapState.TokenAZero) {
+    private suspend fun handleTokenAZero(state: SwapState.TokenAZero) {
         rateTickerManager.onInitialTokensSelected(state.tokenA, state.tokenB)
 
         mapWidgetStates(state)
@@ -533,24 +533,24 @@ class JupiterSwapPresenter(
         view?.setButtonState(buttonMapper.mapEnterAmount())
     }
 
-    private fun handleTokenANotZero(state: SwapState.TokenANotZero) {
+    private suspend fun handleTokenANotZero(state: SwapState.TokenANotZero) {
         mapWidgetStates(state)
         updateWidgets()
     }
 
-    private fun handleRoutesLoaded(state: SwapState.RoutesLoaded) {
+    private suspend fun handleRoutesLoaded(state: SwapState.RoutesLoaded) {
         rateTickerManager.handleJupiterRates(state)
         mapWidgetStates(state)
         updateWidgets()
     }
 
-    private fun handleInitialLoading(state: SwapState.InitialLoading) {
+    private suspend fun handleInitialLoading(state: SwapState.InitialLoading) {
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = SwapButtonState.Hide)
     }
 
-    private fun mapWidgetStates(state: SwapState): Pair<SwapWidgetModel, SwapWidgetModel> {
+    private suspend fun mapWidgetStates(state: SwapState): Pair<SwapWidgetModel, SwapWidgetModel> {
         val result: Pair<SwapWidgetModel, SwapWidgetModel> = when (state) {
             SwapState.InitialLoading ->
                 widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A) to
