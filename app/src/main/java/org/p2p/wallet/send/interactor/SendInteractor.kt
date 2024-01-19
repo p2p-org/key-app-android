@@ -226,7 +226,7 @@ class SendInteractor(
         }
 
         // selecting fee payer
-        val feePayerMode: Pair<SendFeePayerMode, Base58String?> = decideWhoPaysNetworkFee()
+        val feePayerMode: Pair<SendFeePayerMode, Base58String?> = decideWhoPaysNetworkFee(sourceToken = token)
         val rentPayerMode: Pair<SendRentPayerMode, Base58String?> = decideWhoPaysAccountCreationFees()
 
         val signer = Account(tokenKeyProvider.keyPair)
@@ -489,9 +489,12 @@ class SendInteractor(
         return noFreeTransactionsLeft && isSol
     }
 
-    private suspend fun decideWhoPaysNetworkFee(): Pair<SendFeePayerMode, Base58String?> {
+    private suspend fun decideWhoPaysNetworkFee(sourceToken: Token.Active): Pair<SendFeePayerMode, Base58String?> {
         // deciding what fees user will pay
-        val useFeeRelayer = !shouldUseNativeSwap(feePayerToken.mintAddress)
+        // todo: old logic, keep it here just in case
+//        val useFeeRelayer = !shouldUseNativeSwap(feePayerToken.mintAddress)
+        val useFeeRelayer =
+            sourceToken.mintAddress.toBase58Instance() in sendServiceRepository.getCompensationTokens().toSet()
 
         return when {
             useFeeRelayer -> {
@@ -506,6 +509,10 @@ class SendInteractor(
         }
     }
 
+    /**
+     * By last information, we don't compensate account creation fees anymore
+     * @todo: needs to be checked
+     */
     private fun decideWhoPaysAccountCreationFees(): Pair<SendRentPayerMode, Base58String?> {
         return if (feePayerToken.isSOL) {
             SendRentPayerMode.UserSol to null

@@ -12,8 +12,8 @@ object SendServiceResponseMapper {
         recipientGetsAmount = recipientGetsAmount.toDomain(),
         totalAmount = totalAmount.toDomain(),
         networkFee = networkFee.toDomain(),
-        tokenAccountRent = tokenAccountRent?.toDomain(),
-        token2022TransferFee = token2022TransferFee?.toDomain(),
+        tokenAccountRent = tokenAccountRent?.toDomain() ?: GeneratedTransaction.NetworkFeeData.EMPTY,
+        token2022TransferFee = token2022TransferFee?.toDomain() ?: GeneratedTransaction.NetworkFeeData.EMPTY,
     )
 
     fun SendGeneratedTransactionResponse.AmountResponse.toDomain(): GeneratedTransaction.AmountData =

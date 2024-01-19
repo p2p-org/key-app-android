@@ -2,6 +2,7 @@ package org.p2p.wallet.send.repository
 
 import java.math.BigInteger
 import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.send.api.responses.SendServiceFreeLimitsResponse
 import org.p2p.wallet.send.model.send_service.GeneratedTransaction
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
 import org.p2p.wallet.send.model.send_service.SendRentPayerMode
@@ -9,6 +10,10 @@ import org.p2p.wallet.send.model.send_service.SendTransferMode
 
 interface SendServiceRepository {
     suspend fun getCompensationTokens(): List<Base58String>
+
+    suspend fun getTokenAccountRentExempt(mintAddresses: List<Base58String>): Map<Base58String, BigInteger>
+
+    suspend fun getFeeLimits(userWallet: Base58String): SendServiceFreeLimitsResponse
 
     suspend fun generateTransaction(
         userWallet: Base58String,

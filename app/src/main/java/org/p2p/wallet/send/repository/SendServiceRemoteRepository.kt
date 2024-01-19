@@ -7,6 +7,7 @@ import org.p2p.core.network.data.EmptyDataException
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.send.api.SendServiceApi
+import org.p2p.wallet.send.api.responses.SendServiceFreeLimitsResponse
 import org.p2p.wallet.send.model.send_service.GeneratedTransaction
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
 import org.p2p.wallet.send.model.send_service.SendRentPayerMode
@@ -25,6 +26,22 @@ class SendServiceRemoteRepository(
             Timber.i("`get_compensation_tokens` responded with empty data, returning null")
             emptyList()
         }
+    }
+
+    override suspend fun getTokenAccountRentExempt(mintAddresses: List<Base58String>): Map<Base58String, BigInteger> {
+        val params = buildMap {
+            this += "mints" to mintAddresses.map { it.base58Value }
+        }
+        val rpcRequest = RpcMapRequest("get_token_account_rent_exempt", params)
+        return api.getTokenAccountRentExempt(rpcRequest).result
+    }
+
+    override suspend fun getFeeLimits(userWallet: Base58String): SendServiceFreeLimitsResponse {
+        val params = buildMap {
+            this += "user_wallet" to userWallet.base58Value
+        }
+        val rpcRequest = RpcMapRequest("limits", params)
+        return api.getLimits(rpcRequest).result
     }
 
     override suspend fun generateTransaction(
