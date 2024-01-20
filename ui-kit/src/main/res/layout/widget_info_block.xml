@@ -27,7 +27,6 @@
         android:layout_marginStart="16dp"
         android:duplicateParentState="true"
         android:ellipsize="end"
-        android:maxLines="1"
         android:textAppearance="@style/UiKit.TextAppearance.SemiBold.Text1"
         android:textColor="@color/text_night"
         app:layout_constrainedHeight="true"

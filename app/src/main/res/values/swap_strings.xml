@@ -12,7 +12,6 @@
     <string name="swap_main_button_sol_error">Max: %s</string>
     <string name="swap_main_button_sol_error_toast">✅ We left a minimum SOL balance to save the account address</string>
     <string name="swap_main_button_ready_to_swap">Swap %s → %s</string>
-    <string name="swap_main_fee_inform">Key App doesn\’t make any profit from swap 💚</string>
     <string name="swap_main_confirm_button">Swap %s → %s</string>
     <string name="swap_main_alert">The price is higher due to the large amount of cash lost for the pair of tokens. Split your transaction for few small swaps.</string>
     <string name="swap_main_high_fee_alert">The fee is more than the defined slippage %s</string>

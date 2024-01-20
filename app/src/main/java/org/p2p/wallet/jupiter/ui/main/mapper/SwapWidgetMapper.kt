@@ -143,6 +143,7 @@ class SwapWidgetMapper(
         return SwapWidgetModel.Content(
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
+            tokenUrl = token.iconUrl,
             currencyName = tokenFormatter.formatTokenName(token),
             amount = textCellSkeleton(
                 height = 20.toPx(),

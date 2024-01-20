@@ -56,11 +56,11 @@
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/imageViewTokenIcon"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_marginVertical="12dp"
         android:layout_marginStart="16dp"
-        app:cornerRadius="24dp"
+        app:cornerRadius="16dp"
         app:layout_constraintBottom_toTopOf="@+id/textViewBalance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewWidgetTitle"

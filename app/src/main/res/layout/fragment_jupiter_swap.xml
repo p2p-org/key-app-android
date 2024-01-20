@@ -68,7 +68,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toTopOf="@+id/textViewFeeInform"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -86,20 +85,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/swapWidgetFrom"
                 app:srcCompat="@drawable/ic_swap_20"
                 tools:background="@color/bg_rain" />
-
-            <TextView
-                android:id="@+id/textViewFeeInform"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/swap_main_fee_inform"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Label1"
-                android:textColor="@color/text_mountain"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayoutAlert"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/swapWidgetTo" />
 
             <TextView
                 android:id="@+id/textViewDebug"
@@ -121,16 +106,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal"
                 android:padding="12dp"
                 android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textViewFeeInform"
+                app:layout_constraintTop_toBottomOf="@+id/swapWidgetTo"
                 tools:background="@color/bg_light_sun"
                 tools:visibility="visible">
 
