@@ -75,6 +75,7 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.toTokenData
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetMapper
+import org.p2p.wallet.jupiter.ui.main.mapper.SwapWidgetTokenFormatter
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.sdk.facade.RelaySdkFacade
@@ -461,7 +462,7 @@ open class JupiterSwapPresenterBaseTest {
             swapOpenedFrom = data.swapOpenedFrom,
             managerHolder = SwapStateManagerHolder(),
             stateManager = stateManager,
-            widgetMapper = SwapWidgetMapper(),
+            widgetMapper = SwapWidgetMapper(SwapWidgetTokenFormatter(jupiterSwapTokensRepository)),
             buttonMapper = swapButtonMapper,
             rateTickerMapper = SwapRateTickerMapper(),
             rateTickerManager = swapRateTickerManager,
