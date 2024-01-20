@@ -185,7 +185,7 @@ class SwapDeeplinkHandler(
         return when (inputMintOrSymbol) {
             Constants.SOL_SYMBOL -> Constants.WRAPPED_SOL_MINT.toBase58Instance()
             Constants.USDT_SYMBOL -> Constants.USDT_MINT.toBase58Instance()
-            Constants.USDC_SYMBOL -> Constants.USDC_SYMBOL.toBase58Instance()
+            Constants.USDC_SYMBOL -> Constants.USDC_MINT.toBase58Instance()
             // is not popular
             else -> null
         }
