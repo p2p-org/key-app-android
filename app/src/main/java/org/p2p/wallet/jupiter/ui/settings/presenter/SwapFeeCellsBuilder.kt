@@ -225,7 +225,7 @@ class SwapFeeCellsBuilder(
 
     private suspend fun loadRateForToken(token: SwapTokenModel): SwapRateLoaderState.Loaded? {
         return rateLoader.getRate(token)
-            .onEach { Timber.i("JupiterSwapFeeBuilder loading rate for $token") }
+            .onEach { Timber.i("JupiterSwapFeeBuilder getting rate for ${token.tokenSymbol}") }
             .filterIsInstance<SwapRateLoaderState.Loaded>()
             .firstOrNull()
     }

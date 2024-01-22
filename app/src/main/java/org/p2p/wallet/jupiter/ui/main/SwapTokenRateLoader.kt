@@ -47,6 +47,7 @@ class SwapTokenRateLoader(
         val newState = if (rate != null) {
             SwapRateLoaderState.Loaded(token = token, rate = rate)
         } else {
+            Timber.e("SwapTokenRateLoader: no rate available for user token ${token.tokenSymbol} ")
             SwapRateLoaderState.NoRateAvailable(token = token)
         }
         emitAndSaveState(newState)
@@ -57,14 +58,14 @@ class SwapTokenRateLoader(
     ) {
         emitAndSaveState(SwapRateLoaderState.Loading)
         try {
-            val tokenPrice =
-                tokenServiceRepository.findTokenPriceByAddress(
-                    tokenAddress = token.details.tokenMint.base58Value,
-                    networkChain = TokenServiceNetwork.SOLANA
-                )?.usdRate
+            val tokenPrice = tokenServiceRepository.findTokenPriceByAddress(
+                tokenAddress = token.details.tokenMint.base58Value,
+                networkChain = TokenServiceNetwork.SOLANA
+            )?.usdRate
             if (tokenPrice != null) {
                 emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice))
             } else {
+                Timber.e("SwapTokenRateLoader: no rate available for jupiter token ${token.tokenSymbol} ")
                 emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token = token))
             }
         } catch (e: CancellationException) {

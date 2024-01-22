@@ -161,7 +161,11 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
                             val rateLoaderState = it.third
                             val indexOf = fullUiList.indexOf(loadingCell)
                             if (indexOf >= 0) {
-                                val newCell = mapper.updateLiquidityFee(routePlan, loadingCell, rateLoaderState)
+                                val newCell = mapper.updateLiquidityFee(
+                                    marketInfo = routePlan,
+                                    oldCell = loadingCell,
+                                    state = rateLoaderState
+                                )
                                 val newList = fullUiList.toMutableList()
                                     .apply { set(indexOf, newCell) }
                                 fullUiList = newList

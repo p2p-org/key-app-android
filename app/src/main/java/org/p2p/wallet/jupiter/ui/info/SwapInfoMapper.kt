@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.MainCellStyle
@@ -86,8 +87,9 @@ class SwapInfoMapper(
 
         val secondLineText = liquidityToken?.let {
             val feeInTokenLamports = liquidityFee.fromLamports(it.decimals)
+                .formatTokenWithSymbol(it.tokenSymbol, it.decimals)
             TextViewCellModel.Raw(
-                text = TextContainer("$feeInTokenLamports ${it.tokenSymbol}")
+                text = TextContainer(feeInTokenLamports)
             )
         }
 
