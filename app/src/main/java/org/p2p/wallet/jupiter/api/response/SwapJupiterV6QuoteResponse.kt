@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.api.response
 
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 data class SwapJupiterV6QuoteResponse(
@@ -23,6 +24,8 @@ data class SwapJupiterV6QuoteResponse(
     val priceImpactPct: String,
     @SerializedName("routePlan")
     val routePlan: List<RoutePlanResponse>,
+    @SerializedName("keyapp")
+    val keyAppFees: KeyAppFeesResponse,
     @SerializedName("contextSlot")
     val contextSlot: Int,
     @SerializedName("timeTaken")
@@ -59,5 +62,16 @@ data class SwapJupiterV6QuoteResponse(
         val feeAmount: String,
         @SerializedName("feeMint")
         val feeMint: String
+    )
+
+    data class KeyAppFeesResponse(
+        @SerializedName("fee")
+        val fee: String,
+        @SerializedName("refundableFee")
+        val refundableFee: String,
+        @SerializedName("_hash")
+        val hash: String,
+        @SerializedName("fees")
+        val feeDetails: JsonObject
     )
 }

@@ -11,7 +11,6 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 class JupiterSwapRoutesV6Mapper(
     private val gson: Gson
 ) {
-
     fun fromNetwork(
         response: SwapJupiterV6QuoteResponse,
         accountCreationFee: BigInteger,

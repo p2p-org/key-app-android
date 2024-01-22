@@ -36,12 +36,10 @@ class JupiterSwapSendTransactionDelegate(
             .getEncodedKeyPair()
             .toBase58Instance()
 
-        val recentBlockhash = rpcBlockhashRepository.getRecentBlockhash()
-
         val signedSwapTransaction = relaySdkFacade.signTransaction(
             transaction = jupiterTransaction,
             keyPair = userAccountKeypair,
-            recentBlockhash = recentBlockhash
+            recentBlockhash = null // jupiterTransaction already contains blockhash
         ).transaction.convertToBase64()
 
         val firstTransactionSignature = rpcSolanaRepository.sendTransaction(

@@ -114,6 +114,7 @@ class SwapWidget @JvmOverloads constructor(
         textViewCurrencyName.bindOrGone(model.currencySkeleton)
         textViewCurrencyName.setOnClickListener(null)
         textViewChangeCurrency.setOnClickListener(null)
+
         bindLoadingInput(model.amountSkeleton)
         if (textViewBalance.isVisible) {
             textViewBalance.bindOrGone(model.balanceSkeleton)
@@ -128,13 +129,19 @@ class SwapWidget @JvmOverloads constructor(
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
         textViewAvailableAmountTitle.isVisible = model.availableAmount != null
         textViewAvailableAmountValue.bindOrGone(model.availableAmount)
+
         textViewAvailableAmountTitle.setOnClickListener { onAllAmountClick() }
         textViewAvailableAmountValue.setOnClickListener { onAllAmountClick() }
+
         textViewCurrencyName.setOnClickListener { onChangeTokenClick() }
         textViewChangeCurrency.setOnClickListener { onChangeTokenClick() }
         textViewCurrencyName.bindOrGone(model.currencyName)
 
-        glideManager.load(imageViewTokenIcon, model.tokenUrl)
+        glideManager.load(
+            imageView = imageViewTokenIcon,
+            url = model.tokenUrl,
+            size = 32
+        )
 
         if (model.amount is TextViewCellModel.Skeleton) {
             bindLoadingInput(model.amount)

@@ -2,6 +2,7 @@ package org.p2p.wallet.jupiter.ui.settings.presenter
 
 import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.launchIn
@@ -27,6 +28,7 @@ import org.p2p.wallet.swap.model.Slippage.Companion.PERCENT_DIVIDE_VALUE
 
 private val AMOUNT_INPUT_DELAY = 1.seconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class JupiterSwapSettingsPresenter(
     private val stateManager: SwapStateManager,
     private val emptyMapper: SwapEmptySettingsMapper,

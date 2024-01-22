@@ -43,7 +43,8 @@ class JupiterSwapRoutesRemoteV6Repository(
                     inputMint = jupiterSwapPair.inputMint.base58Value,
                     outputMint = jupiterSwapPair.outputMint.base58Value,
                     amountInLamports = jupiterSwapPair.amountInLamports,
-                    slippageBps = jupiterSwapPair.slippageBasePoints
+                    slippageBps = jupiterSwapPair.slippageBasePoints,
+                    userPublicKey = userPublicKey.base58Value
                 )
             }
             val tokenAccountFee = tokenAccountCreationFee(

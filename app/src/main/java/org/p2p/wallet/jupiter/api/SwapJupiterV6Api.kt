@@ -20,6 +20,8 @@ interface SwapJupiterV6Api {
         @Query("inputMint") inputMint: String,
         @Query("outputMint") outputMint: String,
         @Query("amount") amountInLamports: BigInteger,
-        @Query("slippageBps") slippageBps: Int
+        @Query("slippageBps") slippageBps: Int,
+        // added by our own backend
+        @Query("userPublicKey") userPublicKey: String
     ): SwapJupiterV6QuoteResponse
 }
