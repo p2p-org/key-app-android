@@ -4,7 +4,6 @@ import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
-import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.getColor
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.analytics.CreateWalletAnalytics
@@ -18,7 +17,6 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.ui.restore.common.CommonRestoreFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentPhoneNumberEnterBinding
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.smsinput.SmsInputFactory
 import org.p2p.wallet.utils.addFragment
 import org.p2p.wallet.utils.getParcelableCompat
@@ -53,16 +51,6 @@ class PhoneNumberEnterFragment :
     }
 
     private fun FragmentPhoneNumberEnterBinding.initViews() {
-        toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.helpItem) {
-                view?.hideKeyboard()
-                IntercomService.showMessenger()
-                true
-            } else {
-                false
-            }
-        }
-
         buttonConfirmPhone.setOnClickListener {
             presenter.submitUserPhoneNumber(editTextPhoneNumber.text?.toString().orEmpty())
         }

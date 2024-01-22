@@ -19,7 +19,6 @@ import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NAVIGATION_STRATEG
 import org.p2p.wallet.common.NavigationStrategy.Companion.ARG_NEXT_DESTINATION_CLASS
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorTimerBinding
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.utils.OnboardingSpanUtils
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.showUrlInCustomTabs
@@ -60,13 +59,6 @@ class OnboardingGeneralErrorTimerFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.inflateMenu(R.menu.menu_onboarding_help)
-        binding.toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.helpItem) {
-                IntercomService.showMessenger()
-            }
-            return@setOnMenuItemClickListener true
-        }
         binding.buttonToStartingScreen.setOnClickListener {
             navigateToStartingScreen()
         }
