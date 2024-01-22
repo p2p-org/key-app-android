@@ -86,6 +86,20 @@ fun BigDecimal.formatToken(
     keepInitialDecimals = keepInitialDecimals
 )
 
+fun BigDecimal.formatTokenWithSymbol(
+    tokenSymbol: String,
+    decimals: Int = DEFAULT_DECIMAL,
+    exactDecimals: Boolean = false,
+    keepInitialDecimals: Boolean = false,
+): String {
+    val formattedAmount = formatWithDecimals(
+        decimals = decimals,
+        exactDecimals = exactDecimals,
+        keepInitialDecimals = keepInitialDecimals
+    )
+    return "$formattedAmount $tokenSymbol"
+}
+
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 

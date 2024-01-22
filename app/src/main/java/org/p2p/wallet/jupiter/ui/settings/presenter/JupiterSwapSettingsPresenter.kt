@@ -153,18 +153,24 @@ class JupiterSwapSettingsPresenter(
 
     private fun onDetailsClick(settingsPayload: SwapSettingsPayload) {
         when (settingsPayload) {
-            SwapSettingsPayload.ROUTE ->
+            SwapSettingsPayload.ROUTE -> {
                 if (canOpenDetails(featureState)) view?.showRouteDialog()
-            SwapSettingsPayload.NETWORK_FEE ->
+            }
+            SwapSettingsPayload.NETWORK_FEE -> {
                 view?.showDetailsDialog(SwapInfoType.NETWORK_FEE)
-            SwapSettingsPayload.CREATION_FEE ->
+            }
+            SwapSettingsPayload.CREATION_FEE -> {
                 view?.showDetailsDialog(SwapInfoType.ACCOUNT_FEE)
-            SwapSettingsPayload.LIQUIDITY_FEE ->
+            }
+            SwapSettingsPayload.LIQUIDITY_FEE -> {
                 if (canOpenDetails(featureState)) view?.showDetailsDialog(SwapInfoType.LIQUIDITY_FEE)
-            SwapSettingsPayload.MINIMUM_RECEIVED ->
+            }
+            SwapSettingsPayload.MINIMUM_RECEIVED -> {
                 view?.showDetailsDialog(SwapInfoType.MINIMUM_RECEIVED)
-            SwapSettingsPayload.ESTIMATED_FEE ->
+            }
+            SwapSettingsPayload.ESTIMATED_FEE -> {
                 Unit
+            }
         }
     }
 
@@ -210,7 +216,7 @@ class JupiterSwapSettingsPresenter(
         }
     }
 
-    private fun getContentListByFeatureState(
+    private suspend fun getContentListByFeatureState(
         state: SwapState,
     ): List<AnyCellItem> {
         return when (state) {

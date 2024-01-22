@@ -33,6 +33,7 @@ import org.p2p.wallet.databinding.ItemSwapInfoBannerBinding
 import org.p2p.wallet.jupiter.interactor.SwapTokensInteractor
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
@@ -78,6 +79,8 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
     private val interactor: SwapTokensInteractor by inject {
         parametersOf(stateManagerKey)
     }
+
+    private val swapTokensRepository: JupiterSwapTokensRepository by inject()
     private val coroutineDispatchers: CoroutineDispatchers by inject()
     private val stateManager: SwapStateManager
         get() = managerHolder.get(stateManagerKey)
@@ -115,21 +118,15 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
     }
 
     private fun observeFeatureState() {
-        val allTokens = flow { emit(interactor.getAllTokens()) }
-        stateManager.observe().combine(allTokens) { state, tokens ->
-            state to tokens
-        }
-            .flatMapLatest {
-                val (state, tokens) = it
-                handleFeatureState(state, tokens)
-            }
+        stateManager.observe()
+            .flatMapLatest { handleFeatureState(it) }
             .flowOn(coroutineDispatchers.io)
             .onEach { adapter.items = it }
             .flowWithLifecycle(lifecycle)
             .launchIn(lifecycleScope)
     }
 
-    private suspend fun handleFeatureState(state: SwapState, tokens: List<SwapTokenModel>): Flow<List<AnyCellItem>> {
+    private suspend fun handleFeatureState(state: SwapState): Flow<List<AnyCellItem>> {
         return when (state) {
             SwapState.InitialLoading,
             is SwapState.LoadingRoutes,
@@ -138,7 +135,7 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
                 flowOf(mapper.mapEmptyLiquidityFee())
             }
             is SwapState.SwapException -> {
-                handleFeatureState(state.previousFeatureState, tokens)
+                handleFeatureState(state.previousFeatureState)
             }
             is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
@@ -150,8 +147,8 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
                 flow {
                     val rateLoaderList = mutableListOf<Flow<LoadRateBox>>()
                     val feeCells = route.routePlans.map { plan ->
-                        val loadingCell = mapper.getLiquidityFeeCell(plan, tokens)
-                        rateLoaderList += getRateLoaderFlow(plan, tokens, loadingCell)
+                        val loadingCell = mapper.getLiquidityFeeCell(plan)
+                        rateLoaderList += getRateLoaderFlow(plan, loadingCell)
                         loadingCell
                     }
                     var fullUiList = mapper.mapEmptyLiquidityFee().plus(feeCells)
@@ -175,24 +172,21 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             }
             is SwapState.LoadingTransaction -> {
                 flow {
-                    val fullUiList = mapper.mapLoadingLiquidityFee(
-                        allTokens = tokens,
-                        route = state.route
-                    )
+                    val fullUiList = mapper.mapLoadingLiquidityFee(state.route)
                     emit(fullUiList)
                 }
             }
         }
     }
 
-    private fun getRateLoaderFlow(
+    private suspend fun getRateLoaderFlow(
         routePlan: JupiterSwapRoutePlanV6,
-        tokens: List<SwapTokenModel>,
         loadingCell: MainCellModel,
     ): Flow<LoadRateBox> {
-        val lpToken = tokens.find { it.mintAddress == routePlan.feeMint }
+        val lpToken = swapTokensRepository.findTokenByMint(routePlan.feeMint)
         val loadingCellFlow = flowOf(routePlan to loadingCell)
-        val rateLoaderFlow = lpToken?.let { stateManager.getTokenRate(lpToken) }
+        val rateLoaderFlow = lpToken
+            ?.let { stateManager.getTokenRate(SwapTokenModel.JupiterToken(it)) }
             ?: flowOf(SwapRateLoaderState.Error)
         return loadingCellFlow.combine(rateLoaderFlow) { a, b ->
             Triple(a.first, a.second, b)

@@ -52,3 +52,9 @@ fun JSONArray.toStringSet(): Set<String> = buildSet {
         this += getString(i)
     }
 }
+
+fun <T> JSONArray.mapAsStrings(mapper: (String) -> T): List<T> = buildList {
+    for (i in 0 until length()) {
+        this += mapper.invoke(getString(i))
+    }
+}

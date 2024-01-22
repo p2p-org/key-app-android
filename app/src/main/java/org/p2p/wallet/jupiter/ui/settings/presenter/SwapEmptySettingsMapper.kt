@@ -15,13 +15,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 
 class SwapEmptySettingsMapper(
-    private val commonMapper: SwapCommonSettingsMapper
+    private val swapFeeCellsBuilder: SwapFeeCellsBuilder
 ) {
 
-    fun mapEmptyList(
+    suspend fun mapEmptyList(
         tokenB: SwapTokenModel,
     ): List<AnyCellItem> = buildList {
-        this += commonMapper.getNetworkFeeCell()
+        this += swapFeeCellsBuilder.buildNetworkFeeCell(activeRoute = null, solToken = null).cellModel
         addMinimumReceivedCell(tokenB)
     }
 

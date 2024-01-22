@@ -21,12 +21,14 @@ import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 
-class SwapInfoMapper {
+class SwapInfoMapper(
+    private val swapTokensRepository: JupiterSwapTokensRepository
+) {
 
     fun mapNetworkFee(): List<AnyCellItem> = buildList {
         this += SwapInfoBannerCellModel(
@@ -58,24 +60,22 @@ class SwapInfoMapper {
         )
     }
 
-    fun mapLoadingLiquidityFee(
-        allTokens: List<SwapTokenModel>,
+    suspend fun mapLoadingLiquidityFee(
         route: JupiterSwapRouteV6? = null,
     ): List<AnyCellItem> = buildList {
         addAll(mapEmptyLiquidityFee())
         if (route == null) return@buildList
 
         route.routePlans.forEach { routePlan ->
-            this += getLiquidityFeeCell(routePlan, allTokens)
+            this += getLiquidityFeeCell(routePlan)
         }
     }
 
-    fun getLiquidityFeeCell(
+    suspend fun getLiquidityFeeCell(
         routePlan: JupiterSwapRoutePlanV6,
-        allTokens: List<SwapTokenModel>
     ): MainCellModel {
         val label = routePlan.label
-        val liquidityToken = allTokens.find { routePlan.feeMint == it.mintAddress }
+        val liquidityToken = swapTokensRepository.findTokenByMint(routePlan.feeMint)
         val liquidityFee = routePlan.feeAmount
 
         val feePercent = routePlan.percent + "%"

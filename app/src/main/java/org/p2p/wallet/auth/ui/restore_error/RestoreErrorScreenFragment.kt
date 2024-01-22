@@ -150,7 +150,7 @@ class RestoreErrorScreenFragment :
         button.setOnClickListener {
             when (action) {
                 ButtonAction.OPEN_INTERCOM -> {
-                  Unit
+                    Unit
                 }
                 ButtonAction.NAVIGATE_GOOGLE_AUTH -> {
                     presenter.useGoogleAccount()

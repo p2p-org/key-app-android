@@ -14,12 +14,12 @@ import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
 
 class SwapLoadingSettingsMapper(
-    private val commonMapper: SwapCommonSettingsMapper
+    private val feeCellsBuilder: SwapFeeCellsBuilder
 ) {
 
-    fun mapLoadingList(): List<AnyCellItem> = buildList {
+    suspend fun mapLoadingList(): List<AnyCellItem> = buildList {
         addRouteCell()
-        add(commonMapper.getNetworkFeeCell())
+        add(feeCellsBuilder.buildNetworkFeeCell(activeRoute = null, solToken = null).cellModel)
         addAccountFeeCell()
         addLiquidityFeeCell()
         addEstimatedFeeCell()
