@@ -17,7 +17,7 @@ import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 
-class JupiterSwapFeeBuilder(
+class SwapFeeBuilder(
     private val rateLoader: SwapTokenRateLoader,
     private val swapTokensRepository: JupiterSwapTokensRepository
 ) {

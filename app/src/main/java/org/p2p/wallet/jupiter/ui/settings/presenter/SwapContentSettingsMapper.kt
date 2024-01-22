@@ -30,7 +30,7 @@ import org.p2p.wallet.utils.emptyString
 
 class SwapContentSettingsMapper(
     private val commonMapper: SwapCommonSettingsMapper,
-    private val swapFeeBuilder: JupiterSwapFeeBuilder,
+    private val swapFeeBuilder: SwapFeeBuilder,
     private val dispatchers: CoroutineDispatchers,
     private val swapTokensRepository: JupiterSwapTokensRepository
 ) {
