@@ -1,13 +1,13 @@
 package org.p2p.wallet.send.ui.details
 
 import android.content.res.Resources
+import timber.log.Timber
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.SendSolanaFee
-import org.p2p.wallet.utils.getErrorMessage
-import timber.log.Timber
 import org.p2p.wallet.user.interactor.UserTokensInteractor
+import org.p2p.wallet.utils.getErrorMessage
 
 class NewSendDetailsPresenter(
     private val sendInteractor: SendInteractor,
@@ -29,7 +29,7 @@ class NewSendDetailsPresenter(
                 view?.showNoTokensScreen(feePayerTokens)
             } catch (e: Throwable) {
                 Timber.e(e, "Error occurred while collecting fee payer tokens")
-                view?.showUiKitSnackBar(e.getErrorMessage { resources.getString(it) })
+                view?.showUiKitSnackBar(e.getErrorMessage(resources::getString))
             } finally {
                 view?.showAccountCreationFeeLoading(isLoading = false)
             }

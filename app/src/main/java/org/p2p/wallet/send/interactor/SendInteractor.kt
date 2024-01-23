@@ -10,6 +10,7 @@ import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.crypto.toBase64Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
+import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.OperationType
@@ -92,8 +93,11 @@ class SendInteractor(
         transactionFeeInSOL: BigInteger,
         accountCreationFeeInSOL: BigInteger
     ): List<Token.Active> = withContext(dispatchers.io) {
-        val tokenToExclude = feePayerToExclude.tokenSymbol
-        val fees = userTokens
+        val feePayerTokens = sendServiceRepository.getCompensationTokens()
+            .mapNotNull { userTokens.findByMintAddress(it.base58Value) }
+
+        val tokenToExcludeSymbol = feePayerToExclude.tokenSymbol
+        val fees = feePayerTokens
             .map { token ->
                 // converting SOL fee in token lamports to verify the balance coverage
                 async {
@@ -109,10 +113,10 @@ class SendInteractor(
             .toMap()
 
         Timber.tag(TAG).i(
-            "Filtering user tokens for alternative fee payers: ${userTokens.map(Token.Active::mintAddress)}"
+            "Filtering user tokens for alternative fee payers: ${feePayerTokens.map(Token.Active::mintAddress)}"
         )
-        userTokens.filter { token ->
-            if (token.tokenSymbol == tokenToExclude) {
+        feePayerTokens.filter { token ->
+            if (token.tokenSymbol == tokenToExcludeSymbol) {
                 Timber.tag(TAG).i("Excluding ${token.mintAddress} ${token.tokenSymbol}")
                 return@filter false
             }
