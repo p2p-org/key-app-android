@@ -80,27 +80,20 @@ class JupiterSwapSettingsPresenter(
                 rateTickerManager.handleJupiterRates(state)
                 val solToken = swapTokensRepository.requireWrappedSol()
                 currentContentList = contentMapper.mapForSwapLoadedState(
-                    slippage = state.slippage,
-                    route = state.route,
-                    tokenBAmount = state.amountTokenB,
-                    tokenB = state.tokenB,
+                    state = state,
                     solTokenForFee = solToken,
                 )
             }
             is SwapState.LoadingTransaction -> {
                 currentContentList = contentMapper.mapForLoadingTransactionState(
-                    slippage = state.slippage,
-                    route = state.route,
-                    tokenB = state.tokenB,
+                    state = state,
                     solTokenForFee = jupiterSolToken,
                 )
             }
             is SwapState.RoutesLoaded -> {
                 rateTickerManager.handleJupiterRates(state)
                 currentContentList = contentMapper.mapForLoadingTransactionState(
-                    slippage = state.slippage,
-                    route = state.route,
-                    tokenB = state.tokenB,
+                    state = state,
                     solTokenForFee = jupiterSolToken,
                 )
             }
@@ -110,7 +103,6 @@ class JupiterSwapSettingsPresenter(
                     currentContentList = contentMapper.mapForRoutesLoadedState(
                         state = previousState,
                         solTokenForFee = jupiterSolToken,
-                        tokenBAmount = previousState.amountTokenB
                     )
                 } else {
                     rateTickerManager.handleSwapException(state)
@@ -153,18 +145,30 @@ class JupiterSwapSettingsPresenter(
 
     private fun onDetailsClick(settingsPayload: SwapSettingsPayload) {
         when (settingsPayload) {
-            SwapSettingsPayload.ROUTE ->
+            SwapSettingsPayload.ROUTE -> {
                 if (canOpenDetails(featureState)) view?.showRouteDialog()
-            SwapSettingsPayload.NETWORK_FEE ->
+            }
+            SwapSettingsPayload.NETWORK_FEE -> {
                 view?.showDetailsDialog(SwapInfoType.NETWORK_FEE)
-            SwapSettingsPayload.CREATION_FEE ->
+            }
+            SwapSettingsPayload.CREATION_FEE -> {
                 view?.showDetailsDialog(SwapInfoType.ACCOUNT_FEE)
-            SwapSettingsPayload.LIQUIDITY_FEE ->
+            }
+            SwapSettingsPayload.LIQUIDITY_FEE -> {
                 if (canOpenDetails(featureState)) view?.showDetailsDialog(SwapInfoType.LIQUIDITY_FEE)
-            SwapSettingsPayload.MINIMUM_RECEIVED ->
+            }
+            SwapSettingsPayload.MINIMUM_RECEIVED -> {
                 view?.showDetailsDialog(SwapInfoType.MINIMUM_RECEIVED)
-            SwapSettingsPayload.ESTIMATED_FEE ->
+            }
+            SwapSettingsPayload.ESTIMATED_FEE -> {
                 Unit
+            }
+            SwapSettingsPayload.TOKEN_2022_INTEREST -> {
+                view?.showDetailsDialog(SwapInfoType.TOKEN_2022_INTEREST)
+            }
+            SwapSettingsPayload.TOKEN_2022_TRANSFER -> {
+                view?.showDetailsDialog(SwapInfoType.TOKEN_2022_TRANSFER)
+            }
         }
     }
 
@@ -210,7 +214,7 @@ class JupiterSwapSettingsPresenter(
         }
     }
 
-    private fun getContentListByFeatureState(
+    private suspend fun getContentListByFeatureState(
         state: SwapState,
     ): List<AnyCellItem> {
         return when (state) {

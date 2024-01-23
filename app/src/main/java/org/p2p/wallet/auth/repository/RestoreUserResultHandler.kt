@@ -57,13 +57,7 @@ class RestoreUserResultHandler(
         return RestoreFailureState.TitleSubtitleError(
             title = resources.getString(R.string.error_wallet_not_found_title),
             subtitle = resources.getString(R.string.error_shares_do_not_matches_message),
-            googleButton = GoogleButton(
-                titleResId = R.string.onboarding_general_error_bug_report_button_title,
-                iconResId = R.drawable.ic_caution,
-                iconTintResId = R.color.icons_night,
-                buttonAction = ButtonAction.OPEN_INTERCOM,
-                isVisible = false
-            ),
+            googleButton = null,
             secondaryFirstButton = SecondaryFirstButton(
                 titleResId = R.string.restore_starting_screen,
                 buttonAction = ButtonAction.NAVIGATE_START_SCREEN

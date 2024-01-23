@@ -65,7 +65,7 @@
     <string name="send_fees_zero">Fees: 0</string>
     <string name="send_fees_free">Enjoy free transactions</string>
     <string name="send_calculating_fees">Calculating the fees</string>
-    <string name="send_free_fee_format">Free (%d left for today)</string>
+    <string name="send_free_fee_format">Free</string>
 
     <string name="send_cant_calculate_fees_error">Cannot calculate fees. Try again</string>
     <string name="send_reduced_amount_calculation_message">✅ Calculated by subtracting the account creation fee from your balance</string>

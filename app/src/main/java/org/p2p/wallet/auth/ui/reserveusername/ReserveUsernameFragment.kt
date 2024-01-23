@@ -109,7 +109,6 @@ class ReserveUsernameFragment :
 
     private fun UiKitToolbar.initToolbar() {
         if (isSkipEnabled.isFeatureEnabled) {
-            inflateMenu(R.menu.menu_close)
             setOnMenuItemClickListener {
                 if (it.itemId == R.id.itemClose) {
                     usernameAnalytics.logSkipUsernameClicked()

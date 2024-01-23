@@ -32,11 +32,9 @@ import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentCommonRestoreBinding
 import org.p2p.wallet.debug.settings.DebugSettingsFragment
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.restore.ui.seedphrase.SeedPhraseFragment
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
@@ -89,15 +87,6 @@ class CommonRestoreFragment :
             }
             toolbar.setNavigationOnClickListener {
                 popAndReplaceFragment(OnboardingRootFragment.create(), inclusive = true)
-            }
-            toolbar.setOnMenuItemClickListener {
-                if (it.itemId == R.id.helpItem) {
-                    // pass empty string as UserId to launch IntercomService as anonymous user
-                    IntercomService.signIn(userId = emptyString())
-                    IntercomService.showMessenger()
-                    return@setOnMenuItemClickListener true
-                }
-                false
             }
             buttonRestoreByGoogle.setOnClickListener {
                 restoreWalletAnalytics.logRestoreOptionClicked(AnalyticsRestoreWay.GOOGLE)

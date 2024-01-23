@@ -7,7 +7,7 @@ import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
@@ -15,8 +15,8 @@ import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.solanaj.core.FeeAmount
-import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getInterestBearingConfig
-import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getTransferFeeConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.interestBearingConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.transferFeeConfig
 import org.p2p.solanaj.kits.TokenExtensionsMap
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.RpcSolanaRepository
@@ -124,20 +124,28 @@ class SendFeeRelayerManager(
         val currentAmount = calculationMode.getCurrentAmount()
 
         val transferFeePercent: BigDecimal? = tokenExtensions
-            .getTransferFeeConfig()
+            .transferFeeConfig
             ?.getActualTransferFee(currentSolanaEpoch)
             ?.transferFeePercent
 
         val interestBearingPercent: BigDecimal? = tokenExtensions
-            .getInterestBearingConfig()
+            .interestBearingConfig
             ?.currentRate
             ?.toBigDecimal()
+
+        val currentAmountWithInterestFee = transferFeePercent
+            ?.let { it / 100.toBigDecimal() * currentAmount } // get % from total sum
+            ?.let { percentAmount -> currentAmount - percentAmount }
+            ?: currentAmount
 
         return SendFeeTotal(
             currentAmount = currentAmount,
             currentAmountUsd = calculationMode.getCurrentAmountUsd(),
-            receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
-            receiveUsd = currentAmount.toUsd(sourceToken),
+            receiveFormatted = currentAmountWithInterestFee.formatTokenWithSymbol(
+                tokenSymbol = sourceToken.tokenSymbol,
+                decimals = sourceToken.decimals
+            ),
+            receiveUsd = currentAmountWithInterestFee.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
             recipientAddress = recipientAddress.address,
@@ -160,7 +168,7 @@ class SendFeeRelayerManager(
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
-        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken)
+        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken.mintAddress)
         val token2022TransferFee = calculateToken2022TransferFeeUseCase.execute(sourceToken, tokenAmount)
 
         try {
@@ -478,7 +486,7 @@ class SendFeeRelayerManager(
             null
         }
 
-        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken)
+        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken.mintAddress)
         val token2022TransferFee = calculateToken2022TransferFeeUseCase.execute(sourceToken, inputAmount)
 
         when (feeState) {

@@ -137,7 +137,6 @@ class JupiterSwapPresenter(
         debounceInputJob?.cancel()
         cancelRateJobs()
         debounceInputJob = launch {
-
             val newAmount = amount.toBigDecimalOrZero()
             val (tokenA, _) = currentFeatureState?.getTokensPair() ?: (null to null)
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)

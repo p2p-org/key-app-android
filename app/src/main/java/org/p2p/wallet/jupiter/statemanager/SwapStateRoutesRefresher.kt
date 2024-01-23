@@ -32,7 +32,6 @@ class SwapStateRoutesRefresher(
         amountTokenA: BigDecimal,
         slippage: Slippage,
     ) {
-
         minSolBalanceValidator.validateMinimumSolAmount(
             tokenA = tokenA,
             newAmount = amountTokenA,

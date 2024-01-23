@@ -11,13 +11,11 @@ typealias TokenExtensionsMap = Map<String, AccountInfoTokenExtensionConfig>
 sealed interface AccountInfoTokenExtensionConfig {
 
     companion object {
-        fun TokenExtensionsMap.getTransferFeeConfig(): TransferFeeConfig? {
-            return this[TransferFeeConfig.NAME] as? TransferFeeConfig
-        }
+        val TokenExtensionsMap.transferFeeConfig: TransferFeeConfig?
+            get() = this[TransferFeeConfig.NAME] as? TransferFeeConfig
 
-        fun TokenExtensionsMap.getInterestBearingConfig(): InterestBearingConfig? {
-            return this[InterestBearingConfig.NAME] as? InterestBearingConfig
-        }
+        val TokenExtensionsMap.interestBearingConfig: InterestBearingConfig?
+            get() = this[InterestBearingConfig.NAME] as? InterestBearingConfig
     }
 
     data class TransferFeeConfig(

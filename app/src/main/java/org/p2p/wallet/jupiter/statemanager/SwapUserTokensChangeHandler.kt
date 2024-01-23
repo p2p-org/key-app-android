@@ -101,6 +101,7 @@ class SwapUserTokensChangeHandler(
             is SwapState.TokenAZero -> featureState.copy(tokenB = newUserSwapToken)
             is SwapState.RoutesLoaded -> featureState.copy(tokenB = newUserSwapToken)
 
+            // todo: when update from socket comes, we somehow override the token A here
             is SwapState.SwapException -> onUserTokenAChangeBalance(featureState.previousFeatureState, newUserToken)
         }
         return newState

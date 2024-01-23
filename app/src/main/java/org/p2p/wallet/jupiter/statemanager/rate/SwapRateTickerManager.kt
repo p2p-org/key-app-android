@@ -108,7 +108,7 @@ class SwapRateTickerManager(
      *
      * */
     private suspend fun findTokensRatesState(tokenA: SwapTokenModel, tokenB: SwapTokenModel): SwapRateTickerState {
-        val (from, to) = if (!tokenA.isStableCoin() && tokenB.isStableCoin()) {
+        val (from, to) = if (!tokenA.isStableCoin && tokenB.isStableCoin) {
             tokenA to tokenB
         } else {
             tokenB to tokenA
@@ -152,7 +152,7 @@ class SwapRateTickerManager(
         val newTokenB = tokenB.also { currentTokenB = it }
 
         val rateText = when {
-            !newTokenA.isStableCoin() && newTokenB.isStableCoin() -> {
+            !newTokenA.isStableCoin && newTokenB.isStableCoin -> {
                 val newRate = amountTokenB.divideSafe(amountTokenA).formatToken(newTokenB.decimals)
                 formatRateString(newTokenA.tokenSymbol, newRate, newTokenB.tokenSymbol)
             }

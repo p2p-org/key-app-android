@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import org.koin.android.ext.android.inject
 import org.p2p.core.token.Token
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.getColor
@@ -123,7 +124,7 @@ class NewSendDetailsBottomSheet :
             textViewTitle.text = getString(R.string.send_transactions_details_gets)
             textViewSubtitle.text = SpanUtils.highlightText(
                 commonText = state.fullReceive,
-                highlightedText = state.approxReceive,
+                highlightedText = state.approxReceiveUsd,
                 color = color
             )
         }
@@ -134,28 +135,31 @@ class NewSendDetailsBottomSheet :
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
             textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.apply {
-                val fee = state.sendFee
-                text = if (!state.feeLimit.isTransactionAllowed()) {
-                    setTextColor(colorNight)
-                    if (fee == null) {
-                        val zeroUsd = "(0$)"
-                        val fullZeroFeeText = "0 ${state.sourceSymbol} $zeroUsd"
-                        SpanUtils.highlightText(
-                            commonText = fullZeroFeeText,
-                            highlightedText = zeroUsd,
-                            color = colorMountain
-                        )
-                    } else {
-                        SpanUtils.highlightText(
-                            commonText = fee.transactionFullFee,
-                            highlightedText = fee.approxTransactionFeeUsd.orEmpty(),
-                            color = colorMountain
-                        )
-                    }
-                } else {
-                    setTextColor(colorMint)
-                    getString(R.string.send_free_fee_format, state.feeLimit.remaining)
-                }
+                setTextColor(colorMint)
+                text = getString(R.string.send_free_fee_format)
+
+                // old logic, decided to keep for some time
+//                text = if (!state.feeLimit.isTransactionAllowed()) {
+//                    setTextColor(colorNight)
+//                    if (fee == null) {
+//                        val zeroUsd = "(0$)"
+//                        val fullZeroFeeText = "0 ${state.sourceSymbol} $zeroUsd"
+//                        SpanUtils.highlightText(
+//                            commonText = fullZeroFeeText,
+//                            highlightedText = zeroUsd,
+//                            color = colorMountain
+//                        )
+//                    } else {
+//                        SpanUtils.highlightText(
+//                            commonText = fee.transactionFullFee,
+//                            highlightedText = fee.approxTransactionFeeUsd.orEmpty(),
+//                            color = colorMountain
+//                        )
+//                    }
+//                } else {
+//                    setTextColor(colorMint)
+//                    getString(R.string.send_free_fee_format, state.feeLimit.remaining)
+//                }
             }
         }
     }
@@ -168,7 +172,7 @@ class NewSendDetailsBottomSheet :
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
             textViewTitle.text = getString(R.string.send_transactions_details_transfer_fee)
             textViewSubtitle.apply {
-                val percent = state.transferFeePercent!!.formatToken(2, exactDecimals = true)
+                val percent = state.transferFeePercent!!.formatFiat()
                 text = "$percent%"
             }
         }

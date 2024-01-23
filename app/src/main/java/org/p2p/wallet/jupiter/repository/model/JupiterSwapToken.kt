@@ -15,13 +15,12 @@ data class JupiterSwapToken(
     val tags: Set<String>,
     val tokenExtensions: TokenExtensions,
 ) {
-    fun isWrappedSol(): Boolean = tokenMint.base58Value == Constants.WRAPPED_SOL_MINT
+    val isWrappedSol: Boolean
+        get() = tokenMint.base58Value == Constants.WRAPPED_SOL_MINT
 
     val isStrictToken: Boolean
-        get() = isWrappedSol() || !tags.contains("unknown")
-}
+        get() = isWrappedSol || !tags.contains("unknown")
 
-@Deprecated("Use search via repository")
-fun List<JupiterSwapToken>.findTokenByMint(mint: Base58String): JupiterSwapToken? {
-    return find { it.tokenMint == mint }
+    val isToken2022: Boolean
+        get() = tags.contains("token-2022")
 }

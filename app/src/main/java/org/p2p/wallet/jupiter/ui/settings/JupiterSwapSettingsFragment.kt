@@ -21,7 +21,7 @@ import org.p2p.wallet.common.adapter.CommonAnyCellAdapter
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapSettingsBinding
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
-import org.p2p.wallet.jupiter.ui.info.SwapInfoBottomSheet
+import org.p2p.wallet.jupiter.ui.info.SwapFeeInfoBottomSheet
 import org.p2p.wallet.jupiter.ui.info.SwapInfoType
 import org.p2p.wallet.jupiter.ui.settings.adapter.SwapSettingsDecorator
 import org.p2p.wallet.jupiter.ui.settings.view.swapCustomSlippageDelegate
@@ -88,7 +88,7 @@ class JupiterSwapSettingsFragment :
 
     override fun showDetailsDialog(type: SwapInfoType) {
         analytics.logFeeDetailsClicked(type)
-        SwapInfoBottomSheet.show(childFragmentManager, stateManagerKey, type)
+        SwapFeeInfoBottomSheet.show(childFragmentManager, stateManagerKey, type)
     }
 
     override fun showRouteDialog() {

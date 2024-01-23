@@ -18,6 +18,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
+import org.p2p.wallet.jupiter.repository.model.SwapKeyAppFees
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
@@ -190,9 +191,14 @@ object JupiterSwapTestHelpers {
             slippageBps = data.slippageBps,
             otherAmountThreshold = amountOut.minusPercent(data.slippage.doubleValue).toString(),
             swapMode = "EXACT_IN",
-            ataFee = BigInteger.ZERO,
             priceImpactPercent = data.priceImpact,
-            originalRoute = JsonObject()
+            originalRoute = JsonObject(),
+            fees = SwapKeyAppFees(
+                signatureFee = BigInteger.ZERO,
+                ataDeposits = BigInteger.ZERO,
+                totalFeeAndDeposits = BigInteger.ZERO,
+                minimumSolForTransaction = BigInteger.ZERO
+            )
         )
     }
 

@@ -14,8 +14,8 @@ data class JupiterSwapRouteV6(
     val slippageBps: Int,
     val otherAmountThreshold: String,
     val swapMode: String,
-    val ataFee: BigInteger,
     val routePlans: List<JupiterSwapRoutePlanV6>,
+    val fees: SwapKeyAppFees,
     // this field we need to create a route later
     val originalRoute: JsonObject
 )
@@ -29,4 +29,11 @@ data class JupiterSwapRoutePlanV6(
     val outAmount: BigInteger,
     val outputMint: Base58String,
     val percent: String,
+)
+
+data class SwapKeyAppFees(
+    val signatureFee: BigInteger,
+    val ataDeposits: BigInteger,
+    val totalFeeAndDeposits: BigInteger,
+    val minimumSolForTransaction: BigInteger
 )

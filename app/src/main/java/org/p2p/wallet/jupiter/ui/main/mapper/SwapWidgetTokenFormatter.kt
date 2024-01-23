@@ -8,6 +8,7 @@ import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.utils.cutMiddle
 
 class SwapWidgetTokenFormatter(
     private val jupiterSwapTokensRepository: JupiterSwapTokensRepository
@@ -32,7 +33,11 @@ class SwapWidgetTokenFormatter(
     suspend fun formatTokenName(token: SwapTokenModel): TextViewCellModel.Raw {
         val isStrictToken = jupiterSwapTokensRepository.findTokenByMint(token.mintAddress)?.isStrictToken ?: true
         val formattedTokenSymbol = buildString {
-            append(token.tokenSymbol)
+            if (token.tokenSymbol.length > 6) {
+                append(token.tokenSymbol.cutMiddle(3))
+            } else {
+                append(token.tokenSymbol)
+            }
             if (!isStrictToken) {
                 append("️⚠")
             }
