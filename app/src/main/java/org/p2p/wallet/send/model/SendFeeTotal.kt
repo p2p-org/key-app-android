@@ -24,7 +24,7 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 class SendFeeTotal constructor(
     val currentAmount: BigDecimal,
     val currentAmountUsd: BigDecimal?,
-    val receive: String,
+    val receiveFormatted: String,
     val receiveUsd: BigDecimal?,
     val sendFee: SendSolanaFee?,
     val feeLimit: TransactionFeeLimits,
@@ -93,9 +93,9 @@ class SendFeeTotal constructor(
     val approxTotalUsd: String? get() = currentAmountUsd?.asApproximateUsd()
 
     val fullReceive: String
-        get() = if (approxReceive.isNotBlank()) "$receive $approxReceive" else receive
+        get() = if (approxReceiveUsd.isNotBlank()) "$receiveFormatted $approxReceiveUsd" else receiveFormatted
 
-    val approxReceive: String
+    val approxReceiveUsd: String
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalFormatted: String

@@ -7,7 +7,7 @@ import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
@@ -133,11 +133,19 @@ class SendFeeRelayerManager(
             ?.currentRate
             ?.toBigDecimal()
 
+        val currentAmountWithInterestFee = transferFeePercent
+            ?.let { it / 100.toBigDecimal() * currentAmount } // get % from total sum
+            ?.let { percentAmount -> currentAmount - percentAmount }
+            ?: currentAmount
+
         return SendFeeTotal(
             currentAmount = currentAmount,
             currentAmountUsd = calculationMode.getCurrentAmountUsd(),
-            receive = "${currentAmount.formatToken()} ${sourceToken.tokenSymbol}",
-            receiveUsd = currentAmount.toUsd(sourceToken),
+            receiveFormatted = currentAmountWithInterestFee.formatTokenWithSymbol(
+                tokenSymbol = sourceToken.tokenSymbol,
+                decimals = sourceToken.decimals
+            ),
+            receiveUsd = currentAmountWithInterestFee.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
             recipientAddress = recipientAddress.address,
