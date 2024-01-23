@@ -13,7 +13,7 @@ class SwapTokensInteractor(
     private val swapStateManager: SwapStateManager,
     private val jupiterSwapInteractor: JupiterSwapInteractor,
 ) {
-    suspend fun getCurrentTokenA(): SwapTokenModel {
+    suspend fun requireCurrentTokenA(): SwapTokenModel {
         return swapStateManager.getStateValue { state ->
             requireNotNull(jupiterSwapInteractor.getSwapTokenPair(state)?.first) {
                 "Illegal swap state, can't find selected token A for the list: $state"
@@ -40,7 +40,7 @@ class SwapTokensInteractor(
     }
 
     suspend fun getAllTokensA(): List<SwapTokenModel> {
-        val tokenA = getCurrentTokenA()
+        val tokenA = requireCurrentTokenA()
         return getAllTokens().filter { it.notSelectedToken(tokenA) }
     }
 
@@ -48,7 +48,7 @@ class SwapTokensInteractor(
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
         val userTokensMints = userTokens.map { it.mintAddress }.toSet()
 
-        val tokenA = getCurrentTokenA()
+        val tokenA = requireCurrentTokenA()
         val tokenB = getCurrentTokenB()
 
         val availableTokenBMints = swapTokensRepository.getSwappableTokens(sourceTokenMint = tokenA.mintAddress)
@@ -60,7 +60,7 @@ class SwapTokensInteractor(
     }
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
-        val tokenA = getCurrentTokenA()
+        val tokenA = requireCurrentTokenA()
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
         val userTokensMints = userTokens.map { it.mintAddress }.toSet()
         val filteredUserTokens = filterUserSwapTokens(userTokens, symbolOrName)

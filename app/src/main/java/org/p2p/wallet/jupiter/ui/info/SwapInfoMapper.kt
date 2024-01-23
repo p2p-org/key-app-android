@@ -61,6 +61,33 @@ class SwapInfoMapper(
         )
     }
 
+    fun mapToken2022Fee(
+        isTransferFee: Boolean,
+        tokenASymbol: String
+    ): List<AnyCellItem> {
+        val title = if (isTransferFee) {
+            R.string.swap_info_details_transfer_fee_title
+        } else {
+            R.string.swap_info_details_interest_fee_title
+        }
+        // used same for interest and transfer fee
+        val subtitle = R.string.swap_info_details_transfer_fee_subtitle
+        return listOf(
+            SwapInfoBannerCellModel(
+                banner = R.drawable.ic_wallet_found,
+                infoCell = InfoBlockCellModel(
+                    icon = getIcon(R.drawable.ic_lightning),
+                    firstLineText = TextViewCellModel.Raw(
+                        text = TextContainer(title)
+                    ),
+                    secondLineText = TextViewCellModel.Raw(
+                        text = TextContainer(subtitle, tokenASymbol)
+                    )
+                )
+            )
+        )
+    }
+
     suspend fun mapLoadingLiquidityFee(
         route: JupiterSwapRouteV6? = null,
     ): List<AnyCellItem> = buildList {
@@ -169,10 +196,15 @@ class SwapInfoMapper(
         state: SwapRateLoaderState
     ): MainCellModel {
         return when (state) {
-            SwapRateLoaderState.Empty -> oldCell
-            is SwapRateLoaderState.NoRateAvailable,
-            is SwapRateLoaderState.Error -> oldCell.copy(rightSideCellModel = null)
-            SwapRateLoaderState.Loading -> oldCell.copy(rightSideCellModel = rightSideSkeleton())
+            SwapRateLoaderState.Empty -> {
+                oldCell
+            }
+            is SwapRateLoaderState.NoRateAvailable, is SwapRateLoaderState.Error -> {
+                oldCell.copy(rightSideCellModel = null)
+            }
+            SwapRateLoaderState.Loading -> {
+                oldCell.copy(rightSideCellModel = rightSideSkeleton())
+            }
             is SwapRateLoaderState.Loaded -> {
                 val rate = state.rate
                 val token = state.token

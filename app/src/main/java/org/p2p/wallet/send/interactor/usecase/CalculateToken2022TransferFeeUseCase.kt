@@ -7,7 +7,7 @@ import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toLamports
 import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig
-import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getTransferFeeConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.transferFeeConfig
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 
 class CalculateToken2022TransferFeeUseCase(
@@ -20,8 +20,8 @@ class CalculateToken2022TransferFeeUseCase(
     }
 
     suspend fun execute(token: Token.Active, tokenAmount: BigInteger): BigInteger {
-        val tokenExtensions = getTokenExtensionsUseCase.execute(token)
-        val transferFeeExtension = tokenExtensions.getTransferFeeConfig()
+        val tokenExtensions = getTokenExtensionsUseCase.execute(token.mintAddress)
+        val transferFeeExtension = tokenExtensions.transferFeeConfig
             ?.getActualTransferFee(solanaRepository.getEpochInfo().epoch)
         return transferFeeExtension.calculateFee(tokenAmount)
     }

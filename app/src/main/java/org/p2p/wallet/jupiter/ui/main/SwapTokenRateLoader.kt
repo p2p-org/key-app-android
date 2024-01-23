@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
@@ -31,6 +33,12 @@ class SwapTokenRateLoader(
             isRateLoaded -> emitAndSaveState(oldState)
             else -> updateToken(token)
         }
+    }
+
+    suspend fun getLoadedRate(token: SwapTokenModel): SwapRateLoaderState.Loaded? {
+        return getRate(token)
+            .filterIsInstance<SwapRateLoaderState.Loaded>()
+            .firstOrNull()
     }
 
     private suspend fun FlowCollector<SwapRateLoaderState>.updateToken(newToken: SwapTokenModel) {

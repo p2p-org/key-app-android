@@ -13,9 +13,10 @@ private const val SWAP_SETTINGS_SWAPPING_THROUGH_CHOICE = "Swap_Settings_Swappin
 
 class JupiterSwapSettingsAnalytics(private val tracker: Analytics) {
     fun logFeeDetailsClicked(feeType: SwapInfoType) {
+        val analyticsFee = feeType.toAnalyticsValue()?.value ?: return
         tracker.logEvent(
             event = SWAP_SETTINGS_FEE_CLICK,
-            params = mapOf("Fee_Name" to feeType.toAnalyticsValue().value)
+            params = mapOf("Fee_Name" to analyticsFee)
         )
     }
 
@@ -51,12 +52,15 @@ class JupiterSwapSettingsAnalytics(private val tracker: Analytics) {
         }
     }
 
-    private fun SwapInfoType.toAnalyticsValue(): SwapFeeTypeAnalytics {
+    private fun SwapInfoType.toAnalyticsValue(): SwapFeeTypeAnalytics? {
         return when (this) {
             SwapInfoType.NETWORK_FEE -> SwapFeeTypeAnalytics.NETWORK_FEE
             SwapInfoType.ACCOUNT_FEE -> SwapFeeTypeAnalytics.SOL_ACCOUNT_CREATION
             SwapInfoType.LIQUIDITY_FEE -> SwapFeeTypeAnalytics.LIQUIDITY_FEE
             SwapInfoType.MINIMUM_RECEIVED -> SwapFeeTypeAnalytics.ESTIMATED_FEES
+            // not supported for token2022
+            SwapInfoType.TOKEN_2022_INTEREST -> null
+            SwapInfoType.TOKEN_2022_TRANSFER -> null
         }
     }
 

@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -27,47 +27,60 @@ import org.p2p.wallet.utils.emptyString
 
 class SwapContentSettingsMapper(
     private val swapFeeBuilder: SwapFeeCellsBuilder,
+    private val token2022FeeBuilder: SwapToken2022FeeBuilder,
     private val dispatchers: CoroutineDispatchers,
     private val swapTokensRepository: JupiterSwapTokensRepository
 ) {
-
     suspend fun mapForLoadingTransactionState(
-        slippage: Slippage,
-        route: JupiterSwapRouteV6,
-        tokenB: SwapTokenModel,
+        state: SwapState.LoadingTransaction,
         solTokenForFee: JupiterSwapToken,
     ): List<AnyCellItem> = mapList(
-        slippage = slippage,
-        route = route,
+        slippage = state.slippage,
+        route = state.route,
+        tokenA = state.tokenA,
+        tokenAAmount = state.amountTokenA,
         tokenBAmount = null,
-        tokenB = tokenB,
+        tokenB = state.tokenB,
+        solTokenForFee = solTokenForFee,
+    )
+
+    suspend fun mapForLoadingTransactionState(
+        state: SwapState.RoutesLoaded,
+        solTokenForFee: JupiterSwapToken,
+    ): List<AnyCellItem> = mapList(
+        slippage = state.slippage,
+        route = state.route,
+        tokenA = state.tokenA,
+        tokenAAmount = state.amountTokenA,
+        tokenBAmount = null,
+        tokenB = state.tokenB,
         solTokenForFee = solTokenForFee,
     )
 
     suspend fun mapForRoutesLoadedState(
         state: SwapState.RoutesLoaded,
         solTokenForFee: JupiterSwapToken,
-        tokenBAmount: BigDecimal?,
     ): List<AnyCellItem> = mapList(
         slippage = state.slippage,
         route = state.route,
-        tokenBAmount = tokenBAmount,
+        tokenAAmount = state.amountTokenA,
+        tokenBAmount = state.amountTokenB,
+        tokenA = state.tokenA,
         tokenB = state.tokenB,
         solTokenForFee = solTokenForFee,
-        showMinimumReceivedAmount = tokenBAmount != null,
+        showMinimumReceivedAmount = true,
     )
 
     suspend fun mapForSwapLoadedState(
-        slippage: Slippage,
-        route: JupiterSwapRouteV6,
-        tokenBAmount: BigDecimal?,
-        tokenB: SwapTokenModel,
+        state: SwapState.SwapLoaded,
         solTokenForFee: JupiterSwapToken,
     ): List<AnyCellItem> = mapList(
-        slippage = slippage,
-        route = route,
-        tokenBAmount = tokenBAmount,
-        tokenB = tokenB,
+        slippage = state.slippage,
+        route = state.route,
+        tokenAAmount = state.amountTokenA,
+        tokenBAmount = state.amountTokenB,
+        tokenA = state.tokenA,
+        tokenB = state.tokenB,
         solTokenForFee = solTokenForFee,
     )
 
@@ -77,7 +90,9 @@ class SwapContentSettingsMapper(
     private suspend fun mapList(
         slippage: Slippage,
         route: JupiterSwapRouteV6,
+        tokenAAmount: BigDecimal,
         tokenBAmount: BigDecimal?,
+        tokenA: SwapTokenModel,
         tokenB: SwapTokenModel,
         solTokenForFee: JupiterSwapToken,
         showMinimumReceivedAmount: Boolean = true,
@@ -93,6 +108,11 @@ class SwapContentSettingsMapper(
                 this += accountFee.cellModel
             }
 
+            val token2022Fee = token2022FeeBuilder.buildToken2022Fees(tokenA, tokenAAmount)
+            if (token2022Fee?.cellModel != null) {
+                this += token2022Fee.cellModel
+            }
+
             val liquidityFee = swapFeeBuilder.buildLiquidityFeeCell(route)
             if (liquidityFee != null) {
                 this += liquidityFee.cellModel
@@ -101,7 +121,8 @@ class SwapContentSettingsMapper(
             val estimatedFee = swapFeeBuilder.buildEstimatedFeeString(
                 networkFees = networkFeeCell,
                 accountFee = accountFee,
-                liquidityFees = liquidityFee
+                liquidityFees = liquidityFee,
+                token2022Fee = token2022Fee
             )
             if (estimatedFee != null) {
                 this += estimatedFee
@@ -167,8 +188,7 @@ class SwapContentSettingsMapper(
         } else {
             val amountWithSlippage = tokenBAmount.multiply(slippage.doubleValue.toBigDecimal())
             val minimumReceivedText = tokenBAmount.minus(amountWithSlippage)
-                .formatToken(tokenB.decimals)
-                .plus(" ${tokenB.tokenSymbol}")
+                .formatTokenWithSymbol(tokenB.tokenSymbol, tokenB.decimals)
             TextViewCellModel.Raw(text = TextContainer(minimumReceivedText))
         }
         this += MainCellModel(

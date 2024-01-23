@@ -37,7 +37,7 @@ class SwapTokensPresenter(
 
     private suspend fun initialLoad() {
         val currentTokenToSwapTokens = when (tokenToChange) {
-            SwapTokensListMode.TOKEN_A -> interactor.getCurrentTokenA() to interactor.getAllTokensA()
+            SwapTokensListMode.TOKEN_A -> interactor.requireCurrentTokenA() to interactor.getAllTokensA()
             SwapTokensListMode.TOKEN_B -> interactor.getCurrentTokenB() to interactor.getAllAvailableTokensB()
         }
         currentToken = currentTokenToSwapTokens.first
@@ -94,6 +94,10 @@ class SwapTokensPresenter(
     override fun onTokenClicked(clickedToken: SwapTokenModel) {
         interactor.selectToken(tokenToChange, clickedToken)
         view?.close()
+    }
+
+    override fun onNonStrictTokenConfirmed(clickedTokenMint: String) {
+        onTokenClicked(allTokens.first { clickedTokenMint == it.mintAddress.base58Value })
     }
 
     private fun renderLoading(isLoading: Boolean) {

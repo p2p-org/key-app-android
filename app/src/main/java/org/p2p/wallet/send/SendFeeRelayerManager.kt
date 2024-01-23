@@ -15,8 +15,8 @@ import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.solanaj.core.FeeAmount
-import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getInterestBearingConfig
-import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.getTransferFeeConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.interestBearingConfig
+import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.transferFeeConfig
 import org.p2p.solanaj.kits.TokenExtensionsMap
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.rpc.RpcSolanaRepository
@@ -124,12 +124,12 @@ class SendFeeRelayerManager(
         val currentAmount = calculationMode.getCurrentAmount()
 
         val transferFeePercent: BigDecimal? = tokenExtensions
-            .getTransferFeeConfig()
+            .transferFeeConfig
             ?.getActualTransferFee(currentSolanaEpoch)
             ?.transferFeePercent
 
         val interestBearingPercent: BigDecimal? = tokenExtensions
-            .getInterestBearingConfig()
+            .interestBearingConfig
             ?.currentRate
             ?.toBigDecimal()
 
@@ -160,7 +160,7 @@ class SendFeeRelayerManager(
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
 
-        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken)
+        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken.mintAddress)
         val token2022TransferFee = calculateToken2022TransferFeeUseCase.execute(sourceToken, tokenAmount)
 
         try {
@@ -478,7 +478,7 @@ class SendFeeRelayerManager(
             null
         }
 
-        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken)
+        val tokenExtensions = getTokenExtensionsUseCase.execute(sourceToken.mintAddress)
         val token2022TransferFee = calculateToken2022TransferFeeUseCase.execute(sourceToken, inputAmount)
 
         when (feeState) {

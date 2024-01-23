@@ -21,7 +21,7 @@ class MinimumSolAmountValidator(
         slippage: Slippage
     ) {
 
-        if (!tokenA.isWrappedSol()) return
+        if (!tokenA.isWrappedSol) return
 
         val minRentExemption = rpcAmountRepository.getMinBalanceForRentExemption(0)
 

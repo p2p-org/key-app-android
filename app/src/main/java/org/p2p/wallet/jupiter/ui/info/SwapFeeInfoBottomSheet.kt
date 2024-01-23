@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.baseCellDelegate
@@ -46,12 +47,32 @@ private const val ARG_STATE_MANAGE_KEY = "ARG_STATE_MANAGE_KEY"
 private const val ARG_INFO_TYPE_KEY = "ARG_INFO_TYPE_KEY"
 
 enum class SwapInfoType {
-    NETWORK_FEE, ACCOUNT_FEE, LIQUIDITY_FEE, MINIMUM_RECEIVED
+    NETWORK_FEE,
+    ACCOUNT_FEE,
+    LIQUIDITY_FEE,
+    MINIMUM_RECEIVED,
+    TOKEN_2022_INTEREST,
+    TOKEN_2022_TRANSFER
 }
 
 private typealias LoadRateBox = Triple<JupiterSwapRoutePlanV6, MainCellModel, SwapRateLoaderState>
 
-class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
+private fun swapInfoBannerDelegate(): AdapterDelegate<List<AnyCellItem>> =
+    adapterDelegateViewBinding<SwapInfoBannerCellModel, AnyCellItem, ItemSwapInfoBannerBinding>(
+        viewBinding = { inflater, parent -> ItemSwapInfoBannerBinding.inflate(inflater, parent, false) }
+    ) {
+        bind {
+            binding.imageViewBanner.setImageResource(item.banner)
+            binding.infoBlockView.bind(item.infoCell)
+        }
+    }
+
+data class SwapInfoBannerCellModel(
+    @DrawableRes val banner: Int,
+    val infoCell: InfoBlockCellModel
+) : AnyCellItem
+
+class SwapFeeInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
 
     companion object {
         fun show(
@@ -59,9 +80,9 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             stateManagerKey: String,
             swapInfoType: SwapInfoType,
         ) {
-            val tag = SwapInfoBottomSheet::javaClass.name
+            val tag = SwapFeeInfoBottomSheet::javaClass.name
             if (fm.findFragmentByTag(tag) != null) return
-            SwapInfoBottomSheet()
+            SwapFeeInfoBottomSheet()
                 .withArgs(
                     ARG_STATE_MANAGE_KEY to stateManagerKey,
                     ARG_INFO_TYPE_KEY to swapInfoType,
@@ -112,6 +133,12 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             SwapInfoType.LIQUIDITY_FEE -> {
                 binding.buttonDone.setText(R.string.swap_info_details_liquidity_fee_done)
                 observeFeatureState()
+            }
+            SwapInfoType.TOKEN_2022_INTEREST, SwapInfoType.TOKEN_2022_TRANSFER -> {
+                lifecycleScope.launch {
+                    showToken2022Fees()
+                    binding.buttonDone.setText(R.string.swap_info_details_account_fee_done)
+                }
             }
         }
         setExpanded(true)
@@ -166,8 +193,7 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
                                     oldCell = loadingCell,
                                     state = rateLoaderState
                                 )
-                                val newList = fullUiList.toMutableList()
-                                    .apply { set(indexOf, newCell) }
+                                val newList = fullUiList.toMutableList().apply { set(indexOf, newCell) }
                                 fullUiList = newList
                                 emit(newList)
                             }
@@ -196,20 +222,15 @@ class SwapInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
             Triple(a.first, a.second, b)
         }
     }
-}
 
-fun swapInfoBannerDelegate(): AdapterDelegate<List<AnyCellItem>> =
-    adapterDelegateViewBinding<SwapInfoBannerCellModel, AnyCellItem, ItemSwapInfoBannerBinding>(
-        viewBinding = { inflater, parent -> ItemSwapInfoBannerBinding.inflate(inflater, parent, false) }
-    ) {
-
-        bind {
-            binding.imageViewBanner.setImageResource(item.banner)
-            binding.infoBlockView.bind(item.infoCell)
+    private suspend fun showToken2022Fees() {
+        val tokenA = kotlin.runCatching { interactor.requireCurrentTokenA() }.getOrNull()
+        if (tokenA != null) {
+            adapter.items = mapper.mapToken2022Fee(
+                isTransferFee = swapInfoType == SwapInfoType.TOKEN_2022_TRANSFER,
+                tokenASymbol = tokenA.tokenSymbol
+            )
         }
     }
+}
 
-data class SwapInfoBannerCellModel(
-    @DrawableRes val banner: Int,
-    val infoCell: InfoBlockCellModel
-) : AnyCellItem

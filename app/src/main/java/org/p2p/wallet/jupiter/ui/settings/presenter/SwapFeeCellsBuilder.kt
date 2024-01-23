@@ -198,13 +198,15 @@ class SwapFeeCellsBuilder(
         networkFees: SwapSettingsFeeBox,
         accountFee: SwapSettingsFeeBox?,
         liquidityFees: SwapSettingsFeeBox?,
+        token2022Fee: SwapSettingsFeeBox?,
     ): MainCellModel? {
-        if (accountFee?.feeInUsd == null || liquidityFees?.feeInUsd == null) {
+        if (liquidityFees?.feeInUsd == null) {
             return null
         }
 
         val totalFee: String = liquidityFees.feeInUsd
-            .plus(accountFee.feeInUsd)
+            .plus(accountFee?.feeInUsd.orZero())
+            .plus(token2022Fee?.feeInUsd.orZero())
             .asUsdSwap()
         return MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(

@@ -80,27 +80,20 @@ class JupiterSwapSettingsPresenter(
                 rateTickerManager.handleJupiterRates(state)
                 val solToken = swapTokensRepository.requireWrappedSol()
                 currentContentList = contentMapper.mapForSwapLoadedState(
-                    slippage = state.slippage,
-                    route = state.route,
-                    tokenBAmount = state.amountTokenB,
-                    tokenB = state.tokenB,
+                    state = state,
                     solTokenForFee = solToken,
                 )
             }
             is SwapState.LoadingTransaction -> {
                 currentContentList = contentMapper.mapForLoadingTransactionState(
-                    slippage = state.slippage,
-                    route = state.route,
-                    tokenB = state.tokenB,
+                    state = state,
                     solTokenForFee = jupiterSolToken,
                 )
             }
             is SwapState.RoutesLoaded -> {
                 rateTickerManager.handleJupiterRates(state)
                 currentContentList = contentMapper.mapForLoadingTransactionState(
-                    slippage = state.slippage,
-                    route = state.route,
-                    tokenB = state.tokenB,
+                    state = state,
                     solTokenForFee = jupiterSolToken,
                 )
             }
@@ -110,7 +103,6 @@ class JupiterSwapSettingsPresenter(
                     currentContentList = contentMapper.mapForRoutesLoadedState(
                         state = previousState,
                         solTokenForFee = jupiterSolToken,
-                        tokenBAmount = previousState.amountTokenB
                     )
                 } else {
                     rateTickerManager.handleSwapException(state)
@@ -170,6 +162,12 @@ class JupiterSwapSettingsPresenter(
             }
             SwapSettingsPayload.ESTIMATED_FEE -> {
                 Unit
+            }
+            SwapSettingsPayload.TOKEN_2022_INTEREST -> {
+                view?.showDetailsDialog(SwapInfoType.TOKEN_2022_INTEREST)
+            }
+            SwapSettingsPayload.TOKEN_2022_TRANSFER -> {
+                view?.showDetailsDialog(SwapInfoType.TOKEN_2022_TRANSFER)
             }
         }
     }
