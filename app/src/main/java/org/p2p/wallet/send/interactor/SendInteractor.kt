@@ -241,8 +241,10 @@ class SendInteractor(
             recipient = destinationAddress.toBase58Instance(),
             tokenMint = if (token.isSOL) null else token.mintAddress.toBase58Instance(),
             transferMode = SendTransferMode.ExactOut,
+
             feePayerMode = feePayerMode.first,
             customFeePayerTokenMint = feePayerMode.second,
+
             rentPayerMode = rentPayerMode.first,
             customRentPayerTokenMint = rentPayerMode.second
         )

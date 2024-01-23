@@ -48,7 +48,6 @@
     <string name="send_transactions_details_gets">Recipient gets</string>
     <string name="send_transactions_details_transaction_fee">Transaction fee</string>
     <string name="send_transactions_details_transaction_token2022_fee">Token-2022 transfer fee</string>
-    <string name="send_transactions_details_transfer_fee">Transfer fee</string>
     <string name="send_transactions_details_interest_bearing">Interest bearing</string>
     <string name="send_transactions_details_account_fee">Account creation fee</string>
     <string name="send_transactions_details_total">Total</string>

@@ -133,19 +133,14 @@ class SendFeeRelayerManager(
             ?.currentRate
             ?.toBigDecimal()
 
-        val currentAmountWithInterestFee = transferFeePercent
-            ?.let { it / 100.toBigDecimal() * currentAmount } // get % from total sum
-            ?.let { percentAmount -> currentAmount - percentAmount }
-            ?: currentAmount
-
         return SendFeeTotal(
             currentAmount = currentAmount,
             currentAmountUsd = calculationMode.getCurrentAmountUsd(),
-            receiveFormatted = currentAmountWithInterestFee.formatTokenWithSymbol(
+            receiveFormatted = currentAmount.formatTokenWithSymbol(
                 tokenSymbol = sourceToken.tokenSymbol,
                 decimals = sourceToken.decimals
             ),
-            receiveUsd = currentAmountWithInterestFee.toUsd(sourceToken),
+            receiveUsd = currentAmount.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
             recipientAddress = recipientAddress.address,

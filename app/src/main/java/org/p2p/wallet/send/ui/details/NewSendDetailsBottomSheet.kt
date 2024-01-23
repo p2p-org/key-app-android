@@ -80,6 +80,7 @@ class NewSendDetailsBottomSheet :
             setRecipientAddress()
             setRecipientReceiveAmount()
             setTransactionFee()
+            setTransferFee()
             setInterestBearingRate()
             setAccountCreation()
             setTotal()
@@ -132,22 +133,10 @@ class NewSendDetailsBottomSheet :
     private fun DialogNewSendDetailsBinding.setTransactionFee() {
         with(layoutTransactionFee) {
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
-            if (sendFee.transferFeePercent != null) {
-                textViewTitle.setText(R.string.send_transactions_details_transaction_token2022_fee)
-                val percent = sendFee.transferFeePercent!!.formatFiat()
-                textViewSubtitle.text = "$percent%"
-            } else {
-                textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
-                textViewSubtitle.setTextColor(colorMint)
-                textViewSubtitle.setText(R.string.send_free_fee_format)
-            }
-        }
-
-// old logic, decided to keep for some time
-
-//            textViewSubtitle.apply {
-//                setTextColor(colorMint)
-//                text = getString(R.string.send_free_fee_format)
+            textViewTitle.setText(R.string.send_transactions_details_transaction_fee)
+            textViewSubtitle.setTextColor(colorMint)
+            textViewSubtitle.setText(R.string.send_free_fee_format)
+                // old logic, decided to keep for some time
 //                text = if (!state.feeLimit.isTransactionAllowed()) {
 //                    setTextColor(colorNight)
 //                    if (fee == null) {
@@ -169,6 +158,21 @@ class NewSendDetailsBottomSheet :
 //                    setTextColor(colorMint)
 //                    getString(R.string.send_free_fee_format, state.feeLimit.remaining)
 //                }
+        }
+    }
+
+    private fun DialogNewSendDetailsBinding.setTransferFee() {
+        if (sendFee.transferFeePercent == null) return
+
+        with(layoutTransferFee) {
+            root.isVisible = true
+            imageViewIcon.setImageResource(R.drawable.ic_lightning)
+            textViewTitle.text = getString(R.string.send_transactions_details_transaction_token2022_fee)
+            textViewSubtitle.apply {
+                val percent = sendFee.transferFeePercent!!.formatFiat()
+                text = "$percent%"
+            }
+        }
     }
 
     private fun DialogNewSendDetailsBinding.setInterestBearingRate() {
