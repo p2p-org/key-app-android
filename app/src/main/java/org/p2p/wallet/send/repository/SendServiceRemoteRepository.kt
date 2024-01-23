@@ -3,7 +3,9 @@ package org.p2p.wallet.send.repository
 import timber.log.Timber
 import java.math.BigInteger
 import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.network.data.EmptyDataException
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.send.api.SendServiceApi
@@ -20,7 +22,8 @@ class SendServiceRemoteRepository(
         return try {
             val rpcRequest = RpcRequest("get_compensation_tokens", emptyList())
             val response = api.getCompensationTokens(rpcRequest)
-            response.result
+            // add SOL manually, it can be used for compensation
+            response.result.plus(Constants.WRAPPED_SOL_MINT.toBase58Instance())
         } catch (e: EmptyDataException) {
             Timber.i("`get_compensation_tokens` responded with empty data, returning null")
             emptyList()

@@ -97,17 +97,16 @@ class SendInteractor(
             .mapNotNull { userTokens.findByMintAddress(it.base58Value) }
 
         val tokenToExcludeSymbol = feePayerToExclude.tokenSymbol
-        val fees = feePayerTokens
-            .map { token ->
-                // converting SOL fee in token lamports to verify the balance coverage
-                async {
-                    getFeesInPayingTokenUseCase.executeNullable(
-                        token = token,
-                        transactionFeeInSOL = transactionFeeInSOL,
-                        accountCreationFeeInSOL = accountCreationFeeInSOL
-                    )
-                }
+        val fees = feePayerTokens.map { token ->
+            // converting SOL fee in token lamports to verify the balance coverage
+            async {
+                getFeesInPayingTokenUseCase.executeNullable(
+                    token = token,
+                    transactionFeeInSOL = transactionFeeInSOL,
+                    accountCreationFeeInSOL = accountCreationFeeInSOL
+                )
             }
+        }
             .awaitAll()
             .filterNotNull()
             .toMap()
