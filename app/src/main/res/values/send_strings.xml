@@ -47,6 +47,7 @@
     <string name="send_transactions_details_address">Recipient\'s address</string>
     <string name="send_transactions_details_gets">Recipient gets</string>
     <string name="send_transactions_details_transaction_fee">Transaction fee</string>
+    <string name="send_transactions_details_transaction_token2022_fee">Token-2022 transfer fee</string>
     <string name="send_transactions_details_transfer_fee">Transfer fee</string>
     <string name="send_transactions_details_interest_bearing">Interest bearing</string>
     <string name="send_transactions_details_account_fee">Account creation fee</string>
@@ -62,6 +63,7 @@
 
     <string name="send_fees">Fees:</string>
     <string name="send_fees_format">Fees: %s</string>
+    <string name="send_fees_token2022_format">Token-2022 details</string>
     <string name="send_fees_zero">Fees: 0</string>
     <string name="send_fees_free">Enjoy free transactions</string>
     <string name="send_calculating_fees">Calculating the fees</string>

@@ -226,6 +226,10 @@ class NewSendFragment :
         binding.widgetSendDetails.setFeeLabel(text)
     }
 
+    override fun setFeeLabelRes(textRes: Int) {
+        this.setFeeLabel(getString(textRes))
+    }
+
     override fun showBottomFeeValue(fee: TextViewCellModel) {
         binding.widgetSendDetails.showBottomFeeValue(fee)
     }

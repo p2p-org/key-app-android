@@ -3,6 +3,7 @@ package org.p2p.wallet.send.model
 import androidx.annotation.ColorInt
 import android.os.Parcelable
 import java.math.BigDecimal
+import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.utils.asApproximateUsd
@@ -34,13 +35,23 @@ class SendFeeTotal constructor(
     val interestBearingPercent: BigDecimal? = null
 ) : Parcelable {
 
-    fun getFeesInToken(isInputEmpty: Boolean): FeesStringFormat {
-        if (sendFee == null) {
-            val textRes = if (isInputEmpty) R.string.send_fees_free else R.string.send_fees_zero
-            return FeesStringFormat(textRes)
-        }
+    @IgnoredOnParcel
+    val isSendingToken2022: Boolean
+        get() = transferFeePercent != null || interestBearingPercent != null
 
-        return FeesStringFormat(R.string.send_fees_format, sendFee.totalFee)
+    fun getFeesInToken(isInputEmpty: Boolean): FeesStringFormat {
+        return when {
+            isSendingToken2022 -> {
+                FeesStringFormat(R.string.send_fees_token2022_format)
+            }
+            sendFee == null -> {
+                val textRes = if (isInputEmpty) R.string.send_fees_free else R.string.send_fees_zero
+                FeesStringFormat(textRes)
+            }
+            else -> {
+                FeesStringFormat(R.string.send_fees_format, sendFee.totalFee)
+            }
+        }
     }
 
     fun getTotalCombined(@ColorInt colorMountain: Int): CharSequence {

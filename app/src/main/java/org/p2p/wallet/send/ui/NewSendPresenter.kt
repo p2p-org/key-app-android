@@ -245,7 +245,10 @@ class NewSendPresenter(
             tokenExtensions = feeRelayerState.tokenExtensions
         )
 
-        val feesLabel = total.getFeesInToken(calculationMode.isCurrentInputEmpty()).format(resources)
+        val feesLabel = total.getFeesInToken(
+            isInputEmpty = calculationMode.isCurrentInputEmpty()
+        ).format(resources)
+
         view.setFeeLabel(feesLabel)
         updateButton(sourceToken, feeRelayerState)
 
@@ -295,7 +298,12 @@ class NewSendPresenter(
         initialToken: Token.Active,
         solToken: Token.Active
     ) {
-        view.setFeeLabel(resources.getString(R.string.send_fees))
+        val initialFeeLabel = if (initialToken.isToken2022) {
+            resources.getString(R.string.send_fees)
+        } else {
+            resources.getString(R.string.send_fees_token2022_format)
+        }
+        view.setFeeLabel(initialFeeLabel)
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
 
         sendFeeRelayerManager.initialize(initialToken, solToken, recipientAddress)

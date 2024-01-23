@@ -58,7 +58,7 @@ class NewSendDetailsBottomSheet :
 
     private lateinit var binding: DialogNewSendDetailsBinding
 
-    private val state: SendFeeTotal by args(ARG_SEND_FEE_TOTAL)
+    private val sendFee: SendFeeTotal by args(ARG_SEND_FEE_TOTAL)
     private val feeResultKey: String by args(ARG_RESULT_KEY_FEE)
     private val feePayerTokensResultKey: String by args(ARG_RESULT_KEY_FEE_PAYER_TOKENS)
     private val requestKey: String by args(ARG_REQUEST_KEY)
@@ -80,7 +80,6 @@ class NewSendDetailsBottomSheet :
             setRecipientAddress()
             setRecipientReceiveAmount()
             setTransactionFee()
-            setTransferFee()
             setInterestBearingRate()
             setAccountCreation()
             setTotal()
@@ -93,7 +92,7 @@ class NewSendDetailsBottomSheet :
     }
 
     override fun showNoTokensScreen(tokens: List<Token.Active>) {
-        val sendFee = state.sendFee ?: return // can't be null
+        val sendFee = sendFee.sendFee ?: return // can't be null
 
         val bundle = bundleOf(
             feeResultKey to sendFee,
@@ -104,7 +103,7 @@ class NewSendDetailsBottomSheet :
     }
 
     private fun DialogNewSendDetailsBinding.setRecipientAddress() {
-        val address = state.recipientAddress
+        val address = sendFee.recipientAddress
         with(containerAddress) {
             imageViewIcon.setImageResource(R.drawable.ic_wallet_24)
             textViewTitle.text = getString(R.string.send_transactions_details_address)
@@ -123,8 +122,8 @@ class NewSendDetailsBottomSheet :
             imageViewIcon.setImageResource(R.drawable.ic_receive)
             textViewTitle.text = getString(R.string.send_transactions_details_gets)
             textViewSubtitle.text = SpanUtils.highlightText(
-                commonText = state.fullReceive,
-                highlightedText = state.approxReceiveUsd,
+                commonText = sendFee.fullReceive,
+                highlightedText = sendFee.approxReceiveUsd,
                 color = color
             )
         }
@@ -133,12 +132,22 @@ class NewSendDetailsBottomSheet :
     private fun DialogNewSendDetailsBinding.setTransactionFee() {
         with(layoutTransactionFee) {
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
-            textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
-            textViewSubtitle.apply {
-                setTextColor(colorMint)
-                text = getString(R.string.send_free_fee_format)
+            if (sendFee.transferFeePercent != null) {
+                textViewTitle.setText(R.string.send_transactions_details_transaction_token2022_fee)
+                val percent = sendFee.transferFeePercent!!.formatFiat()
+                textViewSubtitle.text = "$percent%"
+            } else {
+                textViewTitle.text = getString(R.string.send_transactions_details_transaction_fee)
+                textViewSubtitle.setTextColor(colorMint)
+                textViewSubtitle.setText(R.string.send_free_fee_format)
+            }
+        }
 
-                // old logic, decided to keep for some time
+// old logic, decided to keep for some time
+
+//            textViewSubtitle.apply {
+//                setTextColor(colorMint)
+//                text = getString(R.string.send_free_fee_format)
 //                text = if (!state.feeLimit.isTransactionAllowed()) {
 //                    setTextColor(colorNight)
 //                    if (fee == null) {
@@ -160,44 +169,28 @@ class NewSendDetailsBottomSheet :
 //                    setTextColor(colorMint)
 //                    getString(R.string.send_free_fee_format, state.feeLimit.remaining)
 //                }
-            }
-        }
-    }
-
-    private fun DialogNewSendDetailsBinding.setTransferFee() {
-        if (state.transferFeePercent == null) return
-
-        with(layoutTransferFee) {
-            root.isVisible = true
-            imageViewIcon.setImageResource(R.drawable.ic_lightning)
-            textViewTitle.text = getString(R.string.send_transactions_details_transfer_fee)
-            textViewSubtitle.apply {
-                val percent = state.transferFeePercent!!.formatFiat()
-                text = "$percent%"
-            }
-        }
     }
 
     private fun DialogNewSendDetailsBinding.setInterestBearingRate() {
-        if (state.interestBearingPercent == null) return
+        if (sendFee.interestBearingPercent == null) return
 
         with(layoutInterestBearing) {
             root.isVisible = true
             imageViewIcon.setImageResource(R.drawable.ic_lightning)
             textViewTitle.text = getString(R.string.send_transactions_details_interest_bearing)
             textViewSubtitle.apply {
-                val percent = state.interestBearingPercent!!.formatToken(2, exactDecimals = true)
+                val percent = sendFee.interestBearingPercent!!.formatToken(2, exactDecimals = true)
                 text = "$percent%"
             }
         }
     }
 
     private fun DialogNewSendDetailsBinding.setAccountCreation() {
-        groupAccountFee.isVisible = state.showAccountCreation
+        groupAccountFee.isVisible = sendFee.showAccountCreation
         imageViewIconAccountFee.setImageResource(R.drawable.ic_user)
         textViewTitleAccountFee.text = getString(R.string.send_transactions_details_account_fee)
 
-        val fee = state.sendFee
+        val fee = sendFee.sendFee
         if (fee != null) {
             textViewSubtitleAccountFee.setTextColor(colorNight)
             textViewSubtitleAccountFee.text = SpanUtils.highlightText(
@@ -209,15 +202,15 @@ class NewSendDetailsBottomSheet :
             textViewTitleAccountFee.setOnClickListener { presenter.loadFeePayerTokens(fee) }
         } else {
             textViewSubtitleAccountFee.setTextColor(colorMint)
-            textViewSubtitleAccountFee.text = getString(R.string.send_free_fee_format, state.feeLimit.remaining)
+            textViewSubtitleAccountFee.text = getString(R.string.send_free_fee_format)
         }
     }
 
     private fun DialogNewSendDetailsBinding.setTotal() {
         imageViewIconTotal.setImageResource(R.drawable.ic_receipt)
         textViewTitleTotal.text = getString(R.string.send_transactions_details_total)
-        textViewSubtitleFirstTotal.text = state.getTotalCombined(colorMountain)
+        textViewSubtitleFirstTotal.text = sendFee.getTotalCombined(colorMountain)
 
-        textViewSubtitleSecondTotal withTextOrGone state.getFeesCombined(colorMountain)
+        textViewSubtitleSecondTotal withTextOrGone sendFee.getFeesCombined(colorMountain)
     }
 }

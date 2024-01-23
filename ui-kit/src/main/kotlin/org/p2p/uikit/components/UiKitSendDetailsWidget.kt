@@ -55,6 +55,7 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
                 switchListener?.invoke()
             }
             val feeClickListener: (View) -> Unit = { feeButtonClickListener?.invoke() }
+
             textViewFee.setOnClickListener(feeClickListener)
             textViewBottomFee.setOnClickListener(feeClickListener)
             imageViewFeesInfo.setOnClickListener(feeClickListener)
@@ -254,26 +255,4 @@ class UiKitSendDetailsWidget @JvmOverloads constructor(
             amountListener?.invoke(amount)
         }
     }
-}
-
-interface UiKitSendDetailsWidgetContract {
-    fun showToken(token: Token.Active)
-    fun showAroundValue(value: String)
-    fun showSliderCompleteAnimation()
-    fun showFeeViewLoading(isLoading: Boolean)
-    fun showDelayedFeeViewLoading(isLoading: Boolean)
-
-    fun setSwitchLabel(symbol: String)
-    fun setInputColor(@ColorRes colorRes: Int)
-    fun setMainAmountLabel(symbol: String)
-    fun setMaxButtonVisible(isVisible: Boolean)
-    fun setFeeLabel(text: String)
-    fun showBottomFeeValue(fee: TextViewCellModel)
-    fun setFeeColor(@ColorRes colorRes: Int)
-    fun setTotalValue(text: String)
-    fun setTokenContainerEnabled(isEnabled: Boolean)
-    fun setInputEnabled(isEnabled: Boolean)
-    fun showFeeViewVisible(isVisible: Boolean)
-
-    fun restoreSlider()
 }
