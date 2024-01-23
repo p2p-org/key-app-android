@@ -2,6 +2,7 @@ package org.p2p.wallet.jupiter.ui.tokens.presenter
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -97,7 +98,10 @@ class SwapTokensPresenter(
     }
 
     override fun onNonStrictTokenConfirmed(clickedTokenMint: String) {
-        onTokenClicked(allTokens.first { clickedTokenMint == it.mintAddress.base58Value })
+        launch {
+            interactor.findTokenByMintAddress(clickedTokenMint.toBase58Instance())
+                ?.also { onTokenClicked(it) }
+        }
     }
 
     private fun renderLoading(isLoading: Boolean) {

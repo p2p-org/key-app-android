@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.interactor
 
+import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
@@ -117,6 +118,11 @@ class SwapTokensInteractor(
 
     private fun SwapTokenModel.notSelectedToken(selectedTokenMint: SwapTokenModel): Boolean {
         return this.mintAddress != selectedTokenMint.mintAddress
+    }
+
+    suspend fun findTokenByMintAddress(mintAddress: Base58String): SwapTokenModel.JupiterToken? {
+        return swapTokensRepository.findTokenByMint(mintAddress)
+            ?.let { SwapTokenModel.JupiterToken(it) }
     }
 
     fun selectToken(mode: SwapTokensListMode, token: SwapTokenModel) {
