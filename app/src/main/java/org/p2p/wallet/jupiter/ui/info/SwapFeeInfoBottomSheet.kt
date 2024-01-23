@@ -233,4 +233,3 @@ class SwapFeeInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
         }
     }
 }
-
