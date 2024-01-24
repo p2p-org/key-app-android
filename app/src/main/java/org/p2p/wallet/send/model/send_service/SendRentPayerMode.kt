@@ -9,5 +9,5 @@ enum class SendRentPayerMode {
     UserSol,
     @SerializedName("UserSameToken")
     UserSameToken,
-    Custom
+    Custom,
 }

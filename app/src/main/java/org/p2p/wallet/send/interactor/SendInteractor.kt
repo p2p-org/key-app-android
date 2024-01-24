@@ -173,6 +173,7 @@ class SendInteractor(
     suspend fun getFreeTransactionsInfo(): TransactionFeeLimits =
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
+    @Deprecated("Use Send-Service method")
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
@@ -230,33 +231,41 @@ class SendInteractor(
 
         // selecting fee payer
         val feePayerMode: Pair<SendFeePayerMode, Base58String?> = decideWhoPaysNetworkFee()
-        val rentPayerMode: Pair<SendRentPayerMode, Base58String?> = decideWhoPaysAccountCreationFees()
+        val rentPayerMode: Pair<SendRentPayerMode, Base58String?> = decideWhoPaysAccountCreationFees(
+            destinationAddress = destinationAddress,
+            tokenMintAddress = token.mintAddress,
+            programId = token.programId?.toPublicKey() ?: TokenProgram.PROGRAM_ID
+        )
 
         val signer = Account(tokenKeyProvider.keyPair)
 
-        val generatedTransaction = sendServiceRepository.generateTransaction(
-            // user_wallet must be signer, not a token account
-            userWallet = signer.publicKey.toBase58Instance(),
-            amountLamports = lamports,
-            recipient = destinationAddress.toBase58Instance(),
-            tokenMint = if (token.isSOL) null else token.mintAddress.toBase58Instance(),
-            transferMode = SendTransferMode.ExactOut,
-
-            feePayerMode = feePayerMode.first,
-            customFeePayerTokenMint = feePayerMode.second,
-
-            rentPayerMode = rentPayerMode.first,
-            customRentPayerTokenMint = rentPayerMode.second
-        )
+        Timber.i("Generating transaction")
+        Timber.i("FeePayerMode: ${feePayerMode.first} - ${feePayerMode.second}")
+        Timber.i("RentPayerMode: ${rentPayerMode.first} - ${rentPayerMode.second}")
 
         try {
+            val generatedTransaction = sendServiceRepository.generateTransaction(
+                // user_wallet must be signer, not a token account
+                userWallet = signer.publicKey.toBase58Instance(),
+                amountLamports = lamports,
+                recipient = destinationAddress.toBase58Instance(),
+                tokenMint = if (token.isSOL) null else token.mintAddress.toBase58Instance(),
+                transferMode = SendTransferMode.ExactOut,
+
+                feePayerMode = feePayerMode.first,
+                customFeePayerTokenMint = feePayerMode.second,
+
+                rentPayerMode = rentPayerMode.first,
+                customRentPayerTokenMint = rentPayerMode.second
+            )
+
             val signedTransaction = transactionInteractor.signGeneratedTransaction(
                 signer = signer,
                 generatedTransaction = generatedTransaction,
             )
             transactionInteractor.sendTransaction(
                 signedTransaction = signedTransaction.toBase64Instance(),
-                isSimulation = false,
+                isSimulation = true,
             )
         } catch (error: Throwable) {
             Timber.tag(TAG).i(error, "Failed sending transaction")
@@ -511,8 +520,18 @@ class SendInteractor(
         }
     }
 
-    private fun decideWhoPaysAccountCreationFees(): Pair<SendRentPayerMode, Base58String?> {
-        return if (feePayerToken.isSOL) {
+    private suspend fun decideWhoPaysAccountCreationFees(
+        destinationAddress: PublicKey,
+        tokenMintAddress: String,
+        programId: PublicKey,
+    ): Pair<SendRentPayerMode, Base58String?> {
+        val shouldCreateTokenAccount = addressInteractor.findSplTokenAddressData(
+            destinationAddress = destinationAddress,
+            mintAddress = tokenMintAddress,
+            programId = programId,
+        ).shouldCreateAccount
+
+        return if (feePayerToken.isSOL || !shouldCreateTokenAccount) {
             SendRentPayerMode.UserSol to null
         } else {
             SendRentPayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()

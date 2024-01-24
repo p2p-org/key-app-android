@@ -201,9 +201,7 @@ class NewSendPresenter(
             }
 
             initializeFeeRelayer(view, initialToken, solToken)
-            initialAmount?.let { inputAmount ->
-                setupDefaultFields(inputAmount)
-            }
+            initialAmount?.let(::setupDefaultFields)
         }
     }
 

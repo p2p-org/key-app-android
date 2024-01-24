@@ -14,4 +14,7 @@ enum class SendTransferMode {
      */
     @SerializedName("ExactIn")
     ExactIn,
+
+    @SerializedName("Maximum")
+    Maximum,
 }
