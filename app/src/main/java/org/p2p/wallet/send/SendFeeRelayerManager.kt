@@ -94,6 +94,7 @@ class SendFeeRelayerManager(
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
         try {
             initializeWithToken(initialToken)
+
             initializeCompleted = true
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "initialize for SendFeeRelayerManager failed")

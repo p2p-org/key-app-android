@@ -22,7 +22,7 @@ private const val TAG = "CalculationMode"
 
 class CalculationMode(
     private val sendModeProvider: SendModeProvider,
-    private val lessThenMinString: String
+    private val lessThenMinString: String,
 ) {
 
     var onCalculationCompleted: ((aroundValue: String) -> Unit)? = null

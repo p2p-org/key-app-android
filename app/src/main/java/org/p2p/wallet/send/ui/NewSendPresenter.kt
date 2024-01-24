@@ -157,6 +157,7 @@ class NewSendPresenter(
         } else {
             setupInitialToken(view)
         }
+
     }
 
     private fun restoreSelectedToken(view: NewSendContract.View, token: Token.Active) {
@@ -171,6 +172,13 @@ class NewSendPresenter(
 
             val currentState = sendFeeRelayerManager.getState()
             handleFeeRelayerStateUpdate(currentState, view)
+
+            maximumAmountCalculator.getMaxAvailableAmountToSend(
+                token = token,
+                recipient = recipientAddress.address.toBase58Instance()
+            )
+                // set max available amount
+                .also { calculationMode.getMaxAvailableAmount(it) }
         }
     }
 
@@ -201,6 +209,10 @@ class NewSendPresenter(
                 Timber.tag(TAG).e(SendFatalError("Couldn't find user's SOL account!"))
                 return@launch
             }
+            maximumAmountCalculator.getMaxAvailableAmountToSend(
+                token = initialToken,
+                recipient = recipientAddress.address.toBase58Instance()
+            ).also { calculationMode.getMaxAvailableAmount(it) }
 
             initializeFeeRelayer(view, initialToken, solToken)
             initialAmount?.let(::setupDefaultFields)

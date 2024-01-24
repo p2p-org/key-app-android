@@ -13,6 +13,7 @@ import org.p2p.wallet.home.repository.RefreshErrorRepository
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
 import org.p2p.wallet.home.ui.select.SelectTokenContract
 import org.p2p.wallet.home.ui.select.SelectTokenPresenter
+import org.p2p.wallet.send.interactor.FeePayersRepository
 import org.p2p.wallet.send.interactor.SearchInteractor
 import org.p2p.wallet.send.interactor.SendInteractor
 
@@ -29,6 +30,7 @@ object MainContainerModule : InjectionModule {
     }
 
     private fun Module.initDomainLayer() {
+        factoryOf(::FeePayersRepository)
         single {
             SendInteractor(
                 addressInteractor = get(),
@@ -40,7 +42,7 @@ object MainContainerModule : InjectionModule {
                 tokenKeyProvider = get(),
                 dispatchers = get(),
                 sendServiceRepository = get(),
-                getFeesInPayingTokenUseCase = get(),
+                feePayersRepository = get()
             )
         }
         factoryOf(::SearchInteractor)

@@ -2,15 +2,12 @@ package org.p2p.wallet.send.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.crypto.toBase64Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
-import org.p2p.core.token.findByMintAddress
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.OperationType
@@ -32,7 +29,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.model.SendFatalError
 import org.p2p.wallet.send.model.SendTransactionFailed
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
@@ -54,7 +50,7 @@ class SendInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val dispatchers: CoroutineDispatchers,
     private val sendServiceRepository: SendServiceRepository,
-    private val getFeesInPayingTokenUseCase: GetFeesInPayingTokenUseCase,
+    private val feePayersRepository: FeePayersRepository,
 ) {
 
     /*
@@ -82,90 +78,7 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    /*
-    * The request is too complex
-    * Wrapped each request into deferred
-    * TODO: Create a function to find fees by multiple tokens
-    * */
-    suspend fun findAlternativeFeePayerTokens(
-        userTokens: List<Token.Active>,
-        feePayerToExclude: Token.Active,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): List<Token.Active> = withContext(dispatchers.io) {
-        val feePayerTokens = sendServiceRepository.getCompensationTokens()
-            .mapNotNull { userTokens.findByMintAddress(it.base58Value) }
 
-        val tokenToExcludeSymbol = feePayerToExclude.tokenSymbol
-        val fees = feePayerTokens.map { token ->
-            // converting SOL fee in token lamports to verify the balance coverage
-            async {
-                getFeesInPayingTokenUseCase.executeNullable(
-                    token = token,
-                    transactionFeeInSOL = transactionFeeInSOL,
-                    accountCreationFeeInSOL = accountCreationFeeInSOL
-                )
-            }
-        }
-            .awaitAll()
-            .filterNotNull()
-            .toMap()
-
-        Timber.tag(TAG).i(
-            "Filtering user tokens for alternative fee payers: ${feePayerTokens.map(Token.Active::mintAddress)}"
-        )
-        feePayerTokens.filter { token ->
-            if (token.tokenSymbol == tokenToExcludeSymbol) {
-                Timber.tag(TAG).i("Excluding ${token.mintAddress} ${token.tokenSymbol}")
-                return@filter false
-            }
-
-            val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
-            if (token.isSOL) {
-                Timber.tag(TAG).i("Checking SOL as fee payer = ${token.totalInLamports >= totalInSol}")
-                return@filter token.totalInLamports >= totalInSol
-            }
-
-            // assuming that all other tokens are SPL
-            val feesInSpl = fees[token.tokenSymbol] ?: return@filter run {
-                Timber.tag(TAG).i("Fee in SPL not found for ${token.tokenSymbol} in ${fees.keys}")
-                false
-            }
-            token.totalInLamports >= feesInSpl.total
-        }.also {
-            Timber.tag(TAG).i("Found alternative feepayer tokens: ${it.map(Token.Active::mintAddress)}")
-        }
-    }
-
-    suspend fun findSupportedFeePayerTokens(
-        userTokens: List<Token.Active>,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): List<Token.Active> = withContext(dispatchers.io) {
-        val fees = userTokens
-            .map { token ->
-                // converting SOL fee in token lamports to verify the balance coverage
-                async {
-                    getFeesInPayingTokenUseCase.executeNullable(
-                        token = token,
-                        transactionFeeInSOL = transactionFeeInSOL,
-                        accountCreationFeeInSOL = accountCreationFeeInSOL
-                    )
-                }
-            }
-            .awaitAll()
-            .filterNotNull()
-            .toMap()
-
-        userTokens.filter { token ->
-            val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
-            if (token.isSOL) return@filter token.totalInLamports >= totalInSol
-
-            // assuming that all other tokens are SPL
-            val feesInSpl = fees[token.tokenSymbol] ?: return@filter false
-            token.totalInLamports >= feesInSpl.total
-        }
-    }
 
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
@@ -536,5 +449,19 @@ class SendInteractor(
         } else {
             SendRentPayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
         }
+    }
+
+    suspend fun findAlternativeFeePayerTokens(
+        userTokens: List<Token.Active>,
+        feePayerToExclude: Token.Active,
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
+    ): List<Token.Active> {
+        return feePayersRepository.findAlternativeFeePayerTokens(
+            userTokens = userTokens,
+            feePayerToExclude = feePayerToExclude,
+            transactionFeeInSOL = transactionFeeInSOL,
+            accountCreationFeeInSOL = accountCreationFeeInSOL
+        )
     }
 }
