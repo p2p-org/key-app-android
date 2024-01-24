@@ -23,7 +23,6 @@ import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -288,8 +287,7 @@ class SendFeeRelayerManager(
         result: SearchResult,
         @Suppress("UNUSED_PARAMETER") useCache: Boolean = true
     ): FeeCalculationState {
-
-        try {
+        return try {
             val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
             val minRentExemption: BigInteger =
                 amountRepository.getMinBalanceForRentExemption(TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH)
@@ -317,33 +315,33 @@ class SendFeeRelayerManager(
 
             val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
 
-            if (fees.total.isZero()) {
+            if (fees.totalFeeLamports.isZero()) {
                 Timber.i("Total fees are zero!")
                 return FeeCalculationState.NoFees
             }
 
-            val poolsStateFee = getFeesInPayingTokenUseCase.execute(
+            val poolsStateFees = getFeesInPayingTokenUseCase.execute(
                 feePayerToken = feePayerToken,
-                transactionFeeInSOL = fees.transaction,
-                accountCreationFeeInSOL = fees.accountBalances
+                transactionFeeInSol = fees.transaction,
+                accountCreationFeeInSol = fees.accountBalances
             )
 
-            return when (poolsStateFee) {
-                is FeePoolsState.Calculated -> {
-                    Timber.i("FeePoolsState is calculated")
-                    FeeCalculationState.Success(
-                        fee = FeeRelayerFee(
-                            feeInSol = fees,
-                            feeInSpl = poolsStateFee.feeInSpl,
-                            expectedFee = expectedFee
-                        )
+            if (poolsStateFees != null) {
+                FeeCalculationState.Success(
+                    fee = FeeRelayerFee(
+                        feeInSol = fees,
+                        feeInSpl = poolsStateFees,
+                        expectedFee = expectedFee
                     )
-                }
-
-                is FeePoolsState.Failed -> {
-                    Timber.i("FeePoolsState is failed")
-                    FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
-                }
+                )
+            } else {
+                FeeCalculationState.PoolsNotFound(
+                    feeInSol =  FeeRelayerFee(
+                        feeInSol = fees,
+                        feeInSpl = FeeAmount(fees.transaction, fees.accountBalances),
+                        expectedFee = expectedFee
+                    )
+                )
             }
         } catch (e: CancellationException) {
             Timber.i("Fee calculation cancelled")

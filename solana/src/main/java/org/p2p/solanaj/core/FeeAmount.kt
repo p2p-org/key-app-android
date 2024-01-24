@@ -10,6 +10,6 @@ data class FeeAmount(
     var accountBalances: BigInteger = BigInteger.ZERO
 ) : Parcelable {
 
-    val total: BigInteger
+    val totalFeeLamports: BigInteger
         get() = transaction + accountBalances
 }

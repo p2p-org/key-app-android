@@ -165,7 +165,7 @@ class FeeRelayerTopUpInteractor(
         neededAmount.transaction = neededTopUpNetworkFee + neededTransactionNetworkFee
 
         // transaction is totally free
-        if (neededAmount.total.isZero()) {
+        if (neededAmount.totalFeeLamports.isZero()) {
             return neededAmount
         }
 

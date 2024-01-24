@@ -40,13 +40,14 @@ sealed class Token constructor(
 
     @Parcelize
     data class Active constructor(
+        // put tokenSymbol first for toString()
+        override val tokenSymbol: String,
         override val publicKey: String,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
         val tokenServiceAddress: String,
         override val tokenExtensions: TokenExtensions,
-        override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
         override val programId: String?,

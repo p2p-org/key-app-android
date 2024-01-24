@@ -5,6 +5,7 @@ import java.math.BigInteger
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkEnvironmentManager
+import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isNotZero
@@ -23,6 +24,7 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.swap.interactor.orca.OrcaPoolInteractor
 import org.p2p.wallet.swap.model.Slippage
+import org.p2p.wallet.swap.model.orca.OrcaPool
 import org.p2p.wallet.swap.model.orca.OrcaPool.Companion.getInputAmount
 import org.p2p.wallet.utils.retryRequest
 
@@ -67,17 +69,18 @@ class FeeRelayerInteractor(
     }
 
     // Calculate needed fee (count in payingToken)
+    @Deprecated("Use token-service to know fee in SPL token")
     suspend fun calculateFeeInPayingToken(
         feeInSOL: FeeAmount,
-        payingFeeTokenMint: String
+        feePayerToken: Token.Active
     ): FeePoolsState {
-        val tradableTopUpPoolsPair = try {
-            orcaPoolInteractor.getTradablePoolsPairs(payingFeeTokenMint, WRAPPED_SOL_MINT)
+        val tradableTopUpPoolsPair: List<MutableList<OrcaPool>> = try {
+            orcaPoolInteractor.getTradablePoolsPairs(feePayerToken.mintAddress, WRAPPED_SOL_MINT)
         } catch (e: Throwable) {
             return FeePoolsState.Failed(feeInSOL)
         }
         val topUpPools = try {
-            orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSOL.total, tradableTopUpPoolsPair)
+            orcaPoolInteractor.findBestPoolsPairForEstimatedAmount(feeInSOL.totalFeeLamports, tradableTopUpPoolsPair)
         } catch (e: Throwable) {
             return FeePoolsState.Failed(feeInSOL)
         }
@@ -139,8 +142,8 @@ class FeeRelayerInteractor(
         }
 
         val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)
-        val topUpParams = if (expectedFee.total.isNotZero() && minRelayAccountBalance < expectedFee.total) {
-            val topUpAmount = expectedFee.total - minRelayAccountBalance
+        val topUpParams = if (expectedFee.totalFeeLamports.isNotZero() && minRelayAccountBalance < expectedFee.totalFeeLamports) {
+            val topUpAmount = expectedFee.totalFeeLamports - minRelayAccountBalance
             feeRelayerTopUpInteractor.prepareForTopUp(
                 topUpAmount = topUpAmount,
                 payingFeeToken = payingFeeToken,

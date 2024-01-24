@@ -460,8 +460,8 @@ class SendInteractor(
         return feePayersRepository.findAlternativeFeePayerTokens(
             userTokens = userTokens,
             feePayerToExclude = feePayerToExclude,
-            transactionFeeInSOL = transactionFeeInSOL,
-            accountCreationFeeInSOL = accountCreationFeeInSOL
+            transactionFeeInSol = transactionFeeInSOL,
+            accountCreationFeeInSol = accountCreationFeeInSOL
         )
     }
 }
