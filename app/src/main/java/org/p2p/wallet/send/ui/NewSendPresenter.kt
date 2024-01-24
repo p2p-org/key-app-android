@@ -45,6 +45,7 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.send.SendFeeRelayerManager
 import org.p2p.wallet.send.analytics.NewSendAnalytics
 import org.p2p.wallet.send.interactor.SendInteractor
+import org.p2p.wallet.send.interactor.SendMaximumAmountCalculator
 import org.p2p.wallet.send.model.CalculationMode
 import org.p2p.wallet.send.model.FeeLoadingState
 import org.p2p.wallet.send.model.FeeRelayerState
@@ -84,7 +85,8 @@ class NewSendPresenter(
     sendModeProvider: SendModeProvider,
     private val historyInteractor: HistoryInteractor,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
-    private val sendFeeRelayerManager: SendFeeRelayerManager
+    private val sendFeeRelayerManager: SendFeeRelayerManager,
+    private val maximumAmountCalculator: SendMaximumAmountCalculator
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private val flow: NewSendAnalytics.AnalyticsSendFlow = if (openedFrom == SendOpenedFrom.SELL_FLOW) {
@@ -102,7 +104,7 @@ class NewSendPresenter(
 
     private val calculationMode = CalculationMode(
         sendModeProvider = sendModeProvider,
-        lessThenMinString = resources.getString(R.string.common_less_than_minimum)
+        lessThenMinString = resources.getString(R.string.common_less_than_minimum),
     )
 
     private var selectedToken: Token.Active? = null
@@ -404,32 +406,38 @@ class NewSendPresenter(
     }
 
     override fun onMaxButtonClicked() {
-        val token = token ?: kotlin.run {
-            Timber.tag(TAG).e(SendFatalError("Token can't be null"))
-            return
+        launch {
+            val token = token ?: kotlin.run {
+                Timber.tag(TAG).e(SendFatalError("Token can't be null"))
+                return@launch
+            }
+            val totalAvailable = maximumAmountCalculator.getMaxAvailableAmountToSend(
+                token = token,
+                recipient = recipientAddress.address.toBase58Instance()
+            )
+                ?.also { calculationMode.getMaxAvailableAmount(it) } // set max available amount
+                ?: kotlin.run {
+                    Timber.tag(TAG).e(SendFatalError("totalAvailable is unavailable"))
+                    return@launch
+                }
+            view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
+            view?.showFeeViewVisible(isVisible = true)
+
+            showMaxButtonIfNeeded()
+
+            newSendAnalytics.setMaxButtonClicked(isClicked = true)
+
+            val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
+            view?.showToast(TextContainer.Raw(message))
+
+            // Calculating if we can pay with current token instead of
+            // already selected fee payer token
+            executeSmartSelection(
+                token = requireToken(),
+                feePayerToken = requireToken(),
+                strategy = CORRECT_AMOUNT
+            )
         }
-        val totalAvailable = calculationMode.getMaxAvailableAmount() ?: kotlin.run {
-            Timber.tag(TAG).e(SendFatalError("totalAvailable is unavailable"))
-            return
-        }
-        view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
-        view?.showFeeViewVisible(isVisible = true)
-
-        showMaxButtonIfNeeded()
-
-        newSendAnalytics.setMaxButtonClicked(isClicked = true)
-
-        val message = resources.getString(R.string.send_using_max_amount, token.tokenSymbol)
-        view?.showToast(TextContainer.Raw(message))
-
-        /*
-        * Calculating if we can pay with current token instead of already selected fee payer token
-        * */
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = CORRECT_AMOUNT
-        )
     }
 
     override fun onFeeInfoClicked() {
@@ -558,7 +566,9 @@ class NewSendPresenter(
     }
 
     private fun showMaxButtonIfNeeded() {
-        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(sendFeeRelayerManager.getMinRentExemption())
+        val isMaxButtonVisible = calculationMode.isMaxButtonVisible(
+            minRentExemption = sendFeeRelayerManager.getMinRentExemption()
+        )
         view?.setMaxButtonVisible(isVisible = isMaxButtonVisible)
     }
 
@@ -588,7 +598,7 @@ class NewSendPresenter(
             resources = resources
         )
 
-        when (val state = sendButton.currentState) {
+        when (val state = sendButton.getCurrentState()) {
             is NewSendButtonState.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)

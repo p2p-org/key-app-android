@@ -1,13 +1,13 @@
 package org.p2p.wallet.home.ui.new.adapter
 
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
@@ -28,12 +28,12 @@ private const val IMAGE_SIZE = 48
 
 class NewSelectTokenViewHolder(
     private val binding: ItemPickTokenNewBinding,
-    private val onItemClicked: (Token) -> Unit
+    private val onItemClicked: (Token.Active) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     constructor(
         parent: ViewGroup,
-        onItemClicked: (Token) -> Unit
+        onItemClicked: (Token.Active) -> Unit
     ) : this(
         binding = ItemPickTokenNewBinding.inflate(LayoutInflater.from(parent.context), parent, false),
         onItemClicked = onItemClicked

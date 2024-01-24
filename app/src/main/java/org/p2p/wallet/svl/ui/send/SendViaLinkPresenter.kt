@@ -216,7 +216,7 @@ class SendViaLinkPresenter(
 
     override fun onMaxButtonClicked() {
         val token = token ?: return
-        val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
+        val totalAvailable = calculationMode.getMaxAvailableAmount(null) ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
 
         showMaxButtonIfNeeded()
@@ -281,7 +281,7 @@ class SendViaLinkPresenter(
             resources = resources
         )
 
-        when (val state = sendButton.currentState) {
+        when (val state = sendButton.getCurrentState()) {
             is NewSendButtonState.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)

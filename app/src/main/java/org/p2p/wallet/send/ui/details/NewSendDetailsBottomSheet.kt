@@ -136,7 +136,7 @@ class NewSendDetailsBottomSheet :
             textViewTitle.setText(R.string.send_transactions_details_transaction_fee)
             textViewSubtitle.setTextColor(colorMint)
             textViewSubtitle.setText(R.string.send_free_fee_format)
-                // old logic, decided to keep for some time
+            // old logic, decided to keep for some time
 //                text = if (!state.feeLimit.isTransactionAllowed()) {
 //                    setTextColor(colorNight)
 //                    if (fee == null) {

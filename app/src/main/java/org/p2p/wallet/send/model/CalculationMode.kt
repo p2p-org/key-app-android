@@ -13,12 +13,10 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
-import org.p2p.wallet.send.repository.SendServiceRepository
 
 private const val TAG = "CalculationMode"
 
@@ -36,6 +34,8 @@ class CalculationMode(
     private lateinit var token: Token.Active
 
     private var inputAmount: String = emptyString()
+
+    var maxTokenAmount: BigDecimal = BigDecimal.ZERO
 
     var inputAmountDecimal: BigDecimal = BigDecimal.ZERO
         private set
@@ -94,23 +94,33 @@ class CalculationMode(
 
     fun isCurrentInputEmpty(): Boolean = inputAmount.isEmpty()
 
-    fun getMaxAvailableAmount(): BigDecimal? {
-        tokenAmount = token.total
-        usdAmount = token.totalInUsdScaled.orZero()
+    /**
+     * @param calculatedMaxAmountToSend is not null if it's calculated by using send-service
+     * if it's null - use old way of doing things, but it can fail due to token.total
+     * can't be sent with fees applied upon
+     */
+    fun getMaxAvailableAmount(calculatedMaxAmountToSend: BigDecimal?): BigDecimal? {
+        if (calculatedMaxAmountToSend == null) {
+            tokenAmount = token.total
+            usdAmount = token.totalInUsdScaled.orZero()
+        } else {
+            tokenAmount = calculatedMaxAmountToSend
+            usdAmount = calculatedMaxAmountToSend.toUsd(token).orZero()
+        }
 
-        val maxAmount = when (currencyMode) {
+        val maxAmount: BigDecimal? = when (currencyMode) {
             is CurrencyMode.Fiat -> {
                 handleCalculateTokenAmountUpdate()
                 token.totalInUsdScaled
             }
             is CurrencyMode.Token -> {
                 handleCalculateUsdAmountUpdate()
-                token.total.scaleLong()
+                calculatedMaxAmountToSend ?: tokenAmount
             }
         }
 
-        inputAmount = maxAmount?.toString().orEmpty()
-
+        inputAmount = maxAmount.orZero().toPlainString()
+        maxTokenAmount = maxAmount.orZero()
         return maxAmount
     }
 

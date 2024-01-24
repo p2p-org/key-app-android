@@ -17,12 +17,14 @@ import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.send.api.SendServiceApi
+import org.p2p.wallet.send.interactor.SendMaximumAmountCalculator
 import org.p2p.wallet.send.interactor.usecase.CalculateToken2022TransferFeeUseCase
 import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.interactor.usecase.GetTokenExtensionsUseCase
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.send.repository.RecipientsLocalRepository
+import org.p2p.wallet.send.repository.SendServiceInMemoryRepository
 import org.p2p.wallet.send.repository.SendServiceRemoteRepository
 import org.p2p.wallet.send.repository.SendServiceRepository
 import org.p2p.wallet.send.ui.NewSendContract
@@ -69,7 +71,8 @@ object SendModule : InjectionModule {
             NewSelectTokenPresenter(
                 tokenServiceCoordinator = get(),
                 selectedTokenMintAddress = selectedTokenMintAddress,
-                selectableTokens = selectableTokens
+                selectableTokens = selectableTokens,
+                get(), get()
             )
         } bind NewSelectTokenContract.Presenter::class
         factory { (recipient: SearchResult, openedFrom: SendOpenedFrom) ->
@@ -90,6 +93,7 @@ object SendModule : InjectionModule {
                 userTokensInteractor = get(),
                 tokenServiceCoordinator = get(),
                 sendFeeRelayerManager = get(),
+                maximumAmountCalculator = get()
             )
         } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
@@ -126,9 +130,11 @@ object SendModule : InjectionModule {
             )
         }
 
+        singleOf(::SendServiceInMemoryRepository)
+        factoryOf(::SendMaximumAmountCalculator)
         factory {
             val api = get<Retrofit>(named(SEND_SERVICE_RETROFIT_QUALIFIER)).create(SendServiceApi::class.java)
-            SendServiceRemoteRepository(api)
+            SendServiceRemoteRepository(api, get())
         } bind SendServiceRepository::class
     }
 }
