@@ -265,7 +265,7 @@ class SendInteractor(
             )
             transactionInteractor.sendTransaction(
                 signedTransaction = signedTransaction.toBase64Instance(),
-                isSimulation = true,
+                isSimulation = false,
             )
         } catch (error: Throwable) {
             Timber.tag(TAG).i(error, "Failed sending transaction")
