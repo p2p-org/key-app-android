@@ -165,7 +165,7 @@ class NewSendPresenter(
             calculationMode.updateToken(token)
             checkTokenRatesAndSetSwitchAmountState(token)
 
-            val userTokens = getNonZeroUserTokensOrSoul()
+            val userTokens = getNonZeroUserTokensOrSol()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
@@ -185,7 +185,7 @@ class NewSendPresenter(
         launch {
             // We should find SOL anyway because SOL is needed for Selection Mechanism
             // todo: check this logic as user definitely may have empty account, we should not error by this reason
-            val userNonZeroTokens = getNonZeroUserTokensOrSoul()
+            val userNonZeroTokens = getNonZeroUserTokensOrSol()
             if (userNonZeroTokens.isEmpty()) {
                 Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
                 // we cannot proceed if user tokens are not loaded
@@ -222,7 +222,7 @@ class NewSendPresenter(
     /**
      * Get user's soul if nothing is there
      */
-    private suspend fun getNonZeroUserTokensOrSoul(): List<Token.Active> {
+    private suspend fun getNonZeroUserTokensOrSol(): List<Token.Active> {
         return tokenServiceCoordinator.getUserTokens()
             .filterNot {
                 if (it.isSOL) {

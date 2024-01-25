@@ -27,6 +27,11 @@ class SendMaximumAmountCalculator(
         token: Token.Active,
         recipient: Base58String
     ): BigDecimal? = kotlin.runCatching {
+        // user can send full amount of SOL
+        if (token.isSOL) {
+            return@runCatching token.totalInLamports
+        }
+
         sendServiceRepository.getMaxAmountToSend(
             userWallet = tokenKeyProvider.publicKeyBase58,
             recipient = recipient,

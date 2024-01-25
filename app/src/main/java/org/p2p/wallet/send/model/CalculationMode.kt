@@ -48,7 +48,7 @@ class CalculationMode(
             is CurrencyMode.Token -> inputAmountDecimal.formatToken(token.decimals)
         }
 
-    private var tokenAmount: BigDecimal = BigDecimal.ZERO
+    private var enteredTokenAmount: BigDecimal = BigDecimal.ZERO
     private var usdAmount: BigDecimal = BigDecimal.ZERO
 
     fun updateToken(newToken: Token.Active) {
@@ -76,7 +76,7 @@ class CalculationMode(
         val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
 
         usdAmount = newUsdAmount
-        tokenAmount = newTokenAmount
+        enteredTokenAmount = newTokenAmount
         inputAmount = newAmount.toString()
 
         if (currencyMode is CurrencyMode.Fiat) {
@@ -88,9 +88,9 @@ class CalculationMode(
         return newAmount
     }
 
-    fun getCurrentAmountLamports(): BigInteger = tokenAmount.toLamports(token.decimals)
+    fun getCurrentAmountLamports(): BigInteger = enteredTokenAmount.toLamports(token.decimals)
 
-    fun getCurrentAmount(): BigDecimal = tokenAmount
+    fun getCurrentAmount(): BigDecimal = enteredTokenAmount
 
     fun getCurrentAmountUsd(): BigDecimal? = usdAmount.takeIf { token.rate != null }
 
@@ -103,10 +103,10 @@ class CalculationMode(
      */
     fun setMaxAvailableAmountInInputs(): BigDecimal? {
         if (maxTokenAmount.isZero()) {
-            tokenAmount = token.total
+            enteredTokenAmount = token.total
             usdAmount = token.totalInUsdScaled.orZero()
         } else {
-            tokenAmount = maxTokenAmount
+            enteredTokenAmount = maxTokenAmount
             usdAmount = maxTokenAmount.toUsd(token).orZero()
         }
 
@@ -117,7 +117,7 @@ class CalculationMode(
             }
             is CurrencyMode.Token -> {
                 handleCalculateUsdAmountUpdate()
-                maxTokenAmount.takeIf { it.isNotZero() } ?: tokenAmount
+                maxTokenAmount.takeIf { it.isNotZero() } ?: enteredTokenAmount
             }
         }
 
@@ -147,8 +147,11 @@ class CalculationMode(
     fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean {
         return if (token.isSOL) {
             val maxAllowedAmount = token.totalInLamports - minRentExemption
-            val amountInLamports = tokenAmount.toLamports(token.decimals)
-            inputAmount.isEmpty() || amountInLamports >= maxAllowedAmount && amountInLamports < token.totalInLamports
+            val totalSolAmount = token.totalInLamports
+            val enteredAmountInLamports = enteredTokenAmount.toLamports(token.decimals)
+            inputAmount.isEmpty() ||
+                enteredAmountInLamports >= maxAllowedAmount &&
+                enteredAmountInLamports < totalSolAmount
         } else {
             inputAmount.isEmpty()
         }
@@ -176,20 +179,24 @@ class CalculationMode(
         usdAmount = inputAmount.toBigDecimalOrZero()
 
         val tokenAround = usdAmount.divideSafe(token.usdRateOrZero, token.decimals)
-        tokenAmount = tokenAround
+        enteredTokenAmount = tokenAround
 
         handleCalculateTokenAmountUpdate()
     }
 
     private fun calculateByToken(inputAmount: String) {
-        tokenAmount = inputAmount.toBigDecimalOrZero()
-        usdAmount = if (tokenAmount.isZero()) BigDecimal.ZERO else tokenAmount.multiply(token.usdRateOrZero)
+        enteredTokenAmount = inputAmount.toBigDecimalOrZero()
+        usdAmount = if (enteredTokenAmount.isZero()) {
+            BigDecimal.ZERO
+        } else {
+            enteredTokenAmount.multiply(token.usdRateOrZero)
+        }
 
         handleCalculateUsdAmountUpdate()
     }
 
     private fun handleCalculateTokenAmountUpdate() {
-        handleCalculationUpdate(tokenAmount.formatToken(token.decimals), token.tokenSymbol)
+        handleCalculationUpdate(enteredTokenAmount.formatToken(token.decimals), token.tokenSymbol)
     }
 
     private fun handleCalculateUsdAmountUpdate() {
@@ -213,7 +220,7 @@ class CalculationMode(
         val newAmount = if (currencyMode is CurrencyMode.Fiat) newUsdAmount else newTokenAmount
 
         usdAmount = newUsdAmount
-        tokenAmount = newTokenAmount
+        enteredTokenAmount = newTokenAmount
         inputAmountDecimal = newAmount
         inputAmount = formatInputAmount
 
@@ -252,7 +259,7 @@ class CalculationMode(
 
         inputAmount = when (newMode) {
             is CurrencyMode.Fiat -> usdAmount.toPlainString()
-            is CurrencyMode.Token -> tokenAmount.toPlainString()
+            is CurrencyMode.Token -> enteredTokenAmount.toPlainString()
         }
 
         currencyMode = newMode

@@ -119,18 +119,16 @@ class NewSendButtonState(
     /**
      * This case is only for sending SOL
      *
-     * 1. The recipient should receive at least [minRentExemption] SOL balance if his current balance is 0
+     * 1. The recipient should receive at least [minRentExemption] SOL balance if the recipient's current balance is 0
      * 2. The recipient should have at least [minRentExemption] after the transaction
      * */
-    private fun isAmountValidForRecipient(amount: BigInteger): Boolean {
+    private fun isAmountValidForRecipient(inputAmount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
-        val isRecipientEmpty = searchResult is SearchResult.AddressFound && searchResult.isEmptyBalance
-
-        val isInputValidForRecipient = amount >= minRentExemption
         if (!isSourceTokenSol) return true
 
-        val isInvalid = isRecipientEmpty && !isInputValidForRecipient
-        return !isInvalid
+        val isRecipientEmpty = searchResult is SearchResult.AddressFound && searchResult.isEmptyBalance
+        val isRecipientWillHaveMintExemption = inputAmount >= minRentExemption
+        return isRecipientEmpty && isRecipientWillHaveMintExemption
     }
 
     /**
@@ -142,8 +140,8 @@ class NewSendButtonState(
     private fun isAmountValidForSender(amount: BigInteger): Boolean {
         val isSourceTokenSol = sourceToken.isSOL
         if (!isSourceTokenSol) return true
-        val balanceDiff = sourceToken.totalInLamports - amount
 
+        val balanceDiff = sourceToken.totalInLamports - amount
         return balanceDiff.isZero() || balanceDiff >= minRentExemption
     }
 
