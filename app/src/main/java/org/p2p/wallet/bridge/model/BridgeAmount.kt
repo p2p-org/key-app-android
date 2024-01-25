@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.utils.asApproximateUsd
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.isNullOrZero
 import org.p2p.core.utils.orZero
 import org.p2p.wallet.utils.emptyString
@@ -31,7 +31,7 @@ data class BridgeAmount(
     val isZero: Boolean = tokenAmount.isNullOrZero() || fiatAmount.isNullOrZero()
 
     val formattedTokenAmount: String?
-        get() = tokenAmount?.let { "${it.formatToken(tokenDecimals)} $tokenSymbol" }
+        get() = tokenAmount?.formatTokenWithSymbol(tokenSymbol, tokenDecimals)
 
     val formattedFiatAmount: String?
         get() = fiatAmount?.asApproximateUsd(withBraces = false)
