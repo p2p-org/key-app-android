@@ -84,7 +84,7 @@ class SwapFeeCellsBuilder(
         activeRoute: JupiterSwapRouteV6,
         tokenB: SwapTokenModel,
     ): SwapSettingsFeeBox? {
-        val ataFee = activeRoute.fees.totalFeeAndDeposits.fromLamports(tokenB.decimals)
+        val ataFee = activeRoute.fees.totalFees.fromLamports(tokenB.decimals)
         if (ataFee.isZero()) {
             return null
         }

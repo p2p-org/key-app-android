@@ -32,8 +32,11 @@ data class JupiterSwapRoutePlanV6(
 )
 
 data class SwapKeyAppFees(
+    // maybe totalFees, maybe else,
+    // I don't know what fees, no doc at the moment
+    val totalFees: BigInteger,
     val signatureFee: BigInteger,
     val ataDeposits: BigInteger,
     val totalFeeAndDeposits: BigInteger,
-    val minimumSolForTransaction: BigInteger
+    val minimumSolForTransaction: BigInteger,
 )
