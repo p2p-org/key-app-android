@@ -63,7 +63,6 @@ class SwapInfoMapper(
 
     fun mapToken2022Fee(
         isTransferFee: Boolean,
-        tokenASymbol: String
     ): List<AnyCellItem> {
         val title = if (isTransferFee) {
             R.string.swap_info_details_transfer_fee_title
@@ -81,7 +80,7 @@ class SwapInfoMapper(
                         text = TextContainer(title)
                     ),
                     secondLineText = TextViewCellModel.Raw(
-                        text = TextContainer(subtitle, tokenASymbol)
+                        text = TextContainer(subtitle)
                     )
                 )
             )

@@ -8,6 +8,7 @@ import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.token.Token
 import org.p2p.core.token.findByMintAddress
+import org.p2p.core.utils.plusAssign
 import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.repository.SendServiceRepository
 
@@ -27,9 +28,13 @@ class FeePayersRepository(
         transactionFeeInSol: BigInteger,
         accountCreationFeeInSol: BigInteger
     ): List<Token.Active> = withContext(dispatchers.io) {
-        Timber.i("findAlternativeFeePayerTokens: " +
-            "accountCreationFeeInSol = $accountCreationFeeInSol " +
-            "transactionFeeInSol = $transactionFeeInSol")
+        Timber.i(
+            buildString {
+                this += "findAlternativeFeePayerTokens: "
+                this += "accountCreationFeeInSol = $accountCreationFeeInSol "
+                this += "transactionFeeInSol = $transactionFeeInSol"
+            }
+        )
         val feePayerTokensMints = sendServiceRepository.getCompensationTokens()
         val tokenToExcludeSymbol = feePayerToExclude.tokenSymbol
 

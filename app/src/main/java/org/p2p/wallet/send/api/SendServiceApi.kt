@@ -29,5 +29,4 @@ interface SendServiceApi {
         @Body rpcRequest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<List<SendTokenAmountsResponse>>
-
 }

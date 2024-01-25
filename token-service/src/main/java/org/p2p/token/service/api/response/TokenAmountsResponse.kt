@@ -9,7 +9,7 @@ internal class TokenAmountsResponse(
     val mintAddress: Base58String,
     @SerializedName("amount")
     val amount: String // do not use BigInteger here, gson parses it as Hex
-){
+) {
     val amountLamports: BigInteger
         get() = amount.toBigInteger()
 }

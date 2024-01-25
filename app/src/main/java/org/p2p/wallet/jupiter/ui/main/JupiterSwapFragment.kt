@@ -74,7 +74,7 @@ private const val EXTRA_INITIAL_AMOUNT_A = "EXTRA_INITIAL_AMOUNT_A"
 private const val EXTRA_STRICT_WARNING = "EXTRA_STRICT_WARNING"
 
 @Parcelize
-data class SwapStrictTokenWarning(
+data class SwapDeeplinkStrictTokenWarning(
     val notStrictTokenASymbol: String?,
     val notStrictTokenBSymbol: String?,
 ) : Parcelable
@@ -95,7 +95,7 @@ class JupiterSwapFragment :
             tokenBMint: Base58String,
             amountA: String,
             source: SwapOpenedFrom,
-            strictWarning: SwapStrictTokenWarning? = null
+            strictWarning: SwapDeeplinkStrictTokenWarning? = null
         ): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
@@ -121,7 +121,7 @@ class JupiterSwapFragment :
     private val initialAmountA: String? by args(EXTRA_INITIAL_AMOUNT_A)
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
-    private var strictWarning: SwapStrictTokenWarning? by args(EXTRA_STRICT_WARNING)
+    private var strictWarning: SwapDeeplinkStrictTokenWarning? by args(EXTRA_STRICT_WARNING)
 
     private val binding: FragmentJupiterSwapBinding by viewBinding()
 
@@ -191,7 +191,7 @@ class JupiterSwapFragment :
         presenter.resumeStateManager()
     }
 
-    private fun showStrictDialog(strictWarning: SwapStrictTokenWarning) {
+    private fun showStrictDialog(strictWarning: SwapDeeplinkStrictTokenWarning) {
         val body = if (strictWarning.notStrictTokenASymbol != null && strictWarning.notStrictTokenBSymbol != null) {
             getString(
                 R.string.swap_main_strict_warning_multiple_body,

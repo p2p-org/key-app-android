@@ -10,7 +10,7 @@ import org.p2p.wallet.deeplinks.SwapDeeplinkData
 import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
-import org.p2p.wallet.jupiter.ui.main.SwapStrictTokenWarning
+import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
@@ -60,7 +60,7 @@ class DeeplinkHandler(
                     tokenAMint = emptyString().toBase58Instance(),
                     tokenBMint = emptyString().toBase58Instance(),
                     amountA = "0",
-                    strictWarning = SwapStrictTokenWarning(
+                    strictWarning = SwapDeeplinkStrictTokenWarning(
                         notStrictTokenASymbol = parsedData.nonStrictTokenASymbol,
                         notStrictTokenBSymbol = parsedData.nonStrictTokenBSymbol
                     ),

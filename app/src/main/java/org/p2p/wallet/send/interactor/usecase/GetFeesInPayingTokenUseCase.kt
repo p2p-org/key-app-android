@@ -53,7 +53,7 @@ class GetFeesInPayingTokenUseCase(
             mintsToConvertTo = listOf(feePayerToken.mintAddress.toBase58Instance())
         )[feePayerToken.mintAddress.toBase58Instance()]
 
-        return if (transactionFeeSpl != null && accountCreationFee != null){
+        return if (transactionFeeSpl != null && accountCreationFee != null) {
             FeeAmount(transactionFeeSpl, accountCreationFee)
         } else {
             null

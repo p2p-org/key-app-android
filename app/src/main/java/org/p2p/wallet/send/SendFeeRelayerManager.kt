@@ -343,7 +343,7 @@ class SendFeeRelayerManager(
                 )
             } else {
                 FeeCalculationState.PoolsNotFound(
-                    feeInSol =  FeeRelayerFee(
+                    feeInSol = FeeRelayerFee(
                         feeInSol = fees,
                         feeInSpl = FeeAmount(fees.transactionFee, fees.accountCreationFee),
                         expectedFee = expectedFee

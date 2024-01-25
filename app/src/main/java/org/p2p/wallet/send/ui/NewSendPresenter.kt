@@ -157,7 +157,6 @@ class NewSendPresenter(
         } else {
             setupInitialToken(view)
         }
-
     }
 
     private fun restoreSelectedToken(view: NewSendContract.View, token: Token.Active) {

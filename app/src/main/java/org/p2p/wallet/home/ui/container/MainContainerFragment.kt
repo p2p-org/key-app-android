@@ -27,7 +27,7 @@ import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.jupiter.ui.main.SwapStrictTokenWarning
+import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
@@ -191,7 +191,7 @@ class MainContainerFragment :
         tokenAMint: Base58String,
         tokenBMint: Base58String,
         amountA: String,
-        strictWarning: SwapStrictTokenWarning?,
+        strictWarning: SwapDeeplinkStrictTokenWarning?,
         source: SwapOpenedFrom
     ) {
         replaceFragment(

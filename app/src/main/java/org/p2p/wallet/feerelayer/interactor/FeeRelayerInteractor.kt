@@ -142,7 +142,10 @@ class FeeRelayerInteractor(
         }
 
         val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)
-        val topUpParams = if (expectedFee.totalFeeLamports.isNotZero() && minRelayAccountBalance < expectedFee.totalFeeLamports) {
+        val topUpParams = if (
+            expectedFee.totalFeeLamports.isNotZero() &&
+            minRelayAccountBalance < expectedFee.totalFeeLamports
+        ) {
             val topUpAmount = expectedFee.totalFeeLamports - minRelayAccountBalance
             feeRelayerTopUpInteractor.prepareForTopUp(
                 topUpAmount = topUpAmount,
