@@ -197,7 +197,8 @@ object JupiterSwapTestHelpers {
                 signatureFee = BigInteger.ZERO,
                 ataDeposits = BigInteger.ZERO,
                 totalFeeAndDeposits = BigInteger.ZERO,
-                minimumSolForTransaction = BigInteger.ZERO
+                minimumSolForTransaction = BigInteger.ZERO,
+                totalFees = BigInteger.ZERO
             )
         )
     }
@@ -217,7 +218,9 @@ object JupiterSwapTestHelpers {
     }
 
     fun getRateFromUsd(usdRate: BigDecimal): BigDecimal {
-        return BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(usdRate, RoundingMode.UP).setScale(18)
+        return BigDecimal.ONE.setScale(18, RoundingMode.UP)
+            .divide(usdRate, RoundingMode.UP)
+            .setScale(18)
     }
 
     fun createSOLToken(

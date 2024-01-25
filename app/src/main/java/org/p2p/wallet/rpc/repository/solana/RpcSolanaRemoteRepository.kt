@@ -69,7 +69,7 @@ class RpcSolanaRemoteRepository(
             val response = api.simulateTransaction(request).result
 
             val simulationError = response.value.error
-            val transactionError: RpcTransactionError? = parseTransactionError(simulationError)
+            val transactionError: RpcTransactionError? = simulationError.let(::parseTransactionError)
             TransactionSimulationResult(
                 isSimulationSuccess = simulationError.isJsonNull,
                 errorIfSimulationFailed = transactionError?.toString() ?: simulationError.toString()

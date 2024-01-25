@@ -223,13 +223,9 @@ class SwapFeeInfoBottomSheet : BaseBottomSheet(R.layout.dialog_swap_info) {
         }
     }
 
-    private suspend fun showToken2022Fees() {
-        val tokenA = kotlin.runCatching { interactor.requireCurrentTokenA() }.getOrNull()
-        if (tokenA != null) {
-            adapter.items = mapper.mapToken2022Fee(
-                isTransferFee = swapInfoType == SwapInfoType.TOKEN_2022_TRANSFER,
-                tokenASymbol = tokenA.tokenSymbol
-            )
-        }
+    private fun showToken2022Fees() {
+        adapter.items = mapper.mapToken2022Fee(
+            isTransferFee = swapInfoType == SwapInfoType.TOKEN_2022_TRANSFER,
+        )
     }
 }

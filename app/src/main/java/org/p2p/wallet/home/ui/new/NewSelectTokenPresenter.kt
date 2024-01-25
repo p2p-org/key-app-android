@@ -1,11 +1,14 @@
 package org.p2p.wallet.home.ui.new
 
+import timber.log.Timber
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import org.p2p.core.token.Token
+import org.p2p.core.utils.invokeAndForget
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.model.SelectTokenItem
@@ -15,13 +18,17 @@ import org.p2p.wallet.home.model.SelectableTokenRoundedState.BOTTOM_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.NOT_ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.ROUNDED
 import org.p2p.wallet.home.model.SelectableTokenRoundedState.TOP_ROUNDED
+import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.send.repository.SendServiceRepository
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
 
 class NewSelectTokenPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val selectedTokenMintAddress: String?,
-    private val selectableTokens: List<Token.Active>?
+    private val selectableTokens: List<Token.Active>?,
+    private val sendServiceRepository: SendServiceRepository,
+    private val tokenKeyProvider: TokenKeyProvider
 ) : BasePresenter<NewSelectTokenContract.View>(), NewSelectTokenContract.Presenter {
 
     private var mappedTokens: List<SelectTokenItem> by observable(emptyList()) { _, _, new ->
@@ -141,5 +148,22 @@ class NewSelectTokenPresenter(
         }
 
         return updatedList
+    }
+
+    override fun onTokenClicked(clickedToken: Token.Active) {
+        launch {
+            // cache maxAmountToSend for clickedToken
+            runCatching {
+                sendServiceRepository.getMaxAmountToSend(
+                    userWallet = tokenKeyProvider.publicKeyBase58,
+                    recipient = tokenKeyProvider.publicKeyBase58,
+                    token = clickedToken
+                )
+            }
+                .onFailure { Timber.i(it) }
+                // do not care about the result, we can refetch that later
+                .invokeAndForget()
+            view?.navigateBackWithToken(clickedToken)
+        }
     }
 }

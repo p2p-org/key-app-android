@@ -2,8 +2,6 @@ package org.p2p.wallet.send.interactor
 
 import timber.log.Timber
 import java.math.BigInteger
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
@@ -31,7 +29,6 @@ import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
 import org.p2p.wallet.rpc.interactor.TransactionInteractor
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
-import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.model.SendFatalError
 import org.p2p.wallet.send.model.SendTransactionFailed
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
@@ -53,7 +50,7 @@ class SendInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
     private val dispatchers: CoroutineDispatchers,
     private val sendServiceRepository: SendServiceRepository,
-    private val getFeesInPayingTokenUseCase: GetFeesInPayingTokenUseCase,
+    private val feePayersRepository: FeePayersRepository,
 ) {
 
     /*
@@ -81,95 +78,13 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-    /*
-    * The request is too complex
-    * Wrapped each request into deferred
-    * TODO: Create a function to find fees by multiple tokens
-    * */
-    suspend fun findAlternativeFeePayerTokens(
-        userTokens: List<Token.Active>,
-        feePayerToExclude: Token.Active,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): List<Token.Active> = withContext(dispatchers.io) {
-        val tokenToExclude = feePayerToExclude.tokenSymbol
-        val fees = userTokens
-            .map { token ->
-                // converting SOL fee in token lamports to verify the balance coverage
-                async {
-                    getFeesInPayingTokenUseCase.executeNullable(
-                        token = token,
-                        transactionFeeInSOL = transactionFeeInSOL,
-                        accountCreationFeeInSOL = accountCreationFeeInSOL
-                    )
-                }
-            }
-            .awaitAll()
-            .filterNotNull()
-            .toMap()
-
-        Timber.tag(TAG).i(
-            "Filtering user tokens for alternative fee payers: ${userTokens.map(Token.Active::mintAddress)}"
-        )
-        userTokens.filter { token ->
-            if (token.tokenSymbol == tokenToExclude) {
-                Timber.tag(TAG).i("Excluding ${token.mintAddress} ${token.tokenSymbol}")
-                return@filter false
-            }
-
-            val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
-            if (token.isSOL) {
-                Timber.tag(TAG).i("Checking SOL as fee payer = ${token.totalInLamports >= totalInSol}")
-                return@filter token.totalInLamports >= totalInSol
-            }
-
-            // assuming that all other tokens are SPL
-            val feesInSpl = fees[token.tokenSymbol] ?: return@filter run {
-                Timber.tag(TAG).i("Fee in SPL not found for ${token.tokenSymbol} in ${fees.keys}")
-                false
-            }
-            token.totalInLamports >= feesInSpl.total
-        }.also {
-            Timber.tag(TAG).i("Found alternative feepayer tokens: ${it.map(Token.Active::mintAddress)}")
-        }
-    }
-
-    suspend fun findSupportedFeePayerTokens(
-        userTokens: List<Token.Active>,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): List<Token.Active> = withContext(dispatchers.io) {
-        val fees = userTokens
-            .map { token ->
-                // converting SOL fee in token lamports to verify the balance coverage
-                async {
-                    getFeesInPayingTokenUseCase.executeNullable(
-                        token = token,
-                        transactionFeeInSOL = transactionFeeInSOL,
-                        accountCreationFeeInSOL = accountCreationFeeInSOL
-                    )
-                }
-            }
-            .awaitAll()
-            .filterNotNull()
-            .toMap()
-
-        userTokens.filter { token ->
-            val totalInSol = transactionFeeInSOL + accountCreationFeeInSOL
-            if (token.isSOL) return@filter token.totalInLamports >= totalInSol
-
-            // assuming that all other tokens are SPL
-            val feesInSpl = fees[token.tokenSymbol] ?: return@filter false
-            token.totalInLamports >= feesInSpl.total
-        }
-    }
-
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 
     suspend fun getFreeTransactionsInfo(): TransactionFeeLimits =
         feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
 
+    @Deprecated("Use Send-Service method")
     suspend fun sendTransaction(
         destinationAddress: PublicKey,
         token: Token.Active,
@@ -227,24 +142,34 @@ class SendInteractor(
 
         // selecting fee payer
         val feePayerMode: Pair<SendFeePayerMode, Base58String?> = decideWhoPaysNetworkFee()
-        val rentPayerMode: Pair<SendRentPayerMode, Base58String?> = decideWhoPaysAccountCreationFees()
+        val rentPayerMode: Pair<SendRentPayerMode, Base58String?> = decideWhoPaysAccountCreationFees(
+            destinationAddress = destinationAddress,
+            tokenMintAddress = token.mintAddress,
+            programId = token.programId?.toPublicKey() ?: TokenProgram.PROGRAM_ID
+        )
 
         val signer = Account(tokenKeyProvider.keyPair)
 
-        val generatedTransaction = sendServiceRepository.generateTransaction(
-            // user_wallet must be signer, not a token account
-            userWallet = signer.publicKey.toBase58Instance(),
-            amountLamports = lamports,
-            recipient = destinationAddress.toBase58Instance(),
-            tokenMint = if (token.isSOL) null else token.mintAddress.toBase58Instance(),
-            transferMode = SendTransferMode.ExactOut,
-            feePayerMode = feePayerMode.first,
-            customFeePayerTokenMint = feePayerMode.second,
-            rentPayerMode = rentPayerMode.first,
-            customRentPayerTokenMint = rentPayerMode.second
-        )
+        Timber.i("Generating transaction")
+        Timber.i("FeePayerMode: ${feePayerMode.first} - ${feePayerMode.second}")
+        Timber.i("RentPayerMode: ${rentPayerMode.first} - ${rentPayerMode.second}")
 
         try {
+            val generatedTransaction = sendServiceRepository.generateTransaction(
+                // user_wallet must be signer, not a token account
+                userWallet = signer.publicKey.toBase58Instance(),
+                amountLamports = lamports,
+                recipient = destinationAddress.toBase58Instance(),
+                tokenMint = if (token.isSOL) null else token.mintAddress.toBase58Instance(),
+                transferMode = SendTransferMode.ExactOut,
+
+                feePayerMode = feePayerMode.first,
+                customFeePayerTokenMint = feePayerMode.second,
+
+                rentPayerMode = rentPayerMode.first,
+                customRentPayerTokenMint = rentPayerMode.second
+            )
+
             val signedTransaction = transactionInteractor.signGeneratedTransaction(
                 signer = signer,
                 generatedTransaction = generatedTransaction,
@@ -506,11 +431,35 @@ class SendInteractor(
         }
     }
 
-    private fun decideWhoPaysAccountCreationFees(): Pair<SendRentPayerMode, Base58String?> {
-        return if (feePayerToken.isSOL) {
+    private suspend fun decideWhoPaysAccountCreationFees(
+        destinationAddress: PublicKey,
+        tokenMintAddress: String,
+        programId: PublicKey,
+    ): Pair<SendRentPayerMode, Base58String?> {
+        val shouldCreateTokenAccount = addressInteractor.findSplTokenAddressData(
+            destinationAddress = destinationAddress,
+            mintAddress = tokenMintAddress,
+            programId = programId,
+        ).shouldCreateAccount
+
+        return if (feePayerToken.isSOL || !shouldCreateTokenAccount) {
             SendRentPayerMode.UserSol to null
         } else {
             SendRentPayerMode.Custom to feePayerToken.mintAddress.toBase58Instance()
         }
+    }
+
+    suspend fun findAlternativeFeePayerTokens(
+        userTokens: List<Token.Active>,
+        feePayerToExclude: Token.Active,
+        transactionFeeInSOL: BigInteger,
+        accountCreationFeeInSOL: BigInteger
+    ): List<Token.Active> {
+        return feePayersRepository.findAlternativeFeePayerTokens(
+            userTokens = userTokens,
+            feePayerToExclude = feePayerToExclude,
+            transactionFeeInSol = transactionFeeInSOL,
+            accountCreationFeeInSol = accountCreationFeeInSOL
+        )
     }
 }

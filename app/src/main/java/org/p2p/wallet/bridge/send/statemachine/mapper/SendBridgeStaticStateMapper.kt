@@ -25,7 +25,11 @@ class SendBridgeStaticStateMapper {
         }
     }
 
-    private fun mapTokenNotZero(token: SendToken, amount: BigDecimal, fee: SendFee?): SendState.Static.TokenNotZero {
+    private fun mapTokenNotZero(
+        token: SendToken,
+        amount: BigDecimal,
+        fee: SendFee?
+    ): SendState.Static.TokenNotZero {
         return SendState.Static.TokenNotZero(
             token = token,
             amount = amount,

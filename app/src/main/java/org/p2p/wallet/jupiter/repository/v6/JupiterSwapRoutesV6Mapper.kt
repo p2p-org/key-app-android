@@ -32,6 +32,7 @@ class JupiterSwapRoutesV6Mapper(
         }
         val feesJson = JSONObject(response.keyAppFees.feeDetails.toString())
         val fees = SwapKeyAppFees(
+            totalFees = response.keyAppFees.fee.toBigInteger(),
             signatureFee = feesJson.optLong("signatureFee").toBigInteger(),
             ataDeposits = feesJson.optJSONArray("ataDeposits")
                 ?.mapAsStrings { it.toBigInteger() }

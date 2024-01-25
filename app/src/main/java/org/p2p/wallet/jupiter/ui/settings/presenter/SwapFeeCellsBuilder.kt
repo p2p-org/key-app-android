@@ -84,7 +84,7 @@ class SwapFeeCellsBuilder(
         activeRoute: JupiterSwapRouteV6,
         tokenB: SwapTokenModel,
     ): SwapSettingsFeeBox? {
-        val ataFee = activeRoute.fees.totalFeeAndDeposits.fromLamports(tokenB.decimals)
+        val ataFee = activeRoute.fees.totalFees.fromLamports(tokenB.decimals)
         if (ataFee.isZero()) {
             return null
         }
@@ -136,13 +136,12 @@ class SwapFeeCellsBuilder(
         val feeAmountFormatted = formatLiquidityFeeString(activeRoute)
 
         val usdAmounts = activeRoute.routePlans.map { routePlan ->
-            val lpToken = lpTokensRates.find { it.token.mintAddress == routePlan.feeMint }
-                ?.token
-                ?: return@supervisorScope null
+            val (lpToken, tokenRate) = lpTokensRates
+                .find { it.token.mintAddress == routePlan.feeMint }
+                ?: return@map null
 
-            val tokenRate: BigDecimal? = lpTokensRates.find { it.token.mintAddress == routePlan.feeMint }?.rate
             val amountLamports = routePlan.feeAmount.fromLamports(lpToken.decimals)
-            tokenRate?.let { amountLamports.multiply(it) }
+            amountLamports * tokenRate
         }
 
         val someAmountsUsdNotLoaded = usdAmounts.any { it == null }

@@ -1,5 +1,7 @@
 package org.p2p.wallet.swap.interactor.orca
 
+import timber.log.Timber
+import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -9,7 +11,6 @@ import org.p2p.wallet.swap.model.orca.OrcaPoolsPair
 import org.p2p.wallet.swap.model.orca.OrcaRoutes
 import org.p2p.wallet.swap.model.orca.OrcaToken
 import org.p2p.wallet.user.interactor.UserInteractor
-import java.math.BigInteger
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 
 class OrcaPoolInteractor(
@@ -17,7 +18,7 @@ class OrcaPoolInteractor(
     private val orcaInfoInteractor: OrcaInfoInteractor,
     private val userInteractor: UserInteractor,
     private val userTokensInteractor: UserTokensInteractor,
-    private val tokenKeyProvider: TokenKeyProvider
+    private val tokenKeyProvider: TokenKeyProvider,
 ) {
 
     /**
@@ -49,11 +50,12 @@ class OrcaPoolInteractor(
         fromMint: String,
         toMint: String
     ): List<OrcaPoolsPair> {
-        val fromTokenName = getTokenFromMint(fromMint)?.first
-        val toTokenName = getTokenFromMint(toMint)?.first
-        val currentRoutes = findRoutes(fromTokenName, toTokenName).values.firstOrNull()
+        val fromTokenSymbol = getTokenFromMint(fromMint)?.first ?: return emptyList()
+        val toTokenSymbol = getTokenFromMint(toMint)?.first ?: return emptyList()
 
-        if (fromTokenName.isNullOrEmpty() || toTokenName.isNullOrEmpty() || currentRoutes.isNullOrEmpty()) {
+        val currentRoutes = findRoutes(fromTokenSymbol, toTokenSymbol).values.firstOrNull()
+
+        if (currentRoutes.isNullOrEmpty()) {
             return emptyList()
         }
 
@@ -67,8 +69,8 @@ class OrcaPoolInteractor(
             orcaRouteInteractor.getPools(
                 infoPools = info?.pools,
                 route = it,
-                fromTokenName = fromTokenName,
-                toTokenName = toTokenName
+                fromTokenName = fromTokenSymbol,
+                toTokenName = toTokenSymbol
             ).toMutableList()
         }
         return result
@@ -139,28 +141,37 @@ class OrcaPoolInteractor(
     // Map mint to token info
     fun getTokenFromMint(mint: String): Pair<String, OrcaToken>? {
         val info = orcaInfoInteractor.getInfo()
-        val key = info?.tokens?.filterValues { it.mint == mint }?.keys?.firstOrNull() ?: return null
-        val tokenInfo = info.tokens[key] ?: return null
-        return key to tokenInfo
+        info ?: return null
+        val tokenSymbol = info.tokens
+            .filterValues { it.mint == mint }
+            .keys
+            .firstOrNull()
+        if (tokenSymbol == null) {
+            Timber.w("No $tokenSymbol in orca swap tokens found")
+            return null
+        }
+
+        val tokenInfo = info.tokens[tokenSymbol] ?: return null
+        return tokenSymbol to tokenInfo
     }
 
     // Find routes for from and to token name, aka symbol
     private fun findRoutes(
-        fromTokenName: String?,
-        toTokenName: String?
+        fromTokenSymbol: String?,
+        toTokenSymbol: String?
     ): OrcaRoutes {
         val swapInfo = orcaInfoInteractor.getInfo() ?: error("Swap info missing")
         // if fromToken isn't selected
-        if (fromTokenName.isNullOrEmpty()) return mutableMapOf()
+        if (fromTokenSymbol.isNullOrEmpty()) return mutableMapOf()
 
         // if toToken isn't selected
-        if (toTokenName == null) {
+        if (toTokenSymbol == null) {
             // get all routes that have token A
-            return swapInfo.routes.filter { it.key.split("/").contains(fromTokenName) }.toMutableMap()
+            return swapInfo.routes.filter { it.key.split("/").contains(fromTokenSymbol) }.toMutableMap()
         }
 
         // get routes with fromToken and toToken
-        val pair = listOf(fromTokenName, toTokenName)
+        val pair = listOf(fromTokenSymbol, toTokenSymbol)
         // example: ["SOL/USDC", "USDC/SOL"]
         val validRoutesNames = listOf(
             pair.joinToString("/"),

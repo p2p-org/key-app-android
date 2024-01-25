@@ -122,7 +122,7 @@ class NewSendFragment :
                 result.containsKey(KEY_RESULT_FEE) && result.containsKey(KEY_RESULT_FEE_PAYER_TOKENS) -> {
                     val fee = result.getParcelableCompat<SendSolanaFee>(KEY_RESULT_FEE)
                     val feePayerTokens = result.getParcelableArrayListCompat<Token.Active>(KEY_RESULT_FEE_PAYER_TOKENS)
-                    if (fee == null || feePayerTokens.isEmpty()) return@setFragmentResultListener
+                    if (fee == null) return@setFragmentResultListener
                     showAccountCreationFeeInfo(fee, feePayerTokens)
                 }
             }
@@ -224,6 +224,10 @@ class NewSendFragment :
 
     override fun setFeeLabel(text: String) {
         binding.widgetSendDetails.setFeeLabel(text)
+    }
+
+    override fun setFeeLabelRes(textRes: Int) {
+        this.setFeeLabel(getString(textRes))
     }
 
     override fun showBottomFeeValue(fee: TextViewCellModel) {

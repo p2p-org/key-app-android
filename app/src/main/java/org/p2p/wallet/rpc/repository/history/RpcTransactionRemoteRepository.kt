@@ -1,11 +1,11 @@
 package org.p2p.wallet.rpc.repository.history
 
+import org.p2p.core.crypto.Base64Utils
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.ConfirmationStatus
 import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RequestConfiguration
 import org.p2p.solanaj.model.types.RpcRequest
-import org.p2p.core.crypto.Base64Utils
 import org.p2p.wallet.rpc.api.RpcTransactionApi
 import org.p2p.wallet.utils.emptyString
 
@@ -101,7 +101,7 @@ class RpcTransactionRemoteRepository(
 
         val rpcRequest = RpcRequest("simulateTransaction", params)
         val result = rpcApi.simulateTransaction(rpcRequest).result
-        if (result.value.error != null) {
+        if (!result.value.error.isJsonNull) {
             throw IllegalStateException("Transaction simulation failed: ${result.value.linedLogs()}")
         } else {
             return emptyString()

@@ -95,7 +95,7 @@
 
     <string name="swap_info_details_transfer_fee_title">Transfer fee</string>
     <string name="swap_info_details_transfer_fee_subtitle">
-        Charge that you need to pay to send or receive %s.
+        Charge that you need to pay to send or receive tokens-2022.
         It helps maintain the network and ensure smooth transactions.
     </string>
     <string name="swap_info_details_interest_fee_title">Interest bearing</string>

@@ -8,6 +8,7 @@ import org.p2p.core.network.data.CommonResponse
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.send.api.responses.SendGeneratedTransactionResponse
+import org.p2p.wallet.send.api.responses.SendTokenAmountsResponse
 import org.p2p.wallet.utils.emptyString
 
 interface SendServiceApi {
@@ -22,4 +23,10 @@ interface SendServiceApi {
         @Body rpcRequest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<SendGeneratedTransactionResponse>
+
+    @POST
+    suspend fun getTokenAmounts(
+        @Body rpcRequest: RpcMapRequest,
+        @Url url: String = emptyString()
+    ): CommonResponse<List<SendTokenAmountsResponse>>
 }

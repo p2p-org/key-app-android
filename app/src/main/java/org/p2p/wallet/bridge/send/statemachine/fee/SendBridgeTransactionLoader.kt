@@ -47,8 +47,8 @@ class SendBridgeTransactionLoader constructor(
         emit(SendState.Loading.Fee(lastStaticState))
         val lastFeeInToken = getFeeTotalInToken(lastStaticState)
         val currentAmount = lastAmount ?: lastStaticState.inputAmount.orZero()
-        val fee = loadFee(token, currentAmount)
-        val updatedFee = mapper.updateFee(lastStaticState, fee)
+        val fee: SendFee.Bridge = loadFee(token, currentAmount)
+        val updatedFee: SendState.Static = mapper.updateFee(lastStaticState, fee)
         val inputAmount = updatedFee.inputAmount
         if (inputAmount != null) {
             val amountWithFee = inputAmount + lastFeeInToken

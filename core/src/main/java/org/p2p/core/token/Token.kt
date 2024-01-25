@@ -5,6 +5,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
@@ -40,13 +42,14 @@ sealed class Token constructor(
 
     @Parcelize
     data class Active constructor(
+        // put tokenSymbol first for toString()
+        override val tokenSymbol: String,
         override val publicKey: String,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
         val tokenServiceAddress: String,
         override val tokenExtensions: TokenExtensions,
-        override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
         override val programId: String?,
@@ -88,6 +91,10 @@ sealed class Token constructor(
         @IgnoredOnParcel
         val canTokenBeHidden: Boolean
             get() = tokenExtensions.canTokenBeHidden != false
+
+        @IgnoredOnParcel
+        val mintAddressB58: Base58String
+            get() = mintAddress.toBase58Instance()
 
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean {
             val isHiddenByUser = visibility == TokenVisibility.HIDDEN

@@ -2,60 +2,61 @@ package org.p2p.wallet.send.interactor.usecase
 
 import timber.log.Timber
 import java.math.BigInteger
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.FeeAmount
-import org.p2p.wallet.feerelayer.interactor.FeeRelayerInteractor
-import org.p2p.wallet.feerelayer.model.FeePoolsState
+import org.p2p.token.service.converter.TokenServiceAmountsConverter
+import org.p2p.wallet.send.repository.SendServiceRepository
 
 class GetFeesInPayingTokenUseCase(
-    private val feeRelayerInteractor: FeeRelayerInteractor
+    private val amountsConverter: TokenServiceAmountsConverter,
+    private val sendServiceRepository: SendServiceRepository
 ) {
 
-    suspend fun executeNullable(
-        token: Token.Active,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): Pair<String, FeeAmount>? = try {
-        Timber.i("getFeesInPayingTokenNullable for ${token.mintAddress}")
-        val feeInSpl = execute(
-            feePayerToken = token,
-            transactionFeeInSOL = transactionFeeInSOL,
-            accountCreationFeeInSOL = accountCreationFeeInSOL
+    suspend fun execute(
+        findFeesIn: List<Base58String>,
+        transactionFeeInSol: BigInteger,
+        accountCreationFeeInSol: BigInteger
+    ): Map<Base58String, BigInteger> = try {
+        val totalFees = accountCreationFeeInSol
+        val feesInSpl = amountsConverter.convertAmount(
+            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to totalFees,
+            mintsToConvertTo = findFeesIn
         )
 
-        if (feeInSpl is FeePoolsState.Calculated) {
-            Timber.i("Fees found for ${token.mintAddress}")
-            token.tokenSymbol to feeInSpl.feeInSpl
+        if (feesInSpl.isNotEmpty()) {
+            Timber.i("-> Fees found: $feesInSpl")
+            feesInSpl
         } else {
-            Timber.i("Fees are null found for ${token.mintAddress}")
-            null
+            Timber.i("-> Fees are null found for $findFeesIn")
+            emptyMap()
         }
     } catch (e: IllegalStateException) {
-        Timber.i(e, "No fees found for token ${token.mintAddress}")
+        Timber.i(e, "-> No fees found, error")
         // ignoring tokens without fees
-        null
+        emptyMap()
     }
 
     suspend fun execute(
         feePayerToken: Token.Active,
-        transactionFeeInSOL: BigInteger,
-        accountCreationFeeInSOL: BigInteger
-    ): FeePoolsState {
-        Timber.i("Fetching fees in paying token: ${feePayerToken.mintAddress}")
-        if (feePayerToken.isSOL) {
-            val fee = FeeAmount(
-                transaction = transactionFeeInSOL,
-                accountBalances = accountCreationFeeInSOL
-            )
-            return FeePoolsState.Calculated(fee)
-        }
+        transactionFeeInSol: BigInteger,
+        accountCreationFeeInSol: BigInteger
+    ): FeeAmount? {
+        val transactionFeeSpl = amountsConverter.convertAmount(
+            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to transactionFeeInSol,
+            mintsToConvertTo = listOf(feePayerToken.mintAddress.toBase58Instance())
+        )[feePayerToken.mintAddress.toBase58Instance()]
+        val accountCreationFee = amountsConverter.convertAmount(
+            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to accountCreationFeeInSol,
+            mintsToConvertTo = listOf(feePayerToken.mintAddress.toBase58Instance())
+        )[feePayerToken.mintAddress.toBase58Instance()]
 
-        return feeRelayerInteractor.calculateFeeInPayingToken(
-            feeInSOL = FeeAmount(
-                transaction = transactionFeeInSOL,
-                accountBalances = accountCreationFeeInSOL
-            ),
-            payingFeeTokenMint = feePayerToken.mintAddress
-        )
+        return if (transactionFeeSpl != null && accountCreationFee != null) {
+            FeeAmount(transactionFeeSpl, accountCreationFee)
+        } else {
+            null
+        }
     }
 }

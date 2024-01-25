@@ -11,7 +11,12 @@ fun StringBuilder.appendBreakLine() {
     append("\n")
 }
 
+operator fun StringBuilder.plusAssign(other: String) {
+    append(other)
+}
+
 fun Spanned.removeLinksUnderline(): SpannableString {
+
     val spannable = SpannableString(this)
     for (u in spannable.getSpans(0, spannable.length, URLSpan::class.java)) {
         spannable.setSpan(

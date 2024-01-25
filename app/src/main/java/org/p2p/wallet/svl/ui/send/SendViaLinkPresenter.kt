@@ -123,8 +123,7 @@ class SendViaLinkPresenter(
             val userTokens = userInteractor.getNonZeroUserTokens()
             val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
             view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-
-            view.setFeeLabel(resources.getString(R.string.send_fees_zero))
+            view.setFeeLabelRes(R.string.send_fees_zero)
             view.showFeeViewLoading(isLoading = false)
         }
     }
@@ -217,7 +216,7 @@ class SendViaLinkPresenter(
 
     override fun onMaxButtonClicked() {
         val token = token ?: return
-        val totalAvailable = calculationMode.getMaxAvailableAmount() ?: return
+        val totalAvailable = calculationMode.setMaxAvailableAmountInInputs() ?: return
         view?.updateInputValue(totalAvailable.toPlainString(), forced = true)
 
         showMaxButtonIfNeeded()
@@ -274,15 +273,15 @@ class SendViaLinkPresenter(
 
     private fun updateButton(sourceToken: Token.Active) {
         val sendButton = NewSendButtonState(
-            sourceToken = sourceToken,
-            searchResult = recipient.toSearchResult(),
+            tokenToSend = sourceToken,
+            recipient = recipient.toSearchResult(),
             calculationMode = calculationMode,
             feeRelayerState = FeeRelayerState.Idle,
             minRentExemption = minRentExemption,
             resources = resources
         )
 
-        when (val state = sendButton.currentState) {
+        when (val state = sendButton.getCurrentState()) {
             is NewSendButtonState.State.Disabled -> {
                 view?.setBottomButtonText(state.textContainer)
                 view?.setSliderText(null)

@@ -108,7 +108,12 @@ class SwapContentSettingsMapper(
                 this += accountFee.cellModel
             }
 
-            val token2022Fee = token2022FeeBuilder.buildToken2022Fees(tokenA, tokenAAmount)
+            val token2022Fee = token2022FeeBuilder.buildToken2022Fees(
+                tokenA = tokenA,
+                tokenAAmount = tokenAAmount,
+                tokenB = tokenB,
+                tokenBAmount = tokenBAmount
+            )
             if (token2022Fee?.cellModel != null) {
                 this += token2022Fee.cellModel
             }

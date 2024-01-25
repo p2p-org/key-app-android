@@ -15,6 +15,8 @@ import org.p2p.token.service.api.TokenServiceRemoteDataSource
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.api.mapper.TokenServiceMapper
+import org.p2p.token.service.converter.TokenServiceAmountsConverter
+import org.p2p.token.service.converter.TokenServiceAmountsRemoteConverter
 import org.p2p.token.service.database.TokenServiceDatabaseModule
 import org.p2p.token.service.database.mapper.TokenServiceDatabaseMapper
 import org.p2p.token.service.repository.TokenServiceRepository
@@ -53,6 +55,7 @@ object TokenServiceModule : InjectionModule {
         single<TokenMetadataLocalRepository> { TokenMetadataInMemoryRepository() }
         single<TokenPriceLocalRepository> { TokenPriceDatabaseRepository(get(), get()) }
         factory<TokenPriceRepository> { TokenPriceRemoteRepository(get(), get()) }
+        factoryOf(::TokenServiceAmountsRemoteConverter) bind TokenServiceAmountsConverter::class
 
         factoryOf(::TokenServiceMapper)
         singleOf(::TokenMetadataRemoteRepository) bind TokenMetadataRepository::class

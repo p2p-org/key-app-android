@@ -6,10 +6,10 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FeeAmount(
-    var transaction: BigInteger = BigInteger.ZERO,
-    var accountBalances: BigInteger = BigInteger.ZERO
+    var transactionFee: BigInteger = BigInteger.ZERO,
+    var accountCreationFee: BigInteger = BigInteger.ZERO
 ) : Parcelable {
 
-    val total: BigInteger
-        get() = transaction + accountBalances
+    val totalFeeLamports: BigInteger
+        get() = transactionFee + accountCreationFee
 }

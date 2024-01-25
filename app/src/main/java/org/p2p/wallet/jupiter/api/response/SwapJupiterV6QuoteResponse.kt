@@ -71,6 +71,8 @@ data class SwapJupiterV6QuoteResponse(
         val refundableFee: String,
         @SerializedName("_hash")
         val hash: String,
+        @SerializedName("epoch")
+        val epoch: Long,
         @SerializedName("fees")
         val feeDetails: JsonObject
     )

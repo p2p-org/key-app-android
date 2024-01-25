@@ -23,7 +23,6 @@ import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerTopUpInteractor
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
-import org.p2p.wallet.feerelayer.model.FeePoolsState
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.rpc.interactor.TransactionAddressInteractor
@@ -45,6 +44,7 @@ import org.p2p.wallet.send.model.FeeRelayerStateError.InsufficientFundsToCoverFe
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.SendSolanaFee
+import org.p2p.wallet.send.repository.SendServiceRepository
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -56,6 +56,7 @@ class SendFeeRelayerManager(
     private val solanaRepository: RpcSolanaRepository,
     private val feeRelayerTopUpInteractor: FeeRelayerTopUpInteractor,
     private val amountRepository: RpcAmountRepository,
+    private val sendServiceRepository: SendServiceRepository,
     private val addressInteractor: TransactionAddressInteractor,
     private val getFeesInPayingTokenUseCase: GetFeesInPayingTokenUseCase,
     private val getTokenExtensionsUseCase: GetTokenExtensionsUseCase,
@@ -94,6 +95,7 @@ class SendFeeRelayerManager(
         onFeeLoading?.invoke(FeeLoadingState.Instant(isLoading = true))
         try {
             initializeWithToken(initialToken)
+
             initializeCompleted = true
         } catch (e: Throwable) {
             Timber.tag(TAG).i(e, "initialize for SendFeeRelayerManager failed")
@@ -133,19 +135,14 @@ class SendFeeRelayerManager(
             ?.currentRate
             ?.toBigDecimal()
 
-        val currentAmountWithInterestFee = transferFeePercent
-            ?.let { it / 100.toBigDecimal() * currentAmount } // get % from total sum
-            ?.let { percentAmount -> currentAmount - percentAmount }
-            ?: currentAmount
-
         return SendFeeTotal(
             currentAmount = currentAmount,
             currentAmountUsd = calculationMode.getCurrentAmountUsd(),
-            receiveFormatted = currentAmountWithInterestFee.formatTokenWithSymbol(
+            receiveFormatted = currentAmount.formatTokenWithSymbol(
                 tokenSymbol = sourceToken.tokenSymbol,
                 decimals = sourceToken.decimals
             ),
-            receiveUsd = currentAmountWithInterestFee.toUsd(sourceToken),
+            receiveUsd = currentAmount.toUsd(sourceToken),
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
             recipientAddress = recipientAddress.address,
@@ -257,7 +254,7 @@ class SendFeeRelayerManager(
                 appendLine()
                 append("Expected total fee in Token: 0 (T)")
             } else {
-                val accountBalances = solanaFee.feeRelayerFee.expectedFee.accountBalances
+                val accountBalances = solanaFee.feeRelayerFee.expectedFee.accountCreationFee
                 val expectedFee = if (!relayAccount.isCreated) {
                     accountBalances + relayInfo.minimumRelayAccountRent
                 } else {
@@ -292,11 +289,13 @@ class SendFeeRelayerManager(
         result: SearchResult,
         @Suppress("UNUSED_PARAMETER") useCache: Boolean = true
     ): FeeCalculationState {
-
-        try {
+        return try {
             val lamportsPerSignature: BigInteger = amountRepository.getLamportsPerSignature(null)
-            val minRentExemption: BigInteger =
-                amountRepository.getMinBalanceForRentExemption(TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH)
+            val minRentExemption: BigInteger = amountRepository.getMinBalanceForRentExemption(
+                TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
+            )
+
+            Timber.i("Requesting minRentExemption for token_program: $minRentExemption")
 
             var transactionFee = BigInteger.ZERO
 
@@ -315,39 +314,41 @@ class SendFeeRelayerManager(
             val accountCreationFee = if (shouldCreateAccount) minRentExemption else BigInteger.ZERO
 
             val expectedFee = FeeAmount(
-                transaction = transactionFee,
-                accountBalances = accountCreationFee,
+                transactionFee = transactionFee,
+                accountCreationFee = accountCreationFee,
             )
 
             val fees = feeRelayerTopUpInteractor.calculateNeededTopUpAmount(expectedFee)
 
-            if (fees.total.isZero()) {
+            if (fees.totalFeeLamports.isZero()) {
                 Timber.i("Total fees are zero!")
                 return FeeCalculationState.NoFees
             }
 
-            val poolsStateFee = getFeesInPayingTokenUseCase.execute(
+            val feePayerTokensMints = sendServiceRepository.getCompensationTokens()
+
+            val poolsStateFees = getFeesInPayingTokenUseCase.execute(
                 feePayerToken = feePayerToken,
-                transactionFeeInSOL = fees.transaction,
-                accountCreationFeeInSOL = fees.accountBalances
+                transactionFeeInSol = fees.transactionFee,
+                accountCreationFeeInSol = fees.accountCreationFee
             )
 
-            return when (poolsStateFee) {
-                is FeePoolsState.Calculated -> {
-                    Timber.i("FeePoolsState is calculated")
-                    FeeCalculationState.Success(
-                        fee = FeeRelayerFee(
-                            feeInSol = fees,
-                            feeInSpl = poolsStateFee.feeInSpl,
-                            expectedFee = expectedFee
-                        )
+            if (poolsStateFees != null && feePayerToken.mintAddressB58 in feePayerTokensMints) {
+                FeeCalculationState.Success(
+                    fee = FeeRelayerFee(
+                        feeInSol = fees,
+                        feeInSpl = poolsStateFees,
+                        expectedFee = expectedFee
                     )
-                }
-
-                is FeePoolsState.Failed -> {
-                    Timber.i("FeePoolsState is failed")
-                    FeeCalculationState.PoolsNotFound(FeeRelayerFee(fees, poolsStateFee.feeInSOL, expectedFee))
-                }
+                )
+            } else {
+                FeeCalculationState.PoolsNotFound(
+                    feeInSol = FeeRelayerFee(
+                        feeInSol = fees,
+                        feeInSpl = FeeAmount(fees.transactionFee, fees.accountCreationFee),
+                        expectedFee = expectedFee
+                    )
+                )
             }
         } catch (e: CancellationException) {
             Timber.i("Fee calculation cancelled")
@@ -382,7 +383,12 @@ class SendFeeRelayerManager(
                 tokenExtensions = tokenExtensions,
             )
         } else {
-            validateAndSelectFeePayer(sourceToken, fee, inputAmount, strategy)
+            validateAndSelectFeePayer(
+                sourceToken = sourceToken,
+                fee = fee,
+                inputAmount = inputAmount,
+                strategy = strategy
+            )
         }
     }
 
