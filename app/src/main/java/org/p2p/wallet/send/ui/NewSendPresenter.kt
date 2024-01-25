@@ -611,8 +611,8 @@ class NewSendPresenter(
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
         val sendButton = NewSendButtonState(
-            sourceToken = sourceToken,
-            searchResult = recipientAddress,
+            tokenToSend = sourceToken,
+            recipient = recipientAddress,
             calculationMode = calculationMode,
             feeRelayerState = feeRelayerState,
             minRentExemption = sendFeeRelayerManager.getMinRentExemption(),

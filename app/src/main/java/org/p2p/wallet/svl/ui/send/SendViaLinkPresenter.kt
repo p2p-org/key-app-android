@@ -273,8 +273,8 @@ class SendViaLinkPresenter(
 
     private fun updateButton(sourceToken: Token.Active) {
         val sendButton = NewSendButtonState(
-            sourceToken = sourceToken,
-            searchResult = recipient.toSearchResult(),
+            tokenToSend = sourceToken,
+            recipient = recipient.toSearchResult(),
             calculationMode = calculationMode,
             feeRelayerState = FeeRelayerState.Idle,
             minRentExemption = minRentExemption,
