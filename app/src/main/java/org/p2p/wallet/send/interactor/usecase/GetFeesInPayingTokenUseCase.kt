@@ -8,9 +8,11 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.token.service.converter.TokenServiceAmountsConverter
+import org.p2p.wallet.send.repository.SendServiceRepository
 
 class GetFeesInPayingTokenUseCase(
-    private val amountsConverter: TokenServiceAmountsConverter
+    private val amountsConverter: TokenServiceAmountsConverter,
+    private val sendServiceRepository: SendServiceRepository
 ) {
 
     suspend fun execute(
@@ -18,10 +20,10 @@ class GetFeesInPayingTokenUseCase(
         transactionFeeInSol: BigInteger,
         accountCreationFeeInSol: BigInteger
     ): Map<Base58String, BigInteger> = try {
-        val totalFees = accountCreationFeeInSol + transactionFeeInSol
+        val totalFees = accountCreationFeeInSol
         val feesInSpl = amountsConverter.convertAmount(
             amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to totalFees,
-            findFeesIn
+            mintsToConvertTo = findFeesIn
         )
 
         if (feesInSpl.isNotEmpty()) {

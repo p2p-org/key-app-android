@@ -178,7 +178,7 @@ class NewSendPresenter(
                 recipient = recipientAddress.address.toBase58Instance()
             )
                 // set max available amount
-                .also { calculationMode.getMaxAvailableAmount(it) }
+                ?.also { calculationMode.setMaxAmounts(it) }
         }
     }
 
@@ -212,7 +212,8 @@ class NewSendPresenter(
             maximumAmountCalculator.getMaxAvailableAmountToSend(
                 token = initialToken,
                 recipient = recipientAddress.address.toBase58Instance()
-            ).also { calculationMode.getMaxAvailableAmount(it) }
+            )
+                ?.also { calculationMode.setMaxAmounts(it) }
 
             initializeFeeRelayer(view, initialToken, solToken)
             initialAmount?.let(::setupDefaultFields)
@@ -335,23 +336,32 @@ class NewSendPresenter(
     }
 
     override fun updateToken(newToken: Token.Active) {
-        newSendAnalytics.logTokenChanged(newToken.tokenSymbol, flow)
-        token = newToken
-        checkTokenRatesAndSetSwitchAmountState(newToken)
+        launch {
+            newSendAnalytics.logTokenChanged(newToken.tokenSymbol, flow)
+            token = newToken
+            maximumAmountCalculator.getMaxAvailableAmountToSend(
+                token = newToken,
+                recipient = recipientAddress.address.toBase58Instance()
+            )
+                // set max available amount
+                ?.also { calculationMode.setMaxAmounts(it) }
 
-        showMaxButtonIfNeeded()
-        view?.showFeeViewVisible(isVisible = true)
-        updateButton(requireToken(), sendFeeRelayerManager.getState())
+            checkTokenRatesAndSetSwitchAmountState(newToken)
 
-        /*
+            showMaxButtonIfNeeded()
+            view?.showFeeViewVisible(isVisible = true)
+            updateButton(requireToken(), sendFeeRelayerManager.getState())
+
+            /*
          * Calculating if we can pay with current token instead of already selected fee payer token
          * */
-        executeSmartSelection(
-            token = requireToken(),
-            feePayerToken = requireToken(),
-            strategy = CORRECT_AMOUNT,
-            useCache = false
-        )
+            executeSmartSelection(
+                token = requireToken(),
+                feePayerToken = requireToken(),
+                strategy = CORRECT_AMOUNT,
+                useCache = false
+            )
+        }
     }
 
     private fun checkTokenRatesAndSetSwitchAmountState(token: Token.Active) {
@@ -427,7 +437,7 @@ class NewSendPresenter(
                 token = token,
                 recipient = recipientAddress.address.toBase58Instance()
             )
-                ?.also { calculationMode.getMaxAvailableAmount(it) } // set max available amount
+                ?.also { calculationMode.setMaxAvailableAmountInInputs() } // set max available amount
                 ?: kotlin.run {
                     Timber.tag(TAG).e(SendFatalError("totalAvailable is unavailable"))
                     return@launch

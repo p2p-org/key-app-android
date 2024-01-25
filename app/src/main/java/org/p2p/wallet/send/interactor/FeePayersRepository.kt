@@ -27,6 +27,9 @@ class FeePayersRepository(
         transactionFeeInSol: BigInteger,
         accountCreationFeeInSol: BigInteger
     ): List<Token.Active> = withContext(dispatchers.io) {
+        Timber.i("findAlternativeFeePayerTokens: " +
+            "accountCreationFeeInSol = $accountCreationFeeInSol " +
+            "transactionFeeInSol = $transactionFeeInSol")
         val feePayerTokensMints = sendServiceRepository.getCompensationTokens()
         val tokenToExcludeSymbol = feePayerToExclude.tokenSymbol
 
@@ -61,8 +64,8 @@ class FeePayersRepository(
                 val isTokenCoversTheFee = token.totalInLamports >= feesInSpl
                 if (!isTokenCoversTheFee) {
                     Timber.w(
-                        "Token(${token.tokenSymbol} with amount ${token.totalInLamports} " +
-                            "can't cover ${feesInSpl}"
+                        "Token ${token.tokenSymbol} with amount ${token.totalInLamports} " +
+                            "can't cover $feesInSpl"
                     )
                 }
                 isTokenCoversTheFee

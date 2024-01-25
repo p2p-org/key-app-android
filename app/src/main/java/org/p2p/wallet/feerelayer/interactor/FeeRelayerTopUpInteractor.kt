@@ -138,11 +138,11 @@ class FeeRelayerTopUpInteractor(
     suspend fun calculateNeededTopUpAmount(expectedFee: FeeAmount): FeeAmount {
         val info = feeRelayerAccountInteractor.getRelayInfo()
         val freeTransactionFeeLimit = feeRelayerAccountInteractor.getFreeTransactionFeeLimit()
-        val neededAmount = FeeAmount(expectedFee.transaction, expectedFee.accountBalances)
+        val neededAmount = FeeAmount(expectedFee.transactionFee, expectedFee.accountCreationFee)
 
         // expected fees
         val expectedTopUpNetworkFee = BigInteger.valueOf(2L) * info.lamportsPerSignature
-        val expectedTransactionNetworkFee = expectedFee.transaction
+        val expectedTransactionNetworkFee = expectedFee.transactionFee
 
         // real fees
         var neededTopUpNetworkFee = expectedTopUpNetworkFee
@@ -162,14 +162,14 @@ class FeeRelayerTopUpInteractor(
             neededTransactionNetworkFee = BigInteger.ZERO
         }
 
-        neededAmount.transaction = neededTopUpNetworkFee + neededTransactionNetworkFee
+        neededAmount.transactionFee = neededTopUpNetworkFee + neededTransactionNetworkFee
 
         // transaction is totally free
         if (neededAmount.totalFeeLamports.isZero()) {
             return neededAmount
         }
 
-        if (neededAmount.transaction.isZero() && neededAmount.accountBalances.isZero()) {
+        if (neededAmount.transactionFee.isZero() && neededAmount.accountCreationFee.isZero()) {
             return neededAmount
         }
 
@@ -182,28 +182,28 @@ class FeeRelayerTopUpInteractor(
         if (relayAccountBalance != null) {
 
             if (relayAccountBalance < minimumRelayAccountBalance) {
-                neededAmount.transaction += minimumRelayAccountBalance - relayAccountBalance
+                neededAmount.transactionFee += minimumRelayAccountBalance - relayAccountBalance
             } else {
                 relayAccountBalance -= minimumRelayAccountBalance
 
                 // if relayAccountBalance has enough balance to cover transaction fee
-                if (relayAccountBalance >= neededAmount.transaction) {
-                    neededAmount.transaction = BigInteger.ZERO
+                if (relayAccountBalance >= neededAmount.transactionFee) {
+                    neededAmount.transactionFee = BigInteger.ZERO
 
                     // if relayAccountBalance has enough balance to cover accountBalances fee too
-                    if (relayAccountBalance - neededAmount.transaction >= neededAmount.accountBalances) {
-                        neededAmount.accountBalances = BigInteger.ZERO
+                    if (relayAccountBalance - neededAmount.transactionFee >= neededAmount.accountCreationFee) {
+                        neededAmount.accountCreationFee = BigInteger.ZERO
                     } else {
                         // Relay account balance can cover part of account creation fee
-                        neededAmount.accountBalances -= (relayAccountBalance - neededAmount.transaction)
+                        neededAmount.accountCreationFee -= (relayAccountBalance - neededAmount.transactionFee)
                     }
                 } else {
                     // if not, relayAccountBalance can cover part of transaction fee
-                    neededAmount.transaction -= relayAccountBalance
+                    neededAmount.transactionFee -= relayAccountBalance
                 }
             }
         } else {
-            neededAmount.accountBalances += minimumRelayAccountBalance
+            neededAmount.accountCreationFee += minimumRelayAccountBalance
         }
         return neededAmount
     }
@@ -356,8 +356,8 @@ class FeeRelayerTopUpInteractor(
 
         // calculate fee first
         val expectedFeeAmount = FeeAmount(
-            transaction = transaction.calculateTransactionFee(lamportsPerSignature),
-            accountBalances = accountCreationFee
+            transactionFee = transaction.calculateTransactionFee(lamportsPerSignature),
+            accountCreationFee = accountCreationFee
         )
 
         // resign transaction

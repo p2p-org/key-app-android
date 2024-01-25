@@ -78,8 +78,6 @@ class SendInteractor(
 
     fun getFeePayerToken(): Token.Active = feePayerToken
 
-
-
     suspend fun getFeeTokenAccounts(fromPublicKey: String): List<Token.Active> =
         feeRelayerAccountInteractor.getFeeTokenAccounts(fromPublicKey)
 

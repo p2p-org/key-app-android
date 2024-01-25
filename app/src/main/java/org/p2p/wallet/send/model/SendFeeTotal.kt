@@ -7,7 +7,7 @@ import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.utils.asApproximateUsd
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
@@ -54,17 +54,19 @@ class SendFeeTotal constructor(
         }
     }
 
-    fun getTotalCombined(@ColorInt colorMountain: Int): CharSequence {
+    fun formatTotalCombined(@ColorInt colorMountain: Int): CharSequence {
         if (sendFee == null || sendFee.feePayerSymbol != sourceSymbol) {
             val usdText = currentAmountUsd?.asApproximateUsd().orEmpty()
-            val totalText = "${currentAmount.toPlainString()} $sourceSymbol $usdText"
+            val totalText = "$totalSumWithSymbol $usdText"
             return SpanUtils.highlightText(totalText, usdText, colorMountain)
         }
 
         // if fee and source token is the same, we'll have only one field for fees
         val totalAmount = currentAmount + sendFee.totalFeeDecimals
-        val totalAmountUsd = (currentAmountUsd.orZero() + sendFee.totalFeeDecimalsUsd.orZero()).asApproximateUsd()
-        val totalText = "${totalAmount.toPlainString()} $sourceSymbol $totalAmountUsd"
+        val totalAmountUsd = currentAmountUsd.orZero()
+            .plus(sendFee.totalFeeDecimalsUsd.orZero())
+            .asApproximateUsd()
+        val totalText = "$totalSumWithSymbol $totalAmountUsd"
         return SpanUtils.highlightText(totalText, totalAmountUsd, colorMountain)
     }
 
@@ -96,9 +98,9 @@ class SendFeeTotal constructor(
 
     val fullTotal: String
         get() = if (sourceSymbol == sendFee?.feePayerSymbol) {
-            if (approxTotalUsd != null) "$totalSum $approxTotalUsd" else totalSum
+            if (approxTotalUsd != null) "$totalSumWithSymbol $approxTotalUsd" else totalSumWithSymbol
         } else {
-            if (approxTotalUsd != null) "$totalFormatted $approxTotalUsd" else totalFormatted
+            if (approxTotalUsd != null) "$totalWithSymbolFormatted $approxTotalUsd" else totalWithSymbolFormatted
         }
 
     val approxTotalUsd: String? get() = currentAmountUsd?.asApproximateUsd()
@@ -109,9 +111,25 @@ class SendFeeTotal constructor(
     val approxReceiveUsd: String
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
-    private val totalFormatted: String
-        get() = "${currentAmount.formatToken()} $sourceSymbol"
+    private val totalWithSymbolFormatted: String
+        get() = currentAmount.formatTokenWithSymbol(sourceSymbol)
 
-    private val totalSum: String
-        get() = "${(currentAmount + sendFee?.accountCreationFeeDecimals.orZero()).formatToken()} $sourceSymbol"
+    private val totalSumWithSymbol: String
+        get() {
+            val transferFee = transferFeePercent
+                ?.let { it / 100.toBigDecimal() }
+                ?.multiply(currentAmount)
+
+            val totalSum = currentAmount
+                .run {
+                    // is fee is paid by other token
+                    if (sendFee?.feePayerSymbol == sourceSymbol) {
+                        plus(sendFee.totalFeeDecimals.orZero())
+                    } else {
+                        this
+                    }
+                }
+                .plus(transferFee.orZero())
+            return totalSum.formatTokenWithSymbol(sourceSymbol)
+        }
 }

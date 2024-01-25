@@ -213,7 +213,7 @@ class NewSendDetailsBottomSheet :
     private fun DialogNewSendDetailsBinding.setTotal() {
         imageViewIconTotal.setImageResource(R.drawable.ic_receipt)
         textViewTitleTotal.text = getString(R.string.send_transactions_details_total)
-        textViewSubtitleFirstTotal.text = sendFee.getTotalCombined(colorMountain)
+        textViewSubtitleFirstTotal.text = sendFee.formatTotalCombined(colorMountain)
 
         textViewSubtitleSecondTotal withTextOrGone sendFee.getFeesCombined(colorMountain)
     }

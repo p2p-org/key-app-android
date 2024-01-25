@@ -26,7 +26,7 @@ internal class TokenServiceAmountsRemoteConverter(
             .orEmpty()
             .associateBy(
                 keySelector = TokenAmountsResponse::mintAddress,
-                valueTransform = TokenAmountsResponse::amount
+                valueTransform = TokenAmountsResponse::amountLamports
             )
     }
 }

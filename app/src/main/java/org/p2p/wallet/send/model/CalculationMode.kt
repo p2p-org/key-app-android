@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.model
 
+import timber.log.Timber
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.model.CurrencyMode
@@ -10,6 +11,7 @@ import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.lessThenMinValue
 import org.p2p.core.utils.orZero
@@ -99,13 +101,13 @@ class CalculationMode(
      * if it's null - use old way of doing things, but it can fail due to token.total
      * can't be sent with fees applied upon
      */
-    fun getMaxAvailableAmount(calculatedMaxAmountToSend: BigDecimal?): BigDecimal? {
-        if (calculatedMaxAmountToSend == null) {
+    fun setMaxAvailableAmountInInputs(): BigDecimal? {
+        if (maxTokenAmount.isZero()) {
             tokenAmount = token.total
             usdAmount = token.totalInUsdScaled.orZero()
         } else {
-            tokenAmount = calculatedMaxAmountToSend
-            usdAmount = calculatedMaxAmountToSend.toUsd(token).orZero()
+            tokenAmount = maxTokenAmount
+            usdAmount = maxTokenAmount.toUsd(token).orZero()
         }
 
         val maxAmount: BigDecimal? = when (currencyMode) {
@@ -115,13 +117,17 @@ class CalculationMode(
             }
             is CurrencyMode.Token -> {
                 handleCalculateUsdAmountUpdate()
-                calculatedMaxAmountToSend ?: tokenAmount
+                maxTokenAmount.takeIf { it.isNotZero() } ?: tokenAmount
             }
         }
 
         inputAmount = maxAmount.orZero().toPlainString()
-        maxTokenAmount = maxAmount.orZero()
         return maxAmount
+    }
+
+    fun setMaxAmounts(calculatedMaxAmountToSend: BigDecimal) {
+        Timber.e("Setting max amount: $calculatedMaxAmountToSend")
+        maxTokenAmount = calculatedMaxAmountToSend
     }
 
     fun switchMode(): CurrencyMode {

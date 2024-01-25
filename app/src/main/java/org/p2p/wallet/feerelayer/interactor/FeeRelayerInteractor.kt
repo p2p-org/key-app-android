@@ -90,11 +90,11 @@ class FeeRelayerInteractor(
         }
 
         val transactionFee = topUpPools.getInputAmount(
-            minimumAmountOut = feeInSOL.transaction,
+            minimumAmountOut = feeInSOL.transactionFee,
             slippage = Slippage.TopUpSlippage.doubleValue
         )
         val accountCreationFee = topUpPools.getInputAmount(
-            minimumAmountOut = feeInSOL.accountBalances,
+            minimumAmountOut = feeInSOL.accountCreationFee,
             slippage = Slippage.TopUpSlippage.doubleValue
         )
 
@@ -137,8 +137,8 @@ class FeeRelayerInteractor(
         val info = feeRelayerAccountInteractor.getRelayInfo()
 
         // Check fee
-        if (freeTransactionFeeLimit.isFreeTransactionFeeAvailable(expectedFee.transaction)) {
-            expectedFee.transaction = BigInteger.ZERO
+        if (freeTransactionFeeLimit.isFreeTransactionFeeAvailable(expectedFee.transactionFee)) {
+            expectedFee.transactionFee = BigInteger.ZERO
         }
 
         val minRelayAccountBalance = relayAccount.getMinRemainingBalance(info.minimumRelayAccountRent)
@@ -198,13 +198,13 @@ class FeeRelayerInteractor(
 
         // Calculate the fee to send back to feePayer
         // Account creation fee (accountBalances) is a must-pay-back fee
-        var paybackFee = additionalPaybackFee + preparedTransaction.expectedFee.accountBalances
+        var paybackFee = additionalPaybackFee + preparedTransaction.expectedFee.accountCreationFee
 
         Timber.i("original payback fee = $paybackFee")
         // The transaction fee, on the other hand, is only be paid if user used more than number of free transaction fee
-        if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transaction)) {
-            Timber.i("adding to payback fee ${preparedTransaction.expectedFee.transaction}")
-            paybackFee += preparedTransaction.expectedFee.transaction
+        if (!freeTransactionFeeLimit.isFreeTransactionFeeAvailable(preparedTransaction.expectedFee.transactionFee)) {
+            Timber.i("adding to payback fee ${preparedTransaction.expectedFee.transactionFee}")
+            paybackFee += preparedTransaction.expectedFee.transactionFee
         }
 
         // transfer sol back to feerelayer's feePayer

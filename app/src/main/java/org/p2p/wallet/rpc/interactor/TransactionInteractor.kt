@@ -46,8 +46,8 @@ class TransactionInteractor(
 
         // calculate fee first
         val expectedFee = FeeAmount(
-            transaction = transaction.calculateTransactionFee(actualLamportsPerSignature),
-            accountBalances = accountsCreationFee
+            transactionFee = transaction.calculateTransactionFee(actualLamportsPerSignature),
+            accountCreationFee = accountsCreationFee
         )
 
         // resign transaction
