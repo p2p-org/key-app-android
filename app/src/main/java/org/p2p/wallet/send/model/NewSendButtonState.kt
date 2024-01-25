@@ -11,7 +11,6 @@ import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isZero
-import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.wallet.R
 
@@ -25,7 +24,9 @@ class NewSendButtonState(
 ) {
 
     private val minSolValidator = NewSendButtonStateMinSolValidator(
-        tokenToSend = tokenToSend, minRentExemption = minRentExemption, recipient = recipient
+        tokenToSend = tokenToSend,
+        minRentExemption = minRentExemption,
+        recipient = recipient
     )
 
     sealed interface State {
@@ -58,9 +59,7 @@ class NewSendButtonState(
             minRentExemption = minRentExemption
         )
         val isAmountZero = inputAmount.isZero()
-        val isAmountValidForRecipient = minSolValidator.isAmountValidForRecipient(inputAmount)
-        val isAmountValidForSender = minSolValidator.isAmountValidForSender(inputAmount)
-        val isMinRequiredBalanceLeft = minSolValidator.isMinRequiredBalanceLeft(inputAmount)
+        val amountValidation = minSolValidator.validateAmount(inputAmount)
 
         return when {
             isFeeCalculationInvalid -> {
@@ -85,23 +84,26 @@ class NewSendButtonState(
                 val textContainer = TextContainer.Res(R.string.send_insufficient_funds)
                 State.Disabled(textContainer, R.color.text_rose)
             }
-            !isMinRequiredBalanceLeft -> {
+            amountValidation == SendSolValidation.SenderNotZeroed -> {
                 val textContainer = TextContainer.Res(R.string.error_insufficient_funds)
                 State.Disabled(textContainer, R.color.text_rose)
             }
-            !isAmountValidForRecipient -> {
-                val solAmount = minRentExemption.fromLamports().scaleLong().toPlainString()
-                val format = resources.getString(R.string.send_min_warning_text_format, solAmount, SOL_SYMBOL)
+            amountValidation == SendSolValidation.EmptyRecipientMinAmountInvalid -> {
+                val format = resources.getString(
+                    R.string.send_min_warning_text_format,
+                    minRentExemption.fromLamports(tokenToSend.decimals),
+                    SOL_SYMBOL
+                )
                 State.Disabled(
                     textContainer = TextContainer.Raw(format),
                     totalAmountTextColor = R.color.text_rose
                 )
             }
-            !isAmountValidForSender -> {
+            amountValidation == SendSolValidation.SenderNoRentExemptAmountLeft -> {
                 val maxSolAmountAllowed = tokenToSend.totalInLamports - minRentExemption
                 val format = resources.getString(
                     R.string.send_max_warning_text_format,
-                    maxSolAmountAllowed.fromLamports().scaleLong().toPlainString(),
+                    maxSolAmountAllowed.fromLamports(tokenToSend.decimals),
                     SOL_SYMBOL
                 )
                 State.Disabled(
