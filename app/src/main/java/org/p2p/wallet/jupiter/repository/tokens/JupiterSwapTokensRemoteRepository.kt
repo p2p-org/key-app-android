@@ -110,6 +110,7 @@ internal class JupiterSwapTokensRemoteRepository(
     override suspend fun searchTokens(mintAddressOrSymbol: String): List<JupiterSwapToken> {
         ensureCache()
         return daoDelegate.searchTokens(mintAddressOrSymbol)
+            .sortedByDescending(JupiterSwapToken::isStrictToken) // show strict tokens first
     }
 
     override suspend fun searchTokensInSwappable(

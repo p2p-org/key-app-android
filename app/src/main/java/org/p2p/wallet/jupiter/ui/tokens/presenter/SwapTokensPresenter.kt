@@ -46,7 +46,7 @@ class SwapTokensPresenter(
         renderAllSwapTokensList(allTokens)
     }
 
-    private fun renderAllSwapTokensList(tokens: List<SwapTokenModel>) {
+    private suspend fun renderAllSwapTokensList(tokens: List<SwapTokenModel>) {
         val cellItems = when (tokenToChange) {
             SwapTokensListMode.TOKEN_A -> {
                 mapperA.toTokenACellItems(
@@ -67,29 +67,29 @@ class SwapTokensPresenter(
     }
 
     override fun onSearchTokenQueryChanged(newQuery: String) {
-        if (newQuery.isBlank()) {
-            renderAllSwapTokensList(allTokens)
-        } else {
-            renderSearchTokenList(newQuery)
+        launch {
+            renderLoading(true)
+            if (newQuery.isBlank()) {
+                renderAllSwapTokensList(allTokens)
+            } else {
+                renderSearchTokenList(newQuery)
+            }
+            renderLoading(false)
         }
     }
 
-    private fun renderSearchTokenList(newQuery: String) {
-        launch {
-            renderLoading(true)
-            try {
-                val searchResult = interactor.searchToken(tokenToChange, newQuery)
-                val cellItems = searchResultMapper.toCellItems(searchResult)
-                view?.setTokenItems(cellItems)
+    private suspend fun renderSearchTokenList(newQuery: String) {
+        try {
+            val searchResult = interactor.searchToken(tokenToChange, newQuery)
+            val cellItems = searchResultMapper.toCellItems(searchResult)
+            view?.setTokenItems(cellItems)
 
-                val isEmpty = cellItems.none { it is MainCellModel }
-                view?.showEmptyState(isEmpty = isEmpty)
-            } catch (error: Throwable) {
-                view?.setTokenItems(emptyList())
-                view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
-            }
+            val isEmpty = cellItems.none { it is MainCellModel }
+            view?.showEmptyState(isEmpty = isEmpty)
+        } catch (error: Throwable) {
+            view?.setTokenItems(emptyList())
+            view?.showUiKitSnackBar(messageResId = R.string.error_general_message)
         }
-        renderLoading(false)
     }
 
     override fun onTokenClicked(clickedToken: SwapTokenModel) {
