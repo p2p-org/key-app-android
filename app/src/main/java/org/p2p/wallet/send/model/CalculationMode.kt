@@ -144,6 +144,11 @@ class CalculationMode(
 
     fun getCurrencyMode(): CurrencyMode = currencyMode
 
+    fun getDebugInfo(): String = buildString {
+        val remainingBalance = token.totalInLamports - getCurrentAmountLamports()
+        append("Remaining balance: $remainingBalance")
+    }
+
     fun isMaxButtonVisible(minRentExemption: BigInteger): Boolean {
         return if (token.isSOL) {
             val maxAllowedAmount = token.totalInLamports - minRentExemption
