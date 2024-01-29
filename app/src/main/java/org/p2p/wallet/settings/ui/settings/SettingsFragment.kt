@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.p2p.core.analytics.constants.ScreenNames
+import org.p2p.core.network.environment.NetworkEnvironmentManager.Companion.URL_PRIVACY_POLICY
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.CountryCode
@@ -129,6 +130,9 @@ class SettingsFragment :
             }
             R.string.settings_item_title_discord -> {
                 presenter.onOpenDiscordClicked()
+            }
+            R.string.settings_item_title_privacy -> {
+                showUrlInCustomTabs(URL_PRIVACY_POLICY)
             }
         }
     }
