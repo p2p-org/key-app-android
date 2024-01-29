@@ -23,7 +23,7 @@ class NewSendButtonState(
     private val resources: Resources
 ) {
 
-    private val minSolValidator = NewSendButtonStateMinSolValidator(
+    private val minSolValidator = SendButtonStateMinSolValidator(
         tokenToSend = tokenToSend,
         minRentExemption = minRentExemption,
         recipient = recipient

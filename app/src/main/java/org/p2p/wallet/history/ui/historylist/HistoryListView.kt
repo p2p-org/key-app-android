@@ -54,18 +54,16 @@ class HistoryListView @JvmOverloads constructor(
         this.presenter = presenter
         this.listViewType = listType
         this.clickListener = clickListener
-
         presenter.attach(this)
         bindView()
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
+    fun onParentViewDestroyed() {
         presenter.detach()
     }
 
     private fun bindView() = with(binding) {
-        presenter.attach(listViewType)
+        presenter.setHistoryType(listViewType)
         errorStateLayout.buttonRetry.setOnClickListener {
             presenter.refreshHistory(listViewType)
         }

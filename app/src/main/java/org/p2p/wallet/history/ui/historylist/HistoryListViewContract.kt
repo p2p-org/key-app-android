@@ -30,7 +30,7 @@ interface HistoryListViewContract {
         fun loadHistory(historyType: HistoryListViewType)
         fun refreshHistory(historyType: HistoryListViewType)
         fun loadNextHistoryPage(historyType: HistoryListViewType)
-        fun attach(historyType: HistoryListViewType)
+        fun setHistoryType(historyType: HistoryListViewType)
 
         fun onItemClicked(historyItem: HistoryItem)
     }

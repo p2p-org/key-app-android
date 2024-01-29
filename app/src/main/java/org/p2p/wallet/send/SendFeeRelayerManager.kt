@@ -295,7 +295,7 @@ class SendFeeRelayerManager(
                 TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH
             )
 
-            Timber.i("Requesting minRentExemption for token_program: $minRentExemption")
+            Timber.i("Requesting minRentExemption for spl_token_program: $minRentExemption")
 
             var transactionFee = BigInteger.ZERO
 

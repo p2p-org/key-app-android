@@ -123,4 +123,9 @@ class HistoryFragment :
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
         listener?.showTransactionProgress(bundleId, progressDetails, SendSwapTransactionProgressHandler.QUALIFIER)
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.layoutHistoryList.onParentViewDestroyed()
+    }
 }

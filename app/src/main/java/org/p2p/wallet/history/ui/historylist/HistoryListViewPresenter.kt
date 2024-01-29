@@ -4,6 +4,7 @@ import timber.log.Timber
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.recycler.PagingState
@@ -12,7 +13,6 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryPagingResult
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
 
@@ -52,7 +52,7 @@ class HistoryListViewPresenter(
         }
     }
 
-    override fun attach(historyType: HistoryListViewType) {
+    override fun setHistoryType(historyType: HistoryListViewType) {
         environmentManager.addEnvironmentListener(this::class) {
             refreshHistory(historyType)
         }
@@ -130,6 +130,7 @@ class HistoryListViewPresenter(
     }
 
     override fun onItemClicked(historyItem: HistoryItem) {
+        Timber.i("on clicked")
         launch {
             when (historyItem) {
                 is HistoryItem.TransactionItem -> {
