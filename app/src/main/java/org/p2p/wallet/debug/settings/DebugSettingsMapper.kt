@@ -55,7 +55,7 @@ class DebugSettingsMapper(
             )
         }
 
-        this += createStrigaSettings()
+//        this += createStrigaSettings()
         this += createUiKitExamplesSettings()
         this += createToolsSettings()
     }
