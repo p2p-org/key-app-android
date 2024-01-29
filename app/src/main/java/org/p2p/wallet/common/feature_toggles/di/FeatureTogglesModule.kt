@@ -16,6 +16,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDe
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationPercentFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.ReferralProgramEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameSkipEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SellEnabledFeatureToggle
@@ -50,6 +51,7 @@ object FeatureTogglesModule : InjectionModule {
                 get<SwapRoutesValidationEnabledFeatureToggle>(),
                 get<StrigaSignupEnabledFeatureToggle>(),
                 get<SwapRoutesRefreshFeatureToggle>(),
+                get<ReferralProgramEnabledFeatureToggle>(),
             ).toList()
         }
 
@@ -69,6 +71,7 @@ object FeatureTogglesModule : InjectionModule {
         factoryOf(::SocketSubscriptionsFeatureToggle)
         factoryOf(::SwapRoutesValidationEnabledFeatureToggle)
         factoryOf(::StrigaSignupEnabledFeatureToggle)
+        factoryOf(::ReferralProgramEnabledFeatureToggle)
 
         singleOf(::FeatureToggleProvider)
     }

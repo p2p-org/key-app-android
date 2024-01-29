@@ -33,6 +33,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
         isPollingEnabled,
         isDevNetEnabled,
         isDebugRemoteConfigEnabled,
+        /*
         strigaSimulateWeb3Flag,
         strigaSimulateUserCreateFlag,
         strigaSmsVerificationMockFlag,
@@ -40,6 +41,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
         strigaSimulateMobileAlreadyVerifiedFlag,
         strigaEnableEmailFieldFlag,
         strigaSimulateIbanNotFilledFlag,
+         */
     )
 
     fun findFeatureFlagByName(featureName: String): InAppFeatureFlag? {
