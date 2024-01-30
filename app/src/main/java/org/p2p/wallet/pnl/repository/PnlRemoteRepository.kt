@@ -21,7 +21,7 @@ class PnlRemoteRepository(
         userWallet: Base58String,
         tokenMints: List<Base58String>
     ): PnlData = withContext(Dispatchers.IO) {
-        storage.getOrCache(tokenMints) {
+        storage.getOrCache {
             getPnlDataInternal(timeSpan, userWallet, tokenMints)
         }
     }
