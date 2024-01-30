@@ -84,8 +84,12 @@ class TokenHistoryPresenter(
         launch {
             try {
                 val pnlTokenData = pnlInteractor.getPnlForToken(token.mintAddressB58)
-                lastPnlData = pnlTokenData
-                view?.renderTokenPnl(pnlUiMapper.mapTokenBalancePnl(pnlTokenData))
+                if (pnlTokenData == null) {
+                    view?.hideTokenPnl()
+                } else {
+                    lastPnlData = pnlTokenData
+                    view?.renderTokenPnl(pnlUiMapper.mapTokenBalancePnl(pnlTokenData))
+                }
             } catch (e: Throwable) {
                 Timber.e(e, "Error getting pnl for token: ${token.mintAddressB58}")
                 view?.hideTokenPnl()

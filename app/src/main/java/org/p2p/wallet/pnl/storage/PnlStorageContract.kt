@@ -28,10 +28,10 @@ interface PnlStorageContract {
     }
 
     suspend fun getOrCache(tokenMints: List<Base58String>, dataGetter: suspend () -> PnlData): PnlData {
-        if (isExpired() || !hasAllTokens(tokenMints)) {
+        if (isExpired()) {
             val data = dataGetter()
             total = data.total
-            tokens = data.tokens
+            tokens += data.tokens
             lastUpdateTime = ZonedDateTime.now()
         }
         return PnlData(total, tokens)
