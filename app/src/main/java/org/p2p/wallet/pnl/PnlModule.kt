@@ -24,7 +24,6 @@ object PnlModule : InjectionModule {
     private const val RETROFIT_QUALIFIER = "PNL_SERVICE_RETROFIT_QUALIFIER"
     override fun create(): Module = module {
         single(named(RETROFIT_QUALIFIER)) {
-            // todo: change to real url when backend is ready
             val rpcApiUrl = "https://pnl.key.app/"
             getRetrofit(
                 baseUrl = rpcApiUrl,
