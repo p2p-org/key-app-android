@@ -2,6 +2,7 @@ package org.p2p.wallet.history.ui.token
 
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.isVisible
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -10,6 +11,8 @@ import org.koin.core.parameter.parametersOf
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.uikit.utils.text.TextViewCellModel
+import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
@@ -24,6 +27,7 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
+import org.p2p.wallet.pnl.ui.PnlDetailsBottomSheet
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
 import org.p2p.wallet.receive.eth.EthereumReceiveFragment
 import org.p2p.wallet.receive.solana.NewReceiveSolanaFragment
@@ -131,6 +135,25 @@ class TokenHistoryFragment :
     override fun renderTokenAmounts(token: Token.Active) {
         binding.totalTextView.text = token.getFormattedTotal(includeSymbol = true)
         binding.usdTotalTextView.text = token.getFormattedUsdTotal()
+    }
+
+    override fun renderTokenPnl(pnl: TextViewCellModel?) {
+        binding.containerPnl.root.isVisible = pnl != null
+        binding.containerPnl.textViewPnl.bindOrGone(pnl)
+        binding.containerPnl.root.setOnClickListener {
+            presenter.onTokenPnlClicked()
+        }
+    }
+
+    override fun showPnlDetails(percentage: String) {
+        PnlDetailsBottomSheet.show(
+            fm = childFragmentManager,
+            percentage = percentage
+        )
+    }
+
+    override fun hideTokenPnl() {
+        binding.containerPnl.root.isVisible = false
     }
 
     override fun loadTokenHistoryList() {

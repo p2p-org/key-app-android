@@ -8,6 +8,7 @@ import com.hannesdorfmann.adapterdelegates4.dsl.AdapterDelegateViewBindingViewHo
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import org.p2p.core.glide.GlideManager
 import org.p2p.uikit.model.AnyCellItem
+import org.p2p.uikit.utils.text.bindOrGone
 import org.p2p.wallet.databinding.ItemTokenBinding
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
@@ -67,4 +68,5 @@ private fun AdapterDelegateViewBindingViewHolder<TokenCellModel, ItemTokenBindin
 private fun AdapterDelegateViewBindingViewHolder<TokenCellModel, ItemTokenBinding>.bindBalance() {
     binding.valueTextView withTextOrGone item.formattedUsdTotal
     binding.totalTextView.text = item.formattedTotal
+    binding.textViewValuePnl.bindOrGone(item.formattedPnl)
 }

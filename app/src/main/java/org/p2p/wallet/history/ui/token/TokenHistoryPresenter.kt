@@ -18,6 +18,9 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.pnl.interactor.PnlInteractor
+import org.p2p.wallet.pnl.models.PnlTokenData
+import org.p2p.wallet.pnl.ui.PnlUiMapper
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -34,8 +37,12 @@ class TokenHistoryPresenter(
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val userTokensRepository: UserTokensLocalRepository,
-    private val historyAnalytics: HistoryAnalytics
+    private val historyAnalytics: HistoryAnalytics,
+    private val pnlInteractor: PnlInteractor,
+    private val pnlUiMapper: PnlUiMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
+
+    private var lastPnlData: PnlTokenData? = null
 
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
@@ -45,12 +52,12 @@ class TokenHistoryPresenter(
 
     private fun subscribeToTokenUpdates() {
         userTokensRepository.observeUserToken(token.mintAddress.toBase58Instance())
-            .onEach { view?.renderTokenAmounts(it) }
+            .onEach { updateTokenAmounts(it) }
             .launchIn(this)
     }
 
     private fun initialize() {
-        view?.renderTokenAmounts(token)
+        updateTokenAmounts(token)
 
         val actionButtons = buildList {
             this += ActionButton.RECEIVE_BUTTON
@@ -68,6 +75,28 @@ class TokenHistoryPresenter(
         }.sorted()
 
         view?.showActionButtons(actionButtons)
+    }
+
+    private fun updateTokenAmounts(token: Token.Active) {
+        view?.renderTokenAmounts(token)
+        view?.renderTokenPnl(pnlUiMapper.mapTokenBalancePnl(lastPnlData))
+
+        launch {
+            try {
+                val pnlTokenData = pnlInteractor.getPnlForToken(token.mintAddressB58)
+                lastPnlData = pnlTokenData
+                view?.renderTokenPnl(pnlUiMapper.mapTokenBalancePnl(pnlTokenData))
+            } catch (e: Throwable) {
+                Timber.e(e, "Error getting pnl for token: ${token.mintAddressB58}")
+                view?.hideTokenPnl()
+            }
+        }
+    }
+
+    override fun onTokenPnlClicked() {
+        if (lastPnlData != null) {
+            view?.showPnlDetails(lastPnlData!!.percent)
+        }
     }
 
     override fun onTransactionClicked(transactionId: String) {

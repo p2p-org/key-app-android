@@ -15,6 +15,9 @@ interface MyCryptoContract {
         fun showAddressCopied(addressOrUsername: String, @StringRes stringResId: Int)
         fun showUserAddress(ellipsizedAddress: String)
         fun showBalance(cellModel: TextViewCellModel?)
+        fun showBalancePnl(cellModel: TextViewCellModel?)
+        fun showPnlDetails(percentage: String)
+        fun hideBalancePnl()
         fun showRefreshing(isRefreshing: Boolean)
         fun showActionButtons(buttons: List<ActionButton>)
         fun showTokenHistory(token: Token.Active)
@@ -42,5 +45,6 @@ interface MyCryptoContract {
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()
         fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)
+        fun onBalancePnlClicked()
     }
 }

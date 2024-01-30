@@ -16,11 +16,15 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.TokenButtonCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
+import org.p2p.wallet.pnl.models.PnlData
+import org.p2p.wallet.pnl.models.PnlTokenData
+import org.p2p.wallet.pnl.ui.PnlUiMapper
 import org.p2p.wallet.transaction.model.NewShowProgress
 
 class MyCryptoMapper(
     private val resources: Resources,
     private val claimUiMapper: ClaimUiMapper,
+    private val pnlMapper: PnlUiMapper,
 ) {
 
     fun mapBalance(balance: BigDecimal): TextViewCellModel {
@@ -41,6 +45,7 @@ class MyCryptoMapper(
     }
 
     fun mapToCellItems(
+        pnlData: PnlData?,
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
         visibilityState: VisibilityState,
@@ -56,7 +61,12 @@ class MyCryptoMapper(
         val result = mutableListOf<AnyCellItem>()
 
         result += ethereumTokens.map { it.mapToCellModel() }
-        result += visibleTokens.map { it.mapToCellModel(isZerosHidden) }
+        result += visibleTokens.map {
+            it.mapToCellModel(
+                isZerosHidden = isZerosHidden,
+                pnlTokenData = pnlData?.findToken(it.mintAddressB58)
+            )
+        }
 
         if (hiddenTokens.isNotEmpty()) {
             val isHidden = visibilityState is VisibilityState.Hidden
@@ -65,19 +75,28 @@ class MyCryptoMapper(
         }
 
         if (visibilityState.isVisible) {
-            result += hiddenTokens.map { it.mapToCellModel(isZerosHidden) }
+            result += hiddenTokens.map {
+                it.mapToCellModel(
+                    isZerosHidden = isZerosHidden,
+                    pnlTokenData = pnlData?.findToken(it.mintAddressB58)
+                )
+            }
         }
 
         return result.toList()
     }
 
-    private fun Token.Active.mapToCellModel(isZerosHidden: Boolean): TokenCellModel {
+    private fun Token.Active.mapToCellModel(
+        isZerosHidden: Boolean,
+        pnlTokenData: PnlTokenData?,
+    ): TokenCellModel {
         return TokenCellModel(
             iconUrl = iconUrl,
             tokenName = tokenName,
             isWrapped = isWrapped,
             formattedUsdTotal = getFormattedUsdTotal(),
             formattedTotal = getFormattedTotal(includeSymbol = true),
+            formattedPnl = pnlMapper.getFormattedPnlForToken(pnlTokenData),
             isDefinitelyHidden = isDefinitelyHidden(isZerosHidden),
             payload = this
         )
