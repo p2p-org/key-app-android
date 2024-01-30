@@ -198,10 +198,10 @@ class MyCryptoPresenter(
 
     private fun prepareAndShowActionButtons() {
         val buttons = listOf(
-            ActionButton.RECEIVE_BUTTON,
             ActionButton.SELL_BUTTON,
-            ActionButton.SWAP_BUTTON,
             ActionButton.BUY_BUTTON,
+            ActionButton.SWAP_BUTTON,
+            ActionButton.RECEIVE_BUTTON,
             ActionButton.SEND_BUTTON
         )
         view?.showActionButtons(buttons)
