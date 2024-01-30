@@ -52,8 +52,4 @@ class PnlStorage(
         set(value) {
             sharedPreferences.edit().putString(KEY_LAST_UPDATE_TIME, value.toString()).apply()
         }
-
-    init {
-        sharedPreferences.edit().clear().apply()
-    }
 }
