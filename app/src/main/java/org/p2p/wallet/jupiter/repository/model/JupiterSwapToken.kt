@@ -6,11 +6,11 @@ import org.p2p.core.utils.Constants
 
 data class JupiterSwapToken(
     val tokenMint: Base58String,
+    val tokenName: String,
     val chainId: Int,
     val decimals: Int,
     val coingeckoId: String?,
     val logoUri: String?,
-    val tokenName: String,
     val tokenSymbol: String,
     val tags: Set<String>,
     val tokenExtensions: TokenExtensions,

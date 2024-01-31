@@ -26,7 +26,9 @@ interface SwapTokensDao {
     @Query("SELECT * FROM swap_tokens WHERE LOWER(symbol) = LOWER(:symbol)")
     suspend fun findTokenBySymbol(symbol: String): SwapTokenEntity?
 
-    @Query("SELECT * FROM swap_tokens WHERE address NOT IN (:userTokensMints)")
+    // todo: make pagingation, right now we are limiting 150
+    // other tokens can be found by using search
+    @Query("SELECT * FROM swap_tokens WHERE address NOT IN (:userTokensMints) LIMIT 150")
     suspend fun findTokensExcludingMints(userTokensMints: Set<String>): List<SwapTokenEntity>
 
     @Query("SELECT * FROM swap_tokens WHERE address IN (:mints)")

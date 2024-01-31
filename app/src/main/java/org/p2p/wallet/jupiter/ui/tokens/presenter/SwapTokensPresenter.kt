@@ -46,7 +46,7 @@ class SwapTokensPresenter(
     private suspend fun loadAllTokens() {
         val currentTokenToSwapTokens = when (tokenToChange) {
             SwapTokensListMode.TOKEN_A -> interactor.requireCurrentTokenA() to interactor.getAllTokensA()
-            SwapTokensListMode.TOKEN_B -> interactor.getCurrentTokenB() to interactor.getAllAvailableTokensB()
+            SwapTokensListMode.TOKEN_B -> interactor.requireCurrentTokenB() to interactor.getAllAvailableTokensB()
         }
         currentToken = currentTokenToSwapTokens.first
         allTokens = currentTokenToSwapTokens.second
