@@ -133,8 +133,8 @@ class TokenHistoryFragment :
     }
 
     override fun renderTokenAmounts(token: Token.Active) {
-        binding.totalTextView.text = token.getFormattedTotal(includeSymbol = true)
-        binding.usdTotalTextView.text = token.getFormattedUsdTotal()
+        binding.textViewTotal.text = token.getFormattedTotal(includeSymbol = true)
+        binding.textViewUsdTotal.text = token.getFormattedUsdTotal()
     }
 
     override fun renderTokenPnl(pnl: TextViewCellModel?) {
@@ -145,10 +145,10 @@ class TokenHistoryFragment :
         }
     }
 
-    override fun showPnlDetails(percentage: String) {
+    override fun showPnlDetails(pnlPercentage: String) {
         PnlDetailsBottomSheet.show(
             fm = childFragmentManager,
-            percentage = percentage
+            pnlPercentage = pnlPercentage
         )
     }
 

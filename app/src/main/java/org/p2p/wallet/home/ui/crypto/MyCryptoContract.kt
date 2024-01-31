@@ -16,7 +16,7 @@ interface MyCryptoContract {
         fun showUserAddress(ellipsizedAddress: String)
         fun showBalance(cellModel: TextViewCellModel?)
         fun showBalancePnl(cellModel: TextViewCellModel?)
-        fun showPnlDetails(percentage: String)
+        fun showPnlDetails(showPnlPercentage: String)
         fun hideBalancePnl()
         fun showRefreshing(isRefreshing: Boolean)
         fun showActionButtons(buttons: List<ActionButton>)

@@ -6,9 +6,9 @@ data class PnlData(
     val total: PnlTokenData,
     val tokens: Map<Base58String, PnlTokenData>
 ) {
-    fun findTokenOrDefault(tokeMints: Base58String): PnlTokenData =
-        tokens[tokeMints] ?: PnlTokenData("0", "0")
+    fun findForTokenOrDefault(tokeMint: Base58String): PnlTokenData =
+        tokens[tokeMint] ?: PnlTokenData("0", "0")
 
-    fun findToken(tokenMint: Base58String): PnlTokenData? =
+    fun findForToken(tokenMint: Base58String): PnlTokenData? =
         tokens[tokenMint]
 }

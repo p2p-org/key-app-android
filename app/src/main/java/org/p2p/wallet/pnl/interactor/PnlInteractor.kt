@@ -12,20 +12,16 @@ class PnlInteractor(
     private val tokenKeyProvider: TokenKeyProvider,
 ) {
 
-    companion object {
-        val DEFAULT_TIME_SPAN = PnlDataTimeSpan.LAST_24_HOURS
-    }
-
     suspend fun getPnlData(
         tokenMints: List<Base58String>,
-        timeSpan: PnlDataTimeSpan = DEFAULT_TIME_SPAN,
-    ): PnlData = pnlRepository.getPnlData(timeSpan, tokenKeyProvider.publicKeyBase58, tokenMints)
+        timeSpan: PnlDataTimeSpan = PnlDataTimeSpan.LAST_24_HOURS,
+    ): PnlData = pnlRepository.getPnlData(tokenKeyProvider.publicKeyBase58, tokenMints, timeSpan)
 
     suspend fun getPnlForToken(
         tokenMint: Base58String,
-        timeSpan: PnlDataTimeSpan = DEFAULT_TIME_SPAN,
+        timeSpan: PnlDataTimeSpan = PnlDataTimeSpan.LAST_24_HOURS,
     ): PnlTokenData? {
-        val pnlData = pnlRepository.getPnlData(timeSpan, tokenKeyProvider.publicKeyBase58, listOf(tokenMint))
-        return pnlData.findToken(tokenMint)
+        val pnlData = pnlRepository.getPnlData(tokenKeyProvider.publicKeyBase58, listOf(tokenMint), timeSpan)
+        return pnlData.findForToken(tokenMint)
     }
 }

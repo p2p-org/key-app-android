@@ -198,10 +198,10 @@ class MyCryptoFragment :
         }
     }
 
-    override fun showPnlDetails(percentage: String) {
+    override fun showPnlDetails(showPnlPercentage: String) {
         PnlDetailsBottomSheet.show(
             fm = childFragmentManager,
-            percentage = percentage
+            pnlPercentage = showPnlPercentage
         )
     }
 

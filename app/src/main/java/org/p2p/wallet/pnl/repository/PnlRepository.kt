@@ -6,8 +6,8 @@ import org.p2p.wallet.pnl.models.PnlData
 
 interface PnlRepository {
     suspend fun getPnlData(
-        timeSpan: PnlDataTimeSpan,
         userWallet: Base58String,
         tokenMints: List<Base58String> = emptyList(),
+        timeSpan: PnlDataTimeSpan = PnlDataTimeSpan.LAST_24_HOURS
     ): PnlData
 }

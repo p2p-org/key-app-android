@@ -23,7 +23,7 @@ import org.p2p.wallet.pnl.ui.PnlUiMapper
 object PnlModule : InjectionModule {
     private const val RETROFIT_QUALIFIER = "PNL_SERVICE_RETROFIT_QUALIFIER"
     override fun create(): Module = module {
-        single(named(RETROFIT_QUALIFIER)) {
+        factory(named(RETROFIT_QUALIFIER)) {
             val rpcApiUrl = "https://pnl.key.app/"
             getRetrofit(
                 baseUrl = rpcApiUrl,
@@ -39,7 +39,7 @@ object PnlModule : InjectionModule {
             )
         } bind PnlStorageContract::class
 
-        single {
+        factory {
             val api = get<Retrofit>(named(RETROFIT_QUALIFIER)).create(PnlServiceApi::class.java)
             PnlRemoteRepository(
                 api = api,

@@ -17,32 +17,25 @@ class PnlRemoteRepository(
 ) : PnlRepository {
 
     override suspend fun getPnlData(
-        timeSpan: PnlDataTimeSpan,
         userWallet: Base58String,
-        tokenMints: List<Base58String>
+        tokenMints: List<Base58String>,
+        timeSpan: PnlDataTimeSpan,
     ): PnlData = withContext(Dispatchers.IO) {
         storage.getOrCache {
-            getPnlDataInternal(timeSpan, userWallet, tokenMints)
+            getPnlDataInternal(userWallet, tokenMints, timeSpan)
         }
     }
 
     private suspend fun getPnlDataInternal(
-        requestTime: PnlDataTimeSpan,
         userWallet: Base58String,
-        tokenMints: List<Base58String>
+        tokenMints: List<Base58String>,
+        timeSpan: PnlDataTimeSpan,
     ): PnlData {
         val params = buildMap {
             put("user_wallet", userWallet.base58Value)
-            val sinceOffset = when (requestTime) {
-                // unix timestamp
-                PnlDataTimeSpan.LAST_24_HOURS -> daysBackToTimestamp(1)
-                PnlDataTimeSpan.LAST_7_DAYS -> daysBackToTimestamp(7)
-                PnlDataTimeSpan.LAST_30_DAYS -> daysBackToTimestamp(30)
-                PnlDataTimeSpan.LAST_90_DAYS -> daysBackToTimestamp(90)
-                PnlDataTimeSpan.LAST_365_DAYS -> daysBackToTimestamp(365)
-                PnlDataTimeSpan.ALL_TIME -> null
-            }
-            put("since", sinceOffset)
+            // todo: backend decided to use null for a default duration
+            //       currently it's 24 hours, something may change in the future
+            put("since", timeSpan.sinceEpochSeconds)
             val requestedTokenMints: List<String>? = tokenMints
                 .map { it.base58Value }
                 .ifEmpty { null }

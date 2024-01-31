@@ -23,7 +23,7 @@ interface TokenHistoryContract {
         fun renderTokenAmounts(token: Token.Active)
         fun renderTokenPnl(pnl: TextViewCellModel?)
         fun hideTokenPnl()
-        fun showPnlDetails(percentage: String)
+        fun showPnlDetails(pnlPercentage: String)
         fun loadTokenHistoryList()
         fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress)
     }

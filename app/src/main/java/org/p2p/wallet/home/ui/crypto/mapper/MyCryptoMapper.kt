@@ -64,7 +64,7 @@ class MyCryptoMapper(
         result += visibleTokens.map {
             it.mapToCellModel(
                 isZerosHidden = isZerosHidden,
-                pnlTokenData = pnlData?.findToken(it.mintAddressB58)
+                pnlTokenData = pnlData?.findForToken(it.mintAddressB58)
             )
         }
 
@@ -78,7 +78,7 @@ class MyCryptoMapper(
             result += hiddenTokens.map {
                 it.mapToCellModel(
                     isZerosHidden = isZerosHidden,
-                    pnlTokenData = pnlData?.findToken(it.mintAddressB58)
+                    pnlTokenData = pnlData?.findForToken(it.mintAddressB58)
                 )
             }
         }

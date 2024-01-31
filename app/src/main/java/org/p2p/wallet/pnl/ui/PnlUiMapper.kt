@@ -1,6 +1,5 @@
 package org.p2p.wallet.pnl.ui
 
-import android.content.res.Resources
 import android.view.Gravity
 import org.p2p.core.common.TextContainer
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
@@ -10,16 +9,13 @@ import org.p2p.wallet.pnl.models.PnlData
 import org.p2p.wallet.pnl.models.PnlTokenData
 import org.p2p.wallet.utils.toPx
 
-class PnlUiMapper(
-    private val resources: Resources,
-) {
+class PnlUiMapper {
 
     fun getFormattedPnlForToken(pnlTokenData: PnlTokenData?): TextViewCellModel? {
-        if (pnlTokenData == null) return null
-        val result = resources.getString(R.string.token_pnl_format, pnlTokenData.percent)
+        pnlTokenData ?: return null
+
         return TextViewCellModel.Raw(
-            text = org.p2p.core.common.TextContainer(result),
-            // textColor = if(pnlTokenData.isNegative) R.color.text_mountain else R.color.text_mountain
+            text = TextContainer(R.string.token_pnl_format, pnlTokenData.percent),
             textColor = R.color.text_mountain
         )
     }
@@ -27,8 +23,9 @@ class PnlUiMapper(
     fun mapBalancePnl(pnlData: PnlData?): TextViewCellModel {
         if (pnlData == null) return mapBalancePnlLoading()
 
-        val result = resources.getString(R.string.home_pnl_format, pnlData.total.percent)
-        return TextViewCellModel.Raw(TextContainer(result))
+        return TextViewCellModel.Raw(
+            TextContainer(R.string.home_pnl_format, pnlData.total.percent)
+        )
     }
 
     private fun mapBalancePnlLoading(): TextViewCellModel {
@@ -46,7 +43,8 @@ class PnlUiMapper(
         if (pnlTokenData == null) {
             return mapBalancePnlLoading()
         }
-        val result = resources.getString(R.string.home_pnl_format, pnlTokenData.percent)
-        return TextViewCellModel.Raw(TextContainer(result))
+        return TextViewCellModel.Raw(
+            TextContainer(R.string.home_pnl_format, pnlTokenData.percent)
+        )
     }
 }
