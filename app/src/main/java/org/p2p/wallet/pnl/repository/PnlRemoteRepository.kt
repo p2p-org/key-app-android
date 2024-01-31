@@ -52,8 +52,4 @@ class PnlRemoteRepository(
 
         return gson.fromJson(response.result, PnlData::class.java)
     }
-
-    private fun daysBackToTimestamp(days: Int): Long {
-        return System.currentTimeMillis() - days * 24 * 60 * 60 * 1000
-    }
 }
