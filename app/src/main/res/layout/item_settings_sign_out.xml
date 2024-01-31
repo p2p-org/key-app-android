@@ -5,7 +5,7 @@
     style="@style/UiKit.Components.Button.Medium.Outlined"
     android:layout_width="match_parent"
     android:layout_height="@dimen/ui_kit_button_medium_height"
-    android:layout_marginHorizontal="12dp"
+    android:layout_marginHorizontal="16dp"
     android:layout_marginTop="12dp"
     android:text="@string/settings_item_sign_out_button_title"
     android:textColor="@color/text_rose"

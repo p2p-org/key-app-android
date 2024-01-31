@@ -53,6 +53,7 @@
     <string name="common_mint">Mint</string>
     <string name="common_refresh">Refresh</string>
     <string name="common_my_crypto">My crypto</string>
+    <string name="common_share_link">Share my link</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -480,4 +481,6 @@
     <string name="send_buy_crypto">Buy crypto</string>
     <string name="pnl_details_title">%s%% last 24 hours</string>
     <string name="pnl_details_subtitle">Result of an investment, trading strategy for 24 hours</string>
+    <string name="referral_banner_title">Referral\nProgram</string>
+    <string name="referral_banner_open_details">Open details</string>
 </resources>
