@@ -25,6 +25,9 @@ import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.pnl.interactor.PnlInteractor
+import org.p2p.wallet.pnl.models.PnlData
+import org.p2p.wallet.pnl.ui.PnlUiMapper
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
@@ -44,6 +47,8 @@ class MyCryptoPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val mainScreenAnalytics: MainScreenAnalytics,
+    private val pnlInteractor: PnlInteractor,
+    private val pnlUiMapper: PnlUiMapper,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
     private var currentVisibilityState: VisibilityState = if (cryptoInteractor.getHiddenTokensVisibility()) {
@@ -61,6 +66,7 @@ class MyCryptoPresenter(
     private var username: Username? = null
 
     private var cryptoTokensSubscription: Job? = null
+    private var lastPnlData: PnlData? = null
 
     override fun attach(view: MyCryptoContract.View) {
         super.attach(view)
@@ -115,11 +121,41 @@ class MyCryptoPresenter(
             }
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
+
+                loadPnlAsync(newState.solTokens, newState.ethTokens)
+
                 showTokensAndBalance(
+                    pnlData = lastPnlData,
                     // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
                     solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
                 )
+            }
+        }
+    }
+
+    private fun loadPnlAsync(
+        solTokens: List<Token.Active>,
+        ethTokens: List<Token.Eth>
+    ) {
+        // do async load of pnl to avoid blocking display of tokens
+        // todo: decided not to load pnl with tokens, because I'm not sure in the unpublished API
+        //       and how it may change in the future
+        launch {
+            try {
+                val pnlData = pnlInteractor.getPnlData(
+                    tokenMints = solTokens.map { it.mintAddressB58 },
+                )
+                lastPnlData = pnlData
+                showTokensAndBalance(
+                    pnlData = pnlData,
+                    // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
+                    solTokens = solTokens,
+                    ethTokens = ethTokens
+                )
+            } catch (e: Throwable) {
+                Timber.e(e, "Error getting pnl for token for home")
+                view?.hideBalancePnl()
             }
         }
     }
@@ -129,9 +165,14 @@ class MyCryptoPresenter(
         return solTokens.minus(excludedTokens.toSet())
     }
 
-    private fun showTokensAndBalance(solTokens: List<Token.Active>, ethTokens: List<Token.Eth>) {
+    private fun showTokensAndBalance(
+        pnlData: PnlData?,
+        solTokens: List<Token.Active>,
+        ethTokens: List<Token.Eth>
+    ) {
         val balance = getUserBalance(solTokens)
         view?.showBalance(cryptoMapper.mapBalance(balance))
+        view?.showBalancePnl(pnlUiMapper.mapBalancePnl(pnlData))
         cryptoScreenAnalytics.logUserAggregateBalanceBase(balance)
 
         val areZerosHidden = cryptoInteractor.areZerosHidden()
@@ -139,12 +180,19 @@ class MyCryptoPresenter(
             cryptoScreenAnalytics.logCryptoClaimTransferedViewed(ethTokens.size)
         }
         val mappedItems: List<AnyCellItem> = cryptoMapper.mapToCellItems(
+            pnlData = pnlData,
             tokens = solTokens,
             ethereumTokens = ethTokens,
             visibilityState = currentVisibilityState,
             isZerosHidden = areZerosHidden,
         )
         view?.showItems(mappedItems)
+    }
+
+    override fun onBalancePnlClicked() {
+        if (lastPnlData != null) {
+            view?.showPnlDetails(lastPnlData!!.total.percent)
+        }
     }
 
     private fun showUserAddressAndUsername() {

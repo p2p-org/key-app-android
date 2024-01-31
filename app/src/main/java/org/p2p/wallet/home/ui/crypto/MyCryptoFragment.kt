@@ -41,6 +41,7 @@ import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.tokenDelegate
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
+import org.p2p.wallet.pnl.ui.PnlDetailsBottomSheet
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
@@ -187,6 +188,25 @@ class MyCryptoFragment :
 
     override fun showBalance(cellModel: TextViewCellModel?) {
         binding.viewBalance.textViewAmount.bindOrGone(cellModel)
+    }
+
+    override fun showBalancePnl(cellModel: TextViewCellModel?) {
+        binding.viewBalance.containerPnl.root.isVisible = cellModel != null
+        binding.viewBalance.containerPnl.textViewPnl.bindOrGone(cellModel)
+        binding.viewBalance.containerPnl.root.setOnClickListener {
+            presenter.onBalancePnlClicked()
+        }
+    }
+
+    override fun showPnlDetails(showPnlPercentage: String) {
+        PnlDetailsBottomSheet.show(
+            fm = childFragmentManager,
+            pnlPercentage = showPnlPercentage
+        )
+    }
+
+    override fun hideBalancePnl() {
+        binding.viewBalance.containerPnl.root.isVisible = false
     }
 
     override fun showUserAddress(ellipsizedAddress: String) {
