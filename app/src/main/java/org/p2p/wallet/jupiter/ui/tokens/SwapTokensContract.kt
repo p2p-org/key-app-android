@@ -16,5 +16,6 @@ interface SwapTokensContract {
     interface Presenter : MvpPresenter<View> {
         fun onSearchTokenQueryChanged(newQuery: String)
         fun onTokenClicked(clickedToken: SwapTokenModel)
+        fun onNonStrictTokenConfirmed(clickedTokenMint: String)
     }
 }

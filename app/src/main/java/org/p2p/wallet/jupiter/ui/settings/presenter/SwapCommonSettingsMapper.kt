@@ -12,37 +12,10 @@ import org.p2p.uikit.organisms.sectionheader.SectionHeaderCellModel
 import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
-import org.p2p.wallet.swap.model.Slippage
 import org.p2p.wallet.jupiter.ui.settings.view.SwapCustomSlippageCellModel
+import org.p2p.wallet.swap.model.Slippage
 
 class SwapCommonSettingsMapper {
-
-    fun getNetworkFeeCell(): MainCellModel {
-        return MainCellModel(
-            leftSideCellModel = LeftSideCellModel.IconWithText(
-                firstLineText = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_settings_network_fee_title),
-                ),
-                secondLineText = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_settings_network_fee_subtitle),
-                    textColor = R.color.text_mint,
-                ),
-            ),
-            rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = TextViewCellModel.Raw(
-                    text = TextContainer(R.string.swap_settings_network_fee_free),
-                    textColor = R.color.text_mint,
-                ),
-                firstIcon = ImageViewCellModel(
-                    icon = DrawableContainer(R.drawable.ic_info_outline),
-                    iconTint = R.color.icons_mint,
-                )
-            ),
-            payload = SwapSettingsPayload.NETWORK_FEE,
-            styleType = MainCellStyle.BASE_CELL,
-        )
-    }
-
     fun mapSlippageList(slippage: Slippage, isSelectedCustom: Boolean): List<AnyCellItem> = buildList {
         this += createHeader(R.string.swap_settings_slippage_title)
         this += getSlippageList(slippage, isSelectedCustom)

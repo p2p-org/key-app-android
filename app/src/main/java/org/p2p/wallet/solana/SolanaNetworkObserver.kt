@@ -6,13 +6,14 @@ import java.net.UnknownHostException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.p2p.core.common.di.AppScope
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationDebounceFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.NetworkObservationFrequencyFeatureToggle
@@ -45,7 +46,9 @@ class SolanaNetworkObserver(
         this.state.value = newState
     }
 
-    fun getStateFlow(): Flow<SolanaNetworkState> = state
+    fun getStateFlow(): StateFlow<SolanaNetworkState> = state.asStateFlow()
+
+    fun getCurrentEpoch(): Int = (state.value as? Online)?.currentEpoch ?: 0
 
     fun start() {
         observeJob = appScope.launch {
@@ -84,7 +87,12 @@ class SolanaNetworkObserver(
 
         when (val oldState = state.value) {
             is Idle,
-            is Offline -> updateState(Online(currentAverageTps))
+            is Offline -> updateState(
+                Online(
+                    averageTps = currentAverageTps,
+                    currentEpoch = samples.firstOrNull()?.currentEpoch ?: 0
+                )
+            )
             is Online -> calculateNegativePercent(oldState, currentAverageTps)
         }
     }
@@ -119,7 +127,7 @@ class SolanaNetworkObserver(
         if (currentAverageTps < minAllowedTps) {
             showError()
         } else {
-            updateState(Online(currentAverageTps))
+            updateState(Online(currentAverageTps, oldState.currentEpoch))
         }
     }
 

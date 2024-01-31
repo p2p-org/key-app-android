@@ -2,9 +2,10 @@ package org.p2p.wallet.jupiter.repository.model
 
 import java.math.BigDecimal
 import java.math.BigInteger
-import org.p2p.core.utils.scaleShortOrFirstNotZero
 import org.p2p.core.crypto.Base58String
+import org.p2p.core.utils.scaleShortOrFirstNotZero
 
+@Deprecated("Old v4 swap logic")
 data class JupiterSwapMarketInformation(
     val id: String,
     val label: String,
@@ -19,6 +20,7 @@ data class JupiterSwapMarketInformation(
     val liquidityFee: LpFee,
     val platformFee: PlatformFee
 ) {
+    @Deprecated("Old v4 swap logic")
     data class LpFee(
         val amountInLamports: BigInteger,
         val mint: Base58String,
@@ -27,6 +29,7 @@ data class JupiterSwapMarketInformation(
         val formattedPercent: BigDecimal = percent.times(BigDecimal(100)).scaleShortOrFirstNotZero()
     }
 
+    @Deprecated("Old v4 swap logic")
     data class PlatformFee(
         val amountInLamports: BigInteger,
         val mint: Base58String,

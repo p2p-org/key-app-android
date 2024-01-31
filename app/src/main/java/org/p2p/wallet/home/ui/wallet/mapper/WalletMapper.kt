@@ -87,7 +87,7 @@ class WalletMapper() {
             cellItems += strigaOffRampTokens.map {
                 StrigaOffRampCellModel(
                     amountAvailable = it.amountToWithdraw,
-                    tokenSymbol = Constants.EUR_SYMBOL,
+                    tokenSymbol = Constants.EUR_READABLE_SYMBOL,
                     isLoading = false,
                     payload = it
                 )

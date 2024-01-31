@@ -1,5 +1,6 @@
 package org.p2p.wallet.jupiter.ui.main
 
+import com.google.gson.JsonObject
 import io.mockk.every
 import timber.log.Timber
 import java.math.BigDecimal
@@ -14,11 +15,10 @@ import org.p2p.core.token.TokenMetadataExtension
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.toLamports
 import org.p2p.uikit.utils.text.TextViewCellModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapFees
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMode
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
+import org.p2p.wallet.jupiter.repository.model.SwapKeyAppFees
 import org.p2p.wallet.jupiter.statemanager.price_impact.SwapPriceImpactView
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
@@ -32,8 +32,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png",
         tokenName = "Wrapped SOL",
         tokenSymbol = "SOL",
-        tags = listOf("solana", "sol", "wrapped-sol", "wrapped-solana"),
-        tokenExtensions = TokenExtensions.NONE
+        tokenExtensions = TokenExtensions.NONE,
+        tags = emptySet()
     )
 
     val JUPITER_USDC_TOKEN = JupiterSwapToken(
@@ -44,8 +44,8 @@ object JupiterSwapTestHelpers {
         logoUri = "https://raw.githubusercontent.com/p2p-org/solana-token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png",
         tokenName = "USD Coin",
         tokenSymbol = "USDC",
-        tags = listOf("solana", "sol", "usdc", "usd-coin"),
-        tokenExtensions = TokenExtensions.NONE
+        tokenExtensions = TokenExtensions.NONE,
+        tags = emptySet()
     )
     val DEFAULT_SWAPPABLE_TOKENS = listOf(
         JUPITER_SOL_TOKEN.tokenMint,
@@ -53,7 +53,9 @@ object JupiterSwapTestHelpers {
     )
 
     val SOL_TO_USD_RATE = BigDecimal("20.74")
-    val USD_TO_SOL_RATE = BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(SOL_TO_USD_RATE, RoundingMode.UP).setScale(18)
+    val USD_TO_SOL_RATE = BigDecimal.ONE.setScale(18, RoundingMode.UP)
+        .divide(SOL_TO_USD_RATE, RoundingMode.UP)
+        .setScale(18)
 
     fun SwapButtonState.toReadableString(): String {
         return when (this) {
@@ -167,53 +169,37 @@ object JupiterSwapTestHelpers {
         return (source * percent).toBigInteger()
     }
 
-    fun createSwapRoute(data: TestSwapRouteData): JupiterSwapRoute {
+    fun createSwapRoute(data: TestSwapRouteData): JupiterSwapRouteV6 {
         val amountIn = data.amountIn.toLamports(data.inDecimals)
         val amountOut = data.amountOut.toLamports(data.outDecimals)
 
-        return JupiterSwapRoute(
-            amountInLamports = amountIn,
+        return JupiterSwapRouteV6(
             inAmountInLamports = amountIn,
             outAmountInLamports = amountOut,
-            priceImpactPct = data.priceImpact,
-            marketInfos = listOf(
-                JupiterSwapMarketInformation(
+            routePlans = listOf(
+                JupiterSwapRoutePlanV6(
                     inputMint = data.inputMint,
                     outputMint = data.outputMint,
-                    notEnoughLiquidity = false,
-                    inAmountInLamports = amountIn,
-                    outAmountInLamports = amountOut,
-                    priceImpactPct = data.priceImpact,
-                    id = "86eq4kdBkUCHGdCC2SfcqGHRCBGhp2M89aCmuvvxaXsm",
+                    outAmount = amountOut,
+                    ammKey = "86eq4kdBkUCHGdCC2SfcqGHRCBGhp2M89aCmuvvxaXsm",
                     label = "Lifinity V2",
-                    minInAmountInLamports = null,
-                    minOutAmountInLamports = null,
-
-                    liquidityFee = JupiterSwapMarketInformation.LpFee(
-                        amountInLamports = BigInteger("400000"),
-                        mint = JUPITER_SOL_TOKEN.tokenMint,
-                        percent = BigDecimal("0.00040")
-                    ),
-                    platformFee = JupiterSwapMarketInformation.PlatformFee(
-                        amountInLamports = BigInteger("0"),
-                        mint = data.outputMint,
-                        percent = BigDecimal("0.0")
-                    )
+                    feeAmount = BigInteger("400000"),
+                    feeMint = JUPITER_SOL_TOKEN.tokenMint,
+                    percent = "100"
                 )
             ),
             slippageBps = data.slippageBps,
             otherAmountThreshold = amountOut.minusPercent(data.slippage.doubleValue).toString(),
-            swapMode = JupiterSwapMode.EXACT_IN,
-            fees = JupiterSwapFees(
-                signatureFee = BigInteger("0"),
-                openOrdersDeposits = listOf(),
-                ataDeposits = listOf(),
-                totalFeeAndDepositsInSol = BigInteger("0"),
-                minimumSolForTransaction = BigInteger("0")
-            ),
-            keyAppFeeInLamports = BigInteger.ZERO,
-            keyAppRefundableFee = "0",
-            keyAppHash = "86cdfab8becfda70a17bac0c2b0704a3afe5458812a60af2e93154d11dc34abe"
+            swapMode = "EXACT_IN",
+            priceImpactPercent = data.priceImpact,
+            originalRoute = JsonObject(),
+            fees = SwapKeyAppFees(
+                signatureFee = BigInteger.ZERO,
+                ataDeposits = BigInteger.ZERO,
+                totalFeeAndDeposits = BigInteger.ZERO,
+                minimumSolForTransaction = BigInteger.ZERO,
+                totalFees = BigInteger.ZERO
+            )
         )
     }
 
@@ -232,7 +218,9 @@ object JupiterSwapTestHelpers {
     }
 
     fun getRateFromUsd(usdRate: BigDecimal): BigDecimal {
-        return BigDecimal.ONE.setScale(18, RoundingMode.UP).divide(usdRate, RoundingMode.UP).setScale(18)
+        return BigDecimal.ONE.setScale(18, RoundingMode.UP)
+            .divide(usdRate, RoundingMode.UP)
+            .setScale(18)
     }
 
     fun createSOLToken(

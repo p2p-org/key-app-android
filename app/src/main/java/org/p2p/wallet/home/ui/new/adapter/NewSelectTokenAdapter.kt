@@ -3,14 +3,14 @@ package org.p2p.wallet.home.ui.new.adapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
+import org.p2p.core.token.Token
 import org.p2p.wallet.R
 import org.p2p.wallet.home.model.SelectTokenItem
 import org.p2p.wallet.home.model.SelectTokenItem.CategoryTitle
 import org.p2p.wallet.home.model.SelectTokenItem.SelectableToken
-import org.p2p.core.token.Token
 
 class NewSelectTokenAdapter(
-    private val onItemClicked: (Token) -> Unit
+    private val onItemClicked: (Token.Active) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {

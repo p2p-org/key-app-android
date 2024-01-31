@@ -7,8 +7,10 @@ object Constants {
     const val SYMBOL_ZERO = "0"
     const val USD_SYMBOL = "$"
     const val USD_READABLE_SYMBOL = "USD"
-    const val GBP_SYMBOL = "GBP"
-    const val EUR_SYMBOL = "EUR"
+    const val GBP_READABLE_SYMBOL = "GBP"
+    const val GBP_SYMBOL = "£"
+    const val EUR_READABLE_SYMBOL = "EUR"
+    const val EUR_SYMBOL = "€"
 
     const val REN_BTC_SYMBOL = "renBTC"
     const val SOL_SYMBOL = "SOL"
@@ -50,4 +52,8 @@ object Constants {
     const val APP_HASH = "J1y9NEXfoHx"
 
     const val FIAT_FRACTION_LENGTH = 2
+
+    // todo: come up with different place for this constant as it duplicates
+    //       value from solana module, and we can't import solana module here due to circular dependency
+    const val SOLANA_TOKEN_2022_PROGRAM_ID = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
 }

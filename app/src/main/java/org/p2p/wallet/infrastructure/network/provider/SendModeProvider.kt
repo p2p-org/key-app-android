@@ -2,19 +2,20 @@ package org.p2p.wallet.infrastructure.network.provider
 
 import androidx.core.content.edit
 import android.content.SharedPreferences
+import timber.log.Timber
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.utils.Constants.USD_READABLE_SYMBOL
 import org.p2p.wallet.utils.emptyString
-import timber.log.Timber
 
 private const val TAG = "SendModeProvider"
 private const val KEY_SEND_MODE = "SEND_MODE"
 
-private val EMPTY_TOKEN = CurrencyMode.Token(emptyString(), 2)
-
 class SendModeProvider(
     private val sharedPreferences: SharedPreferences
 ) {
+    companion object {
+        val EMPTY_TOKEN = CurrencyMode.Token(symbol = emptyString(), fractionLength = 2)
+    }
 
     var sendMode: CurrencyMode = CurrencyMode.Fiat.Usd
         get() = getSendModeFromStorage()

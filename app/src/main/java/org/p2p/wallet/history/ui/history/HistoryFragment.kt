@@ -86,7 +86,7 @@ class HistoryFragment :
                 tokenAMint = sourceTokenMint.toBase58Instance(),
                 tokenBMint = destinationTokenMint.toBase58Instance(),
                 amountA = Constants.ZERO_AMOUNT,
-                source = openedFrom
+                source = openedFrom,
             )
         )
     }
@@ -122,5 +122,10 @@ class HistoryFragment :
 
     override fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress) {
         listener?.showTransactionProgress(bundleId, progressDetails, SendSwapTransactionProgressHandler.QUALIFIER)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.layoutHistoryList.onParentViewDestroyed()
     }
 }

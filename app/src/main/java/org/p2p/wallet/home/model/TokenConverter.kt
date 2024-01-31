@@ -18,6 +18,7 @@ import org.p2p.wallet.home.db.TokenExtensionEntity
 object TokenConverter {
 
     fun createToken(
+        programId: String?,
         mintAddress: String,
         totalLamports: BigInteger,
         accountPublicKey: String,
@@ -32,17 +33,20 @@ object TokenConverter {
         }
         val total = totalLamports.toBigDecimal().divide(tokenMetadata.decimals.toPowerValue())
 
-        val extensions = TokenExtensionsConfigurator(
-            extensions = tokenMetadata.extensions,
-            tokenTotal = total,
-            tokenRate = totalInUsd
-        ).config()
+//        val extensions = TokenExtensionsConfigurator(
+//            extensions = tokenMetadata.extensions,
+//            tokenTotal = total,
+//            tokenRate = totalInUsd
+//        ).config()
+
+        val extensions = TokenExtensions.NONE
 
         return Token.Active(
             publicKey = accountPublicKey,
             tokenSymbol = tokenMetadata.symbol,
             decimals = tokenMetadata.decimals,
             mintAddress = mintAddress,
+            programId = programId,
             tokenName = tokenMetadata.name,
             iconUrl = tokenMetadata.iconUrl,
             // TODO: Remove [totalInUsd] from constructor fields and make it as a function by calculating total * rate
@@ -77,6 +81,7 @@ object TokenConverter {
     }
 
     fun fromNetwork(
+        programId: String?,
         account: Account,
         tokenMetadata: TokenMetadata,
         price: TokenServicePrice?
@@ -85,6 +90,7 @@ object TokenConverter {
         val mintAddress = data.mint
         val total = data.tokenAmount.amount.toBigInteger()
         return createToken(
+            programId = programId,
             mintAddress = mintAddress,
             totalLamports = total,
             accountPublicKey = account.pubkey,
@@ -99,6 +105,7 @@ object TokenConverter {
             tokenSymbol = token.tokenSymbol,
             decimals = token.decimals,
             mintAddress = token.mintAddress,
+            programId = token.programId,
             tokenName = token.tokenName,
             iconUrl = token.iconUrl,
             totalInUsd = token.totalInUsd,
@@ -127,6 +134,7 @@ object TokenConverter {
         tokenSymbol = entity.tokenSymbol,
         decimals = entity.decimals,
         mintAddress = entity.mintAddress,
+        programId = entity.programId,
         tokenName = entity.tokenName,
         iconUrl = entity.iconUrl,
         totalInUsd = entity.totalInUsd,

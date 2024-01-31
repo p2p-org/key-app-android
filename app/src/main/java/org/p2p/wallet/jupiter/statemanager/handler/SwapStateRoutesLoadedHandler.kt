@@ -6,7 +6,6 @@ import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
-import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateRoutesRefresher
 import org.p2p.wallet.swap.model.Slippage
 
@@ -28,7 +27,6 @@ class SwapStateRoutesLoadedHandler(
         var tokenB: SwapTokenModel = oldState.tokenB
         var amountTokenA: BigDecimal = oldState.amountTokenA
         var slippage: Slippage = oldState.slippage
-        var activeRouteOrdinal = oldState.activeRouteIndex
 
         when (action) {
             is SwapStateAction.SlippageChanged -> slippage = action.newSlippageValue
@@ -40,8 +38,6 @@ class SwapStateRoutesLoadedHandler(
             is SwapStateAction.TokenAAmountChanged -> amountTokenA = action.newAmount
             is SwapStateAction.TokenAChanged -> tokenA = action.newTokenA
             is SwapStateAction.TokenBChanged -> tokenB = action.newTokenB
-            is SwapStateAction.ActiveRouteChanged -> activeRouteOrdinal = action.ordinalRouteNumber
-            SwapStateAction.RefreshRoutes -> activeRouteOrdinal = SwapStateManager.DEFAULT_ACTIVE_ROUTE_ORDINAL
 
             SwapStateAction.EmptyAmountTokenA -> {
                 stateFlow.value = SwapState.TokenAZero(tokenA, tokenB, slippage)
@@ -53,6 +49,7 @@ class SwapStateRoutesLoadedHandler(
                 return
             }
             SwapStateAction.CancelSwapLoading -> return
+            SwapStateAction.RefreshRoutes -> Unit
         }
 
         routesRefresher.refreshRoutes(
@@ -61,7 +58,6 @@ class SwapStateRoutesLoadedHandler(
             tokenB = tokenB,
             amountTokenA = amountTokenA,
             slippage = slippage,
-            activeRouteIndex = activeRouteOrdinal
         )
     }
 }

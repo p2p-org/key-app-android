@@ -5,7 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -26,7 +25,6 @@ import org.p2p.wallet.auth.ui.restore_error.RestoreErrorScreenFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentOnboardingGeneralErrorBinding
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popAndReplaceFragment
@@ -63,17 +61,6 @@ class OnboardingGeneralErrorFragment :
     override val snackbarStyle: UiKitSnackbarStyle = UiKitSnackbarStyle.WHITE
     override val customStatusBarStyle = SystemIconsStyle.BLACK
     override val customNavigationBarStyle = SystemIconsStyle.WHITE
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.inflateMenu(R.menu.menu_onboarding_help)
-        binding.toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.helpItem) {
-                IntercomService.showMessenger()
-            }
-            return@setOnMenuItemClickListener true
-        }
-    }
 
     override fun applyWindowInsets(rootView: View) {
         rootView.doOnApplyWindowInsets { _, insets, _ ->
@@ -117,7 +104,7 @@ class OnboardingGeneralErrorFragment :
         button.setOnClickListener {
             when (action) {
                 ButtonAction.OPEN_INTERCOM -> {
-                    IntercomService.showMessenger()
+                    Unit
                 }
                 ButtonAction.NAVIGATE_ENTER_PHONE -> {
                     presenter.onEnterPhoneClicked()
@@ -139,10 +126,7 @@ class OnboardingGeneralErrorFragment :
             state.errorCode
         )
         with(buttonRestoreByGoogle) {
-            setText(R.string.onboarding_general_error_bug_report_button_title)
-            setIconResource(R.drawable.ic_caution)
-            setOnClickListener { IntercomService.showMessenger() }
-            isVisible = true
+            isVisible = false
         }
         with(buttonSecondaryFirst) {
             setText(R.string.restore_starting_screen)

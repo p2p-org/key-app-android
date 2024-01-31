@@ -1,15 +1,15 @@
 package org.p2p.wallet.sdk.facade
 
 import kotlinx.coroutines.withContext
-import org.p2p.solanaj.model.types.RecentBlockhashResponse
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
-import org.p2p.core.utils.encodeToBase58
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.utils.encodeToBase58
+import org.p2p.solanaj.model.types.RecentBlockhashResponse
 import org.p2p.wallet.sdk.RelaySdk
 import org.p2p.wallet.sdk.facade.mapper.SdkMethodResultMapper
 import org.p2p.wallet.sdk.facade.model.relay.RelaySdkSignedTransaction
 import org.p2p.wallet.sdk.facade.model.relay.RelaySignTransactionResponse
-import org.p2p.core.crypto.Base58String
 
 class RelaySdkFacade(
     private val relaySdk: RelaySdk,
@@ -44,10 +44,10 @@ class RelaySdkFacade(
         transaction: String,
         keyPair: ByteArray,
         recentBlockhash: String
-    ) = withContext(dispatchers.io) {
+    ): RelaySdkSignedTransaction = withContext(dispatchers.io) {
         logger.logRequest(methodName = "signTransaction", transaction, keyPair.size, recentBlockhash)
 
-        check(keyPair.size == 64) {
+        require(keyPair.size == 64) {
             "keyPair for SDK should be exact 64 bytes (32 private + 32 public); now = ${keyPair.size}"
         }
 

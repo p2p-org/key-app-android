@@ -1,14 +1,16 @@
 package org.p2p.solanaj.programs
 
 import org.bitcoinj.core.Utils
+import java.math.BigInteger
+import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.AccountMeta
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.TransactionInstruction
-import java.math.BigInteger
 
 object SystemProgram {
     val PROGRAM_ID = PublicKey("11111111111111111111111111111111")
     val SPL_TOKEN_PROGRAM_ID = PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+    val TOKEN2022_PROGRAM_ID = Constants.SOLANA_TOKEN_2022_PROGRAM_ID
     private val SYSVAR_RENT_ADDRESS = PublicKey("SysvarRent111111111111111111111111111111111")
     private const val PROGRAM_INDEX_CREATE_ACCOUNT = 0
     private const val PROGRAM_INDEX_TRANSFER = 2

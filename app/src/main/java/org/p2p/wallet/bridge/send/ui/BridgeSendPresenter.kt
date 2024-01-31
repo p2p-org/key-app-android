@@ -13,7 +13,7 @@ import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asUsd
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
@@ -27,10 +27,10 @@ import org.p2p.wallet.bridge.model.BridgeFee
 import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.bridge.send.interactor.BridgeSendInteractor
 import org.p2p.wallet.bridge.send.model.getFeeList
+import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureAction
 import org.p2p.wallet.bridge.send.statemachine.SendFeatureException
 import org.p2p.wallet.bridge.send.statemachine.SendState
-import org.p2p.wallet.bridge.send.statemachine.BridgeSendStateMachine
 import org.p2p.wallet.bridge.send.statemachine.bridgeFee
 import org.p2p.wallet.bridge.send.statemachine.bridgeToken
 import org.p2p.wallet.bridge.send.statemachine.inputAmount
@@ -105,7 +105,7 @@ class BridgeSendPresenter(
             is SendState.Static.ReadyToSend -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                handleUpdateArbiterFee(token = bridgeToken, sendFee = state.fee, isInputEmpty = false)
                 handleUpdateTotal(sendFee = state.fee)
 
                 updateButtons(
@@ -117,7 +117,7 @@ class BridgeSendPresenter(
             is SendState.Static.TokenNotZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.amount)
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = false)
+                handleUpdateArbiterFee(token = bridgeToken, sendFee = state.fee, isInputEmpty = false)
                 handleUpdateTotal(sendFee = state.fee)
                 updateButtons(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
@@ -128,7 +128,7 @@ class BridgeSendPresenter(
             is SendState.Static.TokenZero -> view?.apply {
                 val bridgeToken = state.bridgeToken ?: return
                 updateTokenAndInput(bridgeToken, state.inputAmount.orZero())
-                handleUpdateFee(sendFee = state.fee, isInputEmpty = true)
+                handleUpdateArbiterFee(token = bridgeToken, sendFee = state.fee, isInputEmpty = true)
                 handleUpdateTotal(sendFee = state.fee)
                 updateButtons(
                     errorButton = TextContainer.Res(R.string.main_enter_the_amount),
@@ -207,6 +207,8 @@ class BridgeSendPresenter(
     override fun setInitialData(selectedToken: Token.Active?, inputAmount: BigDecimal?) = Unit
 
     private fun initialize(view: BridgeSendContract.View) {
+        view.disableSwitchAmounts()
+
         calculationMode.onCalculationCompleted = { view.showAroundValue(it) }
         calculationMode.onInputFractionUpdated = { view.updateInputFraction(it) }
         calculationMode.onLabelsUpdated = { switchSymbol, mainSymbol ->
@@ -278,12 +280,6 @@ class BridgeSendPresenter(
 
     private fun countTotal(amount: BigDecimal, bridgeFee: SendFee.Bridge?): String {
         val mode = calculationMode.getCurrencyMode()
-        val fees = getFeeList(bridgeFee)
-        val fee = if (mode is CurrencyMode.Fiat.Usd) {
-            fees.sumOf { it.amountInUsd.toBigDecimalOrZero() }
-        } else {
-            fees.sumOf { it.amountInToken }
-        }
         val bridgeFeeAmount = bridgeFee?.fee?.totalAmount?.toBridgeAmount()
         return if (bridgeFeeAmount != null && !bridgeFeeAmount.isZero) {
             if (mode is CurrencyMode.Fiat.Usd) {
@@ -292,29 +288,50 @@ class BridgeSendPresenter(
                 bridgeFeeAmount.formattedTokenAmount.orEmpty()
             }
         } else {
-            val total = amount + fee
-            if (mode is CurrencyMode.Fiat.Usd) {
-                total.asUsd()
+            val totalFeeAmount = if (mode is CurrencyMode.Fiat.Usd) {
+                bridgeFeeAmount?.fiatAmount.orZero()
             } else {
-                val tokenSymbol = (mode as? CurrencyMode.Token)?.symbol.orEmpty()
-                "${total.formatToken(mode.fractionLength)} $tokenSymbol"
+                bridgeFeeAmount?.tokenAmount.orZero()
+            }
+            val amountPlusTotalFee = amount + totalFeeAmount
+            when (mode) {
+                is CurrencyMode.Fiat.Usd -> {
+                    amountPlusTotalFee.asUsd()
+                }
+                is CurrencyMode.Token -> {
+                    val tokenSymbol = mode.symbol
+                    amountPlusTotalFee.formatTokenWithSymbol(tokenSymbol)
+                }
+                else -> {
+                    emptyString()
+                }
             }
         }
     }
 
-    private fun BridgeSendContract.View.handleUpdateFee(sendFee: SendFee?, isInputEmpty: Boolean) {
+    private fun BridgeSendContract.View.handleUpdateArbiterFee(
+        token: SendToken.Bridge,
+        sendFee: SendFee?,
+        isInputEmpty: Boolean
+    ) {
         val bridgeFee = sendFee as? SendFee.Bridge
-        val fees = bridgeSendUiMapper.getFeesFormatted(
+        val formattedArbiterFee = bridgeSendUiMapper.getArbiterFeesFormattedToken(
+            token = token,
             bridgeFee = bridgeFee,
             isInputEmpty = isInputEmpty
         )
-        val totalInUsd = getFeeTotalInUsd()
+        val totalInUsd = bridgeFee?.fee
+            ?.arbiterFee
+            ?.toBridgeAmount()
+            ?.fiatAmount
+            .orZero()
+
         val isHighFees = totalInUsd >= MAX_FEE_AMOUNT
         val feeColor = if (isHighFees) R.color.text_rose else R.color.text_mountain
         setFeeColor(feeColor)
         showBottomFeeValue(
             TextViewCellModel.Raw(
-                TextContainer(fees),
+                TextContainer(text = formattedArbiterFee),
                 textColor = feeColor
             )
         )

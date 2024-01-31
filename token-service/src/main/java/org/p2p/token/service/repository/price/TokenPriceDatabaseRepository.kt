@@ -2,6 +2,7 @@ package org.p2p.token.service.repository.price
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.p2p.core.utils.Constants
 import org.p2p.token.service.database.TokenPriceDao
 import org.p2p.token.service.database.mapper.TokenServiceDatabaseMapper
 import org.p2p.token.service.model.TokenServiceNetwork
@@ -38,5 +39,9 @@ internal class TokenPriceDatabaseRepository(
 }
 
 internal fun String.toPriceColumnKey(networkChainName: String): String {
-    return "${this}_$networkChainName"
+    return if (this == Constants.WRAPPED_SOL_MINT) {
+        "${Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN}_$networkChainName"
+    } else {
+        "${this}_$networkChainName"
+    }
 }

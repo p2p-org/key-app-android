@@ -20,12 +20,12 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSendNewBinding
 import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.new.NewSelectTokenFragment
+import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.ui.SendOpenedFrom
 import org.p2p.wallet.send.ui.dialogs.SendFreeTransactionsDetailsBottomSheet
 import org.p2p.wallet.send.ui.dialogs.SendFreeTransactionsDetailsBottomSheet.OpenedFrom
 import org.p2p.wallet.send.ui.search.NewSearchFragment
-import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.BridgeSendProgressHandler
 import org.p2p.wallet.utils.addFragment
@@ -173,7 +173,7 @@ class BridgeSendFragment :
     }
 
     override fun disableSwitchAmounts() {
-        binding.widgetSendDetails.disableFiat()
+        binding.widgetSendDetails.disableSwitchAmounts()
     }
 
     override fun disableInputs() {
@@ -202,6 +202,10 @@ class BridgeSendFragment :
 
     override fun setFeeLabel(text: String) {
         binding.widgetSendDetails.setFeeLabel(text)
+    }
+
+    override fun setFeeLabelRes(textRes: Int) {
+        this.setFeeLabel(getString(textRes))
     }
 
     override fun showBottomFeeValue(fee: TextViewCellModel) {

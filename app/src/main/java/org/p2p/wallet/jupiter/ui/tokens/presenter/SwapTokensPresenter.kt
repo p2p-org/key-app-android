@@ -2,6 +2,7 @@ package org.p2p.wallet.jupiter.ui.tokens.presenter
 
 import timber.log.Timber
 import kotlinx.coroutines.launch
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BasePresenter
@@ -37,7 +38,7 @@ class SwapTokensPresenter(
 
     private suspend fun initialLoad() {
         val currentTokenToSwapTokens = when (tokenToChange) {
-            SwapTokensListMode.TOKEN_A -> interactor.getCurrentTokenA() to interactor.getAllTokensA()
+            SwapTokensListMode.TOKEN_A -> interactor.requireCurrentTokenA() to interactor.getAllTokensA()
             SwapTokensListMode.TOKEN_B -> interactor.getCurrentTokenB() to interactor.getAllAvailableTokensB()
         }
         currentToken = currentTokenToSwapTokens.first
@@ -94,6 +95,13 @@ class SwapTokensPresenter(
     override fun onTokenClicked(clickedToken: SwapTokenModel) {
         interactor.selectToken(tokenToChange, clickedToken)
         view?.close()
+    }
+
+    override fun onNonStrictTokenConfirmed(clickedTokenMint: String) {
+        launch {
+            interactor.findTokenByMintAddress(clickedTokenMint.toBase58Instance())
+                ?.also { onTokenClicked(it) }
+        }
     }
 
     private fun renderLoading(isLoading: Boolean) {

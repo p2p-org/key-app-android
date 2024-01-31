@@ -3,21 +3,22 @@ package org.p2p.wallet.rpc.repository.solana
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import timber.log.Timber
+import org.p2p.core.crypto.Base64String
+import org.p2p.core.crypto.Base64Utils
+import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.model.types.AccountInfo
 import org.p2p.solanaj.model.types.ConfigObjects
 import org.p2p.solanaj.model.types.Encoding
+import org.p2p.solanaj.model.types.EpochInfo
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.model.types.RpcSendTransactionConfig
 import org.p2p.solanaj.model.types.SignatureInformationResponse
 import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.solanaj.rpc.TransactionSimulationResult
 import org.p2p.solanaj.rpc.model.RecentPerformanceSample
-import org.p2p.core.crypto.Base64String
-import org.p2p.core.crypto.Base64Utils
-import org.p2p.core.network.data.transactionerrors.RpcTransactionError
 import org.p2p.wallet.rpc.repository.blockhash.RpcBlockhashRepository
 
 private const val TAG = "RpcSolanaRemoteRepository"
@@ -27,6 +28,8 @@ class RpcSolanaRemoteRepository(
     private val blockHashRepository: RpcBlockhashRepository,
     private val gson: Gson
 ) : RpcSolanaRepository {
+
+    private var epochInfoCache: EpochInfo? = null
 
     override suspend fun sendTransaction(
         transaction: Transaction,
@@ -66,7 +69,7 @@ class RpcSolanaRemoteRepository(
             val response = api.simulateTransaction(request).result
 
             val simulationError = response.value.error
-            val transactionError: RpcTransactionError? = parseTransactionError(simulationError)
+            val transactionError: RpcTransactionError? = simulationError.let(::parseTransactionError)
             TransactionSimulationResult(
                 isSimulationSuccess = simulationError.isJsonNull,
                 errorIfSimulationFailed = transactionError?.toString() ?: simulationError.toString()
@@ -131,5 +134,16 @@ class RpcSolanaRemoteRepository(
         val encoding = Encoding.BASE64
         val params = arrayListOf(stateKey.toString(), RpcSendTransactionConfig(encoding))
         return api.getAccountInfo(RpcRequest(method = "getAccountInfo", params = params)).result
+    }
+
+    override suspend fun getEpochInfo(useCache: Boolean): EpochInfo {
+        if (useCache && epochInfoCache != null) {
+            return epochInfoCache!!
+        }
+
+        val request = RpcRequest(method = "getEpochInfo", params = null)
+        return api.getEpochInfo(request).result.also {
+            epochInfoCache = it
+        }
     }
 }

@@ -12,7 +12,7 @@ import org.p2p.wallet.jupiter.interactor.JupiterSwapInteractor
 import org.p2p.wallet.jupiter.interactor.JupiterSwapTokensResult
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
@@ -51,11 +51,9 @@ class JupiterTestPresenterBuilder {
      * Mock for
      * @see JupiterSwapRoutesRepository.getSwapRoutesForSwapPair(JupiterSwapPair, Base58String)
      */
-    var jupiterSwapRoutesRepoGetSwapRoutesForSwapPair: (JupiterSwapPair, Base58String) -> List<JupiterSwapRoute> = { pair, pk ->
-        listOf(
-            JupiterSwapTestHelpers.createSwapRoute(
-                TestSwapRouteData(pair, pk)
-            )
+    var jupiterSwapRoutesRepoGetSwapRoutesForSwapPair: (JupiterSwapPair, Base58String) -> JupiterSwapRouteV6 = { pair, pk ->
+        JupiterSwapTestHelpers.createSwapRoute(
+            TestSwapRouteData(pair, pk)
         )
     }
 

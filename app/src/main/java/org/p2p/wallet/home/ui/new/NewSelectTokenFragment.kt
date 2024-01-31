@@ -75,13 +75,7 @@ class NewSelectTokenFragment :
     private val binding: FragmentSelectTokenNewBinding by viewBinding()
 
     private val tokenAdapter: NewSelectTokenAdapter by unsafeLazy {
-        NewSelectTokenAdapter(
-            onItemClicked = {
-                setFragmentResult(requestKey, bundleOf(resultKey to it))
-                buyAnalytics.logBuyTokenChosen(it.tokenSymbol, analyticsInteractor.getPreviousScreenName())
-                closeFragment()
-            }
-        )
+        NewSelectTokenAdapter(onItemClicked = presenter::onTokenClicked)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -141,6 +135,12 @@ class NewSelectTokenFragment :
 
             return@setOnEditorActionListener false
         }
+    }
+
+    override fun navigateBackWithToken(clickedToken: Token.Active) {
+        setFragmentResult(requestKey, bundleOf(resultKey to clickedToken))
+        buyAnalytics.logBuyTokenChosen(clickedToken.tokenSymbol, analyticsInteractor.getPreviousScreenName())
+        closeFragment()
     }
 
     private fun closeFragment() {

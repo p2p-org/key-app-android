@@ -48,13 +48,35 @@
         app:layout_constraintTop_toBottomOf="@id/containerAddress" />
 
     <include
+        android:id="@+id/layoutInterestBearing"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutReceiveAmount" />
+
+    <include
+        android:id="@+id/layoutTransferFee"
+        layout="@layout/item_info_image_double_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutInterestBearing" />
+
+    <include
         android:id="@+id/layoutTransactionFee"
         layout="@layout/item_info_image_double_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutReceiveAmount" />
+        app:layout_constraintTop_toBottomOf="@id/layoutTransferFee" />
 
     <org.p2p.uikit.atoms.UiKitRoundedImageView
         android:id="@+id/imageViewIconAccountFee"

@@ -16,9 +16,9 @@ import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayCurrency
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpaySellTokenQuote
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.repository.currencies.MoonpayCurrenciesRepository
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
 import org.p2p.wallet.moonpay.repository.sell.SellRepository
-import org.p2p.wallet.moonpay.repository.sell.SellTransactionFiatCurrency
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 
@@ -75,7 +75,7 @@ class SellInteractor(
         return sellRepository.getUserSellTransactions(tokenKeyProvider.publicKey.toBase58Instance())
     }
 
-    suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: SellTransactionFiatCurrency): MoonpaySellTokenQuote {
+    suspend fun getSellQuoteForSol(solAmount: BigDecimal, fiat: FiatCurrency): MoonpaySellTokenQuote {
         val solToken = requireNotNull(userTokensInteractor.getUserSolToken()) {
             "SOL token is not found for current user, can't sell"
         }
@@ -90,7 +90,7 @@ class SellInteractor(
         return currencyRepository.getAllCurrencies().first(MoonpayCurrency::isSol)
     }
 
-    suspend fun getMoonpaySellFiatCurrency(): SellTransactionFiatCurrency {
+    suspend fun getMoonpaySellFiatCurrency(): FiatCurrency {
         return sellRepository.getSellFiatCurrency()
     }
 

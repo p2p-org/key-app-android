@@ -4,6 +4,7 @@ import org.p2p.solanaj.core.Account
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.solanaj.core.OperationType
 import org.p2p.solanaj.core.PreparedTransaction
+import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.Transaction
 import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
@@ -25,10 +26,16 @@ class TokenInteractor(
     private val tokenKeyProvider: TokenKeyProvider
 ) {
 
-    suspend fun closeTokenAccount(addressToClose: String): String {
+    /**
+     * todo: check programId !!
+     */
+    suspend fun closeTokenAccount(
+        addressToClose: String,
+        programId: PublicKey = TokenProgram.PROGRAM_ID,
+    ): String {
         val owner = tokenKeyProvider.publicKey.toPublicKey()
         val instruction = TokenProgram.closeAccountInstruction(
-            TokenProgram.PROGRAM_ID,
+            programId,
             addressToClose.toPublicKey(),
             owner,
             owner
@@ -56,7 +63,8 @@ class TokenInteractor(
     }
 
     suspend fun createTokenAccount(
-        mintAddress: String
+        mintAddress: String,
+        programId: PublicKey = TokenProgram.PROGRAM_ID
     ): String {
 
         val account = Account(tokenKeyProvider.keyPair)
@@ -72,7 +80,7 @@ class TokenInteractor(
 
         val instruction = TokenProgram.createAssociatedTokenAccountInstruction(
             TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-            TokenProgram.PROGRAM_ID,
+            programId,
             mintAddress.toPublicKey(),
             toPublicKey,
             owner,
@@ -91,7 +99,10 @@ class TokenInteractor(
         return rpcRepository.sendTransaction(transaction)
     }
 
-    private suspend fun createAccountByFeeRelayer(mintAddress: String): String {
+    private suspend fun createAccountByFeeRelayer(
+        mintAddress: String,
+        programId: PublicKey = TokenProgram.PROGRAM_ID
+    ): String {
         val feePayer = feeRelayerAccountInteractor.getFeePayerPublicKey()
 
         val splDestinationAddress = addressInteractor.findSplTokenAddressData(
@@ -104,7 +115,7 @@ class TokenInteractor(
 
         val instruction = TokenProgram.createAssociatedTokenAccountInstruction(
             TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID,
-            TokenProgram.PROGRAM_ID,
+            programId,
             mintAddress.toPublicKey(),
             toPublicKey,
             owner,

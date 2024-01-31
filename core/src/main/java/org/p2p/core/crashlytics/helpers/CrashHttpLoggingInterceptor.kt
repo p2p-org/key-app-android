@@ -30,7 +30,8 @@ class CrashHttpLoggingInterceptor : Interceptor {
         Timber.tag(TAG).i(responseLog)
 
         val responseBodySize = response.body?.contentLength() ?: 0
-        if (responseBodySize < 7_000) {
+        val filteredUrls = setOf("orca.key.app", "swap.key.app", "quote-api.jup.ag")
+        if (responseBodySize < 7_000 && request.url.host !in filteredUrls) {
             val responseBody = response.bodyAsString()
             if (!response.isSuccessful || responseBody.contains("error")) {
                 // log to crash facades !200 error bodies

@@ -12,15 +12,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.formatToken
+import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.utils.divideSafe
-import org.p2p.token.service.model.TokenServiceNetwork
 
 private const val TAG = "SwapRateTickerManager"
 
@@ -40,11 +40,11 @@ class SwapRateTickerManager(
         currentRateState
             .onEach { Timber.tag(TAG).i("SwapRateTickerState changed: $it") }
 
-    fun handleRoutesLoading(state: SwapState.LoadingRoutes) {
+    fun handleRoutesLoading(@Suppress("UNUSED_PARAMETER") state: SwapState.LoadingRoutes) {
         currentRateState.value = SwapRateTickerState.Loading
     }
 
-    fun handleSwapException(state: SwapState.SwapException) {
+    fun handleSwapException(@Suppress("UNUSED_PARAMETER") state: SwapState.SwapException) {
         currentRateState.value = SwapRateTickerState.Hidden
     }
 
@@ -52,18 +52,24 @@ class SwapRateTickerManager(
         val newTokenA = state.tokenA.also { currentTokenA = it }
         val newTokenB = state.tokenB.also { currentTokenB = it }
 
-        val rateText = when {
-            !newTokenA.isStableCoin() && newTokenB.isStableCoin() -> {
-                val newRate = state.amountTokenB.divideSafe(state.amountTokenA).formatToken(newTokenB.decimals)
-                formatRateString(newTokenA.tokenSymbol, newRate, newTokenB.tokenSymbol)
-            }
-            else -> {
-                val newRate = state.amountTokenA.divideSafe(state.amountTokenB)
-                formatRateString(newTokenB.tokenSymbol, newRate.formatToken(newTokenA.decimals), newTokenA.tokenSymbol)
-            }
-        }
+        currentRateState.value = mapShownState(
+            tokenA = newTokenA,
+            tokenB = newTokenB,
+            amountTokenA = state.amountTokenA,
+            amountTokenB = state.amountTokenB
+        )
+    }
 
-        currentRateState.value = SwapRateTickerState.Shown(rateText)
+    fun handleJupiterRates(state: SwapState.RoutesLoaded) {
+        val newTokenA = state.tokenA.also { currentTokenA = it }
+        val newTokenB = state.tokenB.also { currentTokenB = it }
+
+        currentRateState.value = mapShownState(
+            tokenA = newTokenA,
+            tokenB = newTokenB,
+            amountTokenA = state.amountTokenA,
+            amountTokenB = state.amountTokenB
+        )
     }
 
     fun onInitialTokensSelected(
@@ -89,6 +95,10 @@ class SwapRateTickerManager(
         }
     }
 
+    fun stopAll() {
+        coroutineContext.cancelChildren()
+    }
+
     /**
      * Finds token price ratio to each other. Returns the formatted string
      * @sample 1 ETH (Token B) = 49 SOL (Token A)
@@ -98,7 +108,7 @@ class SwapRateTickerManager(
      *
      * */
     private suspend fun findTokensRatesState(tokenA: SwapTokenModel, tokenB: SwapTokenModel): SwapRateTickerState {
-        val (from, to) = if (!tokenA.isStableCoin() && tokenB.isStableCoin()) {
+        val (from, to) = if (!tokenA.isStableCoin && tokenB.isStableCoin) {
             tokenA to tokenB
         } else {
             tokenB to tokenA
@@ -132,7 +142,26 @@ class SwapRateTickerManager(
         return "1 $tokenASymbol ≈ $tokenBRate $tokenBSymbol"
     }
 
-    fun stopAll() {
-        coroutineContext.cancelChildren()
+    private fun mapShownState(
+        tokenA: SwapTokenModel,
+        tokenB: SwapTokenModel,
+        amountTokenA: BigDecimal,
+        amountTokenB: BigDecimal
+    ): SwapRateTickerState {
+        val newTokenA = tokenA.also { currentTokenA = it }
+        val newTokenB = tokenB.also { currentTokenB = it }
+
+        val rateText = when {
+            !newTokenA.isStableCoin && newTokenB.isStableCoin -> {
+                val newRate = amountTokenB.divideSafe(amountTokenA).formatToken(newTokenB.decimals)
+                formatRateString(newTokenA.tokenSymbol, newRate, newTokenB.tokenSymbol)
+            }
+            else -> {
+                val newRate = amountTokenA.divideSafe(amountTokenB)
+                formatRateString(newTokenB.tokenSymbol, newRate.formatToken(newTokenA.decimals), newTokenA.tokenSymbol)
+            }
+        }
+
+        return SwapRateTickerState.Shown(rateText)
     }
 }

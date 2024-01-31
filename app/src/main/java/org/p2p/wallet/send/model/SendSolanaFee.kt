@@ -31,6 +31,7 @@ import org.p2p.wallet.send.model.FeePayerState.SwitchToSpl
 data class SendSolanaFee constructor(
     val feePayerToken: Token.Active,
     val feeRelayerFee: FeeRelayerFee,
+    val token2022TransferFee: BigInteger,
     private val sourceToken: Token.Active,
     private val solToken: Token.Active?,
     private val alternativeFeePayerTokens: List<Token.Active>,

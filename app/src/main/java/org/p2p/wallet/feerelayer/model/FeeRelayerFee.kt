@@ -17,10 +17,10 @@ data class FeeRelayerFee constructor(
 ) : Parcelable {
 
     constructor(feeInSol: FeeAmount, feeInSpl: FeeAmount, expectedFee: FeeAmount) : this(
-        transactionFeeInSol = feeInSol.transaction,
-        accountCreationFeeInSol = feeInSol.accountBalances,
-        transactionFeeInSpl = feeInSpl.transaction,
-        accountCreationFeeInSpl = feeInSpl.accountBalances,
+        transactionFeeInSol = feeInSol.transactionFee,
+        accountCreationFeeInSol = feeInSol.accountCreationFee,
+        transactionFeeInSpl = feeInSpl.transactionFee,
+        accountCreationFeeInSpl = feeInSpl.accountCreationFee,
         expectedFee = expectedFee
     )
 

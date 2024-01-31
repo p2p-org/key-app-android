@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.MainCellStyle
@@ -21,12 +22,14 @@ import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
-import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapMarketInformation
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 
-class SwapInfoMapper {
+class SwapInfoMapper(
+    private val swapTokensRepository: JupiterSwapTokensRepository
+) {
 
     fun mapNetworkFee(): List<AnyCellItem> = buildList {
         this += SwapInfoBannerCellModel(
@@ -58,35 +61,61 @@ class SwapInfoMapper {
         )
     }
 
-    fun mapLoadingLiquidityFee(
-        allTokens: List<SwapTokenModel>,
-        route: JupiterSwapRoute? = null,
+    fun mapToken2022Fee(
+        isTransferFee: Boolean,
+    ): List<AnyCellItem> {
+        val title = if (isTransferFee) {
+            R.string.swap_info_details_transfer_fee_title
+        } else {
+            R.string.swap_info_details_interest_fee_title
+        }
+        // used same for interest and transfer fee
+        val subtitle = R.string.swap_info_details_transfer_fee_subtitle
+        return listOf(
+            SwapInfoBannerCellModel(
+                banner = R.drawable.ic_wallet_found,
+                infoCell = InfoBlockCellModel(
+                    icon = getIcon(R.drawable.ic_lightning),
+                    firstLineText = TextViewCellModel.Raw(
+                        text = TextContainer(title)
+                    ),
+                    secondLineText = TextViewCellModel.Raw(
+                        text = TextContainer(subtitle)
+                    )
+                )
+            )
+        )
+    }
+
+    suspend fun mapLoadingLiquidityFee(
+        route: JupiterSwapRouteV6? = null,
     ): List<AnyCellItem> = buildList {
         addAll(mapEmptyLiquidityFee())
         if (route == null) return@buildList
-        route.marketInfos.forEach { marketInfo ->
-            this += getLiquidityFeeCell(marketInfo, allTokens)
+
+        route.routePlans.forEach { routePlan ->
+            this += getLiquidityFeeCell(routePlan)
         }
     }
 
-    fun getLiquidityFeeCell(
-        marketInfo: JupiterSwapMarketInformation,
-        allTokens: List<SwapTokenModel>
+    suspend fun getLiquidityFeeCell(
+        routePlan: JupiterSwapRoutePlanV6,
     ): MainCellModel {
-        val label = marketInfo.label
-        val liquidityToken = allTokens.find { marketInfo.liquidityFee.mint == it.mintAddress }
-        val liquidityFee = marketInfo.liquidityFee
+        val label = routePlan.label
+        val liquidityToken = swapTokensRepository.findTokenByMint(routePlan.feeMint)
+        val liquidityFee = routePlan.feeAmount
 
-        val feePercent = liquidityFee.formattedPercent.toPlainString() + "%"
+        val feePercent = routePlan.percent + "%"
         val firstLineText = TextViewCellModel.Raw(
             text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePercent),
             maxLines = 2
         )
 
         val secondLineText = liquidityToken?.let {
-            val feeInTokenLamports = liquidityFee.amountInLamports.fromLamports(it.decimals)
+            val feeInTokenLamports = liquidityFee.fromLamports(it.decimals)
+                .formatTokenWithSymbol(it.tokenSymbol, it.decimals)
             TextViewCellModel.Raw(
-                text = TextContainer("$feeInTokenLamports ${it.tokenSymbol}")
+                text = TextContainer(feeInTokenLamports)
             )
         }
 
@@ -161,19 +190,24 @@ class SwapInfoMapper {
     )
 
     fun updateLiquidityFee(
-        marketInfo: JupiterSwapMarketInformation,
+        marketInfo: JupiterSwapRoutePlanV6,
         oldCell: MainCellModel,
         state: SwapRateLoaderState
     ): MainCellModel {
         return when (state) {
-            SwapRateLoaderState.Empty -> oldCell
-            is SwapRateLoaderState.NoRateAvailable,
-            is SwapRateLoaderState.Error -> oldCell.copy(rightSideCellModel = null)
-            SwapRateLoaderState.Loading -> oldCell.copy(rightSideCellModel = rightSideSkeleton())
+            SwapRateLoaderState.Empty -> {
+                oldCell
+            }
+            is SwapRateLoaderState.NoRateAvailable, is SwapRateLoaderState.Error -> {
+                oldCell.copy(rightSideCellModel = null)
+            }
+            SwapRateLoaderState.Loading -> {
+                oldCell.copy(rightSideCellModel = rightSideSkeleton())
+            }
             is SwapRateLoaderState.Loaded -> {
                 val rate = state.rate
                 val token = state.token
-                val feeInUsd = marketInfo.liquidityFee.amountInLamports
+                val feeInUsd = marketInfo.feeAmount
                     .fromLamports(token.decimals)
                     .multiply(rate)
                     .asUsdSwap()

@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import org.p2p.core.model.TextHighlighting
 import org.p2p.core.model.TitleValue
 import org.p2p.core.utils.asApproximateUsd
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
@@ -14,6 +15,7 @@ import org.p2p.wallet.bridge.model.BridgeAmount
 import org.p2p.wallet.bridge.model.toBridgeAmount
 import org.p2p.wallet.bridge.send.model.BridgeSendFees
 import org.p2p.wallet.bridge.send.statemachine.model.SendFee
+import org.p2p.wallet.bridge.send.statemachine.model.SendToken
 import org.p2p.wallet.bridge.send.ui.model.BridgeFeeDetails
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.utils.toPx
@@ -29,7 +31,7 @@ class BridgeSendUiMapper(private val resources: Resources) {
             willGetAmount = fees?.recipientGetsAmount.toBridgeAmount(),
             networkFee = fees?.networkFee.toBridgeAmount(),
             messageAccountRent = fees?.messageAccountRent.toBridgeAmount(),
-            bridgeFee = fees?.arbiterFee.toBridgeAmount(),
+            arbiterFee = fees?.arbiterFee.toBridgeAmount(),
             totalAmount = fees?.totalAmount.toBridgeAmount()
         )
     }
@@ -47,19 +49,39 @@ class BridgeSendUiMapper(private val resources: Resources) {
             tokenUrl = iconUrl,
             amountTokens = amountTokens,
             amountUsd = amountUsd,
-            totalFees = feeDetails?.bridgeFee?.toTextHighlighting()?.let { listOf(it) },
+            totalFees = feeDetails?.arbiterFee?.toTextHighlighting()?.let { listOf(it) },
             transactionDetails = listOf(TitleValue(resources.getString(R.string.transaction_send_to_title), recipient))
         )
     }
 
-    fun getFeesFormatted(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): String {
-        return getFeesInToken(
+    fun getFeesFormattedUsd(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): String {
+        return getFeesInUsd(
             bridgeFee = bridgeFee,
             isInputEmpty = isInputEmpty
         )
     }
 
-    private fun getFeesInToken(bridgeFee: SendFee.Bridge?, isInputEmpty: Boolean): String {
+    fun getArbiterFeesFormattedToken(
+        token: SendToken.Bridge,
+        bridgeFee: SendFee.Bridge?,
+        isInputEmpty: Boolean
+    ): String {
+        if (bridgeFee == null) {
+            return if (isInputEmpty) {
+                resources.getString(R.string.send_fees_free)
+            } else {
+                BigDecimal.ZERO.formatTokenWithSymbol(token.token.tokenSymbol, token.token.decimals)
+            }
+        }
+        return bridgeFee.fee.arbiterFee
+            .amountInToken
+            .formatTokenWithSymbol(token.token.tokenSymbol, token.token.decimals)
+    }
+
+    private fun getFeesInUsd(
+        bridgeFee: SendFee.Bridge?,
+        isInputEmpty: Boolean
+    ): String {
         if (bridgeFee == null) {
             return if (isInputEmpty) {
                 resources.getString(R.string.send_fees_free)

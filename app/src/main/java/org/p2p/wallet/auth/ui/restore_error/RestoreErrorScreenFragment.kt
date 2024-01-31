@@ -1,12 +1,11 @@
 package org.p2p.wallet.auth.ui.restore_error
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
@@ -23,10 +22,8 @@ import org.p2p.wallet.auth.ui.pin.newcreate.NewCreatePinFragment
 import org.p2p.wallet.auth.web3authsdk.GoogleSignInHelper
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentRestoreErrorScreenBinding
-import org.p2p.wallet.intercom.IntercomService
 import org.p2p.wallet.root.SystemIconsStyle
 import org.p2p.wallet.utils.args
-import org.p2p.wallet.utils.emptyString
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
@@ -60,18 +57,6 @@ class RestoreErrorScreenFragment :
         ActivityResultContracts.StartIntentSenderForResult(),
         ::handleSignResult
     )
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.toolbar.inflateMenu(R.menu.menu_onboarding_help)
-        binding.toolbar.setOnMenuItemClickListener {
-            if (it.itemId == R.id.helpItem) {
-                IntercomService.signIn(userId = emptyString())
-                IntercomService.showMessenger()
-            }
-            return@setOnMenuItemClickListener true
-        }
-    }
 
     override fun applyWindowInsets(rootView: View) {
         rootView.doOnApplyWindowInsets { _, insets, _ ->
@@ -165,7 +150,7 @@ class RestoreErrorScreenFragment :
         button.setOnClickListener {
             when (action) {
                 ButtonAction.OPEN_INTERCOM -> {
-                    IntercomService.showMessenger()
+                    Unit
                 }
                 ButtonAction.NAVIGATE_GOOGLE_AUTH -> {
                     presenter.useGoogleAccount()

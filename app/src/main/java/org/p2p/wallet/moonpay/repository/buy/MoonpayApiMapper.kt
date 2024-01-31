@@ -15,7 +15,7 @@ class MoonpayApiMapper {
             feeAmount = response.feeAmount,
             extraFeeAmount = response.extraFeeAmount,
             networkFeeAmount = response.networkFeeAmount,
-            totalAmount = response.totalAmount,
+            totalFiatAmount = response.totalAmount,
             baseCurrency = BuyCurrency.Currency(
                 code = response.baseCurrency.code.removeUnderscoreSolIfUsdc(),
                 minAmount = response.baseCurrency.minBuyAmount,

@@ -1,6 +1,7 @@
 package org.p2p.wallet.auth.repository
 
 import android.content.res.Resources
+import timber.log.Timber
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.ButtonAction
 import org.p2p.wallet.auth.model.GoogleButton
@@ -14,7 +15,6 @@ import org.p2p.wallet.auth.model.SecondaryFirstButton
 import org.p2p.wallet.auth.statemachine.RestoreState
 import org.p2p.wallet.auth.statemachine.RestoreStateMachine
 import org.p2p.wallet.utils.emptyString
-import timber.log.Timber
 
 private const val TAG = "RestoreUserResultHandler"
 class RestoreUserResultHandler(
@@ -57,12 +57,7 @@ class RestoreUserResultHandler(
         return RestoreFailureState.TitleSubtitleError(
             title = resources.getString(R.string.error_wallet_not_found_title),
             subtitle = resources.getString(R.string.error_shares_do_not_matches_message),
-            googleButton = GoogleButton(
-                titleResId = R.string.onboarding_general_error_bug_report_button_title,
-                iconResId = R.drawable.ic_caution,
-                iconTintResId = R.color.icons_night,
-                buttonAction = ButtonAction.OPEN_INTERCOM
-            ),
+            googleButton = null,
             secondaryFirstButton = SecondaryFirstButton(
                 titleResId = R.string.restore_starting_screen,
                 buttonAction = ButtonAction.NAVIGATE_START_SCREEN

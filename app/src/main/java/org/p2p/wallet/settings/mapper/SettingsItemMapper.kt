@@ -49,7 +49,9 @@ class SettingsItemMapper(
         if (isUsernameItemVisible) {
             addUsernameItem(username)
         }
+        /* todo: disabled country selection for now
         addCountrySelectorItem(countryName)
+         */
         add(SignOutButtonItem)
         add(SettingsSpaceSeparatorItem)
     }
@@ -131,6 +133,11 @@ class SettingsItemMapper(
         ComplexSettingsItem(
             nameRes = R.string.settings_item_title_discord,
             iconRes = R.drawable.ic_settings_discord,
+            hasSeparator = true
+        ),
+        ComplexSettingsItem(
+            nameRes = R.string.settings_item_title_privacy,
+            iconRes = R.drawable.ic_settings_shield,
             hasSeparator = false
         ),
         SettingsSpaceSeparatorItem,

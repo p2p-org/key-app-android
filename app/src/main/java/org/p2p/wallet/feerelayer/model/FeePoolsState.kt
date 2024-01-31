@@ -9,7 +9,7 @@ sealed interface FeePoolsState {
 
     val total: BigInteger
         get() = when (this) {
-            is Calculated -> feeInSpl.total
-            is Failed -> feeInSOL.total
+            is Calculated -> feeInSpl.totalFeeLamports
+            is Failed -> feeInSOL.totalFeeLamports
         }
 }

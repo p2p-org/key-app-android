@@ -1,6 +1,7 @@
 package org.p2p.solanaj.kits
 
 import android.util.Base64
+import org.p2p.core.crypto.Base64Utils
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.core.PublicKey.Companion.findProgramAddress
 import org.p2p.solanaj.model.types.AccountInfo
@@ -8,7 +9,6 @@ import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.solanaj.programs.TokenProgram.AccountInfoData
 import org.p2p.solanaj.programs.TokenProgram.MintData
 import org.p2p.solanaj.rpc.RpcException
-import org.p2p.core.crypto.Base64Utils
 
 object TokenTransaction {
 
@@ -78,10 +78,11 @@ object TokenTransaction {
     @Throws(Exception::class)
     fun getAssociatedTokenAddress(
         mint: PublicKey,
-        owner: PublicKey
+        owner: PublicKey,
+        programId: PublicKey = TokenProgram.PROGRAM_ID,
     ): PublicKey {
         return findProgramAddress(
-            listOf(owner.asByteArray(), TokenProgram.PROGRAM_ID.asByteArray(), mint.asByteArray()),
+            listOf(owner.asByteArray(), programId.asByteArray(), mint.asByteArray()),
             TokenProgram.ASSOCIATED_TOKEN_PROGRAM_ID
         )
             .address

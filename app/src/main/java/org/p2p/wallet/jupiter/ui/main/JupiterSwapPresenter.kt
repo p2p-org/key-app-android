@@ -41,7 +41,7 @@ import org.p2p.wallet.jupiter.interactor.model.SwapPriceImpactType
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
@@ -137,7 +137,6 @@ class JupiterSwapPresenter(
         debounceInputJob?.cancel()
         cancelRateJobs()
         debounceInputJob = launch {
-
             val newAmount = amount.toBigDecimalOrZero()
             val (tokenA, _) = currentFeatureState?.getTokensPair() ?: (null to null)
             stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
@@ -319,14 +318,23 @@ class JupiterSwapPresenter(
     }
 
     override fun pauseStateManager() {
-        stateManager.onNewAction(SwapStateAction.CancelSwapLoading)
+        stateManager.pause()
     }
 
     override fun resumeStateManager() {
-        stateManager.onNewAction(SwapStateAction.RefreshRoutes)
+        stateManager.resume()
     }
 
-    private fun handleNewFeatureState(state: SwapState) {
+    override fun onShareClicked() {
+        val tokenPair = currentFeatureState?.getTokensPair() ?: return
+
+        view?.showSwapLinkShareDialog(
+            tokenAMint = tokenPair.first.mintAddress,
+            tokenBMint = tokenPair.second.mintAddress
+        )
+    }
+
+    private suspend fun handleNewFeatureState(state: SwapState) {
         // log analytics only on first TokenAZero
         if (shouldLogScreenOpened && state is SwapState.TokenAZero) {
             analytics.logStartScreen(
@@ -352,7 +360,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun handleOtherException(state: SwapState.SwapException.OtherException) {
+    private suspend fun handleOtherException(state: SwapState.SwapException.OtherException) {
         rateTickerManager.handleSwapException(state)
         mapWidgetStates(state)
         retryAction = {
@@ -372,11 +380,17 @@ class JupiterSwapPresenter(
         view?.setRatioState(ratioState)
     }
 
-    private fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
+    private suspend fun handleFeatureException(state: SwapState.SwapException.FeatureExceptionWrapper) {
         Timber.i(state.featureException)
 
         checkPriceImpact()
-        rateTickerManager.handleSwapException(state)
+
+        when (state.previousFeatureState) {
+            is SwapState.RoutesLoaded -> rateTickerManager.handleJupiterRates(state.previousFeatureState)
+            is SwapState.SwapLoaded -> rateTickerManager.handleJupiterRates(state.previousFeatureState)
+            else -> rateTickerManager.handleSwapException(state)
+        }
+
         val (widgetAState, _) = mapWidgetStates(state.previousFeatureState)
         when (val featureException = state.featureException) {
             is SwapFeatureException.SameTokens -> {
@@ -384,7 +398,7 @@ class JupiterSwapPresenter(
             }
 
             is SwapFeatureException.SmallTokenAAmount -> {
-                val tokenA = state.previousFeatureState.getTokensPair().first
+                val tokenA = state.previousFeatureState.getTokensPair()?.first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
                     oldWidgetAState = widgetAState,
@@ -399,7 +413,7 @@ class JupiterSwapPresenter(
             }
 
             is SwapFeatureException.NotValidTokenA -> {
-                val tokenA = state.previousFeatureState.getTokensPair().first
+                val tokenA = state.previousFeatureState.getTokensPair()?.first
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
                     oldWidgetAState = widgetAState,
@@ -417,7 +431,7 @@ class JupiterSwapPresenter(
             }
 
             is SwapFeatureException.InsufficientSolBalance -> {
-                val tokenA = state.previousFeatureState.getTokensPair().first
+                val tokenA = state.previousFeatureState.getTokensPair()?.first
 
                 this.widgetAState = widgetMapper.mapErrorTokenAAmount(
                     tokenA = tokenA,
@@ -433,11 +447,11 @@ class JupiterSwapPresenter(
         updateWidgets()
     }
 
-    private fun handleSwapLoaded(state: SwapState.SwapLoaded) {
+    private suspend fun handleSwapLoaded(state: SwapState.SwapLoaded) {
         analytics.logChangeTokenBAmountChanged(state.tokenB, state.amountTokenB.toString())
         rateTickerManager.handleJupiterRates(state)
 
-        showRoutesForDebug(state.routes[state.activeRouteIndex], state.slippage)
+        showRoutesForDebug(state.route, state.slippage)
 
         mapWidgetStates(state)
         updateWidgets()
@@ -492,7 +506,7 @@ class JupiterSwapPresenter(
         }
     }
 
-    private fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
+    private suspend fun handleLoadingTransaction(state: SwapState.LoadingTransaction) {
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = buttonMapper.mapLoading())
@@ -501,7 +515,7 @@ class JupiterSwapPresenter(
         getRateTokenB(widgetBModel = widgetBState, tokenB = state.tokenB, tokenAmount = state.amountTokenB)
     }
 
-    private fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
+    private suspend fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
         rateTickerManager.handleRoutesLoading(state)
 
         mapWidgetStates(state)
@@ -510,7 +524,7 @@ class JupiterSwapPresenter(
         getRateTokenA(widgetAModel = widgetAState, tokenA = state.tokenA, tokenAmount = state.amountTokenA)
     }
 
-    private fun handleTokenAZero(state: SwapState.TokenAZero) {
+    private suspend fun handleTokenAZero(state: SwapState.TokenAZero) {
         rateTickerManager.onInitialTokensSelected(state.tokenA, state.tokenB)
 
         mapWidgetStates(state)
@@ -518,23 +532,24 @@ class JupiterSwapPresenter(
         view?.setButtonState(buttonMapper.mapEnterAmount())
     }
 
-    private fun handleTokenANotZero(state: SwapState.TokenANotZero) {
+    private suspend fun handleTokenANotZero(state: SwapState.TokenANotZero) {
         mapWidgetStates(state)
         updateWidgets()
     }
 
-    private fun handleRoutesLoaded(state: SwapState.RoutesLoaded) {
+    private suspend fun handleRoutesLoaded(state: SwapState.RoutesLoaded) {
+        rateTickerManager.handleJupiterRates(state)
         mapWidgetStates(state)
         updateWidgets()
     }
 
-    private fun handleInitialLoading(state: SwapState.InitialLoading) {
+    private suspend fun handleInitialLoading(state: SwapState.InitialLoading) {
         mapWidgetStates(state)
         updateWidgets()
         view?.setButtonState(buttonState = SwapButtonState.Hide)
     }
 
-    private fun mapWidgetStates(state: SwapState): Pair<SwapWidgetModel, SwapWidgetModel> {
+    private suspend fun mapWidgetStates(state: SwapState): Pair<SwapWidgetModel, SwapWidgetModel> {
         val result: Pair<SwapWidgetModel, SwapWidgetModel> = when (state) {
             SwapState.InitialLoading ->
                 widgetMapper.mapWidgetLoading(tokenType = SwapTokenType.TOKEN_A) to
@@ -581,15 +596,15 @@ class JupiterSwapPresenter(
                 )
 
             is SwapState.TokenAZero ->
-                widgetMapper.mapTokenA(token = state.tokenA, tokenAmount = null) to
-                    widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+                widgetMapper.mapTokenA(token = state.tokenA, enteredTokenAmount = null) to
+                    widgetMapper.mapTokenB(token = state.tokenB, enteredTokenAmount = null)
 
             is SwapState.TokenANotZero ->
                 widgetMapper.mapTokenAAndSaveOldFiatAmount(
                     oldWidgetModel = widgetAState,
                     token = state.tokenA,
                     tokenAmount = state.amountTokenA
-                ) to widgetMapper.mapTokenB(token = state.tokenB, tokenAmount = null)
+                ) to widgetMapper.mapTokenB(token = state.tokenB, enteredTokenAmount = null)
 
             is SwapState.SwapException ->
                 mapWidgetStates(state.previousFeatureState)
@@ -669,15 +684,15 @@ class JupiterSwapPresenter(
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 
-    private fun showRoutesForDebug(bestRoute: JupiterSwapRoute, slippage: Slippage) {
+    private fun showRoutesForDebug(bestRoute: JupiterSwapRouteV6, slippage: Slippage) {
         val info = buildString {
             append("Route: ")
 
-            bestRoute.marketInfos.forEachIndexed { index, info ->
+            bestRoute.routePlans.forEachIndexed { index, plan ->
                 if (index == 0) {
-                    val fromTokenData = userLocalRepository.findTokenData(info.inputMint.base58Value)?.symbol
+                    val fromTokenData = userLocalRepository.findTokenData(plan.inputMint.base58Value)?.symbol
                         ?: "(UNKNOWN)"
-                    val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value)?.symbol
+                    val toTokenData = userLocalRepository.findTokenData(plan.outputMint.base58Value)?.symbol
                         ?: "(UNKNOWN)"
                     append(fromTokenData)
                     append(" -> ")
@@ -685,7 +700,7 @@ class JupiterSwapPresenter(
                     return@forEachIndexed
                 }
 
-                val toTokenData = userLocalRepository.findTokenData(info.outputMint.base58Value)?.symbol
+                val toTokenData = userLocalRepository.findTokenData(plan.outputMint.base58Value)?.symbol
                     ?: "(UNKNOWN)"
 
                 append(" -> ")
@@ -696,7 +711,7 @@ class JupiterSwapPresenter(
             appendLine()
             append("Slippage: ${slippage.percentValue}")
             appendLine()
-            append("KeyApp fee: ${bestRoute.keyAppFeeInLamports}")
+            append("KeyApp fee: NONE for v6")
         }
 
         view?.showDebugInfo(
@@ -707,7 +722,7 @@ class JupiterSwapPresenter(
         )
     }
 
-    private fun SwapState.getTokensPair(): Pair<SwapTokenModel?, SwapTokenModel?> {
+    private fun SwapState.getTokensPair(): Pair<SwapTokenModel, SwapTokenModel>? {
         return swapInteractor.getSwapTokenPair(this)
     }
 

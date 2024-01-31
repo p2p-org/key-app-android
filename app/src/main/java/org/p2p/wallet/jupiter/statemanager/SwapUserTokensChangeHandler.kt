@@ -6,7 +6,7 @@ import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 
-class SwapUserTokensChangeHandler constructor(
+class SwapUserTokensChangeHandler(
     private val swapInteractor: JupiterSwapInteractor,
     private val swapTokensRepository: JupiterSwapTokensRepository,
 ) {
@@ -15,17 +15,14 @@ class SwapUserTokensChangeHandler constructor(
         // org/p2p/wallet/user/interactor/UserInteractor.kt:128
         // tokens cleared each time on update, emit empty list
         if (userTokens.isEmpty()) return currentState
-        val (tokenA, tokenB) = swapInteractor.getSwapTokenPair(currentState)
+        val (tokenA, tokenB) = swapInteractor.getSwapTokenPair(currentState) ?: return currentState
         // SwapState.InitialLoading
-        if (tokenA == null || tokenB == null) return currentState
 
         val updatedTokenA = userTokens.find { it.mintAddress == tokenA.mintAddress.base58Value }
-        val jupiterTokenA = swapTokensRepository.getTokens()
-            .find { it.tokenMint == tokenA.mintAddress }
+        val jupiterTokenA = swapTokensRepository.findTokenByMint(tokenA.mintAddress)
 
         val updatedTokenB = userTokens.find { it.mintAddress == tokenB.mintAddress.base58Value }
-        val jupiterTokenB = swapTokensRepository.getTokens()
-            .find { it.tokenMint == tokenB.mintAddress }
+        val jupiterTokenB = swapTokensRepository.findTokenByMint(tokenB.mintAddress)
 
         val isNewTokenAAmount = tokenA is SwapTokenModel.UserToken &&
             updatedTokenA?.totalInLamports != tokenA.tokenAmountInLamports
@@ -104,6 +101,7 @@ class SwapUserTokensChangeHandler constructor(
             is SwapState.TokenAZero -> featureState.copy(tokenB = newUserSwapToken)
             is SwapState.RoutesLoaded -> featureState.copy(tokenB = newUserSwapToken)
 
+            // todo: when update from socket comes, we somehow override the token A here
             is SwapState.SwapException -> onUserTokenAChangeBalance(featureState.previousFeatureState, newUserToken)
         }
         return newState

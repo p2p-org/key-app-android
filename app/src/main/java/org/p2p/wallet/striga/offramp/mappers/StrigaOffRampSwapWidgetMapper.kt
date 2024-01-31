@@ -86,6 +86,7 @@ class StrigaOffRampSwapWidgetMapper {
             amountMaxDecimals = STRIGA_FIAT_DECIMALS,
             // not used in striga
             balance = emptyString().toRawTextViewCellModel(),
+            tokenUrl = null,
             fiatAmount = null
         )
     }

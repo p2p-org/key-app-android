@@ -7,9 +7,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.Constants.USD_SYMBOL
+import org.p2p.core.utils.Constants.EUR_READABLE_SYMBOL
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -18,14 +19,13 @@ import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
 import org.p2p.wallet.moonpay.interactor.BANK_TRANSFER_UK_CODE
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
-import org.p2p.wallet.moonpay.interactor.BuyInteractor.Companion.DEFAULT_MIN_BUY_CURRENCY_AMOUNT
+import org.p2p.wallet.moonpay.interactor.BuyInteractor.Companion.HARDCODED_MIN_BUY_CURRENCY_AMOUNT
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.interactor.SEPA_BANK_TRANSFER
 import org.p2p.wallet.moonpay.model.BuyCurrency
@@ -33,6 +33,7 @@ import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.MoonpayBuyResult
 import org.p2p.wallet.moonpay.model.PaymentMethod
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 import org.p2p.wallet.user.interactor.UserInteractor
 import org.p2p.wallet.utils.emptyString
 
@@ -55,7 +56,7 @@ class NewBuyPresenter(
 
     private val paymentMethods = mutableListOf<PaymentMethod>()
 
-    private var selectedCurrency: BuyCurrency.Currency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
+    private var selectedCurrency: FiatCurrency = SelectCurrencyBottomSheet.DEFAULT_CURRENCY
     private var selectedToken: Token = tokenToBuy
     private var selectedPaymentMethod: PaymentMethod? = null
     private var currentAlpha3Code: String = emptyString()
@@ -67,10 +68,10 @@ class NewBuyPresenter(
 
     private var calculationJob: Job? = null
 
-    private val currenciesToSelect: List<BuyCurrency.Currency> = listOf(
-        BuyCurrency.Currency.create(Constants.GBP_SYMBOL),
-        BuyCurrency.Currency.create(Constants.EUR_SYMBOL),
-        SelectCurrencyBottomSheet.DEFAULT_CURRENCY
+    private val currenciesToSelect = listOf(
+        FiatCurrency.GBP,
+        FiatCurrency.EUR,
+        FiatCurrency.USD
     )
 
     override fun attach(view: NewBuyContract.View) {
@@ -119,9 +120,8 @@ class NewBuyPresenter(
             validatePaymentMethod()
 
             if (!fiatToken.isNullOrBlank()) {
-                currenciesToSelect.firstOrNull { it.code.lowercase() == fiatToken.lowercase() }?.let {
-                    selectCurrency(it)
-                }
+                currenciesToSelect.firstOrNull { it.abbreviation.lowercase() == fiatToken.lowercase() }
+                    ?.also { selectCurrency(it) }
             }
 
             if (fiatAmount != null && fiatAmount.toBigDecimalOrNull() != null) {
@@ -132,11 +132,8 @@ class NewBuyPresenter(
         }
     }
 
-    private fun loadMoonpayBuyQuotes() {
-        launch {
-            val currencyCodes = currenciesToSelect.map { it.code }
-            buyInteractor.loadQuotes(currencyCodes, tokensToBuy)
-        }
+    private suspend fun loadMoonpayBuyQuotes() {
+        buyInteractor.loadQuotes(currenciesToSelect, tokensToBuy)
     }
 
     private fun selectMinimalFiatAmount(amount: String) {
@@ -145,7 +142,7 @@ class NewBuyPresenter(
     }
 
     private fun preselectMinimalFiatAmount() {
-        selectMinimalFiatAmount(DEFAULT_MIN_BUY_CURRENCY_AMOUNT.toString())
+        selectMinimalFiatAmount(HARDCODED_MIN_BUY_CURRENCY_AMOUNT.toString())
     }
 
     override fun onBackPressed() {
@@ -173,18 +170,18 @@ class NewBuyPresenter(
     private fun validatePaymentMethod() {
         if (selectedPaymentMethod?.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (currentAlpha3Code == BANK_TRANSFER_UK_CODE) {
-                selectCurrency(BuyCurrency.Currency.create(Constants.GBP_SYMBOL))
+                selectCurrency(FiatCurrency.GBP)
             } else {
-                selectCurrency(BuyCurrency.Currency.create(Constants.EUR_SYMBOL))
+                selectCurrency(FiatCurrency.EUR)
             }
         }
     }
 
     override fun onSelectTokenClicked() {
-        buyInteractor.getQuotesByCurrency(selectedCurrency.code).forEach { quote ->
+        buyInteractor.getQuotesByCurrency(selectedCurrency).forEach { quote ->
             tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
                 it.rate = quote.price
-                it.currency = quote.currency
+                it.currency = quote.currency.abbreviation.uppercase()
             }
         }
         view?.showTokensToBuy(selectedToken, tokensToBuy)
@@ -207,14 +204,14 @@ class NewBuyPresenter(
         recalculate()
     }
 
-    private fun selectCurrency(currency: BuyCurrency.Currency) {
-        view?.setCurrencyCode(currency.code)
+    private fun selectCurrency(currency: FiatCurrency) {
+        view?.setCurrencyCode(currency.abbreviation)
         setCurrency(currency, byUser = false)
     }
 
-    override fun setCurrency(currency: BuyCurrency.Currency, byUser: Boolean) {
+    override fun setCurrency(currency: FiatCurrency, byUser: Boolean) {
         if (byUser) {
-            buyAnalytics.logBuyCurrencyChanged(selectedCurrency.code, currency.code)
+            buyAnalytics.logBuyCurrencyChanged(selectedCurrency.abbreviation, currency.abbreviation)
         }
         selectedCurrency = currency
 
@@ -233,18 +230,18 @@ class NewBuyPresenter(
     }
 
     private fun isValidCurrencyForPay(): Boolean {
-        val selectedCurrencyCode = selectedCurrency.code
+        val selectedCurrencyCode = selectedCurrency.abbreviation
         val currentPaymentMethod = selectedPaymentMethod ?: return false
 
         if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
             if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
-                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == Constants.EUR_SYMBOL)
+                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == EUR_READABLE_SYMBOL)
             ) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
                 return isValidCurrencyForPay()
-            } else if (selectedCurrency.code == Constants.GBP_SYMBOL && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
+            } else if (selectedCurrency == FiatCurrency.GBP && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
                 paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
                     onPaymentMethodSelected(it, byUser = false)
                 }
@@ -298,14 +295,13 @@ class NewBuyPresenter(
 
             view?.showLoading(isLoading = true)
 
-            val baseCurrencyCode = selectedCurrency.code.lowercase()
             val paymentMethod = selectedPaymentMethod?.paymentType ?: return@launch
 
             val result = buyInteractor.getMoonpayBuyResult(
                 baseCurrencyAmount = amountInCurrency,
                 quoteCurrencyAmount = amountInTokens,
                 tokenToBuy = selectedToken,
-                baseCurrencyCode = baseCurrencyCode,
+                baseCurrencyCode = selectedCurrency,
                 paymentMethod = paymentMethod
             )
             onBuyCurrencyLoadSuccess(result)
@@ -323,19 +319,16 @@ class NewBuyPresenter(
                 buyResultAnalytics = BuyAnalytics.BuyResult.SUCCESS
                 updateViewWithBuyCurrencyData(buyResult.data)
             }
-
             is MoonpayBuyResult.Error -> {
                 Timber.e(buyResult, "Failed to buy")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 view?.showMessage(buyResult.message)
             }
-
             is MoonpayBuyResult.MinAmountError -> {
                 Timber.i(buyResult.toString(), "Failed to buy: MinAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
                 showMinAmountError(buyResult.minBuyAmount)
             }
-
             is MoonpayBuyResult.MaxAmountError -> {
                 Timber.i(buyResult.toString(), "Failed to buy: MaxAmountError")
                 buyResultAnalytics = BuyAnalytics.BuyResult.ERROR
@@ -348,26 +341,26 @@ class NewBuyPresenter(
     private fun showMinAmountError(minAmount: BigDecimal) {
         view?.apply {
             setContinueButtonEnabled(false)
-            val symbol = selectedCurrency.code.symbolFromCode()
+            val symbol = selectedCurrency.uiSymbol
             val minAmountWithSymbol = "$symbol ${minAmount.formatFiat()}"
             buyDetailsState = BuyDetailsState.MinAmountError(minAmountWithSymbol)
             showMessage(
                 resources.getString(R.string.buy_min_transaction_format).format(minAmountWithSymbol)
             )
-            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+            clearOppositeFieldAndTotal("${selectedCurrency.uiSymbol} 0")
         }
     }
 
     private fun showMaxAmountError(maxAmount: BigDecimal) {
         view?.apply {
             setContinueButtonEnabled(false)
-            val symbol = selectedCurrency.code.symbolFromCode()
+            val symbol = selectedCurrency.uiSymbol
             val minAmountWithSymbol = "$symbol ${maxAmount.formatFiat()}"
             buyDetailsState = BuyDetailsState.MaxAmountError(minAmountWithSymbol)
             showMessage(
                 resources.getString(R.string.buy_max_transaction_format).format(minAmountWithSymbol)
             )
-            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+            clearOppositeFieldAndTotal("${selectedCurrency.uiSymbol} 0")
         }
     }
 
@@ -386,7 +379,9 @@ class NewBuyPresenter(
         val enteredAmountLowerThanMax = loadedBuyCurrency.maxAmount
             ?.let { maxCurrencyAmount -> enteredAmountBigDecimal <= maxCurrencyAmount }
             ?: true
-        val enteredAmountHigherThanMin = enteredAmountBigDecimal >= loadedBuyCurrency.minAmount
+
+        val enteredAmountHigherThanMin =
+            buyCurrencyInfo.totalFiatAmount >= HARDCODED_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
 
         if (enteredAmountHigherThanMin && enteredAmountLowerThanMax) {
             handleEnteredAmountValid(buyCurrencyInfo)
@@ -397,25 +392,23 @@ class NewBuyPresenter(
 
     private fun handleEnteredAmountValid(buyCurrencyInfo: BuyCurrency) {
         val amount = if (isSwappedToToken) {
-            buyCurrencyInfo.totalAmount.formatFiat()
+            buyCurrencyInfo.totalFiatAmount.formatFiat()
         } else {
             buyCurrencyInfo.receiveAmount.toBigDecimal().formatToken()
         }
         val currencyForTokensAmount = buyCurrencyInfo.price * buyCurrencyInfo.receiveAmount.toBigDecimal()
-        val currencySymbol = selectedCurrency.code
-        val currency = if (currencySymbol == Constants.USD_READABLE_SYMBOL) USD_SYMBOL else currencySymbol
         val data = BuyViewData(
             tokenSymbol = selectedToken.tokenSymbol,
-            currencySymbol = currency,
+            currencySymbol = selectedCurrency.uiSymbol,
             price = buyCurrencyInfo.price.scaleShort(),
             receiveAmount = buyCurrencyInfo.receiveAmount,
             processingFee = buyCurrencyInfo.feeAmount.scaleShort(),
             networkFee = buyCurrencyInfo.networkFeeAmount.scaleShort(),
             extraFee = buyCurrencyInfo.extraFeeAmount.scaleShort(),
             accountCreationCost = null,
-            total = buyCurrencyInfo.totalAmount.scaleShort(),
+            total = buyCurrencyInfo.totalFiatAmount.scaleShort(),
             receiveAmountText = amount,
-            purchaseCostText = currencyForTokensAmount.asCurrency(currency)
+            purchaseCostText = currencyForTokensAmount.asCurrency(selectedCurrency.uiSymbol)
         )
         view?.apply {
             showTotal(data)
@@ -427,10 +420,10 @@ class NewBuyPresenter(
     }
 
     private fun handleEnteredAmountInvalid(loadedBuyCurrency: BuyCurrency.Currency) {
-        val isAmountLower = amount.toBigDecimal() < loadedBuyCurrency.minAmount
+        val minAmount = HARDCODED_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
         val maxAmount = loadedBuyCurrency.maxAmount
-        val minAmount = loadedBuyCurrency.minAmount
-        val symbol = selectedCurrency.code.symbolFromCode()
+        val isAmountLower = amount.toBigDecimal() < minAmount
+        val symbol = selectedCurrency.uiSymbol
         val minAmountMessage = resources.getString(R.string.buy_min_transaction_format)
             .format("$symbol $minAmount")
         val maxAmountMessage = resources.getString(R.string.buy_max_error_format)
@@ -444,7 +437,7 @@ class NewBuyPresenter(
         view?.apply {
             setContinueButtonEnabled(false)
             showMessage(message)
-            clearOppositeFieldAndTotal("${selectedCurrency.code.symbolFromCode()} 0")
+            clearOppositeFieldAndTotal("${selectedCurrency.uiSymbol} 0")
         }
     }
 
@@ -472,33 +465,26 @@ class NewBuyPresenter(
             buyAnalytics.logBuyButtonPressed(
                 buySumCurrency = it.total.formatFiat(),
                 buySumCoin = it.receiveAmount.toBigDecimal().formatFiat(),
-                buyCurrency = selectedCurrency.code,
+                buyCurrency = selectedCurrency.uiSymbol,
                 buyCoin = it.tokenSymbol,
                 methodPayment = selectedPaymentMethod
             )
             view?.navigateToMoonpay(
                 amount = it.total.toString(),
-                selectedToken,
-                selectedCurrency,
-                paymentType
+                selectedToken = selectedToken,
+                selectedCurrency = selectedCurrency,
+                paymentMethod = paymentType
             )
             buyAnalytics.logBuyMoonPayOpened()
         }
     }
 
     private fun getValidPaymentType(): String? {
-        return if (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency.code == Constants.EUR_SYMBOL) {
+        return if (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency == FiatCurrency.EUR) {
             SEPA_BANK_TRANSFER
         } else {
             selectedPaymentMethod?.paymentType
         }
-    }
-
-    private fun String.symbolFromCode() = when (this.lowercase()) {
-        "eur" -> "€"
-        "usd" -> "$"
-        "gbp" -> "£"
-        else -> throw IllegalArgumentException("Unknown currency $this")
     }
 
     override fun detach() {

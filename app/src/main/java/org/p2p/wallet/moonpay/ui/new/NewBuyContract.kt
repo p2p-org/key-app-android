@@ -4,17 +4,17 @@ import org.p2p.core.token.Token
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.wallet.moonpay.model.BuyCurrency
 import org.p2p.wallet.moonpay.model.BuyDetailsState
 import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
+import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 
 interface NewBuyContract {
 
     interface View : MvpView {
         fun showPreselectedAmount(amount: String)
         fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>)
-        fun showCurrency(currencies: List<BuyCurrency.Currency>, selectedCurrency: BuyCurrency.Currency)
+        fun showCurrency(currencies: List<FiatCurrency>, selectedCurrency: FiatCurrency)
         fun setCurrencyCode(selectedCurrencyCode: String)
         fun showPaymentMethods(methods: List<PaymentMethod>?)
         fun setContinueButtonEnabled(isEnabled: Boolean)
@@ -26,7 +26,7 @@ interface NewBuyContract {
         fun navigateToMoonpay(
             amount: String,
             selectedToken: Token,
-            selectedCurrency: BuyCurrency.Currency,
+            selectedCurrency: FiatCurrency,
             paymentMethod: String?
         )
 
@@ -39,7 +39,7 @@ interface NewBuyContract {
         fun onSelectCurrencyClicked()
         fun onTotalClicked()
         fun setTokenToBuy(token: Token)
-        fun setCurrency(currency: BuyCurrency.Currency, byUser: Boolean = true)
+        fun setCurrency(currency: FiatCurrency, byUser: Boolean = true)
         fun setBuyAmount(amount: String, isDelayEnabled: Boolean = true)
         fun onFocusFieldChanged(focusField: FocusField)
         fun onContinueClicked()

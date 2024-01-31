@@ -9,12 +9,15 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import android.content.Context
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.util.UUID
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.parcelize.Parcelize
 import org.p2p.core.common.bind
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
@@ -59,6 +62,7 @@ import org.p2p.wallet.transaction.ui.SwapTransactionBottomSheetData
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -67,6 +71,13 @@ private const val EXTRA_OPENED_FROM = "EXTRA_OPENED_FROM"
 private const val EXTRA_INITIAL_TOKEN_A_MINT = "EXTRA_INITIAL_TOKEN_A_MINT"
 private const val EXTRA_INITIAL_TOKEN_B_MINT = "EXTRA_INITIAL_TOKEN_B_MINT"
 private const val EXTRA_INITIAL_AMOUNT_A = "EXTRA_INITIAL_AMOUNT_A"
+private const val EXTRA_STRICT_WARNING = "EXTRA_STRICT_WARNING"
+
+@Parcelize
+data class SwapDeeplinkStrictTokenWarning(
+    val notStrictTokenASymbol: String?,
+    val notStrictTokenBSymbol: String?,
+) : Parcelable
 
 class JupiterSwapFragment :
     BaseMvpFragment<JupiterSwapContract.View, JupiterSwapContract.Presenter>(R.layout.fragment_jupiter_swap),
@@ -83,13 +94,15 @@ class JupiterSwapFragment :
             tokenAMint: Base58String,
             tokenBMint: Base58String,
             amountA: String,
-            source: SwapOpenedFrom
+            source: SwapOpenedFrom,
+            strictWarning: SwapDeeplinkStrictTokenWarning? = null
         ): JupiterSwapFragment =
             JupiterSwapFragment()
                 .withArgs(
                     EXTRA_INITIAL_TOKEN_A_MINT to tokenAMint.base58Value,
                     EXTRA_INITIAL_TOKEN_B_MINT to tokenBMint.base58Value,
                     EXTRA_INITIAL_AMOUNT_A to amountA,
+                    EXTRA_STRICT_WARNING to strictWarning,
                     EXTRA_OPENED_FROM to source
                 )
 
@@ -108,9 +121,12 @@ class JupiterSwapFragment :
     private val initialAmountA: String? by args(EXTRA_INITIAL_AMOUNT_A)
     private val openedFrom: SwapOpenedFrom by args(EXTRA_OPENED_FROM)
 
+    private var strictWarning: SwapDeeplinkStrictTokenWarning? by args(EXTRA_STRICT_WARNING)
+
     private val binding: FragmentJupiterSwapBinding by viewBinding()
 
     private val analytics: JupiterSwapMainScreenAnalytics by inject()
+
     override val presenter: JupiterSwapContract.Presenter by inject {
         parametersOf(
             JupiterPresenterInitialData(
@@ -162,7 +178,40 @@ class JupiterSwapFragment :
             setupToolbar()
             buttonTryAgain.setOnClickListener { presenter.onTryAgainClick() }
         }
+        val atLeastOneIsNotStrict =
+            strictWarning?.notStrictTokenASymbol != null ||
+                strictWarning?.notStrictTokenBSymbol != null
+        val strictWarning = strictWarning
+        if (strictWarning != null && atLeastOneIsNotStrict) {
+            showStrictDialog(strictWarning)
+            // remove dialog data when it's shown first time
+            this.strictWarning = null
+        }
+
         presenter.resumeStateManager()
+    }
+
+    private fun showStrictDialog(strictWarning: SwapDeeplinkStrictTokenWarning) {
+        val body = if (strictWarning.notStrictTokenASymbol != null && strictWarning.notStrictTokenBSymbol != null) {
+            getString(
+                R.string.swap_main_strict_warning_multiple_body,
+                strictWarning.notStrictTokenASymbol,
+                strictWarning.notStrictTokenBSymbol
+            )
+        } else {
+            val singleTokenSymbol = strictWarning.notStrictTokenASymbol ?: strictWarning.notStrictTokenBSymbol
+            getString(
+                R.string.swap_main_strict_warning_single_body,
+                singleTokenSymbol,
+            )
+        }
+        MaterialAlertDialogBuilder(requireContext())
+            .setCancelable(false)
+            .setIcon(R.drawable.ic_warning_solid)
+            .setTitle(getString(R.string.swap_main_strict_warning_title))
+            .setMessage(body)
+            .setPositiveButton("Okay") { dialog, _ -> dialog.dismiss() }
+            .show()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -188,13 +237,25 @@ class JupiterSwapFragment :
         }
 
         toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.settingsMenuItem) {
-                openSwapSettingsScreen()
-                true
-            } else {
-                false
+            when (item.itemId) {
+                R.id.settingsMenuItem -> {
+                    openSwapSettingsScreen()
+                    true
+                }
+                R.id.shareMenuItem -> {
+                    presenter.onShareClicked()
+                    true
+                }
+                else -> {
+                    false
+                }
             }
         }
+    }
+
+    override fun showSwapLinkShareDialog(tokenAMint: Base58String, tokenBMint: Base58String) {
+        val shareUrl = "https://s.key.app/swap?from=%s&to=%s".format(tokenAMint.base58Value, tokenBMint.base58Value)
+        requireContext().shareText(shareUrl)
     }
 
     private fun setupWidgetsActionCallbacks() = with(binding) {
@@ -356,8 +417,8 @@ class JupiterSwapFragment :
         textViewAlert.text = text
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onPause() {
+        super.onPause()
         presenter.pauseStateManager()
     }
 

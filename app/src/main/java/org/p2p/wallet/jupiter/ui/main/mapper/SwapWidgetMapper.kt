@@ -2,9 +2,6 @@ package org.p2p.wallet.jupiter.ui.main.mapper
 
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.asUsdSwap
-import org.p2p.core.utils.emptyString
-import org.p2p.core.utils.formatToken
 import org.p2p.uikit.utils.skeleton.textCellSkeleton
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
@@ -15,7 +12,9 @@ import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
 import org.p2p.wallet.jupiter.ui.main.SwapTokenType
 import org.p2p.wallet.jupiter.ui.main.widget.SwapWidgetModel
 
-class SwapWidgetMapper {
+class SwapWidgetMapper(
+    private val tokenFormatter: SwapWidgetTokenFormatter
+) {
 
     fun mapWidgetLoading(tokenType: SwapTokenType): SwapWidgetModel {
         return when (tokenType) {
@@ -40,33 +39,35 @@ class SwapWidgetMapper {
         return when (state) {
             SwapRateLoaderState.Empty,
             SwapRateLoaderState.Error,
-            is SwapRateLoaderState.NoRateAvailable -> widgetModel.copy(fiatAmount = null)
+            is SwapRateLoaderState.NoRateAvailable -> {
+                widgetModel.copy(fiatAmount = null)
+            }
             is SwapRateLoaderState.Loaded -> {
-                var newFiatAmount = fiatAmount(fiatAmount = tokenAmount.multiply(state.rate))
-                oldFiatAmount?.let { newFiatAmount = newFiatAmount.copy(textColor = oldFiatAmount.textColor) }
+                var newFiatAmount = tokenFormatter.formatFiatAmount(fiatAmount = tokenAmount.multiply(state.rate))
+                oldFiatAmount?.also { newFiatAmount = newFiatAmount.copy(textColor = oldFiatAmount.textColor) }
+                widgetModel.copy(fiatAmount = newFiatAmount)
+            }
+            SwapRateLoaderState.Loading -> {
                 widgetModel.copy(
-                    fiatAmount = newFiatAmount,
+                    fiatAmount = textCellSkeleton(
+                        height = 8.toPx(),
+                        width = 84.toPx(),
+                        radius = 2f.toPx(),
+                    )
                 )
             }
-            SwapRateLoaderState.Loading -> widgetModel.copy(
-                fiatAmount = textCellSkeleton(
-                    height = 8.toPx(),
-                    width = 84.toPx(),
-                    radius = 2f.toPx(),
-                )
-            )
         }
     }
 
     fun copyAmount(
         oldWidgetModel: SwapWidgetModel,
         token: SwapTokenModel,
-        tokenAmount: BigDecimal,
+        enteredTokenAmount: BigDecimal,
     ): SwapWidgetModel {
         val widgetModel = oldWidgetModel as? SwapWidgetModel.Content ?: return oldWidgetModel
         val oldAmount = widgetModel.amount as? TextViewCellModel.Raw ?: return oldWidgetModel
         return widgetModel.copy(
-            amount = tokenAmount(token, tokenAmount)
+            amount = tokenFormatter.formatUserTokenAmount(token, enteredTokenAmount)
                 .copy(textColor = oldAmount.textColor)
         )
     }
@@ -83,7 +84,7 @@ class SwapWidgetMapper {
         )
     }
 
-    fun mapTokenAAndSaveOldFiatAmount(
+    suspend fun mapTokenAAndSaveOldFiatAmount(
         oldWidgetModel: SwapWidgetModel,
         token: SwapTokenModel,
         tokenAmount: BigDecimal? = null,
@@ -95,23 +96,24 @@ class SwapWidgetMapper {
         return result
     }
 
-    fun mapTokenA(
+    suspend fun mapTokenA(
         token: SwapTokenModel,
-        tokenAmount: BigDecimal? = null,
+        enteredTokenAmount: BigDecimal? = null,
     ): SwapWidgetModel.Content {
         return SwapWidgetModel.Content(
             isStatic = false,
             widgetTitle = swapWidgetFromTitle(),
-            availableAmount = availableAmount(token),
-            balance = balance(token),
-            currencyName = tokenName(token),
-            amount = tokenAmount(token, tokenAmount),
+            availableAmount = tokenFormatter.formatAvailableAmount(token),
+            balance = tokenFormatter.formatTokenBalance(token),
+            currencyName = tokenFormatter.formatTokenName(token),
+            tokenUrl = token.iconUrl,
+            amount = tokenFormatter.formatUserTokenAmount(token, enteredTokenAmount),
             fiatAmount = null,
             amountMaxDecimals = token.decimals,
         )
     }
 
-    fun mapTokenBAndSaveOldFiatAmount(
+    suspend fun mapTokenBAndSaveOldFiatAmount(
         oldWidgetModel: SwapWidgetModel,
         token: SwapTokenModel,
         tokenAmount: BigDecimal? = null,
@@ -123,78 +125,36 @@ class SwapWidgetMapper {
         return result
     }
 
-    fun mapTokenB(token: SwapTokenModel, tokenAmount: BigDecimal?): SwapWidgetModel.Content {
+    suspend fun mapTokenB(token: SwapTokenModel, enteredTokenAmount: BigDecimal?): SwapWidgetModel.Content {
         return SwapWidgetModel.Content(
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
             availableAmount = null,
-            balance = balance(token),
-            currencyName = tokenName(token),
-            amount = tokenAmount(token, tokenAmount),
+            tokenUrl = token.iconUrl,
+            balance = tokenFormatter.formatTokenBalance(token),
+            currencyName = tokenFormatter.formatTokenName(token),
+            amount = tokenFormatter.formatUserTokenAmount(token, enteredTokenAmount),
             fiatAmount = null,
             amountMaxDecimals = token.decimals,
         )
     }
 
-    fun mapTokenBLoading(
-        token: SwapTokenModel,
-    ): SwapWidgetModel.Content =
-        SwapWidgetModel.Content(
+    suspend fun mapTokenBLoading(token: SwapTokenModel): SwapWidgetModel.Content {
+        return SwapWidgetModel.Content(
             isStatic = true,
             widgetTitle = swapWidgetToTitle(),
-            currencyName = tokenName(token),
+            tokenUrl = token.iconUrl,
+            currencyName = tokenFormatter.formatTokenName(token),
             amount = textCellSkeleton(
                 height = 20.toPx(),
                 width = 84.toPx(),
                 radius = 6f.toPx(),
             ),
-            balance = balance(token),
+            balance = tokenFormatter.formatTokenBalance(token),
             fiatAmount = null,
             availableAmount = null,
         )
-
-    private fun fiatAmount(fiatAmount: BigDecimal): TextViewCellModel.Raw {
-        val usd = fiatAmount.asUsdSwap()
-        return TextViewCellModel.Raw(TextContainer(usd))
     }
-
-    private fun tokenAmount(token: SwapTokenModel, tokenAmount: BigDecimal?): TextViewCellModel.Raw {
-        val decimals = token.decimals
-        val amountText = tokenAmount
-            ?.formatToken(
-                decimals = decimals,
-                keepInitialDecimals = true
-            )
-            ?: emptyString()
-        return TextViewCellModel.Raw(TextContainer(amountText))
-    }
-
-    private fun tokenName(token: SwapTokenModel): TextViewCellModel.Raw =
-        TextViewCellModel.Raw(TextContainer(token.tokenSymbol))
-
-    private fun balance(token: SwapTokenModel): TextViewCellModel.Raw =
-        when (token) {
-            is SwapTokenModel.JupiterToken -> TextViewCellModel.Raw(
-                TextContainer(R.string.swap_main_balance_amount, "0")
-            )
-            is SwapTokenModel.UserToken -> TextViewCellModel.Raw(
-                TextContainer(R.string.swap_main_balance_amount, tokenAmount(token, includeSymbol = false))
-            )
-        }
-
-    private fun availableAmount(token: SwapTokenModel): TextViewCellModel.Raw? =
-        when (token) {
-            is SwapTokenModel.JupiterToken -> null
-            is SwapTokenModel.UserToken -> availableAmountText(token)
-        }
-
-    private fun availableAmountText(token: SwapTokenModel.UserToken): TextViewCellModel.Raw =
-        TextViewCellModel.Raw(
-            TextContainer(tokenAmount(token))
-        )
-
-    private fun tokenAmount(token: SwapTokenModel.UserToken, includeSymbol: Boolean = true): String =
-        token.details.getFormattedTotal(includeSymbol = includeSymbol)
 
     private fun swapWidgetFromTitle(): TextViewCellModel.Raw =
         TextViewCellModel.Raw(TextContainer(R.string.swap_main_you_pay))
@@ -210,7 +170,7 @@ class SwapWidgetMapper {
         if (tokenA == null) return oldWidgetAState
         val result = oldWidgetAState as? SwapWidgetModel.Content ?: return oldWidgetAState
         return result.copy(
-            amount = tokenAmount(tokenA, notValidAmount).copy(textColor = R.color.text_rose),
+            amount = tokenFormatter.formatUserTokenAmount(tokenA, notValidAmount).copy(textColor = R.color.text_rose),
         )
     }
 

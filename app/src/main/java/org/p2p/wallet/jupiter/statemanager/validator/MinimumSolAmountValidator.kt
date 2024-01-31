@@ -6,9 +6,9 @@ import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.toLamports
-import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.statemanager.SwapFeatureException
+import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.model.Slippage
 
 class MinimumSolAmountValidator(
@@ -21,7 +21,7 @@ class MinimumSolAmountValidator(
         slippage: Slippage
     ) {
 
-        if (!tokenA.isSol()) return
+        if (!tokenA.isWrappedSol) return
 
         val minRentExemption = rpcAmountRepository.getMinBalanceForRentExemption(0)
 

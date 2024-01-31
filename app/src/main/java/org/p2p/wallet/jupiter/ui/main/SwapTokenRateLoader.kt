@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicReference
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
@@ -33,6 +35,12 @@ class SwapTokenRateLoader(
         }
     }
 
+    suspend fun getLoadedRate(token: SwapTokenModel): SwapRateLoaderState.Loaded? {
+        return getRate(token)
+            .filterIsInstance<SwapRateLoaderState.Loaded>()
+            .firstOrNull()
+    }
+
     private suspend fun FlowCollector<SwapRateLoaderState>.updateToken(newToken: SwapTokenModel) {
         return when (newToken) {
             is SwapTokenModel.JupiterToken -> updateJupiterTokenRate(newToken)
@@ -47,6 +55,7 @@ class SwapTokenRateLoader(
         val newState = if (rate != null) {
             SwapRateLoaderState.Loaded(token = token, rate = rate)
         } else {
+            Timber.e("SwapTokenRateLoader: no rate available for user token ${token.tokenSymbol} ")
             SwapRateLoaderState.NoRateAvailable(token = token)
         }
         emitAndSaveState(newState)
@@ -57,14 +66,14 @@ class SwapTokenRateLoader(
     ) {
         emitAndSaveState(SwapRateLoaderState.Loading)
         try {
-            val tokenPrice =
-                tokenServiceRepository.findTokenPriceByAddress(
-                    tokenAddress = token.details.tokenMint.base58Value,
-                    networkChain = TokenServiceNetwork.SOLANA
-                )?.usdRate
+            val tokenPrice = tokenServiceRepository.findTokenPriceByAddress(
+                tokenAddress = token.details.tokenMint.base58Value,
+                networkChain = TokenServiceNetwork.SOLANA
+            )?.usdRate
             if (tokenPrice != null) {
                 emitAndSaveState(SwapRateLoaderState.Loaded(token = token, rate = tokenPrice))
             } else {
+                Timber.e("SwapTokenRateLoader: no rate available for jupiter token ${token.tokenSymbol} ")
                 emitAndSaveState(SwapRateLoaderState.NoRateAvailable(token = token))
             }
         } catch (e: CancellationException) {

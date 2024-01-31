@@ -9,20 +9,21 @@ import org.p2p.core.utils.toLamports
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapPair
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoute
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
-import org.p2p.wallet.jupiter.repository.routes.JupiterSwapRoutesRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
+import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
 import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.model.Slippage
 
 class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
-    private val swapRoutesRepository: JupiterSwapRoutesRepository,
+    private val swapRoutesRepository: JupiterSwapRoutesV6Repository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
     private val minSolBalanceValidator: MinimumSolAmountValidator,
     private val swapValidator: SwapValidator,
+    private val swapProfiler: SwapProfiler,
 ) {
     suspend fun refreshRoutes(
         state: MutableStateFlow<SwapState>,
@@ -30,9 +31,7 @@ class SwapStateRoutesRefresher(
         tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
         slippage: Slippage,
-        activeRouteIndex: Int
     ) {
-
         minSolBalanceValidator.validateMinimumSolAmount(
             tokenA = tokenA,
             newAmount = amountTokenA,
@@ -46,8 +45,8 @@ class SwapStateRoutesRefresher(
             slippage = slippage
         )
 
-        val updatedRoutes = try {
-            fetchRoutes(
+        val updatedRoute = try {
+            fetchRoute(
                 tokenA = tokenA,
                 tokenB = tokenB,
                 amountTokenA = amountTokenA,
@@ -55,11 +54,18 @@ class SwapStateRoutesRefresher(
             )
         } catch (e: SwapFailure.TooSmallInputAmount) {
             throw SwapFeatureException.SmallTokenAAmount(amountTokenA)
+        } catch (e: SwapFailure.ServerUnknownError) {
+            Timber.e(e, "Unable to fetch routes")
+            // todo: I guess common unknown errors must be interpreted differently,
+            //       but currently we don't know how exactly distinguish them
+            throw SwapFeatureException.RoutesNotFound
+        } finally {
+            swapProfiler.setRoutesFetchedTime()
         }
-        Timber.i("Jupiter routes fetched: ${updatedRoutes.size}")
 
-        val activeRoute = updatedRoutes.getOrNull(activeRouteIndex)
-            ?: throw SwapFeatureException.RoutesNotFound
+        Timber.i("Jupiter routes fetched")
+
+        val activeRoute = updatedRoute ?: throw SwapFeatureException.RoutesNotFound
 
         val amountTokenB = activeRoute
             .outAmountInLamports
@@ -72,8 +78,7 @@ class SwapStateRoutesRefresher(
                 tokenA = tokenA,
                 tokenB = tokenB,
                 amountTokenA = amountTokenA,
-                routes = updatedRoutes,
-                activeRouteIndex = activeRouteIndex,
+                route = updatedRoute,
                 amountTokenB = amountTokenB,
                 slippage = slippage,
             )
@@ -84,8 +89,7 @@ class SwapStateRoutesRefresher(
             tokenA = tokenA,
             tokenB = tokenB,
             amountTokenA = amountTokenA,
-            routes = updatedRoutes,
-            activeRouteIndex = activeRouteIndex,
+            route = updatedRoute,
             amountTokenB = amountTokenB,
             slippage = slippage,
         )
@@ -94,6 +98,8 @@ class SwapStateRoutesRefresher(
             route = activeRoute,
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance()
         )
+        swapProfiler.setTxCreatedTime()
+
         Timber.i("Fresh swap transaction fetched")
 
         state.value = SwapState.SwapLoaded(
@@ -101,19 +107,18 @@ class SwapStateRoutesRefresher(
             tokenB = tokenB,
             lamportsTokenA = activeRoute.inAmountInLamports,
             lamportsTokenB = activeRoute.outAmountInLamports,
-            routes = updatedRoutes,
-            activeRouteIndex = activeRouteIndex,
+            route = updatedRoute,
             jupiterSwapTransaction = freshSwapTransaction,
             slippage = slippage
         )
     }
 
-    private suspend fun fetchRoutes(
+    private suspend fun fetchRoute(
         tokenA: SwapTokenModel,
         tokenB: SwapTokenModel,
         amountTokenA: BigDecimal,
         slippage: Slippage,
-    ): List<JupiterSwapRoute> {
+    ): JupiterSwapRouteV6? {
         val routesRequest = JupiterSwapPair(
             inputMint = tokenA.mintAddress,
             outputMint = tokenB.mintAddress,
@@ -121,11 +126,11 @@ class SwapStateRoutesRefresher(
             slippageBasePoints = (slippage.doubleValue * 10000).toInt() // 100% = 1000; 0.5 = 50
         )
         val validateRoutes = swapValidator.isValidInputAmount(tokenA, amountTokenA)
+
         return swapRoutesRepository.getSwapRoutesForSwapPair(
             jupiterSwapPair = routesRequest,
             userPublicKey = tokenKeyProvider.publicKey.toBase58Instance(),
-            // don't validate routes if amount is invalid or balance insufficient
-            validateRoutes = validateRoutes
+            shouldValidateRoute = validateRoutes
         )
     }
 }

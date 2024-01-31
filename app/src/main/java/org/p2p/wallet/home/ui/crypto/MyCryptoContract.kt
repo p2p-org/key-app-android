@@ -24,6 +24,7 @@ interface MyCryptoContract {
         fun showAddMoneyDialog()
         fun navigateToSend()
         fun navigateToSwap()
+        fun navigateToSell()
         fun navigateToTokenClaim(token: Token.Eth)
         fun showProgressDialog(bundleId: String, progressDetails: NewShowProgress)
     }
@@ -37,6 +38,7 @@ interface MyCryptoContract {
         fun onSendClicked()
         fun onAddressClicked()
         fun onSwapClicked()
+        fun onSellClicked()
         fun toggleTokenVisibility(token: Token.Active)
         fun toggleTokenVisibilityState()
         fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth)

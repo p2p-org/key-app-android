@@ -23,6 +23,9 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentJupiterSwapTokensBinding
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
+import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.ui.info.SwapNonStrictTokenWarningBottomSheet
+import org.p2p.wallet.jupiter.ui.info.SwapNonStrictTokenWarningBottomSheet.Companion.KEY_RESULT_CONFIRMED_TOKEN
 import org.p2p.wallet.jupiter.ui.tokens.adapter.SwapTokensARoundedItemDecoration
 import org.p2p.wallet.jupiter.ui.tokens.adapter.SwapTokensAdapter
 import org.p2p.wallet.jupiter.ui.tokens.adapter.SwapTokensBRoundedItemDecoration
@@ -62,6 +65,16 @@ class SwapTokensFragment :
     private val adapter: SwapTokensAdapter by unsafeLazy {
         SwapTokensAdapter(onTokenClicked = {
             analytics.logTokenChanged(tokenToChange, it)
+
+            val isStrictToken = (it as? SwapTokenModel.JupiterToken)?.details?.isStrictToken ?: true
+            if (!isStrictToken) {
+                SwapNonStrictTokenWarningBottomSheet.show(
+                    fm = parentFragmentManager,
+                    selectedTokenSymbol = it.tokenSymbol,
+                    selectedTokenMint = it.mintAddress
+                )
+                return@SwapTokensAdapter
+            }
             presenter.onTokenClicked(it)
         })
     }
@@ -93,6 +106,16 @@ class SwapTokensFragment :
                 SwapTokensListMode.TOKEN_B -> {
                     addItemDecoration(SwapTokensBRoundedItemDecoration())
                 }
+            }
+        }
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            SwapNonStrictTokenWarningBottomSheet.KEY_REQUEST,
+            viewLifecycleOwner
+        ) { _, result ->
+            if (result.containsKey(KEY_RESULT_CONFIRMED_TOKEN)) {
+                val tokenMint = result.getString(KEY_RESULT_CONFIRMED_TOKEN)!!
+                presenter.onNonStrictTokenConfirmed(tokenMint)
             }
         }
     }

@@ -58,7 +58,7 @@ class BridgeSendFeeBottomSheet : BaseDoneBottomSheet() {
             )
             layoutBridgeFee.bindDetailsLineWithFee(
                 title = getString(R.string.bridge_send_fee_details_wormhole),
-                fee = bridgeFeeDetails.bridgeFee
+                fee = bridgeFeeDetails.arbiterFee
             )
             layoutWillGetAmount.bindWillGetAmountLine(
                 title = getString(R.string.bridge_send_fee_details_gets),

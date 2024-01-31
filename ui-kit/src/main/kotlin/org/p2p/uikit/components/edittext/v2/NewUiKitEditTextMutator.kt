@@ -8,10 +8,10 @@ import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.widget.EditText
 import org.p2p.core.common.TextContainer
+import org.p2p.core.utils.SimpleTagTextWatcher
 import org.p2p.core.utils.emptyString
 import org.p2p.uikit.databinding.WidgetUiKitEditTextNewBinding
 import org.p2p.uikit.utils.SimpleMaskFormatter
-import org.p2p.uikit.utils.SimpleTagTextWatcher
 
 /**
  * Allows to change state of the view by settings text / listeners and other stuff

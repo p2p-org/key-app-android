@@ -6,9 +6,10 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.withContext
 import org.p2p.core.BuildConfig.moonpayKey
-import org.p2p.core.token.Token
 import org.p2p.core.crashlytics.CrashLogger
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.token.Token
 import org.p2p.wallet.infrastructure.network.interceptor.MoonpayRequestException
 import org.p2p.wallet.moonpay.clientsideapi.MoonpayClientSideApi
 import org.p2p.wallet.moonpay.clientsideapi.response.MoonpayIpAddressResponse
@@ -19,7 +20,6 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.MoonpayServerSideApi
 import org.p2p.wallet.moonpay.serversideapi.response.MoonpaySellTransactionShortResponse
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.core.crypto.Base58String
 
 private const val TAG = "MoonpaySellRemoteRepository"
 
@@ -107,21 +107,21 @@ class MoonpaySellRemoteRepository(
     override suspend fun getSellQuoteForToken(
         tokenToSell: Token.Active,
         tokenAmount: BigDecimal,
-        fiat: SellTransactionFiatCurrency
+        fiat: FiatCurrency
     ): MoonpaySellTokenQuote = doMoonpayRequest {
         mapper.fromNetwork(
             moonpayClientSideApi.getSellQuoteForToken(
                 tokenSymbol = tokenToSell.tokenSymbol.lowercase(),
                 apiKey = moonpayKey,
-                fiatName = fiat.abbriviation,
+                fiatName = fiat.abbreviation,
                 tokenAmount = tokenAmount.toDouble()
             )
         )
     }
 
-    override suspend fun getSellFiatCurrency(): SellTransactionFiatCurrency =
+    override suspend fun getSellFiatCurrency(): FiatCurrency =
         cachedMoonpayIpFlags?.currentCountryAbbreviation.orEmpty()
-            .let(SellTransactionFiatCurrency.Companion::getFromCountryAbbreviation)
+            .let(FiatCurrency.Companion::getFromAlpha3)
 
     override suspend fun cancelSellTransaction(
         transactionId: String

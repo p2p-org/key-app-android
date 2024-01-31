@@ -5,6 +5,8 @@ import java.math.BigDecimal
 import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
@@ -17,6 +19,7 @@ import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.scaleShort
 import org.p2p.core.utils.toLamports
@@ -28,6 +31,7 @@ sealed class Token constructor(
     open val tokenSymbol: String,
     open val decimals: Int,
     open val mintAddress: String,
+    open val programId: String? = null,
     open val tokenName: String,
     open val iconUrl: String?,
     open val isWrapped: Boolean,
@@ -38,15 +42,17 @@ sealed class Token constructor(
 
     @Parcelize
     data class Active constructor(
+        // put tokenSymbol first for toString()
+        override val tokenSymbol: String,
         override val publicKey: String,
         val totalInUsd: BigDecimal?,
         val total: BigDecimal,
         val visibility: TokenVisibility,
         val tokenServiceAddress: String,
         override val tokenExtensions: TokenExtensions,
-        override val tokenSymbol: String,
         override val decimals: Int,
         override val mintAddress: String,
+        override val programId: String?,
         override val tokenName: String,
         override val iconUrl: String?,
         override val isWrapped: Boolean,
@@ -57,6 +63,7 @@ sealed class Token constructor(
         tokenSymbol = tokenSymbol,
         decimals = decimals,
         mintAddress = mintAddress,
+        programId = programId,
         tokenName = tokenName,
         iconUrl = iconUrl,
         isWrapped = isWrapped,
@@ -84,6 +91,10 @@ sealed class Token constructor(
         @IgnoredOnParcel
         val canTokenBeHidden: Boolean
             get() = tokenExtensions.canTokenBeHidden != false
+
+        @IgnoredOnParcel
+        val mintAddressB58: Base58String
+            get() = mintAddress.toBase58Instance()
 
         fun isDefinitelyHidden(isZerosHidden: Boolean): Boolean {
             val isHiddenByUser = visibility == TokenVisibility.HIDDEN
@@ -198,6 +209,10 @@ sealed class Token constructor(
         get() = mintAddress != WRAPPED_SOL_MINT
 
     @IgnoredOnParcel
+    val isToken2022: Boolean
+        get() = programId == Constants.SOLANA_TOKEN_2022_PROGRAM_ID
+
+    @IgnoredOnParcel
     val isRenBTC: Boolean
         get() = tokenSymbol == REN_BTC_SYMBOL
 
@@ -219,7 +234,12 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val currencySymbol: String
-        get() = if (currency == Constants.USD_READABLE_SYMBOL) Constants.USD_SYMBOL else currency
+        get() = when (currency) {
+            Constants.USD_READABLE_SYMBOL -> Constants.USD_SYMBOL
+            Constants.GBP_READABLE_SYMBOL -> Constants.GBP_SYMBOL
+            Constants.EUR_READABLE_SYMBOL -> Constants.EUR_SYMBOL
+            else -> currency
+        }
 
     @IgnoredOnParcel
     val isActive: Boolean
@@ -240,6 +260,7 @@ sealed class Token constructor(
                 tokenSymbol = tokenMetadata.symbol,
                 decimals = tokenMetadata.decimals,
                 mintAddress = tokenMetadata.mintAddress,
+                programId = null,
                 tokenName = SOL_NAME,
                 iconUrl = tokenMetadata.iconUrl,
                 totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },
@@ -264,3 +285,20 @@ fun List<Token.Active>.findByMintAddress(mintAddress: String): Token.Active? =
 @JvmName("findByNullableMintAddress")
 fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
     mintAddress?.let(::findByMintAddress)
+
+fun List<Token.Active>.sortedWithPreferredStableCoins(): List<Token.Active> {
+    return sortedWith(
+        compareBy<Token.Active> {
+            when (it.tokenSymbol) {
+                USDC_SYMBOL -> 1
+                USDT_SYMBOL -> 2
+                else -> 3
+            }
+        }
+            .thenComparing(
+                compareByDescending {
+                    it.totalInUsd.orZero()
+                }
+            )
+    )
+}

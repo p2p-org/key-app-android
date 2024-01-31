@@ -47,5 +47,6 @@ class RpcAmountRemoteRepository(
             rentExemptionCache[dataLength] = result
             return result
         }
+            .also { Timber.i("min_balance_for_rent_exemption: $it") }
     }
 }

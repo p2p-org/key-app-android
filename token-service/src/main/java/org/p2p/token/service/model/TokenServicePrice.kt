@@ -13,4 +13,8 @@ data class TokenServicePrice(
 
     val usdRate: BigDecimal?
         get() = rate.usd
+
+    override fun toString(): String {
+        return "TokenServicePrice($address - ${rate.usd} - ${network.networkName})"
+    }
 }

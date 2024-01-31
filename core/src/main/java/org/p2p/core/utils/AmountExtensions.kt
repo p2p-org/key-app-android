@@ -86,6 +86,20 @@ fun BigDecimal.formatToken(
     keepInitialDecimals = keepInitialDecimals
 )
 
+fun BigDecimal.formatTokenWithSymbol(
+    tokenSymbol: String,
+    decimals: Int = DEFAULT_DECIMAL,
+    exactDecimals: Boolean = false,
+    keepInitialDecimals: Boolean = false,
+): String {
+    val formattedAmount = formatWithDecimals(
+        decimals = decimals,
+        exactDecimals = exactDecimals,
+        keepInitialDecimals = keepInitialDecimals
+    )
+    return "$formattedAmount $tokenSymbol"
+}
+
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 
@@ -134,10 +148,10 @@ fun BigInteger.isLessThan(value: BigInteger) = this.compareTo(value) == -1
 fun BigInteger.isMoreThan(value: BigInteger) = this.compareTo(value) == 1
 fun BigInteger.isZeroOrLess() = isZero() || isLessThan(BigInteger.ZERO)
 
-fun BigDecimal.asCurrency(currency: String): String = when {
-    isZero() -> "${currency}0"
-    lessThenMinValue() -> "<${currency}0.01"
-    else -> "${currency}${formatFiat()}"
+fun BigDecimal.asCurrency(currencyUiSymbol: String): String = when {
+    isZero() -> "${currencyUiSymbol}0"
+    lessThenMinValue() -> "<${currencyUiSymbol}0.01"
+    else -> "${currencyUiSymbol}${formatFiat()}"
 }
 
 // TODO refactor after we will migrate on currency as an entity

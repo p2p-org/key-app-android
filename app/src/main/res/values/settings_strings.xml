@@ -62,6 +62,7 @@
     <string name="settings_item_group_title_community">Community</string>
     <string name="settings_item_title_twitter">Follow us on Twitter</string>
     <string name="settings_item_title_discord">Join our Discord</string>
+    <string name="settings_item_title_privacy">Privacy policy</string>
 
     <string name="settings_item_title_app_version">App version</string>
 

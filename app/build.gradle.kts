@@ -50,6 +50,7 @@ koverReport {
 }
 
 android {
+    namespace = "org.p2p.wallet"
     applicationVariants.all {
         outputs
             .map { it as BaseVariantOutputImpl }
@@ -73,7 +74,6 @@ android {
         unitTests.isReturnDefaultValues = true
         unitTests.isIncludeAndroidResources = true
         animationsDisabled = true
-        execution = "ANDROIDX_TEST_ORCHESTRATOR"
         unitTests.all {
             it.maxParallelForks = Runtime.getRuntime().availableProcessors().div(2)
             it.maxHeapSize = "512m"

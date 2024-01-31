@@ -20,6 +20,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenExtensions
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.utils.Constants
+import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.common.feature_toggles.toggles.remote.StrigaSignupEnabledFeatureToggle
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
@@ -149,7 +150,7 @@ abstract class StrigaOffRampPresenterBaseTest {
     }
 
     protected fun formatRate(rate: BigDecimal): String {
-        return "1 ${Constants.EUR_SYMBOL} ≈ $rate ${Constants.USDC_SYMBOL}"
+        return "1 ${Constants.EUR_READABLE_SYMBOL} ≈ $rate ${Constants.USDC_SYMBOL}"
     }
 
     protected fun String.toRawTextViewCellModel(): TextViewCellModel {
@@ -190,7 +191,8 @@ abstract class StrigaOffRampPresenterBaseTest {
                     rate = null,
                     currency = "USD",
                     tokenExtensions = TokenExtensions(),
-                    tokenServiceAddress = "publicKey"
+                    tokenServiceAddress = "publicKey",
+                    programId = TokenProgram.PROGRAM_ID.toBase58()
                 )
             ),
             ethTokens = emptyList()

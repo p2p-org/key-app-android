@@ -35,7 +35,9 @@ class UiKitInfoBlockView @JvmOverloads constructor(
             right = paddingHorizontal,
             bottom = paddingVertical
         )
-        rippleForeground()
+        if (!isInEditMode) {
+            rippleForeground()
+        }
     }
 
     fun setOnClickAction(onItemClickAction: (view: UiKitInfoBlockView, item: InfoBlockCellModel) -> Unit) {

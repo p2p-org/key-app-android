@@ -54,18 +54,16 @@ class HistoryListView @JvmOverloads constructor(
         this.presenter = presenter
         this.listViewType = listType
         this.clickListener = clickListener
-
         presenter.attach(this)
         bindView()
     }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
+    fun onParentViewDestroyed() {
         presenter.detach()
     }
 
     private fun bindView() = with(binding) {
-        presenter.attach(listViewType)
+        presenter.setHistoryType(listViewType)
         errorStateLayout.buttonRetry.setOnClickListener {
             presenter.refreshHistory(listViewType)
         }
@@ -89,38 +87,40 @@ class HistoryListView @JvmOverloads constructor(
         presenter.loadHistory(listViewType)
     }
 
-    override fun showPagingState(state: PagingState) = with(binding) {
-        historyAdapter.setPagingState(state)
-        val isHistoryEmpty = historyAdapter.isEmpty()
+    override fun showPagingState(state: PagingState): Unit = with(binding) {
+        historyRecyclerView.post {
+            historyAdapter.setPagingState(state)
+            val isHistoryEmpty = historyAdapter.isEmpty()
 
-        when (state) {
-            is PagingState.InitialLoading -> {
-                shimmerView.root.isVisible = true
-                refreshLayout.isVisible = false
-            }
+            when (state) {
+                is PagingState.InitialLoading -> {
+                    shimmerView.root.isVisible = true
+                    refreshLayout.isVisible = false
+                }
 
-            is PagingState.Idle -> {
-                shimmerView.root.isVisible = false
-                refreshLayout.isVisible = true
-                errorStateLayout.root.isVisible = false
-                emptyStateLayout.root.isVisible = isHistoryEmpty
-                historyRecyclerView.isVisible = !isHistoryEmpty
-            }
+                is PagingState.Idle -> {
+                    shimmerView.root.isVisible = false
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = false
+                    emptyStateLayout.root.isVisible = isHistoryEmpty
+                    historyRecyclerView.isVisible = !isHistoryEmpty
+                }
 
-            is PagingState.Loading -> {
-                shimmerView.root.isVisible = isHistoryEmpty
-                refreshLayout.isVisible = true
-                errorStateLayout.root.isVisible = false
-                emptyStateLayout.root.isVisible = false
-                historyRecyclerView.isVisible = !isHistoryEmpty
-            }
+                is PagingState.Loading -> {
+                    shimmerView.root.isVisible = isHistoryEmpty
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = false
+                    emptyStateLayout.root.isVisible = false
+                    historyRecyclerView.isVisible = !isHistoryEmpty
+                }
 
-            is PagingState.Error -> {
-                shimmerView.root.isVisible = false
-                refreshLayout.isVisible = true
-                errorStateLayout.root.isVisible = isHistoryEmpty
-                emptyStateLayout.root.isVisible = false
-                historyRecyclerView.isVisible = !isHistoryEmpty
+                is PagingState.Error -> {
+                    shimmerView.root.isVisible = false
+                    refreshLayout.isVisible = true
+                    errorStateLayout.root.isVisible = isHistoryEmpty
+                    emptyStateLayout.root.isVisible = false
+                    historyRecyclerView.isVisible = !isHistoryEmpty
+                }
             }
         }
     }

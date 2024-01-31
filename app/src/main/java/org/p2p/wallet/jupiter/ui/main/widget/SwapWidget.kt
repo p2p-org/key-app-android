@@ -13,6 +13,9 @@ import android.util.TypedValue
 import android.view.View.OnFocusChangeListener
 import android.widget.EditText
 import android.widget.TextView
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.emptyString
@@ -31,12 +34,14 @@ import org.p2p.wallet.databinding.WidgetSwapBinding
 class SwapWidget @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : ConstraintLayout(context, attrs) {
+) : ConstraintLayout(context, attrs), KoinComponent {
 
     private val binding = inflateViewBinding<WidgetSwapBinding>()
     private val initInputType: Int
     private var internalOnAmountChanged: ((newAmount: String) -> Unit)? = null
     private var currentAmountCell: TextViewCellModel? = null
+    private val glideManager: GlideManager by inject()
+
     var onAmountChanged: (newAmount: String) -> Unit = {}
     var onAllAmountClick: () -> Unit = {}
     var onChangeTokenClick: () -> Unit = {}
@@ -109,6 +114,7 @@ class SwapWidget @JvmOverloads constructor(
         textViewCurrencyName.bindOrGone(model.currencySkeleton)
         textViewCurrencyName.setOnClickListener(null)
         textViewChangeCurrency.setOnClickListener(null)
+
         bindLoadingInput(model.amountSkeleton)
         if (textViewBalance.isVisible) {
             textViewBalance.bindOrGone(model.balanceSkeleton)
@@ -123,11 +129,20 @@ class SwapWidget @JvmOverloads constructor(
         textViewWidgetTitle.bindOrGone(model.widgetTitle)
         textViewAvailableAmountTitle.isVisible = model.availableAmount != null
         textViewAvailableAmountValue.bindOrGone(model.availableAmount)
+
         textViewAvailableAmountTitle.setOnClickListener { onAllAmountClick() }
         textViewAvailableAmountValue.setOnClickListener { onAllAmountClick() }
+
         textViewCurrencyName.setOnClickListener { onChangeTokenClick() }
         textViewChangeCurrency.setOnClickListener { onChangeTokenClick() }
         textViewCurrencyName.bindOrGone(model.currencyName)
+
+        glideManager.load(
+            imageView = imageViewTokenIcon,
+            url = model.tokenUrl,
+            size = 32
+        )
+
         if (model.amount is TextViewCellModel.Skeleton) {
             bindLoadingInput(model.amount)
         } else {
@@ -143,13 +158,13 @@ class SwapWidget @JvmOverloads constructor(
         editTextAmount.setReadOnly(readOnly, inputType)
         val amountMaxDecimals = model.amountMaxDecimals ?: DEFAULT_DECIMAL
         updateFormatter(amountMaxDecimals)
+        val oldAmountRaw = editTextAmount.text?.toString() ?: emptyString()
         val newAmountRaw = (newAmount as? TextViewCellModel.Raw)?.text?.getString(context)
-        val oldAMountRaw = editTextAmount.text?.toString() ?: emptyString()
         val newTextColorRes = (newAmount as? TextViewCellModel.Raw)?.textColor
         val oldTextColorRes = (currentAmountCell as? TextViewCellModel.Raw)?.textColor
         internalOnAmountChanged = null
         if (currentAmountCell is TextViewCellModel.Skeleton ||
-            newAmountRaw != oldAMountRaw ||
+            checkAmountsAreNotEqualExcludingTrailingDot(newAmountRaw, oldAmountRaw) ||
             newTextColorRes != oldTextColorRes
         ) {
             editTextAmount.bindOrGone(newAmount, force = true)
@@ -213,5 +228,16 @@ class SwapWidget @JvmOverloads constructor(
             getColor(R.color.text_silver),
         )
         return ColorStateList(states, colors)
+    }
+
+    /**
+     * Consider two amounts are not equal if they are not equal excluding trailing dot.
+     * We should respect trailing dot in user input as it can be used to enter fractional part.
+     * Example: 6. == 6; 6.0 != 6; 6.0 == 6.0
+     */
+    private fun checkAmountsAreNotEqualExcludingTrailingDot(a: String?, b: String?): Boolean {
+        val aWithoutTrailingDot = a?.removeSuffix(".")
+        val bWithoutTrailingDot = b?.removeSuffix(".")
+        return aWithoutTrailingDot != bWithoutTrailingDot
     }
 }
