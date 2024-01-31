@@ -25,7 +25,7 @@ class SearchAdapter(
         override fun getNewListSize(): Int = newList.size
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].address == newList[newItemPosition].address
+            return oldList[oldItemPosition].addressState == newList[newItemPosition].addressState
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -36,7 +36,7 @@ class SearchAdapter(
                 oldItem is SearchResult.UsernameFound && newItem is SearchResult.UsernameFound ->
                     oldItem.username == newItem.username && oldItem.date == newItem.date
                 oldItem is SearchResult.AddressFound && newItem is SearchResult.AddressFound ->
-                    oldItem.address == newItem.address && oldItem.date == newItem.date
+                    oldItem.addressState.address == newItem.addressState.address && oldItem.date == newItem.date
                 else ->
                     oldItem == newItem
             }

@@ -49,8 +49,4 @@
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/item_country_code" />
-
-    <include
-        android:id="@+id/containerEmptyResult"
-        layout="@layout/layout_striga_preset_data_picker_empty" />
 </LinearLayout>

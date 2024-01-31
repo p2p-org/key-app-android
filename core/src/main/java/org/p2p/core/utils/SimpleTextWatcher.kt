@@ -1,4 +1,4 @@
-package org.p2p.uikit.utils
+package org.p2p.core.utils
 
 import android.text.Editable
 import android.text.TextWatcher

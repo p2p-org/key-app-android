@@ -9,7 +9,7 @@ data class CountryCode(
     val nameCodeAlpha2: String,
     val nameCodeAlpha3: String,
     val phoneCode: String,
-    val countryName: String,
+    val name: String,
     val flagEmoji: String,
     var mask: String = emptyString()
 ) : Parcelable {

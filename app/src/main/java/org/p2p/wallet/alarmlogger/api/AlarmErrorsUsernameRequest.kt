@@ -9,16 +9,16 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.core.crypto.Base58String
 
 class AlarmErrorsUsernameRequest(
-    @SerializedName("user_pubkey")
-    val userPubkey: Base58String,
-    @SerializedName("name_service_error")
-    val nameServiceError: String,
     @SerializedName("name")
     val username: String,
+    @SerializedName("user_pubkey")
+    val userPubkey: Base58String,
     @SerializedName("platform")
     val platform: String = "Android ${Build.VERSION.SDK_INT}, ${Build.MANUFACTURER}, ${Build.MODEL}",
     @SerializedName("app_version")
     val appVersion: String = BuildConfig.VERSION_NAME,
     @SerializedName("timestamp")
     val timestamp: String = SimpleDateFormat("dd.MM HH:mm:ss", Locale.getDefault()).format(Date()),
+    @SerializedName("name_service_error")
+    val nameServiceError: String,
 )

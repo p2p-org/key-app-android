@@ -9,16 +9,14 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.core.crypto.Base58String
 
 data class AlarmErrorsSwapRequest(
-    @SerializedName("user_pubkey")
-    val userPublicKey: Base58String,
-    @SerializedName("blockchain_error")
-    val blockchainError: String,
     @SerializedName("token_a")
     val tokenA: TokenARequest,
     @SerializedName("token_b")
     val tokenB: TokenBRequest,
     @SerializedName("route")
     val swapRouteAsJson: String,
+    @SerializedName("user_pubkey")
+    val userPublicKey: Base58String,
     @SerializedName("slippage")
     val slippage: String,
     @SerializedName("fee_relayer_transaction")
@@ -29,10 +27,8 @@ data class AlarmErrorsSwapRequest(
     val appVersion: String = BuildConfig.VERSION_NAME,
     @SerializedName("timestamp")
     val timestamp: String = SimpleDateFormat("dd.MM HH:mm:ss", Locale.getDefault()).format(Date()),
-    @SerializedName("diff_routes_time")
-    val diffRoutesTime: String,
-    @SerializedName("diff_tx_time")
-    val diffTxTime: String,
+    @SerializedName("blockchain_error")
+    val blockchainError: String
 ) {
     data class TokenARequest(
         @SerializedName("name")
@@ -40,9 +36,7 @@ data class AlarmErrorsSwapRequest(
         @SerializedName("mint")
         val mint: Base58String,
         @SerializedName("send_amount")
-        val amount: String,
-        @SerializedName("balance")
-        val balance: String,
+        val amount: String
     )
 
     data class TokenBRequest(
@@ -51,8 +45,6 @@ data class AlarmErrorsSwapRequest(
         @SerializedName("mint")
         val mint: Base58String,
         @SerializedName("expected_amount")
-        val amount: String,
-        @SerializedName("balance")
-        val balance: String,
+        val amount: String
     )
 }
