@@ -637,6 +637,9 @@ class NewSendPresenter(
     private fun buildDebugInfo(solanaFee: SendSolanaFee?) {
         launch {
             val debugInfo = sendFeeRelayerManager.buildDebugInfo(solanaFee)
+                .plus("\n")
+                .plus(calculationMode.getDebugInfo())
+
             view?.showDebugInfo(debugInfo)
         }
     }
