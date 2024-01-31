@@ -33,9 +33,8 @@ internal class JupiterSwapTokensRemoteRepository(
         getAllMutex.withLock {
             if (isCacheCanBeUsed()) {
                 Timber.i("Cache is valid, using cache")
-                return@withLock daoDelegate.getAllTokens().also {
-                    Timber.d("Cache has come")
-                }
+                return@withLock daoDelegate.getAllTokens()
+                    .also { Timber.d("Cache has come") }
             }
 
             val tokens = async { api.getSwapTokens() }
@@ -52,8 +51,11 @@ internal class JupiterSwapTokensRemoteRepository(
     // temp solution, we don't check is token swappable right now
     override suspend fun getSwappableTokens(sourceTokenMint: Base58String): List<JupiterSwapToken> = getTokens()
 
-    private fun isCacheCanBeUsed(): Boolean {
+    private suspend fun isCacheCanBeUsed(): Boolean {
         val fetchTokensDate = swapStorage.swapTokensFetchDateMillis ?: return false
+        val isCacheEmpty = daoDelegate.getTokensSize() == 0L
+        if (isCacheEmpty) return false
+
         val now = System.currentTimeMillis()
         return (now - fetchTokensDate) <= TimeUnit.DAYS.toMillis(1) // check day has passed
     }

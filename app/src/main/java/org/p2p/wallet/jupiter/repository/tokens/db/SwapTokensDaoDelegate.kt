@@ -25,6 +25,8 @@ class SwapTokensDaoDelegate(
         return dao.getAllSwapTokens().toDomain()
     }
 
+    suspend fun getTokensSize(): Long = dao.getAllSwapTokensSize()
+
     suspend fun searchTokens(
         mintAddressOrSymbol: String,
     ): List<JupiterSwapToken> {
