@@ -129,9 +129,9 @@ object NetworkModule : InjectionModule {
         }
 
         single(named(JUPITER_RETROFIT_V6_QUALIFIER)) {
-            val baseUrl = "https://swap-v6.key.app/"
+            val url = get<NetworkServicesUrlProvider>()
             getRetrofit(
-                baseUrl = baseUrl,
+                baseUrl = url.loadSwapEnvironment().baseUrl,
                 tag = "SwapApiV6",
                 interceptor = null
             )

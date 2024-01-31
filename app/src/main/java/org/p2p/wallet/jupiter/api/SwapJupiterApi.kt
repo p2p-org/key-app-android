@@ -13,6 +13,7 @@ import org.p2p.wallet.jupiter.api.response.JupiterAllSwapRoutesResponse
 import org.p2p.wallet.jupiter.api.response.SwapJupiterQuoteResponse
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 
+@Deprecated("Old v4 api")
 interface SwapJupiterApi {
     @GET("v4/tokens")
     suspend fun getSwapTokens(): List<JupiterTokenResponse>

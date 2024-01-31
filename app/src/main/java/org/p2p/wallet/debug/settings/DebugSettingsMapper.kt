@@ -71,12 +71,19 @@ class DebugSettingsMapper(
         val torusSubtitle = networkUrlProvider.loadTorusEnvironment().run {
             "$baseUrl\n$verifier $subVerifier"
         }
-
         this += SettingsRow.Section(
             titleResId = R.string.debug_settings_torus,
             subtitle = torusSubtitle,
             iconRes = R.drawable.ic_network
         )
+
+        val swapUrl = networkUrlProvider.loadSwapEnvironment().baseUrl
+        this += SettingsRow.Section(
+            titleResId = R.string.debug_settings_swap,
+            subtitle = swapUrl,
+            iconRes = R.drawable.ic_network
+        )
+
         val feeRelayerUrl = networkUrlProvider.loadFeeRelayerEnvironment().baseUrl
         this += SettingsRow.Switcher(
             titleResId = R.string.debug_settings_fee_relayer,
