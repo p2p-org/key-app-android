@@ -43,6 +43,8 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.pnl.ui.PnlDetailsBottomSheet
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.referral.banner.ReferralFragmentFactory
+import org.p2p.wallet.referral.banner.referralBannerDelegate
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.ui.SearchOpenedFromScreen
@@ -74,6 +76,7 @@ class MyCryptoFragment :
     private val glideManager: GlideManager by inject()
     private val onOffRampNavigator: OnOffRampNavigator by inject()
     private val sendFragmentFactory: SendFragmentFactory by inject()
+    private val referralFragmentFactory: ReferralFragmentFactory by inject()
 
     private var listener: RootListener? = null
 
@@ -96,6 +99,16 @@ class MyCryptoFragment :
                 buttonClaim.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
             }
         },
+        referralBannerDelegate { binding, _ ->
+            with(binding) {
+                buttonShare.setOnClickListener {
+                    referralFragmentFactory.shareLink(requireContext())
+                }
+                buttonOpenDetails.setOnClickListener {
+                    replaceFragment(referralFragmentFactory.openDetails())
+                }
+            }
+        }
     )
 
     override fun onAttach(context: Context) {

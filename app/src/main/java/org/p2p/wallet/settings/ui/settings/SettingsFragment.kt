@@ -16,6 +16,7 @@ import org.p2p.wallet.common.crypto.keystore.EncodeCipher
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSettingsBinding
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.referral.banner.ReferralFragmentFactory
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.settings.ui.resetpin.main.ResetPinIntroFragment
@@ -49,10 +50,16 @@ class SettingsFragment :
     override val presenter: SettingsContract.Presenter by inject()
 
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
+    private val referralFragmentFactory: ReferralFragmentFactory by inject()
 
     private val binding: FragmentSettingsBinding by viewBinding()
 
-    private val adapter = NewSettingsAdapter(::onSettingsItemClicked)
+    // todo: migrate to cell adapter
+    private val adapter = NewSettingsAdapter(
+        onSettingsClicked = ::onSettingsItemClicked,
+        onReferralShareLinkClicked = ::onReferralShareLinkClicked,
+        onReferralOpenDetailsClicked = ::onReferralOpenDetailsClicked
+    )
 
     private val biometricWrapper: BiometricPromptWrapper by unsafeLazy {
         BiometricPromptWrapper(
@@ -103,6 +110,14 @@ class SettingsFragment :
             is SettingsItem.SwitchSettingsItem -> handleSwitchItem(clickedSettings)
             else -> Unit
         }
+    }
+
+    private fun onReferralShareLinkClicked() {
+        referralFragmentFactory.shareLink(requireContext())
+    }
+
+    private fun onReferralOpenDetailsClicked() {
+        replaceFragment(referralFragmentFactory.openDetails())
     }
 
     private fun handleNavigationForComplexItem(settings: SettingsItem.ComplexSettingsItem) {

@@ -106,7 +106,8 @@ class TokenHistoryFragment :
         binding.layoutHistoryList.bind(
             presenter = historyListPresenter,
             clickListener = this@TokenHistoryFragment,
-            listType = HistoryListViewType.HistoryForToken(tokenForHistory.mintAddress.toBase58Instance())
+            listType = HistoryListViewType.HistoryForToken(tokenForHistory.mintAddress.toBase58Instance()),
+            refreshListener = presenter::onRefresh
         )
         childFragmentManager.setFragmentResultListener(
             KEY_REQUEST_NETWORK,

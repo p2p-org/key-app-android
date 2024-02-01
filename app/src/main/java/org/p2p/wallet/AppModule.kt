@@ -112,7 +112,7 @@ object AppModule {
                 SettingsModule.create(),
                 StrigaModule.create(),
                 SwapModule.create(),
-                ReferralModule.create()
+                ReferralModule.create(),
             )
         )
     }
