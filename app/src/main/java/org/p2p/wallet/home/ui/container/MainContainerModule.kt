@@ -50,6 +50,7 @@ object MainContainerModule : InjectionModule {
     }
 
     private fun Module.initPresentationLayer() {
+        factoryOf(::MainFragmentDeeplinkHandlerFactory)
         factoryOf(::MainContainerPresenter) bind MainContainerContract.Presenter::class
 
         factory<SelectTokenContract.Presenter> { (tokens: List<Token>) ->

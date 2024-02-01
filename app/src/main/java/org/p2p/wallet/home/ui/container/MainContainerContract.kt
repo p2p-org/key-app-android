@@ -16,7 +16,7 @@ interface MainContainerContract {
         fun showCryptoBadgeVisible(isVisible: Boolean)
         fun showWalletBadgeVisible(isVisible: Boolean)
         fun showWalletBalance(balance: String)
-        fun navigateFromDeeplink(data: DeeplinkData)
+        fun navigateToTabFromDeeplink(data: DeeplinkData)
 
         fun navigateToSendNoTokens(fallbackToken: Token)
         fun navigateToSendScreen()

@@ -9,4 +9,8 @@ class SolanaMessageSigner {
             .detached(message.copyOf())
             .toBase64Instance()
     }
+
+    fun signMessage(message: String, keyPair: ByteArray): Base64String {
+        return signMessage(message.toByteArray(), keyPair)
+    }
 }
