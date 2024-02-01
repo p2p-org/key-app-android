@@ -9,11 +9,9 @@ import org.p2p.wallet.pnl.api.PnlDataTimeSpan
 import org.p2p.wallet.pnl.api.PnlResponseDeserializer
 import org.p2p.wallet.pnl.api.PnlServiceApi
 import org.p2p.wallet.pnl.models.PnlData
-import org.p2p.wallet.pnl.storage.PnlStorageContract
 
 class PnlRemoteRepository(
     private val api: PnlServiceApi,
-    private val storage: PnlStorageContract,
 ) : PnlRepository {
 
     override suspend fun getPnlData(
@@ -21,16 +19,6 @@ class PnlRemoteRepository(
         tokenMints: List<Base58String>,
         timeSpan: PnlDataTimeSpan,
     ): PnlData = withContext(Dispatchers.IO) {
-        storage.getOrCache {
-            getPnlDataInternal(userWallet, tokenMints, timeSpan)
-        }
-    }
-
-    private suspend fun getPnlDataInternal(
-        userWallet: Base58String,
-        tokenMints: List<Base58String>,
-        timeSpan: PnlDataTimeSpan,
-    ): PnlData {
         val params = buildMap {
             put("user_wallet", userWallet.base58Value)
             // todo: backend decided to use null for a default duration
@@ -50,6 +38,6 @@ class PnlRemoteRepository(
             }
             .provide()
 
-        return gson.fromJson(response.result, PnlData::class.java)
+        gson.fromJson(response.result, PnlData::class.java)
     }
 }

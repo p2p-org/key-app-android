@@ -5,6 +5,8 @@ import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
@@ -25,8 +27,8 @@ import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
-import org.p2p.wallet.pnl.interactor.PnlInteractor
-import org.p2p.wallet.pnl.models.PnlData
+import org.p2p.wallet.pnl.interactor.PnlDataObserver
+import org.p2p.wallet.pnl.interactor.PnlDataState
 import org.p2p.wallet.pnl.ui.PnlUiMapper
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
@@ -47,7 +49,7 @@ class MyCryptoPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val mainScreenAnalytics: MainScreenAnalytics,
-    private val pnlInteractor: PnlInteractor,
+    private val pnlInteractor: PnlDataObserver,
     private val pnlUiMapper: PnlUiMapper,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
@@ -66,13 +68,14 @@ class MyCryptoPresenter(
     private var username: Username? = null
 
     private var cryptoTokensSubscription: Job? = null
-    private var lastPnlData: PnlData? = null
+    private var pnlDataSubscription: Job? = null
 
     override fun attach(view: MyCryptoContract.View) {
         super.attach(view)
         showUserAddressAndUsername()
         prepareAndShowActionButtons()
         observeCryptoTokens()
+        observePnlData()
         cryptoScreenAnalytics.logCryptoScreenOpened()
         sharedPreferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
     }
@@ -81,6 +84,8 @@ class MyCryptoPresenter(
         launchInternetAware(connectionManager) {
             try {
                 tokenServiceCoordinator.refresh()
+                // pnl must restart it's 5 minutes timer after force refresh
+                pnlInteractor.restartAndRefresh()
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
@@ -107,6 +112,17 @@ class MyCryptoPresenter(
         }
     }
 
+    private fun observePnlData() {
+        pnlDataSubscription?.cancel()
+        pnlDataSubscription = launch {
+            pnlInteractor.state
+                .onEach {
+                    handleTokenState(tokenServiceCoordinator.observeLastState().value)
+                }
+                .launchIn(this)
+        }
+    }
+
     private fun handleTokenState(newState: UserTokensState) {
         view?.showRefreshing(isRefreshing = newState.isLoading())
 
@@ -122,40 +138,16 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
 
-                loadPnlAsync(newState.solTokens, newState.ethTokens)
+                if (!pnlInteractor.isStarted()) {
+                    pnlInteractor.start()
+                }
 
                 showTokensAndBalance(
-                    pnlData = lastPnlData,
+                    pnlDataState = pnlInteractor.state.value,
                     // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
                     solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
                 )
-            }
-        }
-    }
-
-    private fun loadPnlAsync(
-        solTokens: List<Token.Active>,
-        ethTokens: List<Token.Eth>
-    ) {
-        // do async load of pnl to avoid blocking display of tokens
-        // todo: decided not to load pnl with tokens, because I'm not sure in the unpublished API
-        //       and how it may change in the future
-        launch {
-            try {
-                val pnlData = pnlInteractor.getPnlData(
-                    tokenMints = solTokens.map { it.mintAddressB58 },
-                )
-                lastPnlData = pnlData
-                showTokensAndBalance(
-                    pnlData = pnlData,
-                    // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
-                    solTokens = solTokens,
-                    ethTokens = ethTokens
-                )
-            } catch (e: Throwable) {
-                Timber.e(e, "Error getting pnl for token for home")
-                view?.hideBalancePnl()
             }
         }
     }
@@ -166,13 +158,13 @@ class MyCryptoPresenter(
     }
 
     private fun showTokensAndBalance(
-        pnlData: PnlData?,
+        pnlDataState: PnlDataState,
         solTokens: List<Token.Active>,
         ethTokens: List<Token.Eth>
     ) {
         val balance = getUserBalance(solTokens)
         view?.showBalance(cryptoMapper.mapBalance(balance))
-        view?.showBalancePnl(pnlUiMapper.mapBalancePnl(pnlData))
+        view?.showBalancePnl(pnlUiMapper.mapBalancePnl(pnlDataState))
         cryptoScreenAnalytics.logUserAggregateBalanceBase(balance)
 
         val areZerosHidden = cryptoInteractor.areZerosHidden()
@@ -180,7 +172,7 @@ class MyCryptoPresenter(
             cryptoScreenAnalytics.logCryptoClaimTransferedViewed(ethTokens.size)
         }
         val mappedItems: List<AnyCellItem> = cryptoMapper.mapToCellItems(
-            pnlData = pnlData,
+            pnlDataState = pnlDataState,
             tokens = solTokens,
             ethereumTokens = ethTokens,
             visibilityState = currentVisibilityState,
@@ -190,8 +182,8 @@ class MyCryptoPresenter(
     }
 
     override fun onBalancePnlClicked() {
-        if (lastPnlData != null) {
-            view?.showPnlDetails(lastPnlData!!.total.percent)
+        if (pnlInteractor.state.value.isResult()) {
+            view?.showPnlDetails(pnlInteractor.state.value.toResultOrNull()!!.total.percent)
         }
     }
 
