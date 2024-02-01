@@ -4,25 +4,29 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import timber.log.Timber
+import kotlinx.coroutines.launch
+import org.p2p.core.common.di.AppScope
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
-import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
 import org.p2p.wallet.deeplinks.SwapDeeplinkHandler.SwapTokenSearchResult.TokenFoundByMint
 import org.p2p.wallet.deeplinks.SwapDeeplinkHandler.SwapTokenSearchResult.TokenFoundBySymbol
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.referral.repository.ReferralRepository
 
 sealed interface SwapDeeplinkData {
     data class TokensFound(
         val tokenAMint: Base58String,
         val tokenBMint: Base58String,
+        val referrer: String?
     ) : SwapDeeplinkData
 
     data class NonStrictTokensFound(
         val nonStrictTokenASymbol: String?,
-        val nonStrictTokenBSymbol: String?
+        val nonStrictTokenBSymbol: String?,
+        val referrer: String?
     ) : SwapDeeplinkData
 
     object TokensNotFound : SwapDeeplinkData
@@ -30,7 +34,9 @@ sealed interface SwapDeeplinkData {
 
 class SwapDeeplinkHandler(
     private val context: Context,
-    private val swapTokensRepository: JupiterSwapTokensRepository
+    private val swapTokensRepository: JupiterSwapTokensRepository,
+    private val referralRepository: ReferralRepository,
+    private val appScope: AppScope
 ) {
     private sealed class SwapTokenSearchResult(val token: JupiterSwapToken) {
         class TokenFoundByMint(token: JupiterSwapToken) : SwapTokenSearchResult(token)
@@ -55,7 +61,7 @@ class SwapDeeplinkHandler(
 
     fun createSwapDeeplinkData(intent: Intent): DeeplinkData? {
         val data = intent.data ?: return null
-        val target = DeeplinkTarget.fromScreenTab(ScreenTab.SWAP_SCREEN) ?: return null
+        val target = DeeplinkTarget.SWAP
 
         return DeeplinkData(
             target = target,
@@ -85,7 +91,15 @@ class SwapDeeplinkHandler(
             return SwapDeeplinkData.TokensNotFound
         }
 
-        return createStrictSwapOrWithWarning(inputTokenSearch, outputTokenSearch)
+        val referrer = data.args["r"]
+        if (referrer != null) {
+            appScope.launch {
+                // launch in background, result is not needed
+                referralRepository.setReferent(referrer)
+            }
+        }
+
+        return createStrictSwapOrWithWarning(inputTokenSearch, outputTokenSearch, referrer)
     }
 
     /**
@@ -108,6 +122,7 @@ class SwapDeeplinkHandler(
     private fun createStrictSwapOrWithWarning(
         inputTokenSearch: SwapTokenSearchResult,
         outputTokenSearch: SwapTokenSearchResult,
+        referrer: String?,
     ): SwapDeeplinkData {
         val inputToken = inputTokenSearch.token
         val outputToken = outputTokenSearch.token
@@ -118,12 +133,14 @@ class SwapDeeplinkHandler(
                     SwapDeeplinkData.TokensFound(
                         tokenAMint = inputToken.tokenMint,
                         tokenBMint = outputToken.tokenMint,
+                        referrer = referrer
                     )
                 } else {
                     // from=SOL to=DEDE
                     SwapDeeplinkData.NonStrictTokensFound(
                         nonStrictTokenASymbol = inputToken.takeUnless { it.isStrictToken }?.tokenSymbol,
-                        nonStrictTokenBSymbol = outputToken.takeUnless { it.isStrictToken }?.tokenSymbol
+                        nonStrictTokenBSymbol = outputToken.takeUnless { it.isStrictToken }?.tokenSymbol,
+                        referrer = referrer
                     )
                 }
             }
@@ -132,13 +149,15 @@ class SwapDeeplinkHandler(
                     // from=DEDE to=3hfhh33JJ12adaqq
                     SwapDeeplinkData.NonStrictTokensFound(
                         nonStrictTokenASymbol = inputToken.tokenSymbol,
-                        nonStrictTokenBSymbol = null
+                        nonStrictTokenBSymbol = null,
+                        referrer = referrer
                     )
                 } else {
                     // from=SOL to=3hfhh33JJ12adaqq
                     SwapDeeplinkData.TokensFound(
                         tokenAMint = inputToken.tokenMint,
                         tokenBMint = outputToken.tokenMint,
+                        referrer = referrer
                     )
                 }
             }
@@ -146,12 +165,14 @@ class SwapDeeplinkHandler(
                 if (!outputToken.isStrictToken) {
                     SwapDeeplinkData.NonStrictTokensFound(
                         nonStrictTokenASymbol = null,
-                        nonStrictTokenBSymbol = outputToken.tokenSymbol
+                        nonStrictTokenBSymbol = outputToken.tokenSymbol,
+                        referrer = referrer
                     )
                 } else {
                     SwapDeeplinkData.TokensFound(
                         tokenAMint = inputToken.tokenMint,
                         tokenBMint = outputToken.tokenMint,
+                        referrer = referrer
                     )
                 }
             }
@@ -159,6 +180,7 @@ class SwapDeeplinkHandler(
                 SwapDeeplinkData.TokensFound(
                     tokenAMint = inputToken.tokenMint,
                     tokenBMint = outputToken.tokenMint,
+                    referrer = referrer
                 )
             }
         }
