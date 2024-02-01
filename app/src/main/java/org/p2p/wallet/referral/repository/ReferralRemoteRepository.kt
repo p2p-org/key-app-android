@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.utils.SolanaMessageSigner
+import org.p2p.wallet.common.feature_toggles.toggles.remote.ReferralProgramEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
 class ReferralRemoteRepository(
@@ -12,10 +13,13 @@ class ReferralRemoteRepository(
     private val tokenKeyProvider: TokenKeyProvider,
     private val messageSigner: SolanaMessageSigner,
     private val dispatchers: CoroutineDispatchers,
+    private val referralEnabledFt: ReferralProgramEnabledFeatureToggle
 ) : ReferralRepository {
 
     override suspend fun setReferent(referentUsernameOrPublicKey: String) {
-        setReferentInternal(referentUsernameOrPublicKey)
+        if (referralEnabledFt.isFeatureEnabled) {
+            setReferentInternal(referentUsernameOrPublicKey)
+        }
     }
 
     private suspend fun setReferentInternal(referent: String): Unit = withContext(dispatchers.io) {
