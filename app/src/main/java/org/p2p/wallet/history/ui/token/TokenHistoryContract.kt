@@ -38,5 +38,6 @@ interface TokenHistoryContract {
         fun onBridgePendingClaimClicked(transactionId: String)
         fun onBridgePendingSendClicked(transactionId: String)
         fun onTokenPnlClicked()
+        fun onRefresh()
     }
 }

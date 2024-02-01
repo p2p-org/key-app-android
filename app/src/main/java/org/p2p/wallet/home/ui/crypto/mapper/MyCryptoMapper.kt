@@ -17,7 +17,7 @@ import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.main.delegates.bridgeclaim.EthClaimTokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.hidebutton.TokenButtonCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
-import org.p2p.wallet.pnl.models.PnlData
+import org.p2p.wallet.pnl.interactor.PnlDataState
 import org.p2p.wallet.pnl.models.PnlTokenData
 import org.p2p.wallet.pnl.ui.PnlUiMapper
 import org.p2p.wallet.referral.banner.ReferralBannerCellModel
@@ -48,7 +48,7 @@ class MyCryptoMapper(
     }
 
     fun mapToCellItems(
-        pnlData: PnlData?,
+        pnlDataState: PnlDataState,
         tokens: List<Token.Active>,
         ethereumTokens: List<Token.Eth>,
         visibilityState: VisibilityState,
@@ -71,7 +71,7 @@ class MyCryptoMapper(
         result += visibleTokens.map {
             it.mapToCellModel(
                 isZerosHidden = isZerosHidden,
-                pnlTokenData = pnlData?.findForToken(it.mintAddressB58)
+                pnlTokenData = pnlDataState.toResultOrNull()?.findForToken(it.mintAddressB58)
             )
         }
 
@@ -85,7 +85,7 @@ class MyCryptoMapper(
             result += hiddenTokens.map {
                 it.mapToCellModel(
                     isZerosHidden = isZerosHidden,
-                    pnlTokenData = pnlData?.findForToken(it.mintAddressB58)
+                    pnlTokenData = pnlDataState.toResultOrNull()?.findForToken(it.mintAddressB58)
                 )
             }
         }

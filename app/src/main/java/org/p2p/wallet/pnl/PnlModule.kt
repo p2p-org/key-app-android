@@ -2,19 +2,17 @@ package org.p2p.wallet.pnl
 
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
-import org.p2p.wallet.infrastructure.StorageModule
 import org.p2p.wallet.pnl.api.PnlServiceApi
-import org.p2p.wallet.pnl.interactor.PnlInteractor
+import org.p2p.wallet.pnl.interactor.PnlDataObserver
 import org.p2p.wallet.pnl.repository.PnlRemoteRepository
 import org.p2p.wallet.pnl.repository.PnlRepository
-import org.p2p.wallet.pnl.storage.PnlStorage
-import org.p2p.wallet.pnl.storage.PnlStorageContract
 import org.p2p.wallet.pnl.ui.PnlUiMapper
 
 /**
@@ -32,22 +30,14 @@ object PnlModule : InjectionModule {
             )
         }
 
-        single {
-            PnlStorage(
-                sharedPreferences = get(named(StorageModule.PREFS_PNL)),
-                gson = get()
-            )
-        } bind PnlStorageContract::class
-
         factory {
             val api = get<Retrofit>(named(RETROFIT_QUALIFIER)).create(PnlServiceApi::class.java)
             PnlRemoteRepository(
-                api = api,
-                storage = get()
+                api = api
             )
         } bind PnlRepository::class
 
         factoryOf(::PnlUiMapper)
-        factoryOf(::PnlInteractor)
+        singleOf(::PnlDataObserver)
     }
 }
