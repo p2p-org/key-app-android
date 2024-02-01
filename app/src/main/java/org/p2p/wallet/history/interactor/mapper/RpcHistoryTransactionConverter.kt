@@ -6,6 +6,7 @@ import org.p2p.core.utils.fromJsonReified
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeInMemoryRepository
 import org.p2p.wallet.bridge.model.BridgeFee
+import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
@@ -24,15 +25,24 @@ class RpcHistoryTransactionConverter(
     private val tokenKeyProvider: TokenKeyProvider,
     private val gson: Gson,
     private val usernameFormatter: UsernameFormatter,
-    private val bridgeInMemoryRepository: EthereumBridgeInMemoryRepository
+    private val bridgeInMemoryRepository: EthereumBridgeInMemoryRepository,
+    private val inAppFeatureFlags: InAppFeatureFlags,
 ) {
 
     fun toDomain(
         transaction: RpcHistoryTransactionResponse,
-    ): RpcHistoryTransaction? =
-        when (transaction.type) {
+    ): RpcHistoryTransaction? {
+        val enableReferralRewardMock = inAppFeatureFlags.referralRewardTxMockEnabled.featureValue
+        return when (transaction.type) {
             RpcHistoryTypeResponse.SEND -> parseSend(transaction)
-            RpcHistoryTypeResponse.RECEIVE -> parseReceive(transaction)
+            RpcHistoryTypeResponse.RECEIVE -> {
+                if (enableReferralRewardMock) {
+                    parseReferralReward(transaction)
+                } else {
+                    parseReceive(transaction)
+                }
+            }
+            RpcHistoryTypeResponse.REFERRAL_REWARD -> parseReferralReward(transaction)
             RpcHistoryTypeResponse.SWAP -> parseSwap(transaction)
             RpcHistoryTypeResponse.STAKE -> parseStake(transaction)
             RpcHistoryTypeResponse.UNSTAKE -> parseUnstake(transaction)
@@ -45,6 +55,7 @@ class RpcHistoryTransactionConverter(
             RpcHistoryTypeResponse.UNKNOWN -> parseUnknown(transaction)
             else -> null
         }
+    }
 
     private fun parseReceive(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
         val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.Receive>(
@@ -55,6 +66,30 @@ class RpcHistoryTransactionConverter(
         val total = info.amount.amount.toBigDecimalOrZero()
         val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
         return RpcHistoryTransaction.Transfer(
+            signature = transaction.signature,
+            date = transaction.date.toZonedDateTime(),
+            blockNumber = transaction.blockNumber.toInt(),
+            status = transaction.status.toDomain(),
+            type = transaction.type.toDomain(),
+            senderAddress = info.counterParty.address,
+            counterPartyUsername = usernameFormatter.formatOrNull(info.counterParty.username),
+            iconUrl = info.token.logoUrl,
+            amount = RpcHistoryAmount(total, totalInUsd),
+            symbol = info.token.symbol.orEmpty(),
+            destination = tokenKeyProvider.publicKey,
+            fees = transaction.fees.parseFees()
+        )
+    }
+
+    private fun parseReferralReward(transaction: RpcHistoryTransactionResponse): RpcHistoryTransaction {
+        val info = gson.fromJsonReified<RpcHistoryTransactionInfoResponse.ReferralReward>(
+            transaction.info.toString()
+        )
+            ?: error("Parsing error: cannot parse json object ${transaction.info}")
+
+        val total = info.amount.amount.toBigDecimalOrZero()
+        val totalInUsd = info.amount.usdAmount.toBigDecimalOrZero()
+        return RpcHistoryTransaction.ReferralReward(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
@@ -327,6 +362,7 @@ private fun RpcHistoryTypeResponse?.toDomain(): RpcHistoryTransactionType {
     return when (this) {
         RpcHistoryTypeResponse.SEND -> RpcHistoryTransactionType.SEND
         RpcHistoryTypeResponse.RECEIVE -> RpcHistoryTransactionType.RECEIVE
+        RpcHistoryTypeResponse.REFERRAL_REWARD -> RpcHistoryTransactionType.REFERRAL_REWARD
         RpcHistoryTypeResponse.SWAP -> RpcHistoryTransactionType.SWAP
         RpcHistoryTypeResponse.STAKE -> RpcHistoryTransactionType.STAKE
         RpcHistoryTypeResponse.UNSTAKE -> RpcHistoryTransactionType.UNSTAKE

@@ -3,23 +3,24 @@ package org.p2p.wallet.sell.interactor
 import android.content.res.Resources
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
+import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
@@ -153,6 +154,16 @@ class HistoryItemMapper(
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotalWithSymbol()
             }
+            is RpcHistoryTransaction.ReferralReward -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = getIcon()
+
+                startTitle = resources.getString(R.string.transaction_details_referral_title)
+                startSubtitle = date.toDateString(resources)
+                endTopValue = getTotalWithSymbol()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getFormattedFiatValue()
+            }
             is RpcHistoryTransaction.StakeUnstake -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
                 iconRes = getIcon()
@@ -209,7 +220,7 @@ class HistoryItemMapper(
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
-            is RpcHistoryTransaction.Unknown -> {
+            else -> {
                 iconRes = R.drawable.ic_transaction_unknown
 
                 startTitle = resources.getString(R.string.transaction_history_unknown)

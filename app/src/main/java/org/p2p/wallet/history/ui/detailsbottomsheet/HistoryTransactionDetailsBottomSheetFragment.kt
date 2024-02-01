@@ -2,16 +2,19 @@ package org.p2p.wallet.history.ui.detailsbottomsheet
 
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.net.toUri
 import androidx.core.text.buildSpannedString
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.utils.DEFAULT_DECIMAL
 import org.p2p.core.utils.formatFiat
@@ -24,13 +27,13 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogHistoryTransactionDetailsBinding
 import org.p2p.wallet.history.model.rpc.RpcFee
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.CUT_7_SYMBOLS
 import org.p2p.wallet.utils.UsernameFormatter
 import org.p2p.wallet.utils.appendWhitespace
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.copyToClipBoard
 import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.doOnAnimationEnd
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.showInfoDialog
 import org.p2p.wallet.utils.showUrlInCustomTabs
@@ -127,6 +130,31 @@ class HistoryTransactionDetailsBottomSheetFragment :
         imageViewSecondToken.isVisible = true
     }
 
+    override fun playApplauseAnimation() {
+        with(binding.animationView) {
+            setAnimation(R.raw.raw_animation_applause)
+            isVisible = true
+            doOnAnimationEnd { isVisible = false }
+            playAnimation()
+        }
+    }
+
+    override fun showNewButtons(firstButtonTitleRes: Int, secondButtonTitleRes: Int) {
+        with(binding) {
+            containerOldButtons.isVisible = false
+            containerNewButtons.isVisible = true
+
+            buttonFirst.setText(firstButtonTitleRes)
+            buttonSecond.setText(secondButtonTitleRes)
+            buttonFirst.setOnClickListener {
+                presenter.onFirstButtonClick()
+            }
+            buttonSecond.setOnClickListener {
+                presenter.onSecondButtonClick()
+            }
+        }
+    }
+
     override fun showSubtitle(subtitle: String) {
         binding.textViewSubtitle.text = subtitle
     }
@@ -134,6 +162,14 @@ class HistoryTransactionDetailsBottomSheetFragment :
     override fun showStatus(@StringRes titleResId: Int, @ColorRes colorId: Int) = with(binding) {
         textViewTitle.text = titleStateFormat.format(getString(titleResId))
         textViewAmountUsd.setTextColor(getColor(colorId))
+    }
+
+    override fun setTitle(@StringRes titleResId: Int) {
+        binding.textViewTitle.setText(titleResId)
+    }
+
+    override fun setSmokeBackground() {
+        binding.root.setBackgroundResource(R.drawable.bg_alert_elevation_rounded_top_smoke)
     }
 
     override fun showProgressTransactionErrorState(errorMessage: String) = with(binding.progressStateTransaction) {
@@ -242,6 +278,17 @@ class HistoryTransactionDetailsBottomSheetFragment :
     override fun showAmount(amountToken: String?, amountUsd: String?) = with(binding) {
         textViewAmountTokens.withTextOrGone(amountToken)
         textViewAmountUsd.withTextOrGone(amountUsd)
+    }
+
+    override fun navigateToSolscan(txSignature: String) {
+        dismissAllowingStateLoss()
+        Intent(Intent.ACTION_VIEW, getString(R.string.solscan_tx_url, txSignature).toUri())
+            .also { startActivity(it) }
+    }
+
+    override fun showAmountReferralReward(amountToken: String) = with(binding) {
+        textViewAmountTokens.isVisible = false
+        textViewAmountUsd.withTextOrGone(amountToken)
     }
 
     override fun showFee(fees: List<RpcFee>?) = with(binding) {

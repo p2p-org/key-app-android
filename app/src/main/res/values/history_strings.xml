@@ -25,6 +25,9 @@
     <string name="transaction_history_vote_format">Vote account: %s</string>
 
     <string name="transaction_details_title">Transaction %s</string>
+    <string name="transaction_details_referral_title">Referral reward</string>
+    <string name="transaction_details_referral_button_first">Done</string>
+    <string name="transaction_details_referral_button_second">Open SOLScan</string>
     <string name="transaction_details_title_submitted">submitted</string>
     <string name="transaction_details_title_succeeded">succeeded</string>
     <string name="transaction_details_title_failed">failed</string>
@@ -48,4 +51,5 @@
 
     <string name="transaction_history_send_via_link_title">Sent via one-time link</string>
     <string name="transaction_history_send_via_link_info">Unique one-time link works once only</string>
+    <string name="solscan_tx_url">https://solscan.io/tx/%s</string>
 </resources>

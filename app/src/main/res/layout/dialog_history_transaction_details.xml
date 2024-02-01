@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_rounded_transparent_8"
-        android:backgroundTint="@color/backgroundPrimary">
+        android:backgroundTint="@color/smoke"
+        tools:background="@drawable/bg_alert_elevation_rounded_top_smoke">
 
         <View
             android:id="@+id/viewPointer"
@@ -118,65 +119,73 @@
                 app:layout_goneMarginTop="16dp"
                 tools:text="0.622181417 SOL" />
 
-            <ImageView
-                android:id="@id/imageViewShare"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_marginTop="28dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/bg_night_circle"
-                android:contentDescription="@string/main_share"
-                android:foreground="?attr/selectableItemBackground"
-                android:padding="12dp"
-                android:src="@drawable/ic_share"
-                app:layout_constraintEnd_toStartOf="@+id/imageViewExplorer"
-                app:layout_constraintHorizontal_chainStyle="packed"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/containerOldButtons"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingTop="28dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/textViewAmountTokens"
-                app:tint="@color/icons_snow" />
+                tools:visibility="visible">
 
-            <ImageView
-                android:id="@id/imageViewExplorer"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="28dp"
-                android:background="@drawable/bg_night_circle"
-                android:contentDescription="@string/main_share"
-                android:foreground="?attr/selectableItemBackground"
-                android:padding="12dp"
-                android:src="@drawable/ic_external_filled"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/imageViewShare"
-                app:layout_constraintTop_toBottomOf="@id/textViewAmountTokens"
-                app:tint="@color/icons_snow" />
+                <ImageView
+                    android:id="@id/imageViewShare"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/bg_night_circle"
+                    android:contentDescription="@string/main_share"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_share"
+                    app:layout_constraintEnd_toStartOf="@+id/imageViewExplorer"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/icons_snow" />
 
-            <TextView
-                android:id="@+id/imageViewShareText"
-                style="@style/UiKit.TextAppearance.SemiBold.Label2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:text="@string/transaction_details_share"
-                android:textColor="@color/text_night"
-                app:layout_constraintEnd_toEndOf="@id/imageViewShare"
-                app:layout_constraintStart_toStartOf="@id/imageViewShare"
-                app:layout_constraintTop_toBottomOf="@id/imageViewShare" />
+                <ImageView
+                    android:id="@id/imageViewExplorer"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/bg_night_circle"
+                    android:contentDescription="@string/main_share"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_external_filled"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageViewShare"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/icons_snow" />
 
-            <TextView
-                android:id="@+id/imageViewExplorerText"
-                style="@style/UiKit.TextAppearance.SemiBold.Label2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center"
-                android:text="@string/transaction_details_explorer"
-                android:textColor="@color/text_night"
-                app:layout_constraintEnd_toEndOf="@id/imageViewExplorer"
-                app:layout_constraintStart_toStartOf="@id/imageViewExplorer"
-                app:layout_constraintTop_toBottomOf="@id/imageViewExplorer" />
+                <TextView
+                    android:id="@+id/imageViewShareText"
+                    style="@style/UiKit.TextAppearance.SemiBold.Label2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="@string/transaction_details_share"
+                    android:textColor="@color/text_night"
+                    app:layout_constraintEnd_toEndOf="@id/imageViewShare"
+                    app:layout_constraintStart_toStartOf="@id/imageViewShare"
+                    app:layout_constraintTop_toBottomOf="@id/imageViewShare" />
 
+                <TextView
+                    android:id="@+id/imageViewExplorerText"
+                    style="@style/UiKit.TextAppearance.SemiBold.Label2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:text="@string/transaction_details_explorer"
+                    android:textColor="@color/text_night"
+                    app:layout_constraintEnd_toEndOf="@id/imageViewExplorer"
+                    app:layout_constraintStart_toStartOf="@id/imageViewExplorer"
+                    app:layout_constraintTop_toBottomOf="@id/imageViewExplorer" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -185,14 +194,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="28dp"
+            android:layout_marginTop="24dp"
             android:gravity="center_vertical"
+            android:paddingBottom="32dp"
             android:text="@string/transaction_details_send_to"
             android:textColor="@color/text_mountain"
             app:layout_constraintBottom_toTopOf="@+id/textViewFeeTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails"
-            app:layout_goneMarginBottom="12dp" />
+            app:layout_goneMarginBottom="32dp" />
 
         <TextView
             android:id="@+id/textViewSendReceiveValue"
@@ -200,13 +210,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="28dp"
             android:drawablePadding="4dp"
             android:gravity="center_vertical|end"
             android:textColor="@color/text_night"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/textViewSendReceiveTitle"
             app:layout_constraintTop_toBottomOf="@id/layoutTransactionDetails"
+            app:layout_constraintTop_toTopOf="@id/textViewSendReceiveTitle"
             tools:text="\@kirill.key" />
 
         <TextView
@@ -215,15 +225,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="32dp"
             android:gravity="center_vertical"
+            android:paddingBottom="28dp"
             android:text="@string/transaction_transaction_fee_title"
             android:textColor="@color/text_mountain"
             android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/progressStateTransaction"
+            app:layout_constraintBottom_toTopOf="@+id/containerNewButtons"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textViewSendReceiveTitle"
-            app:layout_goneMarginBottom="12dp" />
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/textViewFeeValue"
@@ -231,14 +241,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="32dp"
             android:gravity="center_vertical|end"
             android:text="@string/transaction_transaction_fee_free_value"
             android:textColor="@color/text_night"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/textViewFeeTitle"
-            app:layout_constraintTop_toBottomOf="@id/textViewSendReceiveTitle" />
+            app:layout_constraintTop_toBottomOf="@id/textViewSendReceiveTitle"
+            tools:visibility="visible" />
 
         <org.p2p.wallet.transaction.ui.ProgressStateWidget
             android:id="@+id/progressStateTransaction"
@@ -252,6 +262,58 @@
             app:layout_constraintTop_toBottomOf="@id/textViewFeeValue"
             tools:visibility="gone" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerNewButtons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewFeeTitle"
+            tools:visibility="visible">
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/buttonFirst"
+                style="@style/UiKit.Components.Button.Large"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginHorizontal="16dp"
+                android:backgroundTint="@color/night"
+                android:textColor="@color/snow"
+                app:iconTint="@color/snow"
+                app:layout_constraintBottom_toTopOf="@id/buttonSecond"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Done" />
+
+            <org.p2p.uikit.components.UiKitButton
+                android:id="@+id/buttonSecond"
+                style="@style/UiKit.Components.Button.Large"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ui_kit_button_large_height"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="32dp"
+                android:backgroundTint="@color/transparent"
+                android:textColor="@color/text_night"
+                app:iconTint="@color/snow"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/buttonFirst"
+                tools:text="Open SOLScan" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/animationView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <org.p2p.wallet.common.ui.widget.ProgressView

@@ -9,6 +9,9 @@ enum class RpcHistoryTypeResponse {
     @SerializedName("receive")
     RECEIVE,
 
+    @SerializedName("referral_reward")
+    REFERRAL_REWARD,
+
     @SerializedName("swap")
     SWAP,
 

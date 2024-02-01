@@ -4,7 +4,12 @@ import android.content.res.Resources
 import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.Locale
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.emptyString
@@ -28,13 +33,23 @@ class HistoryTransactionDetailsPresenter(
     HistoryTransactionDetailsContract.Presenter {
 
     private val timeFormat = DateTimeFormatter.ofPattern(DateTimeUtils.PATTERN_FULL_DAY, Locale.US)
+    private var tx: HistoryTransaction? = null
+    private var loadUsernameJob: Job? = null
+
+    override fun detach() {
+        super.detach()
+        loadUsernameJob?.cancel()
+        loadUsernameJob = null
+    }
 
     override fun load(transactionId: String) {
         launch {
             try {
                 view?.showLoading(isLoading = true)
-                val transaction = historyInteractor.findTransactionById(transactionId)
-                loadDetailsByTransaction(transaction)
+                Timber.d("Start finding tx by id: $transactionId")
+                tx = historyInteractor.findTransactionById(transactionId)
+                Timber.d("Tx by id is found")
+                loadDetailsByTransaction(tx)
             } catch (e: Throwable) {
                 Timber.e(e, "Error on finding transaction by id: $e")
                 view?.showErrorMessage(e)
@@ -61,6 +76,7 @@ class HistoryTransactionDetailsPresenter(
         when (transaction) {
             is RpcHistoryTransaction.Swap -> parseSwap(transaction)
             is RpcHistoryTransaction.Transfer -> parseTransfer(transaction)
+            is RpcHistoryTransaction.ReferralReward -> parseReferralReward(transaction)
             is RpcHistoryTransaction.BurnOrMint -> parseBurnOrMint(transaction)
             is RpcHistoryTransaction.WormholeReceive -> parseWormholeReceive(transaction)
             is RpcHistoryTransaction.WormholeSend -> parseWormholeSend(transaction)
@@ -119,6 +135,55 @@ class HistoryTransactionDetailsPresenter(
         }
     }
 
+    private suspend fun parseReferralReward(transaction: RpcHistoryTransaction.ReferralReward) {
+        val transferActorAddress = transaction.senderAddress.toBase58Instance()
+
+        view?.apply {
+            setSmokeBackground()
+            setTitle(R.string.transaction_details_referral_title)
+            showNewButtons(
+                firstButtonTitleRes = R.string.transaction_details_referral_button_first,
+                secondButtonTitleRes = R.string.transaction_details_referral_button_second
+            )
+            showTransferView(
+                tokenIconUrl = transaction.iconUrl,
+                placeholderIcon = transaction.getIcon()
+            )
+            showAmountReferralReward(amountToken = transaction.getFormattedTotal())
+
+            showSenderAddress(
+                senderAddress = transferActorAddress,
+                senderUsername = null,
+                isReceivePending = true
+            )
+            playApplauseAnimation()
+        }
+
+        // fetching username is failing all the time and it takes way too long
+        // so:
+        //  1. defer it,
+        //  2. limit by timeout
+        //  todo: the same ought to be done for [parseTransfer]
+        loadUsernameJob = async {
+            Timber.d("Start loading username")
+            val transferActorUsername = withTimeoutOrNull(5.seconds) {
+                getTransferActorUsername(transferActorAddress)
+            }
+
+            if (transferActorUsername != null && view != null) {
+                transferActorUsername.username.fullUsername.let {
+                    view?.showSenderAddress(
+                        senderAddress = transferActorAddress,
+                        senderUsername = it,
+                        isReceivePending = true
+                    )
+                }
+            } else {
+                Timber.w("Couldn't load username for address: $transferActorAddress")
+            }
+        }
+    }
+
     private suspend fun showTransferAddress(
         isSend: Boolean,
         isPending: Boolean,
@@ -145,7 +210,11 @@ class HistoryTransactionDetailsPresenter(
 
     private suspend fun getTransferActorUsername(actorAddress: Base58String): UsernameDetails? {
         return runCatching { usernameInteractor.findUsernameByAddress(actorAddress) }
-            .onFailure { Timber.e(it, "Failed to find username by address: $actorAddress") }
+            .onFailure {
+                if (it !is CancellationException) {
+                    Timber.e(it, "Failed to find username by address: $actorAddress")
+                }
+            }
             .getOrNull()
     }
 
@@ -323,6 +392,24 @@ class HistoryTransactionDetailsPresenter(
             view?.showProgressTransactionErrorState(
                 resources.getString(R.string.transaction_details_status_message_format, errorTypeName)
             )
+        }
+    }
+
+    override fun onFirstButtonClick() {
+        when (tx) {
+            is RpcHistoryTransaction.ReferralReward -> {
+                view?.dismiss()
+            }
+            else -> Unit
+        }
+    }
+
+    override fun onSecondButtonClick() {
+        when (tx) {
+            is RpcHistoryTransaction.ReferralReward -> {
+                view?.navigateToSolscan(tx!!.getHistoryTransactionId())
+            }
+            else -> Unit
         }
     }
 }

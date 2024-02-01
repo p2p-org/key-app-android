@@ -5,6 +5,7 @@ enum class RpcHistoryTransactionType {
     SWAP,
     SEND,
     RECEIVE,
+    REFERRAL_REWARD,
     STAKE,
     UNSTAKE,
     CREATE_ACCOUNT,
