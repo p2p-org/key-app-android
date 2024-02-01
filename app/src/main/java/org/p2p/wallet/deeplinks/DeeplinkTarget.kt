@@ -6,18 +6,19 @@ import org.p2p.uikit.components.ScreenTab
  * Pre-defined deeplink targets associated with screen names
  */
 enum class DeeplinkTarget(val screenName: String, val tab: ScreenTab? = null) {
-    HISTORY("history", ScreenTab.HISTORY_SCREEN),
-    SWAP("swap", ScreenTab.SWAP_SCREEN),
-    SETTINGS("settings", ScreenTab.SETTINGS_SCREEN),
-    SEND("send"),
-    BUY("buy"),
-    CASH_OUT("cashOut"),
+    HISTORY(screenName = "history", tab = ScreenTab.HISTORY_SCREEN),
+    SWAP(screenName = "swap", tab = ScreenTab.SWAP_SCREEN),
+    SETTINGS(screenName = "settings", tab = ScreenTab.SETTINGS_SCREEN),
+    SEND(screenName = "send"),
+    BUY(screenName = "buy"),
+    CASH_OUT(screenName = "cashOut"),
+    REFERRAL(screenName = "main"),
 
     /**
      * requires intercom_survey_id @see [org.p2p.wallet.intercom.IntercomDeeplinkManager]
      */
-    FEEDBACK("intercom", ScreenTab.FEEDBACK_SCREEN),
-    ONBOARDING("onboarding");
+    FEEDBACK(screenName = "intercom", ScreenTab.FEEDBACK_SCREEN),
+    ONBOARDING(screenName = "onboarding");
 
     companion object {
         /**

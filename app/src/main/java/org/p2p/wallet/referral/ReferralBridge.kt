@@ -8,6 +8,7 @@ import timber.log.Timber
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.toBase64Instance
 import org.p2p.solanaj.utils.SolanaMessageSigner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 
@@ -66,10 +67,13 @@ class ReferralWebViewBridge(
         }
 
         @JavascriptInterface
-        fun signMessageAsync(message: String): JsResultWrapper = makeAsyncCall {
+        fun signMessageAsync(messageBase64: String): JsResultWrapper = makeAsyncCall {
             try {
                 val signer = SolanaMessageSigner()
-                val signedMessage = signer.signMessage(message.toByteArray(), tokenKeyProvider.keyPair)
+                val signedMessage = signer.signMessage(
+                    message = messageBase64.toBase64Instance().decodeToBytes(),
+                    keyPair = tokenKeyProvider.keyPair
+                )
                 wrapInJsResult(signedMessage.base64Value)
             } catch (e: Throwable) {
                 Timber.e(e, "Unable to evaluate JS method signMessageAsync")
