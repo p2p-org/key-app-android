@@ -22,12 +22,14 @@ class SettingsItemMapper(
         isBiometricLoginEnabled: Boolean,
         isZeroBalanceTokenHidden: Boolean,
         isBiometricLoginAvailable: Boolean,
+        isReferralBannerVisible: Boolean,
         hasDifferentDeviceShare: Boolean
     ): List<SettingsItem> = buildList {
         this += profileBlock(
             username = username,
             isUsernameItemVisible = isUsernameItemVisible,
-            countryName = countryName
+            isReferralBannerVisible = isReferralBannerVisible,
+            countryName = countryName,
         )
         this += securityBlock(
             isBiometricLoginEnabled = isBiometricLoginEnabled,
@@ -42,7 +44,8 @@ class SettingsItemMapper(
     private fun profileBlock(
         username: Username?,
         countryName: String?,
-        isUsernameItemVisible: Boolean
+        isUsernameItemVisible: Boolean,
+        isReferralBannerVisible: Boolean,
     ): List<SettingsItem> = buildList {
         add(SettingsSpaceSeparatorItem)
         add(SettingsGroupTitleItem(groupTitleRes = R.string.settings_item_group_title_profile))
@@ -54,6 +57,9 @@ class SettingsItemMapper(
          */
         add(SignOutButtonItem)
         add(SettingsSpaceSeparatorItem)
+        if (isReferralBannerVisible) {
+            add(SettingsItem.ReferralBannerSettingsItem)
+        }
     }
 
     private fun MutableList<SettingsItem>.addUsernameItem(username: Username?) {
