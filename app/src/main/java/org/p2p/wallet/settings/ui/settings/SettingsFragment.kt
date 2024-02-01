@@ -56,9 +56,9 @@ class SettingsFragment :
 
     // todo: migrate to cell adapter
     private val adapter = NewSettingsAdapter(
-        ::onSettingsItemClicked,
-        ::onReferralShareLinkClicked,
-        ::onReferralOpenDetailsClicked
+        onSettingsClicked = ::onSettingsItemClicked,
+        onReferralShareLinkClicked = ::onReferralShareLinkClicked,
+        onReferralOpenDetailsClicked = ::onReferralOpenDetailsClicked
     )
 
     private val biometricWrapper: BiometricPromptWrapper by unsafeLazy {
@@ -113,7 +113,7 @@ class SettingsFragment :
     }
 
     private fun onReferralShareLinkClicked() {
-        // todo: share link
+        referralFragmentFactory.shareLink(requireContext())
     }
 
     private fun onReferralOpenDetailsClicked() {

@@ -4,4 +4,5 @@
     <string name="transfer_app_host">t.key.app</string>
     <string name="transfer_app_host_swap">s.key.app</string>
     <string name="transfer_app_scheme_alternative">keyapp</string>
+    <string name="share_referral_link">https://r.key.app/%s</string>
 </resources>

@@ -102,6 +102,7 @@ class MyCryptoFragment :
         referralBannerDelegate { binding, _ ->
             with(binding) {
                 buttonShare.setOnClickListener {
+                    referralFragmentFactory.shareLink(requireContext())
                 }
                 buttonOpenDetails.setOnClickListener {
                     replaceFragment(referralFragmentFactory.openDetails())
