@@ -18,6 +18,8 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
+import org.p2p.wallet.pnl.interactor.PnlDataObserver
+import org.p2p.wallet.pnl.ui.PnlUiMapper
 import org.p2p.wallet.rpc.interactor.TokenInteractor
 import org.p2p.wallet.transaction.model.progressstate.TransactionState
 import org.p2p.wallet.user.repository.UserLocalRepository
@@ -25,7 +27,7 @@ import org.p2p.wallet.user.repository.UserTokensLocalRepository
 
 class TokenHistoryPresenter(
     // has old data inside, use userTokensRepository to get fresh one
-    private val token: Token.Active,
+    private var token: Token.Active,
     private val tokenInteractor: TokenInteractor,
     private val ethereumInteractor: EthereumInteractor,
     private val transactionManager: TransactionManager,
@@ -34,23 +36,32 @@ class TokenHistoryPresenter(
     private val bridgeSendUiMapper: BridgeSendUiMapper,
     private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle,
     private val userTokensRepository: UserTokensLocalRepository,
-    private val historyAnalytics: HistoryAnalytics
+    private val historyAnalytics: HistoryAnalytics,
+    private val pnlInteractor: PnlDataObserver,
+    private val pnlUiMapper: PnlUiMapper,
 ) : BasePresenter<TokenHistoryContract.View>(), TokenHistoryContract.Presenter {
 
     override fun attach(view: TokenHistoryContract.View) {
         super.attach(view)
-        subscribeToTokenUpdates()
+        observeCryptoTokens()
+        observePnlData()
         initialize()
     }
 
-    private fun subscribeToTokenUpdates() {
+    private fun observeCryptoTokens() {
         userTokensRepository.observeUserToken(token.mintAddress.toBase58Instance())
-            .onEach { view?.renderTokenAmounts(it) }
+            .onEach { updateTokenAmounts(it) }
+            .launchIn(this)
+    }
+
+    private fun observePnlData() {
+        pnlInteractor.state
+            .onEach { updateTokenAmounts(this.token) }
             .launchIn(this)
     }
 
     private fun initialize() {
-        view?.renderTokenAmounts(token)
+        updateTokenAmounts(token)
 
         val actionButtons = buildList {
             this += ActionButton.RECEIVE_BUTTON
@@ -68,6 +79,29 @@ class TokenHistoryPresenter(
         }.sorted()
 
         view?.showActionButtons(actionButtons)
+    }
+
+    private fun updateTokenAmounts(token: Token.Active) {
+        this.token = token
+        view?.renderTokenAmounts(token)
+        view?.renderTokenPnl(
+            pnlUiMapper.mapTokenBalancePnl(
+                tokenMint = token.mintAddressB58,
+                pnlDataState = pnlInteractor.state.value
+            )
+        )
+    }
+
+    override fun onTokenPnlClicked() {
+        if (pnlInteractor.state.value.isResult()) {
+            pnlInteractor.state.value.findForToken(token.mintAddressB58)?.let {
+                view?.showPnlDetails(it.percent)
+            }
+        }
+    }
+
+    override fun onRefresh() {
+        pnlInteractor.restartAndRefresh()
     }
 
     override fun onTransactionClicked(transactionId: String) {

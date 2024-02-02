@@ -39,6 +39,8 @@ private const val PREFS_SWAP = "swap_prefs"
 private const val PREFS_STRIGA = "striga_prefs"
 
 object StorageModule {
+    const val PREFS_PNL = "pnl_prefs"
+
     private fun Scope.androidPreferences(prefsName: String): SharedPreferences {
         return with(androidContext()) {
             getSharedPreferences("$packageName.$prefsName", Context.MODE_PRIVATE)
@@ -91,6 +93,9 @@ object StorageModule {
         }
         single(named(PREFS_STRIGA)) {
             androidEncryptedPreferences(PREFS_STRIGA)
+        }
+        single(named(PREFS_PNL)) {
+            androidPreferences(PREFS_PNL)
         }
     }
 

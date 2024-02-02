@@ -12,12 +12,13 @@
 
     <ImageButton
         android:id="@+id/imageButtonAction"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_circle_button"
-        android:foreground="@drawable/ripple_button_circle"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:background="@drawable/bg_rounded_solid_snow_12"
+        android:foreground="@drawable/ripple_button_large"
         android:importantForAccessibility="no"
-        android:src="@drawable/ic_plus" />
+        android:src="@drawable/ic_plus"
+        app:tint="@color/text_mountain" />
 
     <TextView
         android:id="@+id/textViewTitle"
@@ -26,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:maxLines="1"
-        android:textColor="@color/text_night"
+        android:textColor="@color/text_mountain"
         app:autoSizeMaxTextSize="14sp"
         app:autoSizeMinTextSize="8sp"
         app:autoSizeTextType="uniform"

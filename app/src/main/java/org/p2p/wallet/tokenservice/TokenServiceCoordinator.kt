@@ -2,8 +2,11 @@ package org.p2p.wallet.tokenservice
 
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -27,12 +30,12 @@ class TokenServiceCoordinator(
     private val ethereumTokensLoader: EthereumTokensLoader,
     private val appScope: AppScope
 ) {
-
     /**
      * Token Service will be needed in different screens and may have 2 or more collectors.
      * Therefore, we are using SharedFlow
      * */
     private val tokensState = MutableSharedFlow<UserTokensState>(replay = 1)
+    private val lastState = MutableStateFlow<UserTokensState>(UserTokensState.Idle)
 
     init {
         combine(
@@ -40,7 +43,10 @@ class TokenServiceCoordinator(
             flow2 = ethereumTokensLoader.observeState(),
             transform = ::mapTokenState
         )
-            .onEach(tokensState::emit)
+            .onEach {
+                lastState.emit(it)
+                tokensState.emit(it)
+            }
             .launchIn(appScope)
     }
 
@@ -61,6 +67,8 @@ class TokenServiceCoordinator(
     }
 
     fun observeUserTokens(): SharedFlow<UserTokensState> = tokensState.asSharedFlow()
+
+    fun observeLastState(): StateFlow<UserTokensState> = lastState.asStateFlow()
 
     suspend fun getUserTokens(): List<Token.Active> {
         return solanaTokensLoader.getUserTokens()

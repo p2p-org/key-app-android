@@ -12,6 +12,7 @@ private const val KEY_NAME_SERVICE_BASE_URL = "KEY_NAME_SERVICE_BASE_URL"
 private const val KEY_BRIDGES_SERVICE_BASE_URL = "KEY_BRIDGES_SERVICE_BASE_URL"
 private const val KEY_GATEWAY_BASE_URL = "KEY_GATEWAY_BASE_URL"
 private const val KEY_TOKEN_SERVICE_BASE_URL = "KEY_TOKEN_SERVICE_BASE_URL"
+private const val KEY_SWAP_SERVICE_BASE_URL = "KEY_SWAP_SERVICE_BASE_URL"
 
 class NetworkServicesUrlProvider(
     private val context: Context,
@@ -150,6 +151,20 @@ class NetworkServicesUrlProvider(
 
     fun resetMoonpayEnvironment() =
         moonpayEnvironmentProvider.resetMoonpayEnvironment()
+
+    fun loadSwapEnvironment(): SwapEnvironment {
+        val url = storage.getString(
+            KEY_SWAP_SERVICE_BASE_URL,
+            context.getString(R.string.jupiterV6BaseUrl)
+        ).orEmpty()
+
+        crashLogger.setCustomKey(KEY_SWAP_SERVICE_BASE_URL, url)
+        return SwapEnvironment(url)
+    }
+
+    fun saveSwapEnvironment(newUrl: String) {
+        storage.putString(KEY_SWAP_SERVICE_BASE_URL, newUrl)
+    }
 
     private fun isProdUrl(currentUrl: String, prodUrlRes: Int): Boolean {
         return currentUrl == context.getString(prodUrlRes)

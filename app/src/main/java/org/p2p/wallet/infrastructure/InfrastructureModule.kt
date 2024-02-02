@@ -11,20 +11,14 @@ import org.p2p.core.dispatchers.DefaultDispatchers
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.utils.validators.BankingBicValidator
 import org.p2p.core.utils.validators.BankingIbanValidator
+import org.p2p.solanaj.utils.SolanaMessageSigner
 import org.p2p.wallet.appsflyer.AppsFlyerService
-import org.p2p.wallet.deeplinks.AppDeeplinksManager
-import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
+import org.p2p.wallet.deeplinks.DeeplinkModule
 import org.p2p.wallet.home.model.TokenConverter
-import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.intercom.IntercomPushService
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.repository.PushTokenRepository
 import org.p2p.wallet.solana.SolanaNetworkObserver
-import org.p2p.wallet.updates.SocketUpdatesManager
-import org.p2p.wallet.updates.SubscriptionUpdatesManager
-import org.p2p.wallet.updates.handler.SolanaAccountUpdateHandler
-import org.p2p.wallet.updates.handler.SplTokenProgramUpdateHandler
-import org.p2p.wallet.updates.handler.TransactionSignatureHandler
 import org.p2p.wallet.utils.UsernameFormatter
 
 object InfrastructureModule : InjectionModule {
@@ -32,27 +26,7 @@ object InfrastructureModule : InjectionModule {
     override fun create() = module {
         singleOf(::GlideManager)
 
-        singleOf(::TransactionSignatureHandler)
-        singleOf(::SolanaAccountUpdateHandler)
-        singleOf(::SplTokenProgramUpdateHandler)
-        single {
-            SocketUpdatesManager(
-                appScope = get(),
-                environmentManager = get(),
-                connectionStateProvider = get(),
-                updateHandlers = listOf(
-                    get<TransactionSignatureHandler>(),
-                    get<SolanaAccountUpdateHandler>(),
-                    get<SplTokenProgramUpdateHandler>(),
-                ),
-                socketEnabledFeatureToggle = get()
-            )
-        } bind SubscriptionUpdatesManager::class
-
-        singleOf(::AppDeeplinksManager)
         singleOf(::AppNotificationManager)
-
-        factoryOf(::SwapDeeplinkHandler)
 
         singleOf(::DefaultDispatchers) bind CoroutineDispatchers::class
 
@@ -64,13 +38,15 @@ object InfrastructureModule : InjectionModule {
         singleOf(::SolanaNetworkObserver)
 
         singleOf(::IntercomPushService)
-        singleOf(::IntercomDeeplinkManager)
+
         single { TokenConverter }
 
         singleOf(::UsernameFormatter)
         factoryOf(::BankingIbanValidator)
         factoryOf(::BankingBicValidator)
 
-        includes(StorageModule.create(), RoomModule.create())
+        factoryOf(::SolanaMessageSigner)
+
+        includes(StorageModule.create(), RoomModule.create(), SocketsModule.create(), DeeplinkModule.create())
     }
 }

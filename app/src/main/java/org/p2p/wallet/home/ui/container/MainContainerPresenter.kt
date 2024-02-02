@@ -14,9 +14,7 @@ import org.p2p.wallet.auth.interactor.MetadataInteractor
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.deeplinks.DeeplinkTarget
-import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
 import org.p2p.wallet.history.ui.history.HistoryFragment
-import org.p2p.wallet.home.deeplinks.DeeplinkHandler
 import org.p2p.wallet.home.ui.container.mapper.WalletBalanceMapper
 import org.p2p.wallet.home.ui.crypto.MyCryptoFragment
 import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
@@ -37,17 +35,14 @@ class MainContainerPresenter(
     private val userInteractor: UserInteractor,
     private val walletStrigaInteractor: WalletStrigaInteractor,
     private val balanceMapper: WalletBalanceMapper,
-    private val swapDeeplinkHandler: SwapDeeplinkHandler,
-    private val mainScreenAnalytics: MainScreenAnalytics
+    private val deeplinkHandlerFactory: MainFragmentDeeplinkHandlerFactory,
+    private val mainScreenAnalytics: MainScreenAnalytics,
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
 
     private val deeplinkHandler by unsafeLazy {
-        DeeplinkHandler(
-            coroutineScope = this,
-            screenNavigator = view,
-            tokenServiceCoordinator = tokenServiceCoordinator,
-            userInteractor = userInteractor,
-            swapDeeplinkHandler = swapDeeplinkHandler,
+        deeplinkHandlerFactory.create(
+            navigator = view,
+            scope = this,
             deeplinkTopLevelHandler = ::handleDeeplinkTarget
         )
     }
@@ -88,13 +83,15 @@ class MainContainerPresenter(
             DeeplinkTarget.BUY,
             DeeplinkTarget.SEND,
             DeeplinkTarget.SWAP,
-            DeeplinkTarget.CASH_OUT
+            DeeplinkTarget.CASH_OUT,
+            DeeplinkTarget.REFERRAL
         )
         launchSupervisor {
             deeplinksManager.subscribeOnDeeplinks(supportedTargets)
-                .onEach { view?.navigateFromDeeplink(it) }
+                .onEach { view?.navigateToTabFromDeeplink(it) }
                 .onEach { deeplinkHandler.handle(it) }
                 .launchIn(this)
+
             deeplinksManager.executeHomePendingDeeplink()
             deeplinksManager.executeTransferPendingAppLink()
         }

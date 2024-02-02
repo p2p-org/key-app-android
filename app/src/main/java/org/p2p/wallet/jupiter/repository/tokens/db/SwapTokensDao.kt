@@ -37,4 +37,7 @@ interface SwapTokensDao {
     // todo: should be done with pagination
     @Query("SELECT * from swap_tokens")
     suspend fun getAllSwapTokens(): List<SwapTokenEntity>
+
+    @Query("SELECT COUNT(*) from swap_tokens")
+    suspend fun getAllSwapTokensSize(): Long
 }
