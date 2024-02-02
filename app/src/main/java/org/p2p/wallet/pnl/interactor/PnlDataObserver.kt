@@ -52,13 +52,14 @@ class PnlDataObserver(
     private var updaterJob: Job? = null
     private val tokenMints = mutableListOf<Base58String>()
     private val tokenMintsMutex = Mutex()
-    private val _state = MutableStateFlow<PnlDataState>(PnlDataState.Loading)
+    private val _state = MutableStateFlow<PnlDataState>(PnlDataState.Idle)
     val state = _state.asStateFlow()
 
     fun isStarted(): Boolean = updaterJob != null
 
     fun start() {
         if (updaterJob != null) return
+        _state.value = PnlDataState.Loading
         launchJob()
     }
 
