@@ -5,18 +5,18 @@ import android.content.SharedPreferences
 import android.graphics.Bitmap
 import timber.log.Timber
 import java.io.File
+import org.p2p.core.crashlytics.CrashLogger
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.auth.repository.UserSignUpDetailsStorage
 import org.p2p.wallet.auth.username.repository.UsernameRepository
 import org.p2p.wallet.auth.username.repository.model.UsernameDetails
-import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.wallet.common.feature_toggles.toggles.remote.RegisterUsernameEnabledFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.UsernameDomainFeatureToggle
 import org.p2p.wallet.common.storage.FileRepository
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.interactor.KEY_IS_AUTH_BY_SEED_PHRASE
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.crypto.toBase58Instance
 
 const val KEY_USERNAME = "KEY_USERNAME"
 const val KEY_USERNAME_DOMAIN = "KEY_USERNAME_DOMAIN"
@@ -95,6 +95,8 @@ class UsernameInteractor(
     }
 
     fun isUsernameItemVisibleInSettings(): Boolean {
+        // https://r.key.app/nickname.sol
+        // https://s.key.app/swap?from=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&to=So11111111111111111111111111111111111111112&r=nickname.sol
         val isUserUsedWeb3Auth = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
         val isRegisterUsernameEnabled = registerUsernameEnabledFeatureToggle.isFeatureEnabled
         // sometimes user can use seed phrase to login, we cant show item to him too
