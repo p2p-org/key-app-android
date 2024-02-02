@@ -5,14 +5,14 @@ import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 
 class SearchSwapTokensMapper(
-    private val commonMapper: SwapTokensCommonMapper
+    private val commonMapper: SwapTokensCommonMapper,
 ) {
 
-    fun toCellItems(foundSwapTokens: List<SwapTokenModel>): List<AnyCellItem> {
-        return commonMapper.foundTokensGroup(foundSwapTokens)
-    }
+    suspend fun toCellItems(
+        foundSwapTokens: List<SwapTokenModel>
+    ): List<AnyCellItem> = commonMapper.foundTokensGroup(foundSwapTokens)
 
-    private fun SwapTokensCommonMapper.foundTokensGroup(
+    private suspend fun SwapTokensCommonMapper.foundTokensGroup(
         foundSwapTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_search_result)

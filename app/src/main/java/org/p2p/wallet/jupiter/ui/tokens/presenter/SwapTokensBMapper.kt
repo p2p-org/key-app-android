@@ -5,9 +5,10 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 
-class SwapTokensBMapper(private val commonMapper: SwapTokensCommonMapper) {
-
-    fun toTokenBCellItems(
+class SwapTokensBMapper(
+    private val commonMapper: SwapTokensCommonMapper,
+) {
+    suspend fun toTokenBCellItems(
         selectedTokenModel: SwapTokenModel,
         tokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
@@ -15,7 +16,7 @@ class SwapTokensBMapper(private val commonMapper: SwapTokensCommonMapper) {
         this += popularTokensGroup(selectedTokenModel, tokens)
     }
 
-    private fun popularTokensGroup(
+    private suspend fun popularTokensGroup(
         selectedTokenModel: SwapTokenModel,
         allTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
@@ -48,7 +49,7 @@ class SwapTokensBMapper(private val commonMapper: SwapTokensCommonMapper) {
         }
     }
 
-    private fun chosenTokenGroup(
+    private suspend fun chosenTokenGroup(
         selectedTokenModel: SwapTokenModel
     ): List<AnyCellItem> = buildList {
         val sectionHeader = commonMapper.createSectionHeader(R.string.swap_tokens_section_chosen_token)

@@ -1,10 +1,14 @@
 package org.p2p.wallet.jupiter.ui.tokens.presenter
 
 import androidx.annotation.StringRes
+import java.math.BigDecimal
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.icon_wrapper.IconWrapperCellModel
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -17,14 +21,17 @@ import org.p2p.uikit.utils.text.badgePadding
 import org.p2p.uikit.utils.text.badgeRounded
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
-import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
+import org.p2p.wallet.utils.cutMiddle
 
 /**
  * Contains base logic for mapping Swap domain models to Cell UI models
  * - sorting logic
  * - creating finance block cell model
  */
-class SwapTokensCommonMapper {
+class SwapTokensCommonMapper(
+    private val swapTokensRepository: JupiterSwapTokensRepository
+) {
     val byTokenMintComparator = Comparator<Base58String> { current, next ->
         val currentTokenMint = current.base58Value
         val nextTokenMint = next.base58Value
@@ -58,7 +65,7 @@ class SwapTokensCommonMapper {
         return this.equalsByMint(selectedToken)
     }
 
-    fun SwapTokenModel.toTokenFinanceCellModel(
+    suspend fun SwapTokenModel.toTokenFinanceCellModel(
         isPopularToken: Boolean = false,
         isSearchResult: Boolean = false
     ): MainCellModel = when (this) {
@@ -66,27 +73,28 @@ class SwapTokensCommonMapper {
         is SwapTokenModel.UserToken -> asTokenFinanceCellModel(isPopularToken, isSearchResult)
     }
 
-    private fun SwapTokenModel.UserToken.asTokenFinanceCellModel(
+    private suspend fun SwapTokenModel.UserToken.asTokenFinanceCellModel(
         isPopularToken: Boolean,
         isSearchResult: Boolean
-    ): MainCellModel =
-        with(details) {
-            createTokenFinanceCellModel(
-                tokenIconUrl = iconUrl.orEmpty(),
-                tokenName = tokenName,
-                tokenSymbol = tokenSymbol,
-                totalTokenAmount = getFormattedTotal(),
-                totalTokenPriceInUsd = totalInUsd?.formatFiat(),
-                addPopularLabel = isPopularToken,
-                payload = SwapTokensCellModelPayload(
-                    hasPopularLabel = isPopularToken,
-                    isSearchResultItem = isSearchResult,
-                    tokenModel = this@asTokenFinanceCellModel
-                )
-            )
-        }
+    ): MainCellModel = with(details) {
+        createTokenFinanceCellModel(
+            tokenIconUrl = iconUrl.orEmpty(),
+            tokenName = tokenName,
+            tokenSymbol = tokenSymbol,
+            tokenMint = mintAddress,
+            totalTokenAmount = total,
+            totalTokenPriceInUsd = totalInUsd?.formatFiat(),
+            payload = SwapTokensCellModelPayload(
+                hasPopularLabel = isPopularToken,
+                isSearchResultItem = isSearchResult,
+                tokenModel = this@asTokenFinanceCellModel
+            ),
+            addPopularLabel = isPopularToken,
+            isStrictToken = null // don't have that info in user tokens
+        )
+    }
 
-    private fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(
+    private suspend fun SwapTokenModel.JupiterToken.asTokenFinanceCellModel(
         isPopularToken: Boolean,
         isSearchResult: Boolean
     ): MainCellModel =
@@ -95,9 +103,11 @@ class SwapTokensCommonMapper {
                 tokenIconUrl = iconUrl.orEmpty(),
                 tokenName = tokenName,
                 tokenSymbol = tokenSymbol,
+                tokenMint = tokenMint.base58Value,
                 totalTokenAmount = null,
                 totalTokenPriceInUsd = null,
                 addPopularLabel = isPopularToken,
+                isStrictToken = isStrictToken,
                 payload = SwapTokensCellModelPayload(
                     hasPopularLabel = isPopularToken,
                     isSearchResultItem = isSearchResult,
@@ -106,13 +116,15 @@ class SwapTokensCommonMapper {
             )
         }
 
-    private fun createTokenFinanceCellModel(
+    private suspend fun createTokenFinanceCellModel(
         tokenIconUrl: String,
         tokenName: String,
         tokenSymbol: String,
-        totalTokenAmount: String?,
+        tokenMint: String,
+        totalTokenAmount: BigDecimal?,
         totalTokenPriceInUsd: String?,
         payload: SwapTokensCellModelPayload,
+        isStrictToken: Boolean?,
         addPopularLabel: Boolean,
     ): MainCellModel {
         return MainCellModel(
@@ -120,30 +132,45 @@ class SwapTokensCommonMapper {
                 tokenIconUrl = tokenIconUrl,
                 tokenName = tokenName,
                 tokenSymbol = tokenSymbol,
-                totalTokenAmount = totalTokenAmount
+                tokenMint = tokenMint,
+                isStrictToken = isStrictToken,
             ),
             rightSideCellModel = if (addPopularLabel) {
                 createPopularRightSideModel()
             } else {
-                createPriceRightSideModel(totalTokenPriceInUsd)
+                createPriceRightSideModel(totalTokenAmount, tokenSymbol, totalTokenPriceInUsd)
             },
             payload = payload
         )
     }
 
-    private fun createLeftSideModel(
+    private suspend fun createLeftSideModel(
         tokenIconUrl: String,
         tokenName: String,
         tokenSymbol: String,
-        totalTokenAmount: String?,
+        tokenMint: String,
+        isStrictToken: Boolean? // can be null for user tokens, we don't have info
     ): LeftSideCellModel.IconWithText {
+        // the only way to know is token strict both
+        // for JupiterToken and UserToken
+        val isStrictToken = isStrictToken
+            ?: swapTokensRepository.findTokenByMint(tokenMint.toBase58Instance())?.isStrictToken
+            ?: true
+
         val tokenIconImage =
             DrawableContainer.Raw(iconUrl = tokenIconUrl)
                 .let(::commonCircleImage)
                 .let(IconWrapperCellModel::SingleIcon)
 
-        val firstLineText = TextViewCellModel.Raw(TextContainer.Raw(tokenName))
-        val tokenAmountOrJustSymbol = totalTokenAmount?.let { "$it $tokenSymbol" } ?: tokenSymbol
+        val tokenNameTitle = buildString {
+            append(tokenName)
+            if (!isStrictToken) {
+                append("️ ⚠")
+            }
+        }
+        val firstLineText = TextViewCellModel.Raw(TextContainer.Raw(tokenNameTitle))
+
+        val tokenAmountOrJustSymbol = "$tokenSymbol • ${tokenMint.cutMiddle(cutCount = 5)}"
         val secondLineText = TextViewCellModel.Raw(TextContainer.Raw(tokenAmountOrJustSymbol))
 
         return LeftSideCellModel.IconWithText(
@@ -165,15 +192,27 @@ class SwapTokensCommonMapper {
         )
     }
 
-    private fun createPriceRightSideModel(totalTokenPriceInUsd: String?): RightSideCellModel.TwoLineText? {
-        if (totalTokenPriceInUsd == null) return null
+    private fun createPriceRightSideModel(
+        totalTokenAmount: BigDecimal?,
+        tokenSymbol: String,
+        totalTokenPriceInUsd: String?
+    ): RightSideCellModel.TwoLineText? {
+        val usdAmount = totalTokenPriceInUsd?.let {
+            TextViewCellModel.Raw(
+                TextContainer.Raw("${Constants.USD_SYMBOL} $it"),
+            )
+        }
+        val tokenAmount = totalTokenAmount?.let {
+            TextViewCellModel.Raw(
+                TextContainer.Raw(it.formatTokenWithSymbol(tokenSymbol)),
+            )
+        }
 
-        val totalTokenInUsdText = TextViewCellModel.Raw(
-            TextContainer.Raw("${Constants.USD_SYMBOL} $totalTokenPriceInUsd"),
-        )
+        if (usdAmount == null && tokenAmount == null) return null
+
         return RightSideCellModel.TwoLineText(
-            firstLineText = totalTokenInUsdText,
-            secondLineText = null
+            firstLineText = usdAmount,
+            secondLineText = tokenAmount
         )
     }
 }

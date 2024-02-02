@@ -112,6 +112,8 @@ internal class JupiterSwapTokensRemoteRepository(
     override suspend fun searchTokens(mintAddressOrSymbol: String): List<JupiterSwapToken> {
         ensureCache()
         return daoDelegate.searchTokens(mintAddressOrSymbol)
+            // show strict and popular tokens first
+            .sortedByDescending { it.isPopularToken() || it.isStrictToken }
     }
 
     override suspend fun searchTokensInSwappable(
@@ -126,5 +128,9 @@ internal class JupiterSwapTokensRemoteRepository(
         if (!isCacheCanBeUsed()) {
             getTokens()
         }
+    }
+
+    private fun JupiterSwapToken.isPopularToken(): Boolean {
+        return tokenMint.base58Value == Constants.USDC_MINT || tokenMint.base58Value == Constants.USDT_MINT
     }
 }
