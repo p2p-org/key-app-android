@@ -8,11 +8,11 @@ import java.lang.reflect.Type
 
 private const val TAG = "JsonRpcParser"
 
-abstract class JsonRpc<P, T>(
+abstract class JsonRpc<Body, Response>(
     @SerializedName("method")
     val method: String,
     @SerializedName("params")
-    val params: P
+    val params: Body
 ) {
     @SerializedName("jsonrpc")
     val version: String = "2.0"
@@ -22,7 +22,7 @@ abstract class JsonRpc<P, T>(
 
     protected abstract val typeOfResult: Type
 
-    fun parseResponse(response: RpcResponse, gson: Gson): T {
+    fun parseResponse(response: RpcResponse, gson: Gson): Response {
         if (response.error != null) {
             val error = ResponseError.RpcError(response.error)
             Timber.tag(TAG).i(error, "RPC error returned")
@@ -31,9 +31,9 @@ abstract class JsonRpc<P, T>(
         return parseResult(response.result, gson)
     }
 
-    fun parseResult(result: JsonElement?, gson: Gson): T {
+    private fun parseResult(result: JsonElement?, gson: Gson): Response {
         return try {
-            gson.fromJson(result, typeOfResult) as T
+            gson.fromJson(result, typeOfResult) as Response
         } catch (error: Throwable) {
             Timber.tag(TAG).i(result.toString())
             Timber.tag(TAG).i(error)

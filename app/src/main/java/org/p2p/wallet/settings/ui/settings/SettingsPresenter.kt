@@ -15,6 +15,7 @@ import org.p2p.wallet.auth.model.CountryCode
 import org.p2p.wallet.common.AppRestarter
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.crypto.keystore.EncodeCipher
+import org.p2p.wallet.common.feature_toggles.toggles.remote.ReferralProgramEnabledFeatureToggle
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.settings.interactor.SettingsInteractor
 import org.p2p.wallet.settings.mapper.SettingsItemMapper
@@ -41,7 +42,8 @@ class SettingsPresenter(
     private val settingsItemMapper: SettingsItemMapper,
     private val metadataInteractor: MetadataInteractor,
     private val authInteractor: AuthInteractor,
-    private val analyticsInteractor: ScreensAnalyticsInteractor
+    private val analyticsInteractor: ScreensAnalyticsInteractor,
+    private val referralProgramEnabledFeatureToggle: ReferralProgramEnabledFeatureToggle,
 ) : BasePresenter<SettingsContract.View>(), SettingsContract.Presenter {
 
     override fun attach(view: SettingsContract.View) {
@@ -58,6 +60,7 @@ class SettingsPresenter(
                 isBiometricLoginEnabled = settingsInteractor.isBiometricLoginEnabled(),
                 isBiometricLoginAvailable = settingsInteractor.isBiometricLoginAvailable(),
                 isZeroBalanceTokenHidden = settingsInteractor.areZerosHidden(),
+                isReferralBannerVisible = referralProgramEnabledFeatureToggle.isFeatureEnabled,
                 hasDifferentDeviceShare = metadataInteractor.hasDifferentDeviceShare()
             )
             view?.showSettings(settings)

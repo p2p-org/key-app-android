@@ -22,7 +22,7 @@ class SwapTokensInteractor(
         }
     }
 
-    suspend fun getCurrentTokenB(): SwapTokenModel {
+    suspend fun requireCurrentTokenB(): SwapTokenModel {
         return swapStateManager.getStateValue { state ->
             requireNotNull(jupiterSwapInteractor.getSwapTokenPair(state)?.second) {
                 "Illegal swap state, can't find selected token B for the list: $state"
@@ -50,7 +50,7 @@ class SwapTokensInteractor(
         val userTokensMints = userTokens.map { it.mintAddress }.toSet()
 
         val tokenA = requireCurrentTokenA()
-        val tokenB = getCurrentTokenB()
+        val tokenB = requireCurrentTokenB()
 
         val availableTokenBMints = swapTokensRepository.getSwappableTokens(sourceTokenMint = tokenA.mintAddress)
             .map(SwapTokenModel::JupiterToken)
@@ -61,36 +61,24 @@ class SwapTokensInteractor(
     }
 
     suspend fun searchToken(tokenMode: SwapTokensListMode, symbolOrName: String): List<SwapTokenModel> {
-        val tokenA = requireCurrentTokenA()
         val userTokens = tokenServiceCoordinator.getUserTokens().map(SwapTokenModel::UserToken)
         val userTokensMints = userTokens.map { it.mintAddress }.toSet()
         val filteredUserTokens = filterUserSwapTokens(userTokens, symbolOrName)
 
-        return when (tokenMode) {
-            SwapTokensListMode.TOKEN_A -> {
-                val searchedJupiterTokens = swapTokensRepository.searchTokens(
-                    mintAddressOrSymbol = symbolOrName
-                )
-                    .map(SwapTokenModel::JupiterToken)
-                    .filter { it.mintAddress !in userTokensMints }
-
-                filteredUserTokens
-                    .plus(searchedJupiterTokens)
-                    .filter { it.notSelectedToken(tokenA) }
-            }
-            SwapTokensListMode.TOKEN_B -> {
-                val tokenB = getCurrentTokenB()
-                val searchedJupiterTokens = swapTokensRepository.searchTokensInSwappable(
-                    mintAddressOrSymbol = symbolOrName,
-                    sourceTokenMint = tokenA.mintAddress
-                )
-                    .map(SwapTokenModel::JupiterToken)
-                    .filter { it.mintAddress !in userTokensMints }
-                filteredUserTokens
-                    .plus(searchedJupiterTokens)
-                    .filter { it.notSelectedToken(tokenB) }
-            }
+        val selectedToken = when (tokenMode) {
+            SwapTokensListMode.TOKEN_A -> requireCurrentTokenA()
+            SwapTokensListMode.TOKEN_B -> requireCurrentTokenB()
         }
+
+        val searchedJupiterTokens = swapTokensRepository.searchTokens(
+            mintAddressOrSymbol = symbolOrName
+        )
+            .map(SwapTokenModel::JupiterToken)
+            .filter { it.mintAddress !in userTokensMints }
+
+        return filteredUserTokens
+            .plus(searchedJupiterTokens)
+            .filter { it.notSelectedToken(selectedToken) }
     }
 
     private fun filterUserSwapTokens(swapTokens: List<SwapTokenModel>, query: String): List<SwapTokenModel> {

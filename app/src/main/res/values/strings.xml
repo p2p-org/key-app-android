@@ -13,6 +13,7 @@
     <string name="common_reload">Reload</string>
     <string name="common_great">Great!</string>
     <string name="common_got_it">Got it</string>
+    <string name="common_got_it_w_emoji">Got it 👍</string>
     <string name="common_settings">Settings</string>
     <string name="common_copied">Copied to clipboard</string>
     <string name="common_copied_with_emoji">👯‍ Copied to the clipboard</string>
@@ -52,6 +53,7 @@
     <string name="common_mint">Mint</string>
     <string name="common_refresh">Refresh</string>
     <string name="common_my_crypto">My crypto</string>
+    <string name="common_share_link">Share my link</string>
 
     <string name="storage_permission_alert_message">The application needs storage permission to save QrCode Image</string>
     <string name="storage_permission_alert_title">Permission required</string>
@@ -181,6 +183,8 @@
     <string name="home_receive">Receive</string>
     <string name="main_transfer">Transfer</string>
     <string name="home_usd_format">$%s</string>
+    <string name="home_pnl_format">%s%% last 24h</string>
+    <string name="token_pnl_format">%s%%</string>
     <string name="main_swap">Swap</string>
     <string name="home_swap">Swap</string>
     <string name="main_close_account">Close Account</string>
@@ -474,4 +478,8 @@
 
     <string name="send_no_token_title">Sending tokens has\nnever been EASIER</string>
     <string name="send_buy_crypto">Buy crypto</string>
+    <string name="pnl_details_title">%s%% last 24 hours</string>
+    <string name="pnl_details_subtitle">Result of an investment, trading strategy for 24 hours</string>
+    <string name="referral_banner_title">Referral\nProgram</string>
+    <string name="referral_banner_open_details">Open details</string>
 </resources>

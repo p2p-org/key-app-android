@@ -104,4 +104,11 @@ class DebugSettingsPresenter(
         interactor.resetUserCountry()
         view?.showUiKitSnackBar(message = "User country has been reset")
     }
+
+    override fun onSwapUrlChanged(urlValue: String) {
+        if (urlValue.isNotBlank()) {
+            networkServicesUrlProvider.saveSwapEnvironment(urlValue)
+            loadData()
+        }
+    }
 }

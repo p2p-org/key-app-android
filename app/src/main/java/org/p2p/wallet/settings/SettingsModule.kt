@@ -49,7 +49,8 @@ object SettingsModule : InjectionModule {
                 settingsItemMapper = get(),
                 metadataInteractor = get(),
                 authInteractor = get(),
-                analyticsInteractor = get()
+                analyticsInteractor = get(),
+                referralProgramEnabledFeatureToggle = get()
             )
         } bind SettingsContract.Presenter::class
 

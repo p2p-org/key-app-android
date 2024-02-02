@@ -77,6 +77,7 @@ import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensPresenter
 
 object JupiterSwapModule : InjectionModule {
 
+    @Deprecated("Old v4 api")
     const val JUPITER_RETROFIT_QUALIFIER = "JUPITER_RETROFIT_QUALIFIER"
     const val JUPITER_RETROFIT_V6_QUALIFIER = "JUPITER_RETROFIT_V6_QUALIFIER"
 

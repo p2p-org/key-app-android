@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
+import org.p2p.wallet.deeplinks.ReferralDeeplinkHandler
 import org.p2p.wallet.deeplinks.SwapDeeplinkData
 import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
@@ -19,22 +20,24 @@ import org.p2p.wallet.utils.emptyString
  * Handles deeplinks supported by main
  * @param deeplinkTopLevelHandler - if case is already done in implementation on a top level you can just pass it up
  */
-class DeeplinkHandler(
+class MainFragmentDeeplinkHandler(
     private val coroutineScope: CoroutineScope,
     private val screenNavigator: DeeplinkScreenNavigator?,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val userInteractor: UserInteractor,
     private val swapDeeplinkHandler: SwapDeeplinkHandler,
     private val deeplinkTopLevelHandler: (target: DeeplinkTarget) -> Unit,
+    private val referralDeeplinkHandler: ReferralDeeplinkHandler,
 ) {
 
     suspend fun handle(data: DeeplinkData) {
-        Timber.i("DeeplinkHandler received target: ${data.target}")
+        Timber.i("MainFragmentDeeplinkHandler received target: ${data.target}")
         when (data.target) {
             DeeplinkTarget.BUY -> handleBuyDeeplink(data)
             DeeplinkTarget.SEND -> handleSendDeeplink()
             DeeplinkTarget.SWAP -> handleSwapDeeplink(data)
             DeeplinkTarget.CASH_OUT -> handleCashOutDeeplink()
+            DeeplinkTarget.REFERRAL -> handleReferralDeeplink(data)
             else -> Unit
         }
     }
@@ -71,6 +74,10 @@ class DeeplinkHandler(
                 screenNavigator?.showSwap()
             }
         }
+    }
+
+    private fun handleReferralDeeplink(data: DeeplinkData) {
+        referralDeeplinkHandler.handleDeeplink(data)
     }
 
     private suspend fun handleSendDeeplink() {

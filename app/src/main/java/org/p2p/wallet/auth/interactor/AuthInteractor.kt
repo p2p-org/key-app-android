@@ -21,6 +21,7 @@ import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_HASH
 import org.p2p.wallet.infrastructure.security.SecureStorageContract.Key.KEY_PIN_CODE_SALT
 import org.p2p.wallet.push_notifications.interactor.PushNotificationsInteractor
+import org.p2p.wallet.referral.repository.ReferralRepository
 
 /**
  * The secure storage now includes the hash which is encrypted in two ways
@@ -35,6 +36,7 @@ class AuthInteractor(
     private val pushNotificationsInteractor: PushNotificationsInteractor,
     private val appLoaderFacade: AppLoaderFacade,
     private val dispatchers: CoroutineDispatchers,
+    private val referralRepository: ReferralRepository,
     private val appScope: AppScope
 ) {
 
@@ -161,6 +163,9 @@ class AuthInteractor(
         // Send device push token to NotificationService on signIn, on creation and restoring the wallet
         appScope.launch {
             pushNotificationsInteractor.updateDeviceToken()
+        }
+        appScope.launch {
+            referralRepository.registerReferent()
         }
     }
 }

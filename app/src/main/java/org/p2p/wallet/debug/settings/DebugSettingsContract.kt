@@ -19,5 +19,6 @@ interface DebugSettingsContract {
         fun onClickDetachStrigaUser()
         fun onClickResetUserCountry()
         fun onSettingsSwitchClicked(titleResId: Int, isChecked: Boolean)
+        fun onSwapUrlChanged(urlValue: String)
     }
 }

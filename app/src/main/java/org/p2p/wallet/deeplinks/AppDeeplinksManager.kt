@@ -24,6 +24,7 @@ private const val EXTRA_TAB_SCREEN = "EXTRA_TAB_SCREEN"
 class AppDeeplinksManager(
     private val context: Context,
     private val swapDeeplinkHandler: SwapDeeplinkHandler,
+    private val referralDeeplinkHandler: ReferralDeeplinkHandler,
     private val intercomDeeplinkManager: IntercomDeeplinkManager
 ) {
     companion object {
@@ -92,12 +93,14 @@ class AppDeeplinksManager(
                 val isValidScheme = context.getString(R.string.app_scheme) == data.scheme
                 val isTransferScheme = isTransferDeeplink(data)
                 val isSwapScheme = swapDeeplinkHandler.isSwapDeeplink(data)
+                val isReferralScheme = referralDeeplinkHandler.isReferralDeeplink(data)
 
                 when {
-                    isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> handleOnboardingDeeplink(data)
-                    isValidScheme && DeeplinkUtils.isValidNavigationLink(data) -> handleCommonDeeplink(intent)
-                    isSwapScheme -> handleSwapDeeplink(intent)
-                    isTransferScheme -> handleTransferDeeplink(data)
+                    isValidScheme && DeeplinkUtils.isValidOnboardingLink(data) -> triggerOnboardingDeeplink(data)
+                    isValidScheme && DeeplinkUtils.isValidNavigationLink(data) -> notifyCommonDeeplink(intent)
+                    isSwapScheme -> notifySwapDeeplinkData(intent)
+                    isReferralScheme -> notifyReferralDeeplinkData(intent)
+                    isTransferScheme -> setTransferDeeplinkPending(data)
                     intercomDeeplinkManager.handleBackgroundDeeplink(data) -> Unit
                 }
             }
@@ -172,12 +175,12 @@ class AppDeeplinksManager(
         }
     }
 
-    private fun handleOnboardingDeeplink(data: Uri) {
+    private fun triggerOnboardingDeeplink(data: Uri) {
         Timber.i("handleOnboardingDeeplink called")
         rootListener?.triggerOnboardingDeeplink(data)
     }
 
-    private fun handleTransferDeeplink(data: Uri) {
+    private fun setTransferDeeplinkPending(data: Uri) {
         val validatedSvlLink = if (data.scheme == context.getString(R.string.transfer_app_scheme_alternative)) {
             // convert link to https format
             data.buildUpon()
@@ -195,7 +198,7 @@ class AppDeeplinksManager(
         }
     }
 
-    private fun handleCommonDeeplink(intent: Intent) {
+    private fun notifyCommonDeeplink(intent: Intent) {
         Timber.i("handleCommonDeeplink called")
         val data = intent.data ?: return
         val screenName = data.host
@@ -214,7 +217,11 @@ class AppDeeplinksManager(
         }
     }
 
-    private fun handleSwapDeeplink(intent: Intent) {
+    private fun notifyReferralDeeplinkData(intent: Intent) {
+        referralDeeplinkHandler.createDeeplinkData(intent)?.also(::notify)
+    }
+
+    private fun notifySwapDeeplinkData(intent: Intent) {
         swapDeeplinkHandler.createSwapDeeplinkData(intent)?.also(::notify)
     }
 
