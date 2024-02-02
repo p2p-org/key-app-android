@@ -39,6 +39,7 @@ class ReferralRemoteRepository(
         try {
             val requestTimestamp = System.currentTimeMillis().milliseconds.inWholeSeconds
             val signature = signRequestHex(
+                // order matters
                 tokenKeyProvider.publicKey, Optional.empty<String>(), requestTimestamp
             )
             val request = ReferralRequest(
@@ -76,6 +77,7 @@ class ReferralRemoteRepository(
         try {
             val requestTimestamp = System.currentTimeMillis().milliseconds.inWholeSeconds
             val signature = signRequestHex(
+                // order matters
                 tokenKeyProvider.publicKey, referent, requestTimestamp
             )
             val request = ReferralRequest(
