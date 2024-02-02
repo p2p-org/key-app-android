@@ -10,23 +10,37 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
 import com.google.android.play.core.ktx.requestAppUpdateInfo
 import timber.log.Timber
+import kotlin.time.Duration.Companion.seconds
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.ForceUpdateVersionCodeFeatureToggle
+import org.p2p.wallet.infrastructure.coroutines.waitForCondition
 
 class AppUpdateService(
     private val context: Context,
     private val forceUpdateVersionCodeFt: ForceUpdateVersionCodeFeatureToggle
 ) {
     private suspend fun isUpdateNeeded(): Boolean {
-        val forceUpdateVersionCode = forceUpdateVersionCodeFt.value
-        if (forceUpdateVersionCode == -1) {
+        val isForceUpdateCodeFetched = waitForCondition(2.seconds.inWholeMilliseconds) {
+            forceUpdateVersionCodeFt.value != -1
+        }
+        if (!isForceUpdateCodeFetched) {
             Timber.e(IllegalArgumentException("Force update version is not fetched"))
             return false
         }
 
+        val forceUpdateVersionCode = forceUpdateVersionCodeFt.value
+
         val appUpdateInfo = AppUpdateManagerFactory.create(context).requestAppUpdateInfo()
         val currentVersionCode = BuildConfig.VERSION_CODE
         val storeVersionCode = appUpdateInfo.availableVersionCode()
+
+        Timber.i(
+            buildString {
+                appendLine("storeVersionCode = $storeVersionCode, ")
+                appendLine("currentVersionCode = $currentVersionCode, ")
+                appendLine("forceUpdateVersionCode = $forceUpdateVersionCode")
+            }
+        )
 
         val isForceUpdateNeeded = currentVersionCode < forceUpdateVersionCode
         val isForceUpdateAvailableInStore = storeVersionCode >= forceUpdateVersionCode
