@@ -144,13 +144,13 @@ class HistoryTransactionDetailsBottomSheetFragment :
             containerOldButtons.isVisible = false
             containerNewButtons.isVisible = true
 
-            buttonFirst.setText(firstButtonTitleRes)
-            buttonSecond.setText(secondButtonTitleRes)
-            buttonFirst.setOnClickListener {
-                presenter.onFirstButtonClick()
+            buttonPrimary.setText(firstButtonTitleRes)
+            buttonSecondary.setText(secondButtonTitleRes)
+            buttonPrimary.setOnClickListener {
+                presenter.onPrimaryButtonClick()
             }
-            buttonSecond.setOnClickListener {
-                presenter.onSecondButtonClick()
+            buttonSecondary.setOnClickListener {
+                presenter.onSecondaryButtonClick()
             }
         }
     }

@@ -6,7 +6,6 @@ import timber.log.Timber
 import java.util.Locale
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -34,13 +33,6 @@ class HistoryTransactionDetailsPresenter(
 
     private val timeFormat = DateTimeFormatter.ofPattern(DateTimeUtils.PATTERN_FULL_DAY, Locale.US)
     private var tx: HistoryTransaction? = null
-    private var loadUsernameJob: Job? = null
-
-    override fun detach() {
-        super.detach()
-        loadUsernameJob?.cancel()
-        loadUsernameJob = null
-    }
 
     override fun load(transactionId: String) {
         launch {
@@ -164,7 +156,7 @@ class HistoryTransactionDetailsPresenter(
         //  1. defer it,
         //  2. limit by timeout
         //  todo: the same ought to be done for [parseTransfer]
-        loadUsernameJob = async {
+        async {
             Timber.d("Start loading username")
             val transferActorUsername = withTimeoutOrNull(5.seconds) {
                 getTransferActorUsername(transferActorAddress)
@@ -395,7 +387,7 @@ class HistoryTransactionDetailsPresenter(
         }
     }
 
-    override fun onFirstButtonClick() {
+    override fun onPrimaryButtonClick() {
         when (tx) {
             is RpcHistoryTransaction.ReferralReward -> {
                 view?.dismiss()
@@ -404,7 +396,7 @@ class HistoryTransactionDetailsPresenter(
         }
     }
 
-    override fun onSecondButtonClick() {
+    override fun onSecondaryButtonClick() {
         when (tx) {
             is RpcHistoryTransaction.ReferralReward -> {
                 view?.navigateToSolscan(tx!!.getHistoryTransactionId())

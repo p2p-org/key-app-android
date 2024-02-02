@@ -273,7 +273,7 @@
             tools:visibility="visible">
 
             <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/buttonFirst"
+                android:id="@+id/buttonPrimary"
                 style="@style/UiKit.Components.Button.Large"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/ui_kit_button_large_height"
@@ -281,12 +281,12 @@
                 android:backgroundTint="@color/night"
                 android:textColor="@color/snow"
                 app:iconTint="@color/snow"
-                app:layout_constraintBottom_toTopOf="@id/buttonSecond"
+                app:layout_constraintBottom_toTopOf="@id/buttonSecondary"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Done" />
 
             <org.p2p.uikit.components.UiKitButton
-                android:id="@+id/buttonSecond"
+                android:id="@+id/buttonSecondary"
                 style="@style/UiKit.Components.Button.Large"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/ui_kit_button_large_height"
@@ -298,7 +298,7 @@
                 app:iconTint="@color/snow"
                 app:layout_constraintBottom_toBottomOf="parent"
 
-                app:layout_constraintTop_toBottomOf="@id/buttonFirst"
+                app:layout_constraintTop_toBottomOf="@id/buttonPrimary"
                 tools:text="Open SOLScan" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

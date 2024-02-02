@@ -39,7 +39,7 @@ interface HistoryTransactionDetailsContract {
 
     interface Presenter : MvpPresenter<View> {
         fun load(transactionId: String)
-        fun onFirstButtonClick()
-        fun onSecondButtonClick()
+        fun onPrimaryButtonClick()
+        fun onSecondaryButtonClick()
     }
 }
