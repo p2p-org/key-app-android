@@ -22,7 +22,7 @@ class ReferralWebViewBridge(
 ) {
     companion object {
         const val JS_BRIDGE_OBJECT_NAME = "ReferralBridge"
-        private const val REFERRAL_URL = "https://referral-2ii.pages.dev/"
+        private const val REFERRAL_URL = "https://referral-dapp.key.app/"
     }
 
     private var referralWebView: WebView? = null
