@@ -5,13 +5,15 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 
-class SwapTokensAMapper(private val commonMapper: SwapTokensCommonMapper) {
+class SwapTokensAMapper(
+    private val commonMapper: SwapTokensCommonMapper,
+) {
 
     private val userTokensSorter: Comparator<SwapTokenModel.UserToken> =
         compareByDescending(commonMapper.byTokenMintComparator, SwapTokenModel.UserToken::mintAddress)
             .thenByDescending { it.tokenAmountInUsd.orZero() }
 
-    fun toTokenACellItems(
+    suspend fun toTokenACellItems(
         chosenToken: SwapTokenModel,
         swapTokens: List<SwapTokenModel>
     ): List<AnyCellItem> = buildList {
@@ -21,7 +23,7 @@ class SwapTokensAMapper(private val commonMapper: SwapTokensCommonMapper) {
         this += commonMapper.allOtherTokensGroup(swapTokens.filterIsInstance<SwapTokenModel.JupiterToken>())
     }
 
-    private fun SwapTokensCommonMapper.chosenTokenGroup(
+    private suspend fun SwapTokensCommonMapper.chosenTokenGroup(
         selectedTokenModel: SwapTokenModel
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_chosen_token)
@@ -31,7 +33,7 @@ class SwapTokensAMapper(private val commonMapper: SwapTokensCommonMapper) {
         this += selectedToken
     }
 
-    private fun SwapTokensCommonMapper.userTokensGroup(
+    private suspend fun SwapTokensCommonMapper.userTokensGroup(
         userTokensModels: List<SwapTokenModel.UserToken>
     ): List<AnyCellItem> = buildList {
         val sectionHeader = createSectionHeader(R.string.swap_tokens_section_all_tokens)
@@ -43,7 +45,7 @@ class SwapTokensAMapper(private val commonMapper: SwapTokensCommonMapper) {
         this += userTokens
     }
 
-    private fun SwapTokensCommonMapper.allOtherTokensGroup(
+    private suspend fun SwapTokensCommonMapper.allOtherTokensGroup(
         otherTokenModels: List<SwapTokenModel.JupiterToken>
     ): List<AnyCellItem> = buildList {
         val otherTokens = otherTokenModels
