@@ -1,6 +1,7 @@
 package org.p2p.wallet.root
 
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
@@ -15,11 +16,13 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.crashlytics.helpers.FragmentLoggingLifecycleListener
 import org.p2p.core.utils.KeyboardListener
@@ -67,17 +70,31 @@ class RootActivity :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val crashLogger: CrashLogger by inject()
+    private val appUpdateService: AppUpdateService by lazy {
+        AppUpdateService(
+            context = applicationContext,
+            forceUpdateVersionCodeFt = get()
+        )
+    }
 
     private val networkObserver: SolanaNetworkObserver by inject()
     private val decorSystemBarsDelegate by lazy { DecorSystemBarsDelegate(this) }
     private val visibilityDelegate by lazy { ActivityVisibilityDelegate(this) }
-    override val keyboardState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val keyboardState = MutableStateFlow(false)
 
     private lateinit var binding: ActivityRootBinding
 
     private var snackbar: Snackbar? = null
     private var splashScreenBox: SplashScreenBox? = null
     private var onSplashDataLoaded: Boolean = false
+
+    private val appUpdateIntentLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            if (result.resultCode != RESULT_OK) {
+                Timber.e(Exception("Update flow failed! Result code: ${result.resultCode}}"))
+                showUiKitSnackBar(messageResId = R.string.error_general_message)
+            }
+        }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -105,11 +122,18 @@ class RootActivity :
 
         checkForGoogleServices()
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
+        supportFragmentManager.registerFragmentLifecycleCallbacks(
+            FragmentLoggingLifecycleListener(),
+            true
+        )
         deeplinksManager.setRootListener(this)
         handleDeeplink()
 
         registerNetworkObserver()
+
+        lifecycleScope.launch {
+            appUpdateService.startInAppUpdateIfNeeded(appUpdateIntentLauncher)
+        }
     }
 
     fun hideSplashScreen() {
@@ -169,10 +193,10 @@ class RootActivity :
         handlerQualifierName: String
     ) {
         NewTransactionProgressBottomSheet.show(
-            supportFragmentManager,
-            internalTransactionId,
-            data,
-            handlerQualifierName
+            fragmentManager = supportFragmentManager,
+            transactionId = internalTransactionId,
+            data = data,
+            handlerQualifierName = handlerQualifierName
         )
     }
 
@@ -220,6 +244,13 @@ class RootActivity :
         }
 
         crashLogger.setCustomKey("has_google_services", userHasGoogleServices)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            appUpdateService.checkUpdateIsNotStalled(appUpdateIntentLauncher)
+        }
     }
 
     override fun onStop() {
