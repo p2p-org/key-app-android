@@ -95,8 +95,6 @@ class UsernameInteractor(
     }
 
     fun isUsernameItemVisibleInSettings(): Boolean {
-        // https://r.key.app/nickname.sol
-        // https://s.key.app/swap?from=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&to=So11111111111111111111111111111111111111112&r=nickname.sol
         val isUserUsedWeb3Auth = userSignUpDetailsStorage.getLastSignUpUserDetails() != null
         val isRegisterUsernameEnabled = registerUsernameEnabledFeatureToggle.isFeatureEnabled
         // sometimes user can use seed phrase to login, we cant show item to him too
