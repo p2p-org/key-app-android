@@ -92,7 +92,7 @@ class RootActivity :
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             if (result.resultCode != RESULT_OK) {
                 Timber.e(Exception("Update flow failed! Result code: ${result.resultCode}}"))
-                showUiKitSnackBar(messageResId = R.string.error_general_message)
+                finishAffinity()
             }
         }
 

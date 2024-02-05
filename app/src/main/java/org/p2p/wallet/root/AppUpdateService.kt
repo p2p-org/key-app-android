@@ -13,6 +13,7 @@ import timber.log.Timber
 import kotlin.time.Duration.Companion.seconds
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.ForceUpdateVersionCodeFeatureToggle
+import org.p2p.wallet.common.feature_toggles.toggles.remote.ForceUpdateVersionCodeFeatureToggle.Companion.NOT_FETCHED
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
 
 class AppUpdateService(
@@ -21,7 +22,7 @@ class AppUpdateService(
 ) {
     private suspend fun isUpdateNeeded(): Boolean {
         val isForceUpdateCodeFetched = waitForCondition(2.seconds.inWholeMilliseconds) {
-            forceUpdateVersionCodeFt.value != -1
+            forceUpdateVersionCodeFt.value != NOT_FETCHED
         }
         if (!isForceUpdateCodeFetched) {
             Timber.e(IllegalArgumentException("Force update version is not fetched"))
