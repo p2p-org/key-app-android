@@ -1,18 +1,19 @@
 package org.p2p.solanaj.model.types
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigInteger
 
 data class EpochInfo(
     @SerializedName("absoluteSlot")
-    val absoluteSlot: Long,
+    val absoluteSlot: BigInteger,
     @SerializedName("blockHeight")
-    val blockHeight: Long,
+    val blockHeight: BigInteger,
     @SerializedName("epoch")
-    val epoch: Int,
+    val epoch: BigInteger,
     @SerializedName("slotIndex")
-    val slotIndex: Long,
+    val slotIndex: BigInteger,
     @SerializedName("slotsInEpoch")
-    val slotsInEpoch: Long,
+    val slotsInEpoch: BigInteger,
     @SerializedName("transactionCount")
     val transactionCount: Long
 )

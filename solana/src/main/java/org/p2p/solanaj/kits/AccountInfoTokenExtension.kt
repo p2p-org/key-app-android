@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.utils.divideSafe
+import org.p2p.core.utils.isZero
+import org.p2p.core.utils.orZero
 
 typealias TokenExtensionsMap = Map<String, AccountInfoTokenExtensionConfig>
 
@@ -32,7 +34,7 @@ sealed interface AccountInfoTokenExtensionConfig {
         }
 
         data class TransferFeeConfigData(
-            val epoch: Int,
+            val epoch: BigInteger,
             val maximumFee: BigInteger,
             val transferFeeBasisPoints: Int,
         ) {
@@ -42,8 +44,8 @@ sealed interface AccountInfoTokenExtensionConfig {
                     .multiply("100".toBigDecimal().setScale(4))
         }
 
-        fun getActualTransferFee(currentEpoch: Int): TransferFeeConfigData? {
-            if (currentEpoch > (newerTransferFee?.epoch ?: 0) || currentEpoch == 0) {
+        fun getActualTransferFee(currentEpoch: BigInteger): TransferFeeConfigData? {
+            if (currentEpoch > (newerTransferFee?.epoch.orZero()) || currentEpoch.isZero()) {
                 return newerTransferFee ?: olderTransferFee
             }
             return olderTransferFee
