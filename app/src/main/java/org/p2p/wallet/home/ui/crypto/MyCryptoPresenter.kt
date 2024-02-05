@@ -85,7 +85,11 @@ class MyCryptoPresenter(
             try {
                 tokenServiceCoordinator.refresh()
                 // pnl must restart it's 5 minutes timer after force refresh
-                pnlInteractor.restartAndRefresh()
+                // and we should restart it only if it was initially started
+                // other cases might indicate that we didn't start observer due to empty state
+                if (pnlInteractor.isStarted()) {
+                    pnlInteractor.restartAndRefresh()
+                }
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
@@ -205,7 +209,9 @@ class MyCryptoPresenter(
 
     private fun handleEmptyAccount() {
         cryptoScreenAnalytics.logUserAggregateBalanceBase(BigDecimal.ZERO)
+        view?.showBalancePnl(null)
         view?.showBalance(cryptoMapper.mapBalance(BigDecimal.ZERO))
+        view?.showItems(cryptoMapper.mapEmptyStateCellItems())
     }
 
     override fun toggleTokenVisibility(token: Token.Active) {

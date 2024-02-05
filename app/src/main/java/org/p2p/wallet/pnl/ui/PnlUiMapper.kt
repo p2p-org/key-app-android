@@ -31,6 +31,7 @@ class PnlUiMapper {
             is PnlDataState.Loading -> {
                 mapBalancePnlLoading()
             }
+            is PnlDataState.Idle,
             is PnlDataState.Error -> {
                 null
             }
@@ -49,6 +50,7 @@ class PnlUiMapper {
             is PnlDataState.Loading -> {
                 mapBalancePnlLoading()
             }
+            is PnlDataState.Idle,
             is PnlDataState.Error -> {
                 null
             }

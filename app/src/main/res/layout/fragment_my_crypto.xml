@@ -65,41 +65,48 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewCrypto"
+            android:layout_height="wrap_content"
+            android:fillViewport="true"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:orientation="vertical"
-                android:overScrollMode="never"
-                android:paddingBottom="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:listitem="@layout/item_token" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/textViewEmpty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:drawablePadding="24dp"
-                android:gravity="center_horizontal"
-                android:text="@string/my_crypto_empty_title"
-                android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
-                android:textColor="@color/text_night"
-                android:visibility="gone"
-                app:drawableBottomCompat="@drawable/ic_my_crypto_empty"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewCrypto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="vertical"
+                    android:overScrollMode="never"
+                    android:paddingBottom="20dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:itemCount="4"
+                    tools:listitem="@layout/item_token" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/textViewEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:drawablePadding="24dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/my_crypto_empty_title"
+                    android:textAppearance="@style/UiKit.TextAppearance.Regular.Text1"
+                    android:textColor="@color/text_night"
+                    android:visibility="gone"
+                    app:drawableBottomCompat="@drawable/ic_my_crypto_empty"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/recyclerViewCrypto"
+                    tools:visibility="visible" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
