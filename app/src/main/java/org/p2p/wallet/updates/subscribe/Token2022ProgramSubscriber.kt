@@ -5,7 +5,6 @@ import org.p2p.solanaj.model.types.Encoding
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.programs.SystemProgram
-import org.p2p.solanaj.programs.TokenProgram
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.updates.SocketSubscriptionUpdateType
 import org.p2p.wallet.updates.SubscriptionUpdatesManager
@@ -30,7 +29,6 @@ class Token2022ProgramSubscriber(
                     "commitment" to ConfirmationStatus.CONFIRMED.value,
                     "encoding" to Encoding.BASE64.encoding,
                     "filters" to listOf(
-                        mapOf("dataSize" to TokenProgram.AccountInfoData.ACCOUNT_INFO_DATA_LENGTH),
                         mapOf(
                             "memcmp" to mapOf(
                                 "offset" to 32,
