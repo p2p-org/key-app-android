@@ -77,7 +77,7 @@ class SendFeeRelayerManager(
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
     private var initializeCompleted = false
-    private var currentSolanaEpoch: Int = 0
+    private var currentSolanaEpoch: BigInteger = BigInteger.ZERO
 
     private var minRentExemption: BigInteger = BigInteger.ZERO
 

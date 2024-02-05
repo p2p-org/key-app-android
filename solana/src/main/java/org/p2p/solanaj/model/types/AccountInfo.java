@@ -2,6 +2,7 @@ package org.p2p.solanaj.model.types;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -20,7 +21,7 @@ public class AccountInfo extends RpcResultObject {
         @SerializedName("owner")
         private String owner;
         @SerializedName("rentEpoch")
-        private long rentEpoch;
+        private BigInteger rentEpoch;
 
         @Nullable
         public List<String> getData() {
@@ -39,7 +40,7 @@ public class AccountInfo extends RpcResultObject {
             return owner;
         }
 
-        public long getRentEpoch() {
+        public BigInteger getRentEpoch() {
             return rentEpoch;
         }
 
