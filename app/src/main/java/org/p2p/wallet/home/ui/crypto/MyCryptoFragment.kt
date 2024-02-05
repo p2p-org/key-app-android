@@ -253,7 +253,6 @@ class MyCryptoFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             textViewEmpty.isVisible = isEmpty
-            recyclerViewCrypto.isVisible = !isEmpty
         }
         setAppBarScrollingState(!isEmpty)
     }

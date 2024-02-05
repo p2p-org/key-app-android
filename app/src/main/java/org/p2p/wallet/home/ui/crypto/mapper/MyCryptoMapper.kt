@@ -93,6 +93,16 @@ class MyCryptoMapper(
         return result.toList()
     }
 
+    fun mapEmptyStateCellItems(): List<AnyCellItem> {
+        val result = mutableListOf<AnyCellItem>()
+
+        if (referralProgramEnabledFeatureToggle.isFeatureEnabled) {
+            result += ReferralBannerCellModel
+        }
+
+        return result
+    }
+
     private fun Token.Active.mapToCellModel(
         isZerosHidden: Boolean,
         pnlTokenData: PnlTokenData?,
