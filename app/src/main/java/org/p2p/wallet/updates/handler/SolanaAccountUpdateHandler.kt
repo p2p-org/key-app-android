@@ -47,5 +47,5 @@ private data class BalanceValueResponse(
     @SerializedName("executable")
     val executable: Boolean,
     @SerializedName("rentEpoch")
-    val rentEpoch: Int
+    val rentEpoch: BigInteger
 )
