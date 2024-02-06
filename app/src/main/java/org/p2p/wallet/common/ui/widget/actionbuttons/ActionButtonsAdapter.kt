@@ -18,9 +18,13 @@ class ActionButtonsAdapter(
     override fun getItemCount(): Int = buttons.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActionButtonViewHolder =
-        ActionButtonViewHolder(parent, onButtonClicked)
+        ActionButtonViewHolder(
+            parent = parent,
+            onButtonClicked = onButtonClicked,
+            itemsCount = buttons.size
+        )
 
     override fun onBindViewHolder(holder: ActionButtonViewHolder, position: Int) {
-        holder.onBind(buttons[position])
+        holder.onBind(buttons[position], position)
     }
 }

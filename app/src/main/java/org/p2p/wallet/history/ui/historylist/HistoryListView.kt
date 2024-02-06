@@ -45,15 +45,18 @@ class HistoryListView @JvmOverloads constructor(
     private lateinit var presenter: HistoryListViewContract.Presenter
 
     private var clickListener: HistoryListViewClickListener? = null
+    private var externalRefreshListener: () -> Unit = {}
 
     fun bind(
         presenter: HistoryListViewContract.Presenter,
         clickListener: HistoryListViewClickListener,
         listType: HistoryListViewType,
+        refreshListener: () -> Unit = {},
     ) {
         this.presenter = presenter
         this.listViewType = listType
         this.clickListener = clickListener
+        externalRefreshListener = refreshListener
         presenter.attach(this)
         bindView()
     }
@@ -79,6 +82,7 @@ class HistoryListView @JvmOverloads constructor(
         refreshLayout.setOnRefreshListener {
             presenter.refreshHistory(listViewType)
             scrollListener.reset()
+            externalRefreshListener()
         }
         loadHistory()
     }

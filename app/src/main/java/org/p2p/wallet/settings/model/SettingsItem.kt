@@ -33,4 +33,6 @@ sealed interface SettingsItem {
     ) : SettingsItem
 
     object SettingsSpaceSeparatorItem : SettingsItem
+
+    object ReferralBannerSettingsItem : SettingsItem
 }

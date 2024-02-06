@@ -272,6 +272,49 @@ sealed class RpcHistoryTransaction(
     }
 
     @Parcelize
+    data class ReferralReward(
+        override val signature: String,
+        override val date: ZonedDateTime,
+        override val blockNumber: Int,
+        override val status: HistoryTransactionStatus,
+        override val type: RpcHistoryTransactionType,
+        val senderAddress: String,
+        val iconUrl: String?,
+        val amount: RpcHistoryAmount,
+        val symbol: String,
+        val destination: String,
+        val counterPartyUsername: String?,
+        val fees: List<RpcFee>?,
+    ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
+        @DrawableRes
+        fun getIcon(): Int = R.drawable.ic_transaction_receive
+
+        fun getFormattedFiatValue(): String? {
+            return amount.totalInUsd
+                ?.scaleShortOrFirstNotZero()
+                ?.asUsdTransaction(getSymbol(false))
+        }
+
+        fun getTotalWithSymbol(): String = "${getSymbol(false)}${getFormattedTotal()}"
+
+        fun getFormattedTotal(scaleMedium: Boolean = false): String = if (scaleMedium) {
+            "${amount.total.scaleMedium().formatToken()} $symbol"
+        } else {
+            "${amount.total.formatToken()} $symbol"
+        }
+
+        @ColorRes
+        fun getTextColor() = when {
+            !status.isCompleted() -> {
+                R.color.text_rose
+            }
+            else -> {
+                R.color.text_mint
+            }
+        }
+    }
+
+    @Parcelize
     data class StakeUnstake(
         override val signature: String,
         override val date: ZonedDateTime,

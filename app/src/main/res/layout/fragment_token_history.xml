@@ -25,7 +25,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/totalTextView"
+            android:id="@+id/textViewTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/bg_smoke"
@@ -39,7 +39,7 @@
             tools:text="21.9181 SOL" />
 
         <TextView
-            android:id="@+id/usdTotalTextView"
+            android:id="@+id/textViewUsdTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/bg_smoke"
@@ -48,11 +48,21 @@
             android:textColor="@color/text_night"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/totalTextView"
+            app:layout_constraintTop_toBottomOf="@+id/textViewTotal"
             tools:text="$12,380.00" />
 
+        <include
+            android:id="@+id/containerPnl"
+            layout="@layout/layout_pnl_text_block"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewUsdTotal" />
+
         <org.p2p.wallet.common.ui.widget.actionbuttons.ActionButtonsView
-            android:id="@+id/view_action_buttons"
+            android:id="@+id/viewActionButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/bg_smoke"
@@ -60,7 +70,7 @@
             android:paddingBottom="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/usdTotalTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/containerPnl" />
 
         <org.p2p.wallet.history.ui.historylist.HistoryListView
             android:id="@+id/layoutHistoryList"
@@ -69,7 +79,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view_action_buttons" />
+            app:layout_constraintTop_toBottomOf="@+id/viewActionButtons" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -22,6 +22,15 @@ sealed class RpcHistoryTransactionInfoResponse {
         val counterParty: RpcHistoryAccountResponse
     ) : RpcHistoryTransactionInfoResponse()
 
+    data class ReferralReward(
+        @SerializedName("amount")
+        val amount: RpcHistoryAmountResponse,
+        @SerializedName("token")
+        val token: RpcHistoryTokenResponse,
+        @SerializedName("account")
+        val counterParty: RpcHistoryAccountResponse
+    ) : RpcHistoryTransactionInfoResponse()
+
     data class Swap(
         @SerializedName("from")
         val from: RpcHistorySwapTokenResponse,

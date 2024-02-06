@@ -1,8 +1,12 @@
 package org.p2p.wallet.debug.settings
 
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
+import android.widget.EditText
+import android.widget.LinearLayout
 import org.koin.android.ext.android.inject
 import org.p2p.core.network.environment.NetworkEnvironment
 import org.p2p.uikit.utils.attachAdapter
@@ -28,6 +32,8 @@ import org.p2p.wallet.settings.ui.network.SettingsNetworkBottomSheet
 import org.p2p.wallet.utils.getSerializableOrNull
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
+import org.p2p.wallet.utils.toDp
+import org.p2p.wallet.utils.viewbinding.context
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
 private const val REQUEST_KEY = "EXTRA_REQUEST_KEY"
@@ -94,6 +100,9 @@ class DebugSettingsFragment :
             R.string.debug_settings_torus -> {
                 replaceFragment(DebugTorusFragment.create())
             }
+            R.string.debug_settings_swap -> {
+                showChangeSwapUrlDialog()
+            }
             R.string.debug_settings_logs_title -> {
                 CustomLogDialog(requireContext()).show()
             }
@@ -125,5 +134,27 @@ class DebugSettingsFragment :
         bundle.getSerializableOrNull<NetworkEnvironment>(BUNDLE_KEY_NEW_NETWORK_NAME)?.let {
             presenter.onNetworkChanged(it)
         }
+    }
+
+    private fun showChangeSwapUrlDialog() {
+        val editText = EditText(binding.context).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(20.toDp(), 20.toDp(), 20.toDp(), 0) }
+            setText("")
+            setTextAppearance(R.style.UiKit_TextAppearance_Regular_Text1)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
+        }
+
+        AlertDialog.Builder(binding.context).apply {
+            setView(editText)
+            setPositiveButton("Change") { dialog, _ ->
+                presenter.onSwapUrlChanged(urlValue = editText.text.toString(),)
+                dialog.dismiss()
+            }
+            setNegativeButton("Close") { dialog, _ -> dialog.dismiss() }
+        }
+            .show()
     }
 }

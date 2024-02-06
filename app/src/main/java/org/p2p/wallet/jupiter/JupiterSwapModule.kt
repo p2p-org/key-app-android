@@ -54,6 +54,7 @@ import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.info.SwapInfoMapper
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapContract
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapPresenter
+import org.p2p.wallet.jupiter.ui.main.SwapShareDeeplinkBuilder
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
@@ -78,6 +79,7 @@ import org.p2p.wallet.jupiter.ui.tokens.presenter.SwapTokensPresenter
 
 object JupiterSwapModule : InjectionModule {
 
+    @Deprecated("Old v4 api")
     const val JUPITER_RETROFIT_QUALIFIER = "JUPITER_RETROFIT_QUALIFIER"
     const val JUPITER_RETROFIT_V6_QUALIFIER = "JUPITER_RETROFIT_V6_QUALIFIER"
 
@@ -111,6 +113,8 @@ object JupiterSwapModule : InjectionModule {
         factoryOf(::SwapWidgetTokenFormatter)
         factoryOf(::SwapButtonMapper)
         factoryOf(::SwapRateTickerMapper)
+
+        factoryOf(::SwapShareDeeplinkBuilder)
 
         factory { (initialData: JupiterPresenterInitialData) ->
             val stateManager: SwapStateManager = getSwapStateManager(

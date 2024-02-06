@@ -29,7 +29,9 @@ android {
         applicationId = "org.p2p.wallet"
         minSdk = Versions.sdkMinVersion
         targetSdk = Versions.sdkTargetVersion
+
         versionCode = Versions.VERSION_CODE
+        logger.quiet("VERSION_CODE: $versionCode")
         versionName = Versions.VERSION_NAME
 
         multiDexEnabled = true

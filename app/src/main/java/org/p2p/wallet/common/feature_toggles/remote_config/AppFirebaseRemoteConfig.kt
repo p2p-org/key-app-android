@@ -8,8 +8,8 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import org.p2p.wallet.BuildConfig
 import org.p2p.core.common.di.AppScope
+import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.utils.retryOnException
 
 private const val NO_VALUE = ""
@@ -53,7 +53,6 @@ class AppFirebaseRemoteConfig(
             remoteConfig.fetchAndActivate()
                 .addOnSuccessListener {
                     isFetchFailed = false
-
                     Timber.d("Remote config fetched and activated")
                     Timber.i("Remote config fetched toggles: ${allFeatureTogglesRaw()}")
                     continuation.resume(allFeatureTogglesRaw())

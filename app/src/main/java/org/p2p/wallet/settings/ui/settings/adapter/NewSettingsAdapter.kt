@@ -1,12 +1,13 @@
 package org.p2p.wallet.settings.ui.settings.adapter
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import android.view.ViewGroup
 import org.p2p.wallet.R
 import org.p2p.wallet.settings.model.SettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.ComplexSettingsItem
+import org.p2p.wallet.settings.model.SettingsItem.ReferralBannerSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsGroupTitleItem
 import org.p2p.wallet.settings.model.SettingsItem.SettingsSpaceSeparatorItem
 import org.p2p.wallet.settings.model.SettingsItem.SignOutButtonItem
@@ -14,6 +15,7 @@ import org.p2p.wallet.settings.model.SettingsItem.SwitchSettingsItem
 import org.p2p.wallet.settings.model.SettingsItem.TextSettingsItem
 import org.p2p.wallet.settings.ui.settings.adapter.viewholder.ComplexSettingsViewHolder
 import org.p2p.wallet.settings.ui.settings.adapter.viewholder.NewSettingsViewHolder
+import org.p2p.wallet.settings.ui.settings.adapter.viewholder.ReferralBannerSettingsViewHolder
 import org.p2p.wallet.settings.ui.settings.adapter.viewholder.SettingsGroupTitleViewHolder
 import org.p2p.wallet.settings.ui.settings.adapter.viewholder.SettingsSpaceSeparatorViewHolder
 import org.p2p.wallet.settings.ui.settings.adapter.viewholder.SignOutButtonViewHolder
@@ -22,7 +24,9 @@ import org.p2p.wallet.settings.ui.settings.adapter.viewholder.TextSettingsViewHo
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class NewSettingsAdapter(
-    private val onSettingsClicked: (SettingsItem) -> Unit
+    private val onSettingsClicked: (SettingsItem) -> Unit,
+    private val onReferralShareLinkClicked: () -> Unit,
+    private val onReferralOpenDetailsClicked: () -> Unit,
 ) : RecyclerView.Adapter<NewSettingsViewHolder<*, *>>() {
 
     private val data = mutableListOf<SettingsItem>()
@@ -51,23 +55,38 @@ class NewSettingsAdapter(
         is SignOutButtonItem -> R.layout.item_settings_sign_out
         is SwitchSettingsItem -> R.layout.item_settings_switch
         is TextSettingsItem -> R.layout.item_settings_text_value
+        is ReferralBannerSettingsItem -> R.layout.item_referral_banner
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewSettingsViewHolder<*, *> = when (viewType) {
-        R.layout.item_settings_group_title ->
+        R.layout.item_settings_group_title -> {
             SettingsGroupTitleViewHolder(parent.inflateViewBindingForViewHolder())
-        R.layout.item_settings_complex ->
+        }
+        R.layout.item_settings_complex -> {
             ComplexSettingsViewHolder(parent.inflateViewBindingForViewHolder(), onSettingsClicked)
-        R.layout.item_settings_space_separator ->
+        }
+        R.layout.item_settings_space_separator -> {
             SettingsSpaceSeparatorViewHolder(parent.inflateViewBindingForViewHolder())
-        R.layout.item_settings_sign_out ->
+        }
+        R.layout.item_settings_sign_out -> {
             SignOutButtonViewHolder(parent.inflateViewBindingForViewHolder(), onSettingsClicked)
-        R.layout.item_settings_switch ->
+        }
+        R.layout.item_settings_switch -> {
             SwitchSettingsViewHolder(parent.inflateViewBindingForViewHolder(), onSettingsClicked)
-        R.layout.item_settings_text_value ->
+        }
+        R.layout.item_settings_text_value -> {
             TextSettingsViewHolder(parent.inflateViewBindingForViewHolder())
-        else ->
+        }
+        R.layout.item_referral_banner -> {
+            ReferralBannerSettingsViewHolder(
+                parent.inflateViewBindingForViewHolder(),
+                onClickShareLink = onReferralShareLinkClicked,
+                onClickOpenDetails = onReferralOpenDetailsClicked
+            )
+        }
+        else -> {
             error("ViewHolder with view type $viewType is not found")
+        }
     }
 
     override fun onBindViewHolder(holder: NewSettingsViewHolder<*, *>, position: Int) {

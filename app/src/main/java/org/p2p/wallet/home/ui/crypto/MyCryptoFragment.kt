@@ -41,7 +41,10 @@ import org.p2p.wallet.home.ui.main.delegates.token.TokenCellModel
 import org.p2p.wallet.home.ui.main.delegates.token.tokenDelegate
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
+import org.p2p.wallet.pnl.ui.PnlDetailsBottomSheet
 import org.p2p.wallet.receive.ReceiveFragmentFactory
+import org.p2p.wallet.referral.banner.ReferralFragmentFactory
+import org.p2p.wallet.referral.banner.referralBannerDelegate
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.ui.SearchOpenedFromScreen
@@ -73,6 +76,7 @@ class MyCryptoFragment :
     private val glideManager: GlideManager by inject()
     private val onOffRampNavigator: OnOffRampNavigator by inject()
     private val sendFragmentFactory: SendFragmentFactory by inject()
+    private val referralFragmentFactory: ReferralFragmentFactory by inject()
 
     private var listener: RootListener? = null
 
@@ -95,6 +99,16 @@ class MyCryptoFragment :
                 buttonClaim.setOnClickListener { onClaimTokenClicked(item.isClaimEnabled, item.payload) }
             }
         },
+        referralBannerDelegate { binding, _ ->
+            with(binding) {
+                buttonShare.setOnClickListener {
+                    referralFragmentFactory.shareLink(requireContext())
+                }
+                buttonOpenDetails.setOnClickListener {
+                    replaceFragment(referralFragmentFactory.openDetails())
+                }
+            }
+        }
     )
 
     override fun onAttach(context: Context) {
@@ -189,6 +203,25 @@ class MyCryptoFragment :
         binding.viewBalance.textViewAmount.bindOrGone(cellModel)
     }
 
+    override fun showBalancePnl(cellModel: TextViewCellModel?) {
+        binding.viewBalance.containerPnl.root.isVisible = cellModel != null
+        binding.viewBalance.containerPnl.textViewPnl.bindOrGone(cellModel)
+        binding.viewBalance.containerPnl.root.setOnClickListener {
+            presenter.onBalancePnlClicked()
+        }
+    }
+
+    override fun showPnlDetails(showPnlPercentage: String) {
+        PnlDetailsBottomSheet.show(
+            fm = childFragmentManager,
+            pnlPercentage = showPnlPercentage
+        )
+    }
+
+    override fun hideBalancePnl() {
+        binding.viewBalance.containerPnl.root.isVisible = false
+    }
+
     override fun showUserAddress(ellipsizedAddress: String) {
         with(binding.layoutToolbar) {
             textViewAddress.text = "\uD83D\uDD17 $ellipsizedAddress"
@@ -220,7 +253,6 @@ class MyCryptoFragment :
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             textViewEmpty.isVisible = isEmpty
-            recyclerViewCrypto.isVisible = !isEmpty
         }
         setAppBarScrollingState(!isEmpty)
     }

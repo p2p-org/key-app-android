@@ -29,6 +29,7 @@ object Dependencies {
     private const val fragmentKtx = "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
     private const val biometricKtx = "androidx.biometric:biometric:1.1.0"
     private const val browser = "androidx.browser:browser:1.5.0"
+    private const val appUpdate = "com.google.android.play:app-update-ktx:2.1.0"
     const val swiperefreshlayout = "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     const val flexbox = "com.google.android.flexbox:flexbox:3.0.0"
 
@@ -200,7 +201,8 @@ object Dependencies {
         activityKtx,
         fragmentKtx,
         biometricKtx,
-        browser
+        browser,
+        appUpdate
     )
 
     val coroutineLibraries = listOf(

@@ -210,7 +210,7 @@ class MainContainerFragment :
     }
     //endregion
 
-    override fun navigateFromDeeplink(data: DeeplinkData) {
+    override fun navigateToTabFromDeeplink(data: DeeplinkData) {
         when (data.target) {
             DeeplinkTarget.HISTORY -> navigate(ScreenTab.HISTORY_SCREEN)
             DeeplinkTarget.SETTINGS -> navigate(ScreenTab.SETTINGS_SCREEN)

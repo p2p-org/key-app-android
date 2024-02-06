@@ -13,6 +13,7 @@
     <string name="debug_settings_token_service">Token Service Environment</string>
     <string name="debug_settings_name_service">Name Service Environment</string>
     <string name="debug_settings_torus">Torus Environment</string>
+    <string name="debug_settings_swap">Swap Environment</string>
     <string name="debug_settings_notification_service">Notification Service Environment</string>
     <string name="debug_settings_stub_public_key">Public key stubbing 🗡️</string>
     <string name="debug_settings_web3">Web3 User Data 🤑</string>

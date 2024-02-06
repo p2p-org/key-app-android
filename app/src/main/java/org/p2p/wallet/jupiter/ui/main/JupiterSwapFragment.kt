@@ -126,6 +126,7 @@ class JupiterSwapFragment :
     private val binding: FragmentJupiterSwapBinding by viewBinding()
 
     private val analytics: JupiterSwapMainScreenAnalytics by inject()
+    private val shareLinkBuilder: SwapShareDeeplinkBuilder by inject()
 
     override val presenter: JupiterSwapContract.Presenter by inject {
         parametersOf(
@@ -254,8 +255,7 @@ class JupiterSwapFragment :
     }
 
     override fun showSwapLinkShareDialog(tokenAMint: Base58String, tokenBMint: Base58String) {
-        val shareUrl = "https://s.key.app/swap?from=%s&to=%s".format(tokenAMint.base58Value, tokenBMint.base58Value)
-        requireContext().shareText(shareUrl)
+        requireContext().shareText(shareLinkBuilder.buildDeeplink(tokenAMint, tokenBMint))
     }
 
     private fun setupWidgetsActionCallbacks() = with(binding) {

@@ -34,9 +34,11 @@ import org.p2p.wallet.infrastructure.transactionmanager.TransactionManagerModule
 import org.p2p.wallet.jupiter.JupiterSwapModule
 import org.p2p.wallet.moonpay.MoonpayModule
 import org.p2p.wallet.moonpay.ui.BuyModule
+import org.p2p.wallet.pnl.PnlModule
 import org.p2p.wallet.push_notifications.PushNotificationsModule
 import org.p2p.wallet.qr.ScanQrModule
 import org.p2p.wallet.receive.ReceiveModule
+import org.p2p.wallet.referral.ReferralModule
 import org.p2p.wallet.restore.RestoreModule
 import org.p2p.wallet.root.RootModule
 import org.p2p.wallet.rpc.RpcModule
@@ -87,6 +89,7 @@ object AppModule {
                 TokenServiceModule.create(),
                 HomeEventsModule.create(),
                 EthereumModule.create(),
+                PnlModule.create(),
                 // feature screens
                 AuthModule.create(),
                 BridgeModule.create(),
@@ -109,6 +112,7 @@ object AppModule {
                 SettingsModule.create(),
                 StrigaModule.create(),
                 SwapModule.create(),
+                ReferralModule.create(),
             )
         )
     }
