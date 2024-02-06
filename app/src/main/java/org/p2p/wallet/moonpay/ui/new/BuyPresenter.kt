@@ -239,22 +239,16 @@ class BuyPresenter(
 
         val isUsdSelected =
             selectedCurrency == FiatCurrency.USD
-        val isEuValidCurrencySelected =
-            currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrency == FiatCurrency.EUR
+        val isUkWithEurSelected =
+            selectedCurrency == FiatCurrency.EUR && currentAlpha3Code == BANK_TRANSFER_UK_CODE
+        val isNotUkWithGbpSelected =
+            selectedCurrency == FiatCurrency.GBP && currentAlpha3Code != BANK_TRANSFER_UK_CODE
 
-        return when {
-            isUsdSelected || isEuValidCurrencySelected -> {
-                switchToCardPaymentMethod()
-                isValidCurrencyForPay()
-            }
-            selectedCurrency == FiatCurrency.GBP && currentAlpha3Code != BANK_TRANSFER_UK_CODE -> {
-                switchToCardPaymentMethod()
-                isValidCurrencyForPay()
-            }
-            else -> {
-                true
-            }
+        if (isUsdSelected || isUkWithEurSelected || isNotUkWithGbpSelected) {
+            switchToCardPaymentMethod()
+            return isValidCurrencyForPay()
         }
+        return true
     }
 
     private fun switchToCardPaymentMethod() {
