@@ -9,8 +9,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants
-import org.p2p.core.utils.Constants.EUR_READABLE_SYMBOL
 import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -39,7 +37,7 @@ import org.p2p.wallet.utils.emptyString
 
 private const val DELAY_IN_MS = 500L
 
-class NewBuyPresenter(
+class BuyPresenter(
     tokenToBuy: Token,
     private val fiatToken: String? = null,
     private val fiatAmount: String? = null,
@@ -50,7 +48,7 @@ class NewBuyPresenter(
     private val resources: Resources,
     private val buyInteractor: BuyInteractor,
     private val analyticsInteractor: ScreensAnalyticsInteractor,
-) : BasePresenter<NewBuyContract.View>(), NewBuyContract.Presenter {
+) : BasePresenter<BuyContract.View>(), BuyContract.Presenter {
 
     private lateinit var tokensToBuy: List<Token>
 
@@ -74,7 +72,7 @@ class NewBuyPresenter(
         FiatCurrency.USD
     )
 
-    override fun attach(view: NewBuyContract.View) {
+    override fun attach(view: BuyContract.View) {
         super.attach(view)
         loadTokensToBuy()
         loadAvailablePaymentMethods()
@@ -211,7 +209,10 @@ class NewBuyPresenter(
 
     override fun setCurrency(currency: FiatCurrency, byUser: Boolean) {
         if (byUser) {
-            buyAnalytics.logBuyCurrencyChanged(selectedCurrency.abbreviation, currency.abbreviation)
+            buyAnalytics.logBuyCurrencyChanged(
+                fromCurrency = selectedCurrency.abbreviation,
+                toCurrency = currency.abbreviation
+            )
         }
         selectedCurrency = currency
 
@@ -230,25 +231,29 @@ class NewBuyPresenter(
     }
 
     private fun isValidCurrencyForPay(): Boolean {
-        val selectedCurrencyCode = selectedCurrency.abbreviation
         val currentPaymentMethod = selectedPaymentMethod ?: return false
 
-        if (currentPaymentMethod.method == PaymentMethod.MethodType.BANK_TRANSFER) {
-            if (selectedCurrencyCode == Constants.USD_READABLE_SYMBOL ||
-                (currentAlpha3Code == BANK_TRANSFER_UK_CODE && selectedCurrencyCode == EUR_READABLE_SYMBOL)
-            ) {
-                paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
-                    onPaymentMethodSelected(it, byUser = false)
-                }
-                return isValidCurrencyForPay()
-            } else if (selectedCurrency == FiatCurrency.GBP && currentAlpha3Code != BANK_TRANSFER_UK_CODE) {
-                paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }?.let {
-                    onPaymentMethodSelected(it, byUser = false)
-                }
-                return isValidCurrencyForPay()
-            }
+        if (currentPaymentMethod.method != PaymentMethod.MethodType.BANK_TRANSFER) {
+            return true
+        }
+
+        val isUsdSelected =
+            selectedCurrency == FiatCurrency.USD
+        val isUkWithEurSelected =
+            selectedCurrency == FiatCurrency.EUR && currentAlpha3Code == BANK_TRANSFER_UK_CODE
+        val isNotUkWithGbpSelected =
+            selectedCurrency == FiatCurrency.GBP && currentAlpha3Code != BANK_TRANSFER_UK_CODE
+
+        if (isUsdSelected || isUkWithEurSelected || isNotUkWithGbpSelected) {
+            switchToCardPaymentMethod()
+            return isValidCurrencyForPay()
         }
         return true
+    }
+
+    private fun switchToCardPaymentMethod() {
+        paymentMethods.find { it.method == PaymentMethod.MethodType.CARD }
+            ?.also { onPaymentMethodSelected(selectedMethod = it, byUser = false) }
     }
 
     override fun onFocusFieldChanged(focusField: FocusField) {

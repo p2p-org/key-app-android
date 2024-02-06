@@ -97,7 +97,7 @@ class MainFragmentDeeplinkHandler(
             coroutineScope.launch {
                 val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
                 if (token != null) {
-                    screenNavigator?.navigateToNewBuyScreen(token, fiatToken, fiatAmount)
+                    screenNavigator?.navigateToBuyScreen(token, fiatToken, fiatAmount)
                 } else {
                     onBuyHandled()
                 }

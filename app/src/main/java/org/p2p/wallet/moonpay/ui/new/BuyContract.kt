@@ -9,7 +9,7 @@ import org.p2p.wallet.moonpay.model.BuyViewData
 import org.p2p.wallet.moonpay.model.PaymentMethod
 import org.p2p.wallet.moonpay.repository.sell.FiatCurrency
 
-interface NewBuyContract {
+interface BuyContract {
 
     interface View : MvpView {
         fun showPreselectedAmount(amount: String)

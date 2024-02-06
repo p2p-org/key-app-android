@@ -8,8 +8,8 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.moonpay.interactor.BuyInteractor
 import org.p2p.wallet.moonpay.interactor.PaymentMethodsInteractor
 import org.p2p.wallet.moonpay.model.PaymentMethod
-import org.p2p.wallet.moonpay.ui.new.NewBuyContract
-import org.p2p.wallet.moonpay.ui.new.NewBuyPresenter
+import org.p2p.wallet.moonpay.ui.new.BuyContract
+import org.p2p.wallet.moonpay.ui.new.BuyPresenter
 import org.p2p.wallet.receive.solana.ReceiveSolanaContract
 import org.p2p.wallet.receive.solana.ReceiveSolanaPresenter
 
@@ -37,13 +37,13 @@ object BuyModule : InjectionModule {
                 context = get()
             )
         }
-        factory<NewBuyContract.Presenter> { (
+        factory<BuyContract.Presenter> { (
             token: Token,
             fiatToken: String?,
             fiatAmount: String?,
             preselectedMethodType: PaymentMethod.MethodType?
         ) ->
-            NewBuyPresenter(
+            BuyPresenter(
                 tokenToBuy = token,
                 fiatToken = fiatToken,
                 fiatAmount = fiatAmount,

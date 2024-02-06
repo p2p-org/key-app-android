@@ -25,7 +25,7 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.moonpay.analytics.BuyAnalytics
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.new.BuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.pnl.ui.PnlDetailsBottomSheet
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
@@ -175,7 +175,7 @@ class TokenHistoryFragment :
         when (clickedButton) {
             ActionButton.BUY_BUTTON -> {
                 buyAnalytics.logTokenScreenActionClicked()
-                replaceFragment(NewBuyFragment.create(tokenForHistory))
+                replaceFragment(BuyFragment.create(tokenForHistory))
             }
             ActionButton.RECEIVE_BUTTON -> {
                 receiveAnalytics.logTokenScreenActionClicked()
