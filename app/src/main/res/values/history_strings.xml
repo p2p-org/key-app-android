@@ -43,7 +43,7 @@
     <string name="transaction_details_pending_transfer_description">The transaction will be completed in a few seconds</string>
 
     <string name="transaction_details_share">Share</string>
-    <string name="transaction_details_explorer">Explorer</string>
+    <string name="transaction_details_explorer">SolScan</string>
 
     <string name="transaction_details_no_balance_change">No balance change</string>
 
