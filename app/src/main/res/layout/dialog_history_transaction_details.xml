@@ -299,7 +299,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
 
                 app:layout_constraintTop_toBottomOf="@id/buttonPrimary"
-                tools:text="Open SOLScan" />
+                tools:text="Open Solscan" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
