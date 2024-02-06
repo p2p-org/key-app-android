@@ -55,7 +55,7 @@ class TokenHistoryPresenter(
     }
 
     private fun observePnlData() {
-        pnlInteractor.state
+        pnlInteractor.pnlState
             .onEach { updateTokenAmounts(this.token) }
             .launchIn(this)
     }
@@ -87,14 +87,14 @@ class TokenHistoryPresenter(
         view?.renderTokenPnl(
             pnlUiMapper.mapTokenBalancePnl(
                 tokenMint = token.mintAddressB58,
-                pnlDataState = pnlInteractor.state.value
+                pnlDataState = pnlInteractor.pnlState.value
             )
         )
     }
 
     override fun onTokenPnlClicked() {
-        if (pnlInteractor.state.value.isResult()) {
-            pnlInteractor.state.value.findForToken(token.mintAddressB58)?.let {
+        if (pnlInteractor.pnlState.value.isLoaded()) {
+            pnlInteractor.pnlState.value.findForToken(token.mintAddressB58)?.let {
                 view?.showPnlDetails(it.percent)
             }
         }

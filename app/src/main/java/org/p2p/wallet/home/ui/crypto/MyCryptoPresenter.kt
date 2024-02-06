@@ -49,7 +49,7 @@ class MyCryptoPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val mainScreenAnalytics: MainScreenAnalytics,
-    private val pnlInteractor: PnlDataObserver,
+    private val pnlDataObserver: PnlDataObserver,
     private val pnlUiMapper: PnlUiMapper,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
@@ -87,8 +87,8 @@ class MyCryptoPresenter(
                 // pnl must restart it's 5 minutes timer after force refresh
                 // and we should restart it only if it was initially started
                 // other cases might indicate that we didn't start observer due to empty state
-                if (pnlInteractor.isStarted()) {
-                    pnlInteractor.restartAndRefresh()
+                if (pnlDataObserver.isStarted()) {
+                    pnlDataObserver.restartAndRefresh()
                 }
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
@@ -119,7 +119,7 @@ class MyCryptoPresenter(
     private fun observePnlData() {
         pnlDataSubscription?.cancel()
         pnlDataSubscription = launch {
-            pnlInteractor.state
+            pnlDataObserver.pnlState
                 .onEach {
                     handleTokenState(tokenServiceCoordinator.observeLastState().value)
                 }
@@ -142,12 +142,12 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
 
-                if (!pnlInteractor.isStarted()) {
-                    pnlInteractor.start()
+                if (!pnlDataObserver.isStarted()) {
+                    pnlDataObserver.start()
                 }
 
                 showTokensAndBalance(
-                    pnlDataState = pnlInteractor.state.value,
+                    pnlDataState = pnlDataObserver.pnlState.value,
                     // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
                     solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
@@ -186,8 +186,8 @@ class MyCryptoPresenter(
     }
 
     override fun onBalancePnlClicked() {
-        if (pnlInteractor.state.value.isResult()) {
-            view?.showPnlDetails(pnlInteractor.state.value.toResultOrNull()!!.total.percent)
+        if (pnlDataObserver.pnlState.value.isLoaded()) {
+            view?.showPnlDetails(pnlDataObserver.pnlState.value.toLoadedOrNull()!!.total.percent)
         }
     }
 

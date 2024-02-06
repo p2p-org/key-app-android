@@ -23,7 +23,7 @@ class PnlUiMapper {
 
     fun mapBalancePnl(pnlDataState: PnlDataState): TextViewCellModel? {
         return when (pnlDataState) {
-            is PnlDataState.Result -> {
+            is PnlDataState.Loaded -> {
                 TextViewCellModel.Raw(
                     TextContainer(R.string.home_pnl_format, pnlDataState.data.total.percent)
                 )
@@ -40,7 +40,7 @@ class PnlUiMapper {
 
     fun mapTokenBalancePnl(tokenMint: Base58String, pnlDataState: PnlDataState): TextViewCellModel? {
         return when (pnlDataState) {
-            is PnlDataState.Result -> {
+            is PnlDataState.Loaded -> {
                 pnlDataState.findForToken(tokenMint)?.let { pnlTokenData ->
                     TextViewCellModel.Raw(
                         TextContainer(R.string.home_pnl_format, pnlTokenData.percent)
