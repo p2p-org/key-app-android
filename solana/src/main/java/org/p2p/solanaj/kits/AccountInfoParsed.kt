@@ -1,6 +1,7 @@
 package org.p2p.solanaj.kits
 
 import com.google.gson.annotations.SerializedName
+import java.math.BigInteger
 
 data class AccountInfoParsed(
     @SerializedName("data")
@@ -16,7 +17,7 @@ data class AccountInfoParsed(
     val owner: String,
 
     @SerializedName("rentEpoch")
-    val rentEpoch: Long
+    val rentEpoch: BigInteger
 ) {
 
     var address: String? = null

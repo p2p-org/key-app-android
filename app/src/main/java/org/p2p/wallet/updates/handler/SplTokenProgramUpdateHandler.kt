@@ -75,5 +75,5 @@ private data class AccountNotificationResponse(
     @SerializedName("executable")
     val executable: Boolean,
     @SerializedName("rentEpoch")
-    val rentEpoch: Int
+    val rentEpoch: BigInteger
 )
