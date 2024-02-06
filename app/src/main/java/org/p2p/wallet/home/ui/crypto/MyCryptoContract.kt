@@ -26,6 +26,7 @@ interface MyCryptoContract {
         fun navigateToReceive()
         fun showAddMoneyDialog()
         fun navigateToSend()
+        fun navigateToSendNoTokens(validTokenToBuy: Token)
         fun navigateToSwap()
         fun navigateToSell()
         fun navigateToTokenClaim(token: Token.Eth)

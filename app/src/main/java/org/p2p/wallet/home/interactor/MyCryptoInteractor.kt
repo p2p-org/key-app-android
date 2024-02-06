@@ -12,6 +12,16 @@ class MyCryptoInteractor(
     private val ethereumInteractor: EthereumInteractor
 ) {
 
+    suspend fun canSendBeOpened(): CryptoSendOpenResult {
+        val isAccountEmpty = userInteractor.getNonZeroUserTokens().isEmpty()
+        return if (isAccountEmpty) {
+            val token = userInteractor.getSingleTokenForBuy()
+            CryptoSendOpenResult.NoTokens(token)
+        } else {
+            CryptoSendOpenResult.CanBeOpened
+        }
+    }
+
     suspend fun setTokenHidden(mintAddress: String, visibility: String) {
         userInteractor.setTokenHidden(mintAddress, visibility)
     }

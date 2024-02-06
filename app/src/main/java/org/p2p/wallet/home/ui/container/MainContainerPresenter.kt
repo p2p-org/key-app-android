@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.token.Token
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
@@ -89,7 +90,7 @@ class MainContainerPresenter(
         launchSupervisor {
             deeplinksManager.subscribeOnDeeplinks(supportedTargets)
                 .onEach { view?.navigateToTabFromDeeplink(it) }
-                .onEach { deeplinkHandler.handle(it) }
+                .onEach(deeplinkHandler::handle)
                 .launchIn(this)
 
             deeplinksManager.executeHomePendingDeeplink()
@@ -98,10 +99,9 @@ class MainContainerPresenter(
     }
 
     override fun observeUserTokens() {
-        launch {
-            tokenServiceCoordinator.observeUserTokens()
-                .collect { handleTokenState(it) }
-        }
+        tokenServiceCoordinator.observeUserTokens()
+            .onEach(::handleTokenState)
+            .launchIn(this)
     }
 
     override fun logWalletOpened() {
@@ -120,11 +120,11 @@ class MainContainerPresenter(
         mainScreenAnalytics.logMainScreenSettingsClick()
     }
 
-    override fun onSendClicked() {
+    override fun handleSendDeeplink() {
         mainScreenAnalytics.logMainScreenSendClick()
         launch {
             val userTokens = tokenServiceCoordinator.getUserTokens()
-            val isAccountEmpty = userTokens.isEmpty() || userTokens.all { it.isZero }
+            val isAccountEmpty = userTokens.isEmpty() || userTokens.all(Token.Active::isZero)
             if (isAccountEmpty) {
                 val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
                 view?.navigateToSendNoTokens(validTokenToBuy)
@@ -144,7 +144,7 @@ class MainContainerPresenter(
 
     private fun handleDeeplinkTarget(target: DeeplinkTarget) {
         when (target) {
-            DeeplinkTarget.SEND -> onSendClicked()
+            DeeplinkTarget.SEND -> handleSendDeeplink()
             else -> Timber.d("Unsupported deeplink target! $target")
         }
     }
@@ -179,9 +179,9 @@ class MainContainerPresenter(
             is UserTokensState.Loaded -> {
                 // todo: this new filter supposed to be used for new design
                 val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
-                val balance = filteredTokens.sumOf { it.total }
-                view?.showWalletBalance(balanceMapper.formatBalance(balance))
-                view?.showWalletBalance("Wallet")
+                val balance = filteredTokens.sumOf(Token.Active::total)
+                view?.showWalletBalance(balance = balanceMapper.formatBalance(balance))
+                view?.showWalletBalance(balance = "Wallet")
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
             }
         }

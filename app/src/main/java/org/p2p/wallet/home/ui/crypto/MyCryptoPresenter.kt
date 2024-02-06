@@ -20,6 +20,7 @@ import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.common.ui.widget.actionbuttons.ActionButton
+import org.p2p.wallet.home.interactor.CryptoSendOpenResult
 import org.p2p.wallet.home.interactor.MyCryptoInteractor
 import org.p2p.wallet.home.model.VisibilityState
 import org.p2p.wallet.home.ui.crypto.analytics.CryptoScreenAnalytics
@@ -264,7 +265,16 @@ class MyCryptoPresenter(
     }
 
     override fun onSendClicked() {
-        view?.navigateToSend()
+        launch {
+            when (val result = cryptoInteractor.canSendBeOpened()) {
+                is CryptoSendOpenResult.CanBeOpened -> {
+                    view?.navigateToSend()
+                }
+                is CryptoSendOpenResult.NoTokens -> {
+                    view?.navigateToSendNoTokens(result.fallbackBuyToken ?: return@launch)
+                }
+            }
+        }
     }
 
     override fun onSwapClicked() {
@@ -279,7 +289,7 @@ class MyCryptoPresenter(
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
         cryptoScreenAnalytics.logCryptoClaimTransferedClicked()
         launch {
-            claimHandler.handle(view, canBeClaimed, token)
+            claimHandler.handle(view = view, canBeClaimed = canBeClaimed, token = token)
         }
     }
 

@@ -49,6 +49,7 @@ import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
 import org.p2p.wallet.send.ui.SearchOpenedFromScreen
 import org.p2p.wallet.send.ui.search.NewSearchFragment
+import org.p2p.wallet.send.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.ClaimProgressHandler
 import org.p2p.wallet.utils.HomeScreenLayoutManager
@@ -196,6 +197,11 @@ class MyCryptoFragment :
 
     override fun navigateToSend() {
         val target = NewSearchFragment.create(SearchOpenedFromScreen.MAIN)
+        replaceFragment(target)
+    }
+
+    override fun navigateToSendNoTokens(validTokenToBuy: Token) {
+        val target = SendUnavailableFragment.create(validTokenToBuy)
         replaceFragment(target)
     }
 

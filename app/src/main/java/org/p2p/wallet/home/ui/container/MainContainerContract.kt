@@ -31,6 +31,6 @@ interface MainContainerContract {
         fun logCryptoOpened()
         fun logHistoryOpened()
         fun logSettingsOpened()
-        fun onSendClicked()
+        fun handleSendDeeplink()
     }
 }
