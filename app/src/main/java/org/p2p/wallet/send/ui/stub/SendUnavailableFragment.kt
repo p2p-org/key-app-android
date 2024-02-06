@@ -12,7 +12,7 @@ import org.p2p.core.utils.insets.systemAndIme
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseFragment
 import org.p2p.wallet.databinding.FragmentSendUnavailableBinding
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.new.BuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.popBackStack
@@ -41,7 +41,7 @@ class SendUnavailableFragment : BaseFragment(R.layout.fragment_send_unavailable)
                 popBackStack()
             }
             buttonBuy.setOnClickListener {
-                replaceFragment(NewBuyFragment.create(token = defaultTokenToBuy))
+                replaceFragment(BuyFragment.create(token = defaultTokenToBuy))
             }
             buttonReceive.setOnClickListener {
                 replaceFragment(receiveFragmentFactory.receiveFragment(token = null))

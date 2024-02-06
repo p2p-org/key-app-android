@@ -19,7 +19,7 @@ import org.p2p.wallet.common.mvp.BaseMvpBottomSheet
 import org.p2p.wallet.databinding.DialogAddMoneyBinding
 import org.p2p.wallet.home.addmoney.AddMoneyContract
 import org.p2p.wallet.moonpay.model.PaymentMethod
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.new.BuyFragment
 import org.p2p.wallet.receive.ReceiveFragmentFactory
 import org.p2p.wallet.striga.StrigaFragmentFactory
 import org.p2p.wallet.striga.user.model.StrigaUserStatusDestination
@@ -70,7 +70,7 @@ class AddMoneyBottomSheet :
 
     override fun navigateToBankCard(tokenToBuy: Token, paymentMethod: PaymentMethod.MethodType) {
         dismissAndNavigate(
-            NewBuyFragment.create(
+            BuyFragment.create(
                 token = tokenToBuy,
                 preselectedMethodType = paymentMethod
             )

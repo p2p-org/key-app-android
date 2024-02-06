@@ -17,7 +17,7 @@ import org.p2p.wallet.history.ui.historylist.HistoryListViewType
 import org.p2p.wallet.history.ui.sendvialink.HistorySendLinksFragment
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.new.BuyFragment
 import org.p2p.wallet.moonpay.ui.transaction.SellTransactionDetailsBottomSheet
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -106,7 +106,7 @@ class HistoryFragment :
     }
 
     override fun showBuyScreen(token: Token) {
-        replaceFragment(NewBuyFragment.create(token))
+        replaceFragment(BuyFragment.create(token))
     }
 
     override fun openTransactionDetailsScreen(transactionId: String) {

@@ -13,10 +13,11 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.uikit.components.FocusField
 import org.p2p.uikit.utils.getColor
+import org.p2p.uikit.utils.setTextColorRes
 import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
-import org.p2p.wallet.databinding.FragmentNewBuyBinding
+import org.p2p.wallet.databinding.FragmentBuyBinding
 import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -46,9 +47,9 @@ private const val KEY_REQUEST = "KEY_REQUEST_NEW_BUY"
 private const val KEY_RESULT_TOKEN = "KEY_RESULT_TOKEN"
 private const val KEY_RESULT_CURRENCY = "KEY_RESULT_CURRENCY"
 
-class NewBuyFragment :
-    BaseMvpFragment<NewBuyContract.View, NewBuyContract.Presenter>(R.layout.fragment_new_buy),
-    NewBuyContract.View {
+class BuyFragment :
+    BaseMvpFragment<BuyContract.View, BuyContract.Presenter>(R.layout.fragment_buy),
+    BuyContract.View {
 
     companion object {
         fun create(
@@ -56,8 +57,8 @@ class NewBuyFragment :
             fiatToken: String? = null,
             fiatAmount: String? = null,
             preselectedMethodType: PaymentMethod.MethodType? = null
-        ): NewBuyFragment =
-            NewBuyFragment()
+        ): BuyFragment =
+            BuyFragment()
                 .withArgs(
                     EXTRA_TOKEN to token,
                     EXTRA_FIAT_TOKEN to fiatToken,
@@ -71,7 +72,7 @@ class NewBuyFragment :
     private val fiatAmount: String? by args(EXTRA_FIAT_AMOUNT)
     private val preselectedMethodType: PaymentMethod.MethodType? by args(EXTRA_PRESELECTED_METHOD_TYPE)
 
-    override val presenter: NewBuyContract.Presenter by inject {
+    override val presenter: BuyContract.Presenter by inject {
         parametersOf(
             token,
             fiatToken,
@@ -80,7 +81,7 @@ class NewBuyFragment :
         )
     }
 
-    private val binding: FragmentNewBuyBinding by viewBinding()
+    private val binding: FragmentBuyBinding by viewBinding()
     private val adapter: PaymentMethodsAdapter by unsafeLazy {
         PaymentMethodsAdapter(presenter::onPaymentMethodSelected)
     }
@@ -119,7 +120,6 @@ class NewBuyFragment :
                     presenter.setTokenToBuy(it)
                 }
             }
-
             result.containsKey(KEY_RESULT_CURRENCY) -> {
                 result.getSerializableCompat<FiatCurrency>(KEY_RESULT_CURRENCY)?.let {
                     setCurrencyCode(it.abbreviation)
@@ -129,7 +129,7 @@ class NewBuyFragment :
         }
     }
 
-    private fun FragmentNewBuyBinding.initViews() {
+    private fun FragmentBuyBinding.initViews() {
         recyclerViewMethods.adapter = adapter
 
         toolbarBuy.title = getString(R.string.buy_toolbar_title, token.tokenSymbol)
@@ -143,18 +143,16 @@ class NewBuyFragment :
         buttonBuy.text = getString(R.string.buy_toolbar_title, token.tokenSymbol)
 
         amountsView.apply {
-            tokenSymbol = this@NewBuyFragment.token.tokenSymbol
+            tokenSymbol = this@BuyFragment.token.tokenSymbol
             currencyCode = FiatCurrency.USD.abbreviation.uppercase()
 
-            setOnSelectTokenClickListener { presenter.onSelectTokenClicked() }
+            setOnSelectTokenClickListener(presenter::onSelectTokenClicked)
             setOnTokenAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
 
-            setOnSelectCurrencyClickListener { presenter.onSelectCurrencyClicked() }
+            setOnSelectCurrencyClickListener(presenter::onSelectCurrencyClicked)
             setOnCurrencyAmountChangeListener { amount -> presenter.setBuyAmount(amount, isDelayEnabled = false) }
 
-            setOnFocusChangeListener { focusField ->
-                presenter.onFocusFieldChanged(focusField)
-            }
+            setOnFocusChangeListener(presenter::onFocusFieldChanged)
         }
 
         buttonBuy.setOnClickListener { presenter.onContinueClicked() }
@@ -234,10 +232,10 @@ class NewBuyFragment :
         binding.buttonBuy.isEnabled = isEnabled
         with(binding.buttonBuy) {
             if (isEnabled) {
-                setTextColor(getColor(R.color.text_snow))
+                setTextColorRes(R.color.text_snow)
                 setBackgroundColor(getColor(R.color.bg_night))
             } else {
-                setTextColor(getColor(R.color.text_mountain))
+                setTextColorRes(R.color.text_mountain)
                 setBackgroundColor(getColor(R.color.bg_rain))
                 strokeWidth = 1
             }
@@ -246,8 +244,8 @@ class NewBuyFragment :
 
     override fun clearOppositeFieldAndTotal(totalText: String) {
         when (binding.amountsView.focusField) {
-            FocusField.TOKEN -> binding.amountsView.setCurrencyAmount(null)
-            FocusField.CURRENCY -> binding.amountsView.setTokenAmount(null)
+            FocusField.TOKEN -> binding.amountsView.setCurrencyAmount(currencyAmount = null)
+            FocusField.CURRENCY -> binding.amountsView.setTokenAmount(tokenAmount = null)
         }
 
         binding.textViewTotalValue.text = totalText
@@ -282,7 +280,7 @@ class NewBuyFragment :
     }
 
     override fun onDetach() {
-        super.onDetach()
         backPressedCallback?.remove()
+        super.onDetach()
     }
 }

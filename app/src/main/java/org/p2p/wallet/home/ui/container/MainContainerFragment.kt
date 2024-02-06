@@ -28,7 +28,7 @@ import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
+import org.p2p.wallet.moonpay.ui.new.BuyFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
@@ -175,12 +175,12 @@ class MainContainerFragment :
     }
 
     //region DeeplinkScreenNavigator
-    override fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
-        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
+    override fun navigateToBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
+        replaceFragment(BuyFragment.create(token, fiatToken, fiatAmount))
     }
 
     override fun navigateToBuyScreen(token: Token) {
-        replaceFragment(NewBuyFragment.create(token))
+        replaceFragment(BuyFragment.create(token))
     }
 
     override fun showCashOut() {
