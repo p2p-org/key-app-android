@@ -87,7 +87,7 @@ class MyCryptoPresenter(
                 // pnl must restart it's 5 minutes timer after force refresh
                 // and we should restart it only if it was initially started
                 // other cases might indicate that we didn't start observer due to empty state
-                if (pnlInteractor.isStarted()) {
+                if (!pnlInteractor.canBeStarted()) {
                     pnlInteractor.restartAndRefresh()
                 }
             } catch (cancelled: CancellationException) {
@@ -119,7 +119,7 @@ class MyCryptoPresenter(
     private fun observePnlData() {
         pnlDataSubscription?.cancel()
         pnlDataSubscription = launch {
-            pnlInteractor.state
+            pnlInteractor.pnlState
                 .onEach {
                     handleTokenState(tokenServiceCoordinator.observeLastState().value)
                 }
@@ -142,12 +142,12 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
 
-                if (!pnlInteractor.isStarted()) {
+                if (pnlInteractor.canBeStarted()) {
                     pnlInteractor.start()
                 }
 
                 showTokensAndBalance(
-                    pnlDataState = pnlInteractor.state.value,
+                    pnlDataState = pnlInteractor.pnlState.value,
                     // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
                     solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
@@ -186,8 +186,8 @@ class MyCryptoPresenter(
     }
 
     override fun onBalancePnlClicked() {
-        if (pnlInteractor.state.value.isResult()) {
-            view?.showPnlDetails(pnlInteractor.state.value.toResultOrNull()!!.total.percent)
+        if (pnlInteractor.pnlState.value.isLoaded()) {
+            view?.showPnlDetails(pnlInteractor.pnlState.value.toLoadedOrNull()!!.total.percent)
         }
     }
 
