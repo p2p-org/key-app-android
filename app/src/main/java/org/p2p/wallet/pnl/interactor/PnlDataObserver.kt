@@ -44,7 +44,7 @@ class PnlDataObserver(
     private val pnlRepository: PnlRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
-    private val pnlEnabledFeatureToggle: PnlEnabledFeatureToggle
+    private val pnlEnabledFt: PnlEnabledFeatureToggle
 ) {
 
     private companion object {
@@ -57,10 +57,10 @@ class PnlDataObserver(
     private val _pnlState = MutableStateFlow<PnlDataState>(PnlDataState.Idle)
     val pnlState = _pnlState.asStateFlow()
 
-    fun canBeStarted(): Boolean = updaterJob != null
+    fun isStarted(): Boolean = updaterJob != null
 
     fun start() {
-        if (updaterJob != null || !pnlEnabledFeatureToggle.isFeatureEnabled) return
+        if (!pnlEnabledFt.isFeatureEnabled || isStarted()) return
         _pnlState.value = PnlDataState.Loading
         launchJob()
     }
@@ -76,6 +76,8 @@ class PnlDataObserver(
     }
 
     private fun launchJob() {
+        if (!pnlEnabledFt.isFeatureEnabled) return
+
         updaterJob = appScope.launch {
             // firstly, get current state, because observer may return actual tokens later
             tokenServiceCoordinator.observeLastState().value.extractTokenMints()
