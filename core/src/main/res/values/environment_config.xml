@@ -3,8 +3,8 @@
     <string name="coinGeckoBaseUrl">https://api.coingecko.com/api/v3/</string>
 
     <string name="bitcoinExplorer">https://btc.com/btc/address/%s</string>
-    <string name="solanaExplorer">https://explorer.solana.com/tx/%s</string>
-    <string name="solanaWalletExplorer">https://explorer.solana.com/address/%s</string>
+    <string name="solanaExplorer">https://solscan.io/tx/%s</string>
+    <string name="solanaWalletExplorer">https://solscan.io/account/%s</string>
 
     <string name="solanaTokensBaseUrl">https://raw.githubusercontent.com/p2p-org/token-list/main/src/tokens/</string>
 

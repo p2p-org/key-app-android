@@ -27,7 +27,7 @@
     <string name="transaction_details_title">Transaction %s</string>
     <string name="transaction_details_referral_title">Referral reward</string>
     <string name="transaction_details_referral_button_first">Done</string>
-    <string name="transaction_details_referral_button_second">Open SOLScan</string>
+    <string name="transaction_details_referral_button_second">Open Solscan</string>
     <string name="transaction_details_title_submitted">submitted</string>
     <string name="transaction_details_title_succeeded">succeeded</string>
     <string name="transaction_details_title_failed">failed</string>
@@ -43,7 +43,7 @@
     <string name="transaction_details_pending_transfer_description">The transaction will be completed in a few seconds</string>
 
     <string name="transaction_details_share">Share</string>
-    <string name="transaction_details_explorer">Explorer</string>
+    <string name="transaction_details_explorer">Solscan</string>
 
     <string name="transaction_details_no_balance_change">No balance change</string>
 

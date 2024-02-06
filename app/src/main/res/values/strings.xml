@@ -204,7 +204,7 @@
     <string name="main_share">Share</string>
     <string name="main_send_to_yourself_error">You can not send tokens to yourself</string>
     <string name="main_send_transaction_id">Transaction ID</string>
-    <string name="main_send_view_in_explorer">View in Solana explorer</string>
+    <string name="main_send_view_in_explorer">View in Solscan</string>
     <string name="main_send_success">Success</string>
     <string name="main_send_transaction_confirmed">Transaction has been confirmed</string>
     <string name="main_send_wrong_wallet">Wrong wallet address</string>
@@ -291,7 +291,7 @@
     <string name="receive_tap_to_read">Tap to read</string>
     <string name="receive_token_list_info">Each token in this list is available for receiving with this address; you can search for a token by typing its name or ticker.\n\nIf a token is not on this list, we do not recommend sending it to this address.</string>
     <string name="receive_token_list_do_not_recommend">we do not recommend sending it to this address.</string>
-    <string name="receive_view_solana_explorer">View in Solana explorer</string>
+    <string name="receive_view_solana_explorer">View in Solscan</string>
     <string name="receive_status_received">Statuses received</string>
     <string name="receive_choose_network_type">Choose the network</string>
     <string name="receive_solana_network">Solana network</string>
