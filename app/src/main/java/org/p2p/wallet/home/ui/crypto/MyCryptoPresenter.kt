@@ -263,10 +263,6 @@ class MyCryptoPresenter(
         view?.navigateToReceive()
     }
 
-    override fun onSendClicked() {
-        view?.navigateToSend()
-    }
-
     override fun onSwapClicked() {
         cryptoScreenAnalytics.logCryptoSwapClick()
         view?.navigateToSwap()
@@ -279,7 +275,7 @@ class MyCryptoPresenter(
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
         cryptoScreenAnalytics.logCryptoClaimTransferedClicked()
         launch {
-            claimHandler.handle(view, canBeClaimed, token)
+            claimHandler.handle(view = view, canBeClaimed = canBeClaimed, token = token)
         }
     }
 
