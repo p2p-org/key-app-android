@@ -110,21 +110,16 @@ class MyCryptoPresenter(
 
     private fun observeCryptoTokens() {
         cryptoTokensSubscription?.cancel()
-        cryptoTokensSubscription = launch {
-            tokenServiceCoordinator.observeUserTokens()
-                .collect { handleTokenState(it) }
-        }
+        cryptoTokensSubscription = tokenServiceCoordinator.observeUserTokens()
+            .onEach { handleTokenState(it) }
+            .launchIn(this)
     }
 
     private fun observePnlData() {
         pnlDataSubscription?.cancel()
-        pnlDataSubscription = launch {
-            pnlDataObserver.pnlState
-                .onEach {
-                    handleTokenState(tokenServiceCoordinator.observeLastState().value)
-                }
-                .launchIn(this)
-        }
+        pnlDataSubscription = pnlDataObserver.pnlState
+            .onEach { handleTokenState(tokenServiceCoordinator.observeLastState().value) }
+            .launchIn(this)
     }
 
     private fun handleTokenState(newState: UserTokensState) {
@@ -281,6 +276,11 @@ class MyCryptoPresenter(
 
     override fun detach() {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+        cryptoTokensSubscription?.cancel()
+        cryptoTokensSubscription = null
+
+        pnlDataSubscription?.cancel()
+        pnlDataSubscription = null
         super.detach()
     }
 
