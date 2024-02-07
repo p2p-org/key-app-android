@@ -33,7 +33,7 @@ import org.p2p.wallet.BuildConfig as AppBuildConfig
 
 @Suppress("KotlinConstantConditions")
 val isLocalDebugBuild: Boolean
-    get() = org.p2p.wallet.BuildConfig.DEBUG && org.p2p.wallet.BuildConfig.BUILD_TYPE == "debug"
+    get() = AppBuildConfig.DEBUG && AppBuildConfig.BUILD_TYPE == "debug"
 
 class App : Application(), Configuration.Provider {
     private val crashLoggerInitializer: CrashLoggerInitializer by inject()
