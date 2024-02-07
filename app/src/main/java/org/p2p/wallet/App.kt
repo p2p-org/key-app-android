@@ -31,6 +31,10 @@ import org.p2p.wallet.utils.SolanajTimberLogger
 import org.p2p.core.BuildConfig as CoreBuildConfig
 import org.p2p.wallet.BuildConfig as AppBuildConfig
 
+@Suppress("KotlinConstantConditions")
+val isLocalDebugBuild: Boolean
+    get() = AppBuildConfig.DEBUG && AppBuildConfig.BUILD_TYPE == "debug"
+
 class App : Application(), Configuration.Provider {
     private val crashLoggerInitializer: CrashLoggerInitializer by inject()
     private val crashLogger: CrashLogger by inject()
