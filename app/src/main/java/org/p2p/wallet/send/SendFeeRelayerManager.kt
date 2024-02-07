@@ -325,15 +325,13 @@ class SendFeeRelayerManager(
                 return FeeCalculationState.NoFees
             }
 
-            val feePayerTokensMints = sendServiceRepository.getCompensationTokens()
-
             val poolsStateFees = getFeesInPayingTokenUseCase.execute(
                 feePayerToken = feePayerToken,
                 transactionFeeInSol = fees.transactionFee,
                 accountCreationFeeInSol = fees.accountCreationFee
             )
 
-            if (poolsStateFees != null && feePayerToken.mintAddressB58 in feePayerTokensMints) {
+            if (poolsStateFees != null) {
                 FeeCalculationState.Success(
                     fee = FeeRelayerFee(
                         feeInSol = fees,
