@@ -11,6 +11,7 @@ import kotlinx.coroutines.supervisorScope
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
+import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
@@ -90,9 +91,7 @@ class SwapFeeCellsBuilder(
         }
 
         val tokenBRate: BigDecimal? = loadRateForToken(tokenB)?.rate
-
         val feeUsd = tokenBRate?.let { ataFee.multiply(it) }
-
         val formattedFeeAmount = ataFee.formatTokenWithSymbol(tokenB.tokenSymbol, tokenB.decimals)
 
         val cellModel = MainCellModel(
@@ -193,11 +192,44 @@ class SwapFeeCellsBuilder(
         }
     }
 
+    suspend fun buildKeyAppFee(activeRoute: JupiterSwapRouteV6, tokenB: SwapTokenModel): SwapSettingsFeeBox? {
+        val platformFee = activeRoute.fees.platformFeeTokenB
+        if (platformFee.isZero()) {
+            return null
+        }
+
+        val tokenBRate = loadRateForToken(tokenB)?.rate
+
+        val platformFeeUsd = activeRoute.fees.platformFeeTokenB
+            .fromLamports(tokenB.decimals)
+            .multiply(tokenBRate.orZero())
+
+        val formattedPlatformFee = "${activeRoute.fees.platformFeePercent.formatFiat()} %"
+
+        val cellModel = MainCellModel(
+            leftSideCellModel = LeftSideCellModel.IconWithText(
+                firstLineText = TextViewCellModel.Raw(
+                    text = TextContainer("KeyApp Fee"),
+                ),
+                secondLineText = TextViewCellModel.Raw(
+                    text = TextContainer(formattedPlatformFee)
+                ),
+            ),
+            rightSideCellModel = null,
+            styleType = MainCellStyle.BASE_CELL,
+        )
+        return SwapSettingsFeeBox(
+            cellModel = cellModel,
+            feeInUsd = platformFeeUsd
+        )
+    }
+
     fun buildEstimatedFeeString(
         networkFees: SwapSettingsFeeBox,
         accountFee: SwapSettingsFeeBox?,
         liquidityFees: SwapSettingsFeeBox?,
         token2022Fee: SwapSettingsFeeBox?,
+        keyAppFee: SwapSettingsFeeBox?,
     ): MainCellModel? {
         if (liquidityFees?.feeInUsd == null) {
             return null
@@ -206,7 +238,9 @@ class SwapFeeCellsBuilder(
         val totalFee: String = liquidityFees.feeInUsd
             .plus(accountFee?.feeInUsd.orZero())
             .plus(token2022Fee?.feeInUsd.orZero())
+            .plus(keyAppFee?.feeInUsd.orZero())
             .asUsdSwap()
+
         return MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
