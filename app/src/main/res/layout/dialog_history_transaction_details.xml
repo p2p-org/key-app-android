@@ -225,6 +225,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
+            app:layout_goneMarginTop="24dp"
             android:gravity="center_vertical"
             android:paddingBottom="28dp"
             android:text="@string/transaction_transaction_fee_title"
@@ -247,7 +248,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/textViewFeeTitle"
-            app:layout_constraintTop_toBottomOf="@id/textViewSendReceiveTitle"
+            app:layout_constraintTop_toTopOf="@id/textViewFeeTitle"
             tools:visibility="visible" />
 
         <org.p2p.wallet.transaction.ui.ProgressStateWidget

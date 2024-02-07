@@ -30,9 +30,11 @@ object Constants {
     const val WRAPPED_BTC_MINT = "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh"
 
     const val FEE_RELAYER_ACCOUNT = "FG4Y3yX4AAchp1HvNZ7LfzFTewF2f6nDoMDCohTFrdpT"
+    const val FEE_RELAYER_ACCOUNT_V2 = "9U8gVazjmW87Ax5j1yFG7PBfD4ZzckFPLhdPhmoWc2xD"
     const val SWAP_FEE_RELAYER_ACCOUNT = "JdYkwaUrvoeYsCbPgnt3AAa1qzjV2CtoRqU3bzuAvQu"
     val FEE_RELAYER_ACCOUNTS = listOf(
         FEE_RELAYER_ACCOUNT,
+        FEE_RELAYER_ACCOUNT_V2,
         SWAP_FEE_RELAYER_ACCOUNT
     )
 
