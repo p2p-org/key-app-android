@@ -12,7 +12,7 @@ window.ReferralBridge = {
     showShareDialog: function(link) {
         AndroidReferralBridge.showShareDialog(link);
     },
-    getAndroidClipboardContent: function() {
+    getClipboardContent: function() {
         return AndroidReferralBridge.getClipboardValue();
     },
     signMessageAsync: async function(message) {
