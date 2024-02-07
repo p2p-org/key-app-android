@@ -90,7 +90,7 @@ class MyCryptoFragment :
                 }
             }
         },
-        tokenButtonDelegate() { binding, _ ->
+        tokenButtonDelegate { binding, _ ->
             binding.root.setOnClickListener { onVisibilityToggleClicked() }
         },
         ethClaimTokenDelegate(glideManager) { binding, item ->
@@ -243,7 +243,13 @@ class MyCryptoFragment :
 
     override fun showItems(items: List<AnyCellItem>) {
         cellAdapter.setItems(items) {
-            binding.recyclerViewCrypto.invalidateItemDecorations()
+            // very stupid check but
+            // when user logouts, data layer emits new cell items and update the list
+            // async stuff is going inside when items are set and when this callback is called
+            // view is already null because we navigated to auth screen
+            if (view != null) {
+                binding.recyclerViewCrypto.invalidateItemDecorations()
+            }
         }
     }
 
