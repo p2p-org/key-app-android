@@ -8,6 +8,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.findSolOrThrow
 import org.p2p.wallet.infrastructure.swap.JupiterSwapStorageContract
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 
@@ -22,6 +23,7 @@ class CommonSwapTokenSelector(
         val userTokensJob = async { tokenServiceCoordinator.getUserTokens() }
         val userTokens = userTokensJob.await()
 
+        val userIsEmpty = userTokens.isEmpty() || userTokens.all { it.isZero }
         val userHasUsdc = userTokens.any { it.isUSDC }
         val userHasSol = userTokens.any { it.isSOL && !it.isZero }
         val userTokensContainsJupiter = jupiterTokensRepository.filterIntersectedTokens(userTokens)
@@ -38,6 +40,11 @@ class CommonSwapTokenSelector(
                 tokenA = findTokenByMint(userTokens, savedSelectedTokenMintA)
                 tokenB = findTokenByMint(userTokens, savedSelectedTokenMintB)
             }
+            userIsEmpty -> {
+                val jupiterUsdcToSol = jupiterUsdcToJupiterSol()
+                tokenA = SwapTokenModel.JupiterToken(jupiterUsdcToSol.first)
+                tokenB = SwapTokenModel.JupiterToken(jupiterUsdcToSol.second)
+            }
             userHasUsdc -> {
                 tokenA = SwapTokenModel.UserToken(userTokens.first { it.isUSDC })
                 tokenB = getTokenB(
@@ -53,7 +60,7 @@ class CommonSwapTokenSelector(
                     jupiterTokensRepository = jupiterTokensRepository,
                     userTokens = userTokens,
                     preferSol = false,
-                    savedSwapTokenB = savedSelectedTokenMintB
+                    savedSwapTokenB = savedSelectedTokenMintB.takeIf { it != tokenA.mintAddress }
                 )
             }
             userTokenWithMaxAmount != null -> {
@@ -67,16 +74,19 @@ class CommonSwapTokenSelector(
             }
             // no any tokens
             else -> {
-                val jupiterUsdc = jupiterTokensRepository.requireUsdc()
-                val jupiterSol = jupiterTokensRepository.requireWrappedSol()
-                tokenA = SwapTokenModel.JupiterToken(jupiterUsdc)
-                tokenB = SwapTokenModel.JupiterToken(jupiterSol)
+                val jupiterUsdcToSol = jupiterUsdcToJupiterSol()
+                tokenA = SwapTokenModel.JupiterToken(jupiterUsdcToSol.first)
+                tokenB = SwapTokenModel.JupiterToken(jupiterUsdcToSol.second)
             }
         }
 
         selectedSwapTokenStorage.savedTokenAMint = tokenA.mintAddress
         selectedSwapTokenStorage.savedTokenBMint = tokenB.mintAddress
         tokenA to tokenB
+    }
+
+    private suspend fun jupiterUsdcToJupiterSol(): Pair<JupiterSwapToken, JupiterSwapToken> {
+        return jupiterTokensRepository.requireUsdc() to jupiterTokensRepository.requireWrappedSol()
     }
 
     private suspend fun findTokenByMint(

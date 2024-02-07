@@ -39,4 +39,6 @@ data class SwapKeyAppFees(
     val ataDeposits: BigInteger,
     val totalFeeAndDeposits: BigInteger,
     val minimumSolForTransaction: BigInteger,
+    val platformFeeTokenB: BigInteger,
+    val platformFeePercent: BigDecimal,
 )

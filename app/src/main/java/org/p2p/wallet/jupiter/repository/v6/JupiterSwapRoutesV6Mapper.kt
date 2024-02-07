@@ -2,6 +2,8 @@ package org.p2p.wallet.jupiter.repository.v6
 
 import com.google.gson.Gson
 import org.json.JSONObject
+import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toJsonObject
@@ -30,14 +32,23 @@ class JupiterSwapRoutesV6Mapper(
                 percent = it.percent.toString()
             )
         }
+
         val feesJson = JSONObject(response.keyAppFees.feeDetails.toString())
+
+        // feeBps=20 == 2%
+        // feeBps=200 == 20%
+        // feeBps=100 == 10%
+        // feeBps=2 == 0.2%
+        val platformFeePercent = getPlatformFeePercent(response.platformFee)
+        val platformFeeAmount = response.platformFee?.amount?.toBigInteger().orZero()
+
+        val ataDeposits = getAtaDepositsSum(feesJson)
         val fees = SwapKeyAppFees(
             totalFees = response.keyAppFees.fee.toBigInteger(),
             signatureFee = feesJson.optLong("signatureFee").toBigInteger(),
-            ataDeposits = feesJson.optJSONArray("ataDeposits")
-                ?.mapAsStrings { it.toBigInteger() }
-                ?.sumOf { it }
-                .orZero(),
+            ataDeposits = ataDeposits,
+            platformFeeTokenB = platformFeeAmount,
+            platformFeePercent = platformFeePercent,
             totalFeeAndDeposits = feesJson.optLong("totalFeeAndDeposits").toBigInteger(),
             minimumSolForTransaction = feesJson.optLong("minimumSOLForTransaction").toBigInteger(),
         )
@@ -53,5 +64,18 @@ class JupiterSwapRoutesV6Mapper(
             routePlans = plans,
             fees = fees
         )
+    }
+
+    private fun getAtaDepositsSum(feesJson: JSONObject): BigInteger {
+        return feesJson.optJSONArray("ataDeposits")
+            ?.mapAsStrings { it.toBigInteger() }
+            ?.sumOf { it }
+            .orZero()
+    }
+
+    private fun getPlatformFeePercent(fee: SwapJupiterV6QuoteResponse.PlatformFeeResponse?): BigDecimal {
+        return fee?.feeBps
+            ?.divide(100.toBigDecimal())
+            .orZero()
     }
 }
