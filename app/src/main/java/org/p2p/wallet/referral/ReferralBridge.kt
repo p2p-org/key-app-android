@@ -14,6 +14,7 @@ import kotlinx.coroutines.withContext
 import org.p2p.core.crypto.toBase64Instance
 import org.p2p.solanaj.utils.SolanaMessageSigner
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.utils.getClipboardText
 
 private typealias JsResultWrapper = String
 
@@ -126,6 +127,12 @@ class ReferralWebViewBridge(
         @JavascriptInterface
         fun getUserPublicKeyAsync(): JsResultWrapper = makeAsyncCall {
             wrapInJsResult(tokenKeyProvider.publicKey)
+        }
+
+        @JavascriptInterface
+        fun getClipboardValue(): JsResultWrapper {
+            val context = referralWebView?.context ?: return wrapInJsResult("No Android context found")
+            return wrapInJsResult(context.getClipboardText(trimmed = true).orEmpty())
         }
 
         private fun wrapInJsResult(value: String): JsResultWrapper {
