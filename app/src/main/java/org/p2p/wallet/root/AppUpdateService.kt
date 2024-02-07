@@ -15,12 +15,15 @@ import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.common.feature_toggles.toggles.remote.ForceUpdateVersionCodeFeatureToggle
 import org.p2p.wallet.common.feature_toggles.toggles.remote.ForceUpdateVersionCodeFeatureToggle.Companion.NOT_FETCHED
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
+import org.p2p.wallet.isLocalDebugBuild
 
 class AppUpdateService(
     private val context: Context,
     private val forceUpdateVersionCodeFt: ForceUpdateVersionCodeFeatureToggle
 ) {
     private suspend fun isUpdateNeeded(): Boolean {
+        if (isLocalDebugBuild) return false
+
         val isForceUpdateCodeFetched = waitForCondition(2.seconds.inWholeMilliseconds) {
             forceUpdateVersionCodeFt.value != NOT_FETCHED
         }
@@ -70,6 +73,8 @@ class AppUpdateService(
     suspend fun checkUpdateIsNotStalled(
         activityResultLauncher: ActivityResultLauncher<IntentSenderRequest>
     ) {
+        if (isLocalDebugBuild) return
+
         val appUpdateManager = AppUpdateManagerFactory.create(context)
         val appUpdateInfo = appUpdateManager.requestAppUpdateInfo()
         val isStalled = appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
