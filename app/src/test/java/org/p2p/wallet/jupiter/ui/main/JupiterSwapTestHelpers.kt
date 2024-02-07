@@ -198,7 +198,9 @@ object JupiterSwapTestHelpers {
                 ataDeposits = BigInteger.ZERO,
                 totalFeeAndDeposits = BigInteger.ZERO,
                 minimumSolForTransaction = BigInteger.ZERO,
-                totalFees = BigInteger.ZERO
+                totalFees = BigInteger.ZERO,
+                platformFeePercent = BigDecimal.ZERO,
+                platformFeeTokenB = BigInteger.ZERO
             )
         )
     }
