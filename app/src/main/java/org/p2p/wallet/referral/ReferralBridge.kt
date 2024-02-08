@@ -18,6 +18,9 @@ import org.p2p.wallet.utils.getClipboardText
 
 private typealias JsResultWrapper = String
 
+/**
+ * @see [assets/referral_bridge_provider.js]
+ */
 class ReferralWebViewBridge(
     webView: WebView,
     private val tokenKeyProvider: TokenKeyProvider,
@@ -131,7 +134,7 @@ class ReferralWebViewBridge(
 
         @JavascriptInterface
         fun getClipboardValue(): JsResultWrapper {
-            val context = referralWebView?.context ?: return wrapInJsResult("No Android context found")
+            val context = referralWebView?.context ?: return wrapInJsResult(Exception("No Android context found"))
             return wrapInJsResult(context.getClipboardText(trimmed = true).orEmpty())
         }
 

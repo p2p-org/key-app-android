@@ -13,7 +13,7 @@ window.ReferralBridge = {
         AndroidReferralBridge.showShareDialog(link);
     },
     getClipboardContent: function() {
-        return AndroidReferralBridge.getClipboardValue();
+        return JSON.parse(AndroidReferralBridge.getClipboardValue());
     },
     signMessageAsync: async function(message) {
         const result = AndroidReferralBridge.signMessageAsync(message);
