@@ -43,9 +43,9 @@ class SwapFeeCellsBuilder(
 
     suspend fun buildNetworkFeeCell(
         activeRoute: JupiterSwapRouteV6?,
-        solToken: JupiterSwapToken?,
+        solToken: JupiterSwapToken,
     ): SwapSettingsFeeBox {
-        if (activeRoute != null && solToken != null) {
+        if (activeRoute != null) {
             val networkFee = activeRoute.fees.signatureFee.fromLamports(solToken.decimals)
             val solTokenRate: BigDecimal? = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate
             val feeUsd: BigDecimal? = solTokenRate?.let { networkFee.multiply(it) }
@@ -84,15 +84,26 @@ class SwapFeeCellsBuilder(
     suspend fun buildAccountFeeCell(
         activeRoute: JupiterSwapRouteV6,
         tokenB: SwapTokenModel,
+        solToken: JupiterSwapToken
     ): SwapSettingsFeeBox? {
-        val ataFee = activeRoute.fees.totalFees.fromLamports(tokenB.decimals)
-        if (ataFee.isZero()) {
+        val ataFeeInSol = activeRoute.fees.ataDepositsInSol.fromLamports(solToken.decimals)
+        if (ataFeeInSol.isZero()) {
             return null
         }
 
-        val tokenBRate: BigDecimal? = loadRateForToken(tokenB)?.rate
-        val feeUsd = tokenBRate?.let { ataFee.multiply(it) }
-        val formattedFeeAmount = ataFee.formatTokenWithSymbol(tokenB.tokenSymbol, tokenB.decimals)
+        val solRate = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate ?: kotlin.run {
+            Timber.e(IllegalStateException("Sol rate is null"))
+            return null
+        }
+        val tokenBRate = loadRateForToken(tokenB)?.rate ?: kotlin.run {
+            Timber.e(IllegalStateException("Token B (${tokenB.mintAddress} rate is null"))
+            return null
+        }
+        val ataFeeInTokenB: BigDecimal = (solRate / tokenBRate) * ataFeeInSol
+
+        val feeUsd = ataFeeInTokenB.multiply(tokenBRate)
+
+        val formattedFeeAmount = ataFeeInTokenB.formatTokenWithSymbol(tokenB.tokenSymbol, tokenB.decimals)
 
         val cellModel = MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(

@@ -12,14 +12,15 @@ import org.p2p.uikit.utils.skeleton.SkeletonCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.uikit.utils.toPx
 import org.p2p.wallet.R
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 
 class SwapLoadingSettingsMapper(
     private val feeCellsBuilder: SwapFeeCellsBuilder
 ) {
 
-    suspend fun mapLoadingList(): List<AnyCellItem> = buildList {
+    suspend fun mapLoadingList(solToken: JupiterSwapToken): List<AnyCellItem> = buildList {
         addRouteCell()
-        add(feeCellsBuilder.buildNetworkFeeCell(activeRoute = null, solToken = null).cellModel)
+        add(feeCellsBuilder.buildNetworkFeeCell(activeRoute = null, solToken = solToken).cellModel)
         addAccountFeeCell()
         addLiquidityFeeCell()
         addEstimatedFeeCell()

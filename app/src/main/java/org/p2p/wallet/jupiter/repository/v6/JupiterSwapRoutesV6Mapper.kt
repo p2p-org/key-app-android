@@ -46,7 +46,7 @@ class JupiterSwapRoutesV6Mapper(
         val fees = SwapKeyAppFees(
             totalFees = response.keyAppFees.fee.toBigInteger(),
             signatureFee = feesJson.optLong("signatureFee").toBigInteger(),
-            ataDeposits = ataDeposits,
+            ataDepositsInSol = ataDeposits,
             platformFeeTokenB = platformFeeAmount,
             platformFeePercent = platformFeePercent,
             totalFeeAndDeposits = feesJson.optLong("totalFeeAndDeposits").toBigInteger(),

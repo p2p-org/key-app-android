@@ -22,7 +22,7 @@ sealed interface AccountInfoTokenExtensionConfig {
 
     data class TransferFeeConfig(
         @SerializedName("withheldAmount")
-        val withheldAmount: Long,
+        val withheldAmount: String,
         @SerializedName("newerTransferFee")
         val newerTransferFee: TransferFeeConfigData? = null,
         @SerializedName("olderTransferFee")
@@ -33,10 +33,13 @@ sealed interface AccountInfoTokenExtensionConfig {
             const val NAME = "transferFeeConfig"
         }
 
-        data class TransferFeeConfigData(
+        class TransferFeeConfigData(
+            @SerializedName("epoch")
             val epoch: BigInteger,
+            @SerializedName("maximumFee")
             val maximumFee: BigInteger,
-            val transferFeeBasisPoints: Int,
+            @SerializedName("transferFeeBasisPoints")
+            val transferFeeBasisPoints: Long,
         ) {
             val transferFeePercent: BigDecimal
                 get() = transferFeeBasisPoints.toBigDecimal().setScale(4)
@@ -44,11 +47,19 @@ sealed interface AccountInfoTokenExtensionConfig {
                     .multiply("100".toBigDecimal().setScale(4))
         }
 
+        /**
+         * Each transfer fee has it's "turn on" epoch field
+         * when epoch comes - we should use the turned on transfer fee
+         */
         fun getActualTransferFee(currentEpoch: BigInteger): TransferFeeConfigData? {
-            if (currentEpoch > (newerTransferFee?.epoch.orZero()) || currentEpoch.isZero()) {
-                return newerTransferFee ?: olderTransferFee
+            if (currentEpoch.isZero()) return newerTransferFee ?: olderTransferFee
+
+            val isNewerTransferFeeEnabled = currentEpoch >= newerTransferFee?.epoch.orZero()
+            return if (isNewerTransferFeeEnabled) {
+                newerTransferFee
+            } else {
+                olderTransferFee
             }
-            return olderTransferFee
         }
     }
 
@@ -58,9 +69,9 @@ sealed interface AccountInfoTokenExtensionConfig {
         @SerializedName("preUpdateAverageRate")
         val preUpdateAverageRate: Double,
         @SerializedName("initializationTimestamp")
-        val initializationTimestamp: Long,
+        val initializationTimestamp: BigInteger,
         @SerializedName("lastUpdateTimestamp")
-        val lastUpdateTimestamp: Long,
+        val lastUpdateTimestamp: BigInteger,
         @SerializedName("rateAuthority")
         val rateAuthority: String,
     ) : AccountInfoTokenExtensionConfig {

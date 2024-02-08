@@ -13,6 +13,7 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 
 class SwapEmptySettingsMapper(
     private val swapFeeCellsBuilder: SwapFeeCellsBuilder
@@ -20,8 +21,9 @@ class SwapEmptySettingsMapper(
 
     suspend fun mapEmptyList(
         tokenB: SwapTokenModel,
+        jupiterSolToken: JupiterSwapToken
     ): List<AnyCellItem> = buildList {
-        this += swapFeeCellsBuilder.buildNetworkFeeCell(activeRoute = null, solToken = null).cellModel
+        this += swapFeeCellsBuilder.buildNetworkFeeCell(activeRoute = null, solToken = jupiterSolToken).cellModel
         addMinimumReceivedCell(tokenB)
     }
 
