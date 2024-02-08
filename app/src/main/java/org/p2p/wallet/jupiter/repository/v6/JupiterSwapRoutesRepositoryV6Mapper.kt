@@ -5,6 +5,7 @@ import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.utils.divideByInt
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toJsonObject
 import org.p2p.wallet.jupiter.api.response.SwapJupiterV6QuoteResponse
@@ -13,7 +14,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.SwapKeyAppFees
 import org.p2p.wallet.utils.mapAsStrings
 
-class JupiterSwapRoutesV6Mapper(
+class JupiterSwapRoutesRepositoryV6Mapper(
     private val gson: Gson
 ) {
     fun fromNetwork(
@@ -75,7 +76,7 @@ class JupiterSwapRoutesV6Mapper(
 
     private fun getPlatformFeePercent(fee: SwapJupiterV6QuoteResponse.PlatformFeeResponse?): BigDecimal {
         return fee?.feeBps
-            ?.divide(100.toBigDecimal())
+            ?.divideByInt(10)
             .orZero()
     }
 }

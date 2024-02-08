@@ -69,7 +69,7 @@ import org.p2p.wallet.jupiter.statemanager.token_selector.CommonSwapTokenSelecto
 import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokenASelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.PreinstallTokensByMintSelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokenSelector
-import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
+import org.p2p.wallet.jupiter.statemanager.validator.SwapMinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapTestHelpers.toTokenData
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
@@ -244,7 +244,7 @@ open class JupiterSwapPresenterBaseTest {
                 tokenKeyProvider = tokenKeyProvider,
                 swapRoutesRepository = jupiterSwapRoutesV6Repository,
                 swapTransactionRepository = jupiterSwapTransactionRepository,
-                minSolBalanceValidator = MinimumSolAmountValidator(
+                minSolBalanceValidator = SwapMinimumSolAmountValidator(
                     rpcAmountRepository = rpcAmountRepository
                 ),
                 swapValidator = SwapValidator(),

@@ -16,7 +16,7 @@ import org.p2p.wallet.utils.retryOnException
 class JupiterSwapRoutesRemoteV6Repository(
     private val apiV6: SwapJupiterV6Api,
     private val dispatchers: CoroutineDispatchers,
-    private val mapper: JupiterSwapRoutesV6Mapper,
+    private val mapper: JupiterSwapRoutesRepositoryV6Mapper,
     private val validator: JupiterSwapRouteValidator,
 ) : JupiterSwapRoutesV6Repository {
     override suspend fun getSwapRoutesForSwapPair(
