@@ -13,7 +13,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
-import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
+import org.p2p.wallet.jupiter.statemanager.validator.SwapMinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.model.Slippage
 
@@ -21,7 +21,7 @@ class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapRoutesRepository: JupiterSwapRoutesV6Repository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
-    private val minSolBalanceValidator: MinimumSolAmountValidator,
+    private val minSolBalanceValidator: SwapMinimumSolAmountValidator,
     private val swapValidator: SwapValidator,
     private val swapProfiler: SwapProfiler,
 ) {

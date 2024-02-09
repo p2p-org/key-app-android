@@ -8,37 +8,15 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 import java.lang.reflect.Type
-import java.math.BigInteger
 import java.util.Optional
 import org.p2p.core.model.DefaultBlockParameter
 import org.p2p.core.token.SolAddress
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
-import org.p2p.core.wrapper.eth.hexStringToBigIntegerOrNull
 import org.p2p.core.wrapper.eth.hexStringToByteArrayOrNull
 import org.p2p.core.wrapper.eth.hexStringToIntOrNull
 import org.p2p.core.wrapper.eth.hexStringToLongOrNull
 import org.p2p.core.wrapper.eth.toHexString
-
-internal class BigIntegerTypeAdapter(private val isHex: Boolean = true) : TypeAdapter<BigInteger?>() {
-    override fun write(writer: JsonWriter, value: BigInteger?) {
-        if (value == null) {
-            writer.nullValue()
-        } else {
-            val stringValue = if (isHex) value.toHexString() else value.toString()
-            writer.value(stringValue)
-        }
-    }
-
-    override fun read(reader: JsonReader): BigInteger? {
-        if (reader.peek() == JsonToken.NULL) {
-            reader.nextNull()
-            return null
-        }
-        val stringValue = reader.nextString()
-        return if (isHex) stringValue.hexStringToBigIntegerOrNull() else BigInteger(stringValue)
-    }
-}
 
 internal class LongTypeAdapter(private val isHex: Boolean = false) : TypeAdapter<Long?>() {
     override fun write(writer: JsonWriter, value: Long?) {
@@ -190,7 +168,6 @@ internal class OptionalTypeAdapter<T : Any>(
         .setLenient()
         .registerTypeAdapter(EthAddress::class.java, AddressTypeAdapter())
         .registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
-        .registerTypeAdapter(BigInteger::class.java, BigIntegerTypeAdapter())
         .registerTypeAdapter(Long::class.java, LongTypeAdapter())
         .registerTypeAdapter(object : TypeToken<Long?>() {}.type, LongTypeAdapter())
         .registerTypeAdapter(Int::class.java, IntTypeAdapter())

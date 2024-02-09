@@ -15,7 +15,10 @@ fun BigInteger.divideSafe(value: BigInteger): BigInteger =
 
 // scales by default to the decimals
 fun BigDecimal.divideSafe(value: BigDecimal, decimals: Int = DEFAULT_DECIMALS_VALUE): BigDecimal =
-    if (this.isZero() || value.isZero()) BigDecimal.ZERO
-    else this.divide(value, decimals, RoundingMode.HALF_EVEN).stripTrailingZeros()
+    if (this.isZero() || value.isZero()) {
+        BigDecimal.ZERO
+    } else {
+        this.divide(value, decimals, RoundingMode.HALF_EVEN).stripTrailingZeros()
+    }
 
 fun clamp(value: Int, min: Int, max: Int): Int = min(max(min, value), max)

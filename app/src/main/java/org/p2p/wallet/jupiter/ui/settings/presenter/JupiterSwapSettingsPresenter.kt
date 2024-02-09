@@ -53,7 +53,7 @@ class JupiterSwapSettingsPresenter(
         super.attach(view)
 
         stateManager.observe()
-            .mapLatest { handleFeatureState(it) }
+            .mapLatest(::handleFeatureState)
             .launchIn(this)
 
         rateTickerManager.observe()
@@ -217,21 +217,22 @@ class JupiterSwapSettingsPresenter(
     private suspend fun getContentListByFeatureState(
         state: SwapState,
     ): List<AnyCellItem> {
+        val jupiterSolToken = swapTokensRepository.requireWrappedSol()
         return when (state) {
             SwapState.InitialLoading -> {
                 emptyList()
             }
             is SwapState.TokenAZero -> {
-                emptyMapper.mapEmptyList(tokenB = state.tokenB)
+                emptyMapper.mapEmptyList(tokenB = state.tokenB, jupiterSolToken)
             }
             is SwapState.TokenANotZero -> {
-                emptyMapper.mapEmptyList(tokenB = state.tokenB)
+                emptyMapper.mapEmptyList(tokenB = state.tokenB, jupiterSolToken)
             }
             is SwapState.LoadingRoutes,
             is SwapState.LoadingTransaction,
             is SwapState.RoutesLoaded,
             is SwapState.SwapLoaded -> {
-                loadingMapper.mapLoadingList()
+                loadingMapper.mapLoadingList(jupiterSolToken)
             }
             is SwapState.SwapException -> {
                 getContentListByFeatureState(state.previousFeatureState)

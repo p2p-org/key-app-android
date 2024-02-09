@@ -11,7 +11,7 @@ import org.p2p.wallet.jupiter.statemanager.SwapFeatureException
 import org.p2p.wallet.rpc.repository.amount.RpcAmountRepository
 import org.p2p.wallet.swap.model.Slippage
 
-class MinimumSolAmountValidator(
+class SwapMinimumSolAmountValidator(
     private val rpcAmountRepository: RpcAmountRepository
 ) {
 

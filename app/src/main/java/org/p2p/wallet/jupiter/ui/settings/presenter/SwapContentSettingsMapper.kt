@@ -103,7 +103,7 @@ class SwapContentSettingsMapper(
             val networkFeeCell = swapFeeBuilder.buildNetworkFeeCell(route, solTokenForFee)
             this += networkFeeCell.cellModel
 
-            val accountFee = swapFeeBuilder.buildAccountFeeCell(route, tokenB)
+            val accountFee = swapFeeBuilder.buildAccountFeeCell(route, tokenB, solTokenForFee)
             if (accountFee != null) {
                 this += accountFee.cellModel
             }
