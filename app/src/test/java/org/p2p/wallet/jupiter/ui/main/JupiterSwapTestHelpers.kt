@@ -195,7 +195,7 @@ object JupiterSwapTestHelpers {
             originalRoute = JsonObject(),
             fees = SwapKeyAppFees(
                 signatureFee = BigInteger.ZERO,
-                ataDeposits = BigInteger.ZERO,
+                ataDepositsInSol = BigInteger.ZERO,
                 totalFeeAndDeposits = BigInteger.ZERO,
                 minimumSolForTransaction = BigInteger.ZERO,
                 totalFees = BigInteger.ZERO,

@@ -31,7 +31,7 @@ class CalculateToken2022TransferFeeUseCase(
     ): BigInteger {
         if (this == null) return BigInteger.ZERO
 
-        if (transferFeeBasisPoints == 0 || preFeeAmount.isZero()) {
+        if (transferFeeBasisPoints == 0L || preFeeAmount.isZero()) {
             return BigInteger.ZERO
         }
         val transferFeeBasisPoints = transferFeeBasisPoints.toBigInteger()

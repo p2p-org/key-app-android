@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
-import java.math.BigInteger
 import kotlin.reflect.KClass
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.Base64String
@@ -31,8 +30,6 @@ class GsonProvider {
     private fun buildGson(): Gson {
         return builder.apply {
             setLenient()
-            registerTypeAdapter(BigInteger::class.java, BigIntegerTypeAdapter())
-            registerTypeAdapter(object : TypeToken<BigInteger?>() {}.type, BigIntegerTypeAdapter())
             registerTypeAdapter(Long::class.java, LongTypeAdapter())
             registerTypeAdapter(Int::class.java, IntTypeAdapter())
             registerTypeAdapter(ByteArray::class.java, ByteArrayTypeAdapter())
