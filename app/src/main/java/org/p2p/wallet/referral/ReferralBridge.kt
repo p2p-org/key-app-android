@@ -59,11 +59,6 @@ class ReferralWebViewBridge(
             }
             super.onPageFinished(view, url)
         }
-
-        override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
-            Timber.e(request?.url?.toString())
-            return super.shouldInterceptRequest(view, request)
-        }
     }
 
     private val consoleLogger = object : WebChromeClient() {
