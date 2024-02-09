@@ -40,6 +40,7 @@ class ReferralWebViewBridge(
         override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             // inject JS provider so WebView can work with our JS interface
+            // should be provided again on reload
             if (!isJsProviderInjected) {
                 val jsProvider = view.resources.assets.open("referral_bridge_provider.js")
                     .bufferedReader()
@@ -90,6 +91,7 @@ class ReferralWebViewBridge(
 
     fun onFragmentResumed() {
         referralWebView?.onResume()
+        referralWebView?.requestFocus()
     }
 
     fun onFragmentPaused() {
