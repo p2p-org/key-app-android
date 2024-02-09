@@ -41,8 +41,8 @@ class ReferralFragment :
     }
 
     override fun onResume() {
-        jsBridge.onFragmentResumed()
         super.onResume()
+        jsBridge.onFragmentResumed()
     }
 
     override fun onPause() {

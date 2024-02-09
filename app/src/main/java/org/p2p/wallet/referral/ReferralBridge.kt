@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.webkit.ConsoleMessage
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.google.gson.JsonObject
@@ -40,6 +42,7 @@ class ReferralWebViewBridge(
         override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             // inject JS provider so WebView can work with our JS interface
+            // should be provided again on reload
             if (!isJsProviderInjected) {
                 val jsProvider = view.resources.assets.open("referral_bridge_provider.js")
                     .bufferedReader()
@@ -55,6 +58,11 @@ class ReferralWebViewBridge(
                 onWebViewLoaded.invoke()
             }
             super.onPageFinished(view, url)
+        }
+
+        override fun shouldInterceptRequest(view: WebView?, request: WebResourceRequest?): WebResourceResponse? {
+            Timber.e(request?.url?.toString())
+            return super.shouldInterceptRequest(view, request)
         }
     }
 
@@ -90,6 +98,7 @@ class ReferralWebViewBridge(
 
     fun onFragmentResumed() {
         referralWebView?.onResume()
+        referralWebView?.requestFocus()
     }
 
     fun onFragmentPaused() {
