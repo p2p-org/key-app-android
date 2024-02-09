@@ -76,7 +76,7 @@ class JupiterSwapRoutesRepositoryV6Mapper(
 
     private fun getPlatformFeePercent(fee: SwapJupiterV6QuoteResponse.PlatformFeeResponse?): BigDecimal {
         return fee?.feeBps
-            ?.divideByInt(10)
+            ?.divideByInt(100)
             .orZero()
     }
 }
