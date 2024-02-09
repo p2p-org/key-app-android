@@ -12,6 +12,9 @@ window.ReferralBridge = {
     showShareDialog: function(link) {
         AndroidReferralBridge.showShareDialog(link);
     },
+    openTermsUrl: function(link) {
+        AndroidReferralBridge.openTermsUrl(link);
+    },
     getClipboardContent: function() {
         return JSON.parse(AndroidReferralBridge.getClipboardValue());
     },

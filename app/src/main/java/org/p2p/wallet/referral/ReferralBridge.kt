@@ -25,6 +25,7 @@ class ReferralWebViewBridge(
     webView: WebView,
     private val tokenKeyProvider: TokenKeyProvider,
     private val onShareLinkCalled: (String) -> Unit,
+    private val openTerms: (link: String) -> Unit,
     private val onWebViewLoaded: () -> Unit
 ) {
     companion object {
@@ -69,11 +70,7 @@ class ReferralWebViewBridge(
                 append(consoleMessage.lineNumber())
             }
 
-            if (consoleMessage.messageLevel() == ConsoleMessage.MessageLevel.ERROR) {
-                Timber.tag(JS_BRIDGE_OBJECT_NAME).e(Exception(logMessage))
-            } else {
-                Timber.tag(JS_BRIDGE_OBJECT_NAME).w(logMessage)
-            }
+            Timber.tag(JS_BRIDGE_OBJECT_NAME).i(logMessage)
             return true
         }
     }
@@ -127,6 +124,11 @@ class ReferralWebViewBridge(
         @JavascriptInterface
         fun showShareDialog(link: String) {
             onShareLinkCalled.invoke(link)
+        }
+
+        @JavascriptInterface
+        fun openTermsUrl(link: String) {
+            openTerms.invoke(link)
         }
 
         @JavascriptInterface

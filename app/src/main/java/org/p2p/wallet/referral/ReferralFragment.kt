@@ -1,5 +1,6 @@
 package org.p2p.wallet.referral
 
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import android.os.Bundle
 import android.view.View
@@ -7,7 +8,9 @@ import org.koin.android.ext.android.get
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReferralBinding
+import org.p2p.wallet.url.OpenUrlFragment
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareText
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
@@ -28,11 +31,19 @@ class ReferralFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.progressBar.isVisible = true
+        binding.webViewReferral.isInvisible = true
 
         jsBridge = ReferralWebViewBridge(
             webView = binding.webViewReferral,
             tokenKeyProvider = get(),
             onShareLinkCalled = ::showShareLinkDialog,
+            openTerms = {
+                val target = OpenUrlFragment.create(
+                    url = it,
+                    title = getString(R.string.onboarding_terms_of_use)
+                )
+                replaceFragment(target)
+            },
             onWebViewLoaded = ::onWebViewLoaded
         )
         binding.toolbar.setNavigationOnClickListener {
@@ -60,6 +71,7 @@ class ReferralFragment :
     }
 
     private fun onWebViewLoaded() {
+        binding.webViewReferral.isVisible = true
         binding.progressBar.isVisible = false
     }
 }
