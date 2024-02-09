@@ -11,6 +11,7 @@ import kotlinx.coroutines.supervisorScope
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
 import org.p2p.core.utils.asUsdSwap
+import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenWithSymbol
@@ -99,7 +100,7 @@ class SwapFeeCellsBuilder(
             Timber.e(IllegalStateException("Token B (${tokenB.mintAddress} rate is null"))
             return null
         }
-        val ataFeeInTokenB: BigDecimal = (solRate / tokenBRate) * ataFeeInSol
+        val ataFeeInTokenB: BigDecimal = solRate.divideSafe(tokenBRate) * ataFeeInSol
 
         val feeUsd = ataFeeInTokenB.multiply(tokenBRate)
 

@@ -5,7 +5,7 @@ import org.json.JSONObject
 import java.math.BigDecimal
 import java.math.BigInteger
 import org.p2p.core.crypto.toBase58Instance
-import org.p2p.core.utils.divideByInt
+import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toJsonObject
 import org.p2p.wallet.jupiter.api.response.SwapJupiterV6QuoteResponse
@@ -75,8 +75,6 @@ class JupiterSwapRoutesRepositoryV6Mapper(
     }
 
     private fun getPlatformFeePercent(fee: SwapJupiterV6QuoteResponse.PlatformFeeResponse?): BigDecimal {
-        return fee?.feeBps
-            ?.divideByInt(100)
-            .orZero()
+        return fee?.feeBps?.divideSafe(100.toBigDecimal()).orZero()
     }
 }
