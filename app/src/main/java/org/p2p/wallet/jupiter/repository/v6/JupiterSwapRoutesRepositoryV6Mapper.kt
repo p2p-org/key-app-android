@@ -57,13 +57,15 @@ class JupiterSwapRoutesRepositoryV6Mapper(
         return JupiterSwapRouteV6(
             inAmountInLamports = response.inAmount.toBigInteger(),
             outAmountInLamports = response.outAmount.toBigInteger(),
+            inTokenMint = response.inputMint.toBase58Instance(),
+            outTokenMint = response.outputMint.toBase58Instance(),
             priceImpactPercent = response.priceImpactPct.toBigDecimal(),
             slippageBps = response.slippageBps,
             otherAmountThreshold = response.otherAmountThreshold,
             swapMode = response.swapMode,
             originalRoute = gson.toJsonObject(response),
             routePlans = plans,
-            fees = fees
+            fees = fees,
         )
     }
 

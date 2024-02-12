@@ -88,7 +88,7 @@ fun BigDecimal.formatToken(
 
 fun BigDecimal.formatTokenWithSymbol(
     tokenSymbol: String,
-    decimals: Int = DEFAULT_DECIMAL,
+    decimals: Int,
     exactDecimals: Boolean = false,
     keepInitialDecimals: Boolean = false,
 ): String {

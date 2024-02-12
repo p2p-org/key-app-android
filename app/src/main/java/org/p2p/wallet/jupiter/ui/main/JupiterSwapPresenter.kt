@@ -21,6 +21,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.data.ServerException
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -517,6 +518,7 @@ class JupiterSwapPresenter(
 
     private suspend fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
         rateTickerManager.handleRoutesLoading(state)
+        showRoutesForDebug(bestRoute = null, slippage = state.slippage)
 
         mapWidgetStates(state)
         updateWidgets()
@@ -684,7 +686,15 @@ class JupiterSwapPresenter(
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 
-    private fun showRoutesForDebug(bestRoute: JupiterSwapRouteV6, slippage: Slippage) {
+    private fun showRoutesForDebug(
+        bestRoute: JupiterSwapRouteV6?,
+        slippage: Slippage
+    ) {
+        if (bestRoute == null) {
+            view?.showDebugInfo(TextViewCellModel.Raw(TextContainer(emptyString())))
+            return
+        }
+
         val info = buildString {
             append("Route: ")
 

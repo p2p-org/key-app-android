@@ -102,7 +102,7 @@ class JupiterTestPresenterBuilder {
 
                 else -> null
             }
-        }.associateBy { it.address.toBase58Instance() }
+        }.associateBy { it.tokenAddress.toBase58Instance() }
     }
 
     /**
