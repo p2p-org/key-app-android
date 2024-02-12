@@ -25,6 +25,7 @@ import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.model.CalculationMode
 import org.p2p.wallet.send.model.FeeRelayerState
 import org.p2p.wallet.send.model.NewSendButtonState
+import org.p2p.wallet.send.model.SendFeeTotal
 import org.p2p.wallet.send.model.TemporaryAccount
 import org.p2p.wallet.send.model.toSearchResult
 import org.p2p.wallet.svl.analytics.SendViaLinkAnalytics
@@ -278,7 +279,8 @@ class SendViaLinkPresenter(
             calculationMode = calculationMode,
             feeRelayerState = FeeRelayerState.Idle,
             minRentExemption = minRentExemption,
-            resources = resources
+            resources = resources,
+            totalFee = SendFeeTotal.createEmpty()
         )
 
         when (val state = sendButton.getCurrentState()) {
