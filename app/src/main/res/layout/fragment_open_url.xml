@@ -3,8 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_smoke"
-    android:backgroundTint="@color/bg_smoke"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -12,16 +10,14 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_smoke"
+        android:background="@color/bg_snow"
         app:layout_constraintTop_toTopOf="parent"
         app:navigationIcon="@drawable/ic_back"
-        app:title="Referral program" />
+        app:title="" />
 
     <WebView
-        android:id="@+id/webViewReferral"
+        android:id="@+id/webViewUrl"
         android:layout_width="0dp"
-        android:background="@color/bg_smoke"
-        android:backgroundTint="@color/bg_smoke"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -33,7 +29,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:indeterminateOnly="true"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -130,7 +130,6 @@ class HistoryListViewPresenter(
     }
 
     override fun onItemClicked(historyItem: HistoryItem) {
-        Timber.i("on clicked")
         launch {
             when (historyItem) {
                 is HistoryItem.TransactionItem -> {
