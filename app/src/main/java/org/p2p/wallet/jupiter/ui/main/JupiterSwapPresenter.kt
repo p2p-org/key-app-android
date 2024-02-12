@@ -708,10 +708,13 @@ class JupiterSwapPresenter(
             }
 
             appendLine()
+            appendLine("Slippage: ${slippage.percentValue}")
             appendLine()
-            append("Slippage: ${slippage.percentValue}")
-            appendLine()
-            append("KeyApp fee: NONE for v6")
+            val keyApp = bestRoute.originalRoute.getAsJsonObject("keyapp")
+            appendLine("fee: ${keyApp.get("fee")}")
+            appendLine("fees: ${keyApp.getAsJsonObject("fees")}")
+            appendLine("KeyApp fee lamports: ${bestRoute.fees.platformFeeTokenB}")
+            append("KeyApp fee %: ${bestRoute.fees.platformFeePercent}")
         }
 
         view?.showDebugInfo(

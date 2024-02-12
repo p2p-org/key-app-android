@@ -10,9 +10,9 @@ import org.p2p.solanaj.core.PublicKey
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.repository.RecipientsLocalRepository
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
 import org.p2p.wallet.utils.emptyString
@@ -33,7 +33,7 @@ class UserInteractor(
     suspend fun findTokenData(mintAddress: String): Token? {
         val tokenData = userLocalRepository.findTokenData(mintAddress)
         val price = tokenData?.let {
-            tokenServiceRepository.findTokenPriceByAddress(
+            tokenServiceRepository.getTokenPriceByAddress(
                 tokenAddress = it.mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA
             )
@@ -94,7 +94,7 @@ class UserInteractor(
     private suspend fun findTokenDataBySymbol(symbol: String): Token.Other? {
         val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
         val price = tokenData?.let {
-            tokenServiceRepository.findTokenPriceByAddress(
+            tokenServiceRepository.getTokenPriceByAddress(
                 tokenAddress = it.mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA
             )

@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.TokenServiceRepository
 
 class TokenServiceEventPublisher(
     private val tokenServiceInteractor: TokenServiceRepository,
@@ -27,7 +27,7 @@ class TokenServiceEventPublisher(
             eventType = TokenServiceEventType.from(networkChain),
             data = TokenServiceUpdate.Loading
         )
-        tokenServiceInteractor.loadPriceForTokens(
+        tokenServiceInteractor.fetchTokenPricesForTokens(
             chain = networkChain,
             tokenAddresses = addresses
         )

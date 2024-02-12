@@ -42,16 +42,20 @@ class SwapFeeCellsBuilder(
     private val swapTokensRepository: JupiterSwapTokensRepository
 ) {
 
+    private class SwapFeeBuildFailed(
+        message: String,
+        cause: Throwable? = null
+    ) : Exception(message, cause)
+
     suspend fun buildNetworkFeeCell(
         activeRoute: JupiterSwapRouteV6?,
         solToken: JupiterSwapToken,
     ): SwapSettingsFeeBox {
-        if (activeRoute != null) {
-            val networkFee = activeRoute.fees.signatureFee.fromLamports(solToken.decimals)
-            val solTokenRate: BigDecimal? = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate
-            val feeUsd: BigDecimal? = solTokenRate?.let { networkFee.multiply(it) }
-            // amount is not used, network fee is free right now
-        }
+        // amount is not used, network fee is free right now
+//        val networkFee = activeRoute.fees.signatureFee.fromLamports(solToken.decimals)
+//        val solTokenRate: BigDecimal? = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate
+//        val feeUsd: BigDecimal? = solTokenRate?.let { networkFee.multiply(it) }
+
         val cellModel = MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
@@ -93,11 +97,11 @@ class SwapFeeCellsBuilder(
         }
 
         val solRate = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate ?: kotlin.run {
-            Timber.e(IllegalStateException("Sol rate is null"))
+            Timber.e(SwapFeeBuildFailed("Sol rate is null"))
             return null
         }
         val tokenBRate = loadRateForToken(tokenB)?.rate ?: kotlin.run {
-            Timber.e(IllegalStateException("Token B (${tokenB.mintAddress} rate is null"))
+            Timber.e(SwapFeeBuildFailed("Token B (${tokenB.mintAddress} rate is null"))
             return null
         }
         val ataFeeInTokenB: BigDecimal = solRate.divideSafe(tokenBRate) * ataFeeInSol

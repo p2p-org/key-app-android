@@ -41,7 +41,7 @@ class UserTokensRemoteRepository(
 
             val tokenData = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
             if (tokenData.decimals == NFT_DECIMALS) return@mapNotNull null
-            val tokenPrice = tokenServiceRepository.findTokenPriceByAddress(
+            val tokenPrice = tokenServiceRepository.getTokenPriceByAddress(
                 tokenAddress = tokenData.mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA
             )
@@ -58,7 +58,7 @@ class UserTokensRemoteRepository(
          * */
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(Constants.WRAPPED_SOL_MINT) ?: return tokens
-        val solPrice = tokenServiceRepository.findTokenPriceByAddress(
+        val solPrice = tokenServiceRepository.getTokenPriceByAddress(
             tokenAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN,
             networkChain = TokenServiceNetwork.SOLANA
         )
