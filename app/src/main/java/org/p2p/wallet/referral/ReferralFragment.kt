@@ -37,13 +37,7 @@ class ReferralFragment :
             webView = binding.webViewReferral,
             tokenKeyProvider = get(),
             onShareLinkCalled = ::showShareLinkDialog,
-            openTerms = {
-                val target = OpenUrlFragment.create(
-                    url = it,
-                    title = getString(R.string.onboarding_terms_of_use)
-                )
-                replaceFragment(target)
-            },
+            openTerms = ::navigateToTerms,
             onWebViewLoaded = ::onWebViewLoaded
         )
         binding.toolbar.setNavigationOnClickListener {
@@ -68,6 +62,14 @@ class ReferralFragment :
 
     private fun showShareLinkDialog(link: String) {
         requireContext().shareText(link)
+    }
+
+    private fun navigateToTerms(link: String) {
+        val target = OpenUrlFragment.create(
+            url = link,
+            title = getString(R.string.onboarding_terms_of_use)
+        )
+        replaceFragment(target)
     }
 
     private fun onWebViewLoaded() {
