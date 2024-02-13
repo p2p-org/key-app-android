@@ -38,7 +38,7 @@ class TokenServiceDatabaseMapperTest {
 
         // THEN
         val expectedDomainModel = TokenServicePrice(
-            address = Constants.SOL_MINT,
+            tokenAddress = Constants.SOL_MINT,
             rate = TokenRate(usd = usdRate),
             network = network
         )
@@ -69,7 +69,7 @@ class TokenServiceDatabaseMapperTest {
         val usdRate = BigDecimal.TEN
         val network = TokenServiceNetwork.SOLANA
         val domain = TokenServicePrice(
-            address = Constants.SOL_MINT,
+            tokenAddress = Constants.SOL_MINT,
             network = network,
             rate = TokenRate(usd = usdRate)
         )
@@ -92,7 +92,7 @@ class TokenServiceDatabaseMapperTest {
         // GIVEN
         val network = TokenServiceNetwork.SOLANA
         val domain = TokenServicePrice(
-            address = Constants.SOL_MINT,
+            tokenAddress = Constants.SOL_MINT,
             network = network,
             rate = TokenRate(usd = null)
         )

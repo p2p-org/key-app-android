@@ -136,7 +136,7 @@ class UserInMemoryRepository(
     override suspend fun findTokenByMint(mintAddress: String): Token? {
         val tokenMetadata: TokenMetadata? = findTokenData(mintAddress)
         return if (tokenMetadata != null) {
-            val price = tokenServiceRepository.findTokenPriceByAddress(
+            val price = tokenServiceRepository.getTokenPriceByAddress(
                 tokenAddress = tokenMetadata.mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA
             )

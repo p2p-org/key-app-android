@@ -277,7 +277,7 @@ open class JupiterSwapPresenterBaseTest {
         tokenRates: (List<JupiterSwapToken>) -> Map<Base58String, TokenServicePrice>,
     ) {
         coEvery { jupiterSwapTokensRepository.getTokens() } returns allTokens
-        coEvery { tokenServiceRepository.loadPriceForTokens(any(), any()) } answers {
+        coEvery { tokenServiceRepository.fetchTokenPricesForTokens(any(), any()) } answers {
             val tokens: List<JupiterSwapToken> = arg(0)
             tokenRates(tokens)
         }

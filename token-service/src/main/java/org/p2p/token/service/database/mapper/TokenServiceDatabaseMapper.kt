@@ -11,7 +11,7 @@ internal class TokenServiceDatabaseMapper {
         val tokenRate = item.rate
         val usdRate = tokenRate.usd ?: return null
         return TokenServicePriceEntity(
-            tokenAddress = item.address,
+            tokenAddress = item.tokenAddress,
             networkChainName = item.network.networkName,
             usdRate = usdRate
         )
@@ -19,7 +19,7 @@ internal class TokenServiceDatabaseMapper {
 
     fun fromEntity(entity: TokenServicePriceEntity): TokenServicePrice {
         return TokenServicePrice(
-            address = entity.tokenAddress,
+            tokenAddress = entity.tokenAddress,
             rate = TokenRate(
                 usd = entity.usdRate
             ),

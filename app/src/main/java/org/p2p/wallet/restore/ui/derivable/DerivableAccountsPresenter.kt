@@ -3,6 +3,7 @@ package org.p2p.wallet.restore.ui.derivable
 import timber.log.Timber
 import kotlin.properties.Delegates.observable
 import kotlinx.coroutines.launch
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.token.service.model.TokenServiceNetwork
@@ -11,7 +12,6 @@ import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.auth.analytics.OnboardingAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics
 import org.p2p.wallet.auth.analytics.RestoreWalletAnalytics.UsernameRestoreMethod
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.restore.interactor.SeedPhraseInteractor
 import org.p2p.wallet.restore.model.DerivableAccount
@@ -42,9 +42,10 @@ class DerivableAccountsPresenter(
         launch {
             try {
                 val tokenAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN
-                val solRate = tokenServiceRepository.fetchTokenPriceByAddress(
+                val solRate = tokenServiceRepository.getTokenPriceByAddress(
                     networkChain = TokenServiceNetwork.SOLANA,
-                    tokenAddress = tokenAddress
+                    tokenAddress = tokenAddress,
+                    forceRemote = true
                 ).also { solRate = it } ?: return@launch
 
                 allAccounts = allAccounts.updateWithTotalInUsd(solRate).toMutableList()

@@ -34,7 +34,7 @@ class TokenServiceMapper {
     ): TokenServicePrice? {
         val tokenRate = response.price ?: return null
         return TokenServicePrice(
-            address = response.tokenAddress,
+            tokenAddress = response.tokenAddress,
             rate = fromNetwork(tokenRate),
             network = tokenServiceNetwork
         )

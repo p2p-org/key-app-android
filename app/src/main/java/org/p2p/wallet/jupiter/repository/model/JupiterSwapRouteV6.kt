@@ -9,6 +9,8 @@ import org.p2p.core.crypto.Base58String
 data class JupiterSwapRouteV6(
     val inAmountInLamports: BigInteger,
     val outAmountInLamports: BigInteger,
+    val inTokenMint: Base58String,
+    val outTokenMint: Base58String,
     val priceImpactPercent: BigDecimal,
     @IntRange(from = 0, to = 10000)
     val slippageBps: Int,

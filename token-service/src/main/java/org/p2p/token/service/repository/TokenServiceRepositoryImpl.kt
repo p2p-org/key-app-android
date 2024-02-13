@@ -16,7 +16,7 @@ internal class TokenServiceRepositoryImpl(
     private val metadataRemoteRepository: TokenMetadataRepository
 ) : TokenServiceRepository {
 
-    override suspend fun loadPriceForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
+    override suspend fun fetchTokenPricesForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
         val result = priceRemoteRepository.loadTokensPrice(
             chain = chain,
             addresses = tokenAddresses
@@ -25,7 +25,7 @@ internal class TokenServiceRepositoryImpl(
         priceLocalRepository.saveTokensPrice(tokensPrices)
     }
 
-    override suspend fun loadMetadataForTokens(
+    override suspend fun fetchMetadataForTokens(
         chain: TokenServiceNetwork,
         tokenAddresses: List<String>
     ): List<TokenServiceMetadata> {
@@ -38,22 +38,20 @@ internal class TokenServiceRepositoryImpl(
         return tokensMetadata
     }
 
-    override suspend fun observeTokenPricesFlow(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> =
+    override fun observeTokenPricesFlow(networkChain: TokenServiceNetwork): Flow<List<TokenServicePrice>> =
         priceLocalRepository.observeTokenPrices(networkChain)
 
-    override suspend fun findTokenPriceByAddress(
+    override suspend fun getTokenPriceByAddress(
         tokenAddress: String,
-        networkChain: TokenServiceNetwork
-    ): TokenServicePrice? {
-        return priceLocalRepository.findTokenPriceByAddress(address = tokenAddress, networkChain = networkChain)
-    }
-
-    override suspend fun fetchTokenPriceByAddress(
         networkChain: TokenServiceNetwork,
-        tokenAddress: String
+        forceRemote: Boolean
     ): TokenServicePrice? {
-        loadPriceForTokens(chain = networkChain, tokenAddresses = listOf(tokenAddress))
-        return findTokenPriceByAddress(tokenAddress = tokenAddress, networkChain = networkChain)
+        val localPrice = priceLocalRepository.findTokenPriceByAddress(tokenAddress, networkChain)
+        if (forceRemote || localPrice == null) {
+            fetchTokenPricesForTokens(networkChain, listOf(tokenAddress))
+        }
+
+        return priceLocalRepository.findTokenPriceByAddress(tokenAddress, networkChain)
     }
 
     override fun findTokenMetadataByAddress(

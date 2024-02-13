@@ -15,8 +15,8 @@ import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
-import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.external.token.EthereumTokenRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
 import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
@@ -131,7 +131,7 @@ internal class EthereumKitRepository(
             this += erc20TokensAddresses
         }
         // Fetch tokens metadata
-        val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
+        val tokensMetadata = tokenServiceRepository.fetchMetadataForTokens(
             chain = TokenServiceNetwork.ETHEREUM,
             tokenAddresses = allTokensAddresses
         )

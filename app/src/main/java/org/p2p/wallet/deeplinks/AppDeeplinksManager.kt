@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onCompletion
 import org.p2p.wallet.R
+import org.p2p.wallet.common.feature_toggles.toggles.remote.SendViaLinkFeatureToggle
 import org.p2p.wallet.intercom.IntercomDeeplinkManager
 import org.p2p.wallet.notification.NotificationType
 import org.p2p.wallet.root.RootActivity
@@ -25,7 +26,8 @@ class AppDeeplinksManager(
     private val context: Context,
     private val swapDeeplinkHandler: SwapDeeplinkHandler,
     private val referralDeeplinkHandler: ReferralDeeplinkHandler,
-    private val intercomDeeplinkManager: IntercomDeeplinkManager
+    private val intercomDeeplinkManager: IntercomDeeplinkManager,
+    private val sendViaLinkFeatureToggle: SendViaLinkFeatureToggle
 ) {
     companion object {
         const val NOTIFICATION_TYPE = "eventType"
@@ -114,6 +116,8 @@ class AppDeeplinksManager(
      * or keyapp://t/... if came from website
      */
     private fun isTransferDeeplink(data: Uri): Boolean {
+        if (!sendViaLinkFeatureToggle.isFeatureEnabled) return false
+
         val transferHostMain = context.getString(R.string.transfer_app_host)
         val transferSchemeMain = "https"
         val transferHostAlternative = "t"

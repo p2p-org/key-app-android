@@ -82,6 +82,7 @@ class SwapTokensCommonMapper(
             tokenName = tokenName,
             tokenSymbol = tokenSymbol,
             tokenMint = mintAddress,
+            tokenDecimals = decimals,
             totalTokenAmount = total,
             totalTokenPriceInUsd = totalInUsd?.formatFiat(),
             payload = SwapTokensCellModelPayload(
@@ -104,6 +105,7 @@ class SwapTokensCommonMapper(
                 tokenName = tokenName,
                 tokenSymbol = tokenSymbol,
                 tokenMint = tokenMint.base58Value,
+                tokenDecimals = decimals,
                 totalTokenAmount = null,
                 totalTokenPriceInUsd = null,
                 addPopularLabel = isPopularToken,
@@ -121,6 +123,7 @@ class SwapTokensCommonMapper(
         tokenName: String,
         tokenSymbol: String,
         tokenMint: String,
+        tokenDecimals: Int,
         totalTokenAmount: BigDecimal?,
         totalTokenPriceInUsd: String?,
         payload: SwapTokensCellModelPayload,
@@ -138,7 +141,12 @@ class SwapTokensCommonMapper(
             rightSideCellModel = if (addPopularLabel) {
                 createPopularRightSideModel()
             } else {
-                createPriceRightSideModel(totalTokenAmount, tokenSymbol, totalTokenPriceInUsd)
+                createPriceRightSideModel(
+                    totalTokenAmount = totalTokenAmount,
+                    tokenSymbol = tokenSymbol,
+                    tokenDecimals = tokenDecimals,
+                    totalTokenPriceInUsd = totalTokenPriceInUsd,
+                )
             },
             payload = payload
         )
@@ -195,6 +203,7 @@ class SwapTokensCommonMapper(
     private fun createPriceRightSideModel(
         totalTokenAmount: BigDecimal?,
         tokenSymbol: String,
+        tokenDecimals: Int,
         totalTokenPriceInUsd: String?
     ): RightSideCellModel.TwoLineText? {
         val usdAmount = totalTokenPriceInUsd?.let {
@@ -204,7 +213,7 @@ class SwapTokensCommonMapper(
         }
         val tokenAmount = totalTokenAmount?.let {
             TextViewCellModel.Raw(
-                TextContainer.Raw(it.formatTokenWithSymbol(tokenSymbol)),
+                TextContainer.Raw(it.formatTokenWithSymbol(tokenSymbol, tokenDecimals)),
             )
         }
 

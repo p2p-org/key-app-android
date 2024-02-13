@@ -21,6 +21,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.data.ServerException
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -517,6 +518,7 @@ class JupiterSwapPresenter(
 
     private suspend fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
         rateTickerManager.handleRoutesLoading(state)
+        showRoutesForDebug(bestRoute = null, slippage = state.slippage)
 
         mapWidgetStates(state)
         updateWidgets()
@@ -684,7 +686,15 @@ class JupiterSwapPresenter(
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 
-    private fun showRoutesForDebug(bestRoute: JupiterSwapRouteV6, slippage: Slippage) {
+    private fun showRoutesForDebug(
+        bestRoute: JupiterSwapRouteV6?,
+        slippage: Slippage
+    ) {
+        if (bestRoute == null) {
+            view?.showDebugInfo(TextViewCellModel.Raw(TextContainer(emptyString())))
+            return
+        }
+
         val info = buildString {
             append("Route: ")
 
@@ -708,10 +718,13 @@ class JupiterSwapPresenter(
             }
 
             appendLine()
+            appendLine("Slippage: ${slippage.percentValue}")
             appendLine()
-            append("Slippage: ${slippage.percentValue}")
-            appendLine()
-            append("KeyApp fee: NONE for v6")
+            val keyApp = bestRoute.originalRoute.getAsJsonObject("keyapp")
+            appendLine("fee: ${keyApp.get("fee")}")
+            appendLine("fees: ${keyApp.getAsJsonObject("fees")}")
+            appendLine("KeyApp fee lamports: ${bestRoute.fees.platformFeeTokenB}")
+            append("KeyApp fee %: ${bestRoute.fees.platformFeePercent}")
         }
 
         view?.showDebugInfo(

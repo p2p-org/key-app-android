@@ -51,7 +51,6 @@ import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokenSelect
 import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokensData
 import org.p2p.wallet.jupiter.statemanager.validator.SwapMinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
-import org.p2p.wallet.jupiter.ui.info.SwapInfoMapper
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapContract
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapPresenter
 import org.p2p.wallet.jupiter.ui.main.SwapShareDeeplinkBuilder
@@ -230,7 +229,6 @@ object JupiterSwapModule : InjectionModule {
         }
 
         factoryOf(::SwapCommonSettingsMapper)
-        factoryOf(::SwapInfoMapper)
         factoryOf(::SwapSelectRoutesMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)
