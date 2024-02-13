@@ -13,6 +13,7 @@ import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
 import org.p2p.wallet.feerelayer.model.Limits
+import org.p2p.wallet.feerelayer.model.ProcessedFee
 import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 
 /**
@@ -51,7 +52,7 @@ class SendFeeTotal constructor(
                     maxAccountCreationCountAllowed = 0,
                     maxAccountCreationAmountAllowed = BigInteger.ZERO
                 ),
-                processedFee = org.p2p.wallet.feerelayer.model.ProcessedFee(
+                processedFee = ProcessedFee(
                     totalFeeAmountUsed = BigInteger.ZERO,
                     totalRentAmountUsed = BigInteger.ZERO,
                     totalFeeCountUsed = 0,
