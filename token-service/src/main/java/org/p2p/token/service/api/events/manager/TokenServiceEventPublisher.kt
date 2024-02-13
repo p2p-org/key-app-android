@@ -9,6 +9,7 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 
+@Deprecated("Maybe deprecated due to fetching prices from remote only without cache")
 class TokenServiceEventPublisher(
     private val tokenServiceInteractor: TokenServiceRepository,
     private val eventManager: TokenServiceEventManager,

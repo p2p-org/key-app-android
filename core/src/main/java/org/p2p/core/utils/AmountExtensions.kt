@@ -3,10 +3,10 @@ package org.p2p.core.utils
 import java.math.BigDecimal
 import java.math.BigInteger
 import java.math.RoundingMode
+import kotlin.math.pow
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 
-private val POWER_VALUE = BigDecimal("10")
 const val SOL_DECIMALS = 9
 const val MOONPAY_DECIMAL = 2
 const val STRIGA_FIAT_DECIMALS = 2
@@ -26,7 +26,7 @@ fun String?.toBigIntegerOrZero(): BigInteger {
     return this?.toBigIntegerOrNull() ?: BigInteger.ZERO
 }
 
-fun Int.toPowerValue(): BigDecimal = POWER_VALUE.pow(this)
+fun Int.toPowerValue(): BigDecimal = BigDecimal.TEN.pow(this)
 
 fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
     return if (isZero()) {
@@ -56,10 +56,12 @@ fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
 
 // do not use BigDecimal(double) sometimes it makes the amount less
 // example: pass 0.030, get 0.029
-fun BigInteger.fromLamports(decimals: Int): BigDecimal =
-    (this.toBigDecimal() / (POWER_VALUE.pow(decimals)))
+fun BigInteger.fromLamports(decimals: Int): BigDecimal {
+    return (this.toDouble() / (10.0.pow(decimals)))
+        .toBigDecimal()
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
         .scaleLong(decimals)
+}
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
