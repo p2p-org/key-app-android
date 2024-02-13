@@ -17,7 +17,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.textwatcher.AmountFractionTextWatcher
-import org.p2p.core.utils.DEFAULT_DECIMAL
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.hideKeyboard
 import org.p2p.uikit.utils.drawable.shape.shapeRounded16dp
@@ -156,7 +156,7 @@ class SwapWidget @JvmOverloads constructor(
         val readOnly = model.isStatic || newAmount is TextViewCellModel.Skeleton
         val inputType = if (readOnly) InputType.TYPE_NULL else initInputType
         editTextAmount.setReadOnly(readOnly, inputType)
-        val amountMaxDecimals = model.amountMaxDecimals ?: DEFAULT_DECIMAL
+        val amountMaxDecimals = model.amountMaxDecimals ?: SOL_DECIMALS
         updateFormatter(amountMaxDecimals)
         val oldAmountRaw = editTextAmount.text?.toString() ?: emptyString()
         val newAmountRaw = (newAmount as? TextViewCellModel.Raw)?.text?.getString(context)

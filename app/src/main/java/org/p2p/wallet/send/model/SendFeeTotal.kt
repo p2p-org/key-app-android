@@ -6,7 +6,7 @@ import java.math.BigDecimal
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.model.TextHighlighting
-import org.p2p.core.utils.DEFAULT_DECIMAL
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.orZero
@@ -113,7 +113,7 @@ class SendFeeTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalWithSymbolFormatted: String
-        get() = currentAmount.formatTokenWithSymbol(sourceSymbol, DEFAULT_DECIMAL)
+        get() = currentAmount.formatTokenWithSymbol(sourceSymbol, SOL_DECIMALS)
 
     private val totalSumWithSymbol: String
         get() {
@@ -131,6 +131,6 @@ class SendFeeTotal constructor(
                     }
                 }
                 .plus(transferFee.orZero())
-            return totalSum.formatTokenWithSymbol(sourceSymbol, DEFAULT_DECIMAL)
+            return totalSum.formatTokenWithSymbol(sourceSymbol, SOL_DECIMALS)
         }
 }

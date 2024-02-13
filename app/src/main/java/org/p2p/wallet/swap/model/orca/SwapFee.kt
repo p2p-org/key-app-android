@@ -1,8 +1,11 @@
 package org.p2p.wallet.swap.model.orca
 
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.SOL_SYMBOL
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
@@ -13,8 +16,6 @@ import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.send.model.FeePayerState
 import org.p2p.wallet.swap.model.FeeRelayerSwapFee
-import java.math.BigDecimal
-import java.math.BigInteger
 
 class SwapFee constructor(
     private val fee: FeeRelayerSwapFee,
@@ -70,7 +71,7 @@ class SwapFee constructor(
         get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals).scaleMedium()
 
     val feeAmountInSol: BigDecimal
-        get() = fee.feeInSol.fromLamports().scaleMedium()
+        get() = fee.feeInSol.fromLamports(SOL_DECIMALS).scaleMedium()
 
     val feePayerSymbol: String = feePayerToken.tokenSymbol
 
