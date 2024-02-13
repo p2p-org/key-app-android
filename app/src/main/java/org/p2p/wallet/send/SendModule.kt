@@ -13,6 +13,7 @@ import org.p2p.core.token.Token
 import org.p2p.wallet.feerelayer.interactor.FeeRelayerViaLinkInteractor
 import org.p2p.wallet.home.ui.new.NewSelectTokenContract
 import org.p2p.wallet.home.ui.new.NewSelectTokenPresenter
+import org.p2p.wallet.infrastructure.StorageModule
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
@@ -27,6 +28,8 @@ import org.p2p.wallet.send.repository.RecipientsLocalRepository
 import org.p2p.wallet.send.repository.SendServiceInMemoryRepository
 import org.p2p.wallet.send.repository.SendServiceRemoteRepository
 import org.p2p.wallet.send.repository.SendServiceRepository
+import org.p2p.wallet.send.repository.SendStorage
+import org.p2p.wallet.send.repository.SendStorageContract
 import org.p2p.wallet.send.ui.NewSendContract
 import org.p2p.wallet.send.ui.NewSendPresenter
 import org.p2p.wallet.send.ui.SendOpenedFrom
@@ -93,7 +96,8 @@ object SendModule : InjectionModule {
                 userTokensInteractor = get(),
                 tokenServiceCoordinator = get(),
                 sendFeeRelayerManager = get(),
-                maximumAmountCalculator = get()
+                maximumAmountCalculator = get(),
+                sendStorage = get()
             )
         } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
@@ -116,6 +120,11 @@ object SendModule : InjectionModule {
         factoryOf(::FeeRelayerViaLinkInteractor)
         factoryOf(::SendViaLinkInteractor)
         factoryOf(::UserSendLinksDatabaseRepository) bind UserSendLinksLocalRepository::class
+        factory {
+            SendStorage(
+                prefs = get(named(StorageModule.PREFS_SEND))
+            )
+        } bind SendStorageContract::class
     }
 
     private fun Module.initSendService() {

@@ -32,7 +32,7 @@ data class SendSolanaFee constructor(
     val feePayerToken: Token.Active,
     val feeRelayerFee: FeeRelayerFee,
     val token2022TransferFee: BigInteger,
-    private val sourceToken: Token.Active,
+    val sourceToken: Token.Active,
     private val solToken: Token.Active?,
     private val alternativeFeePayerTokens: List<Token.Active>,
     private val supportedFeePayerTokens: List<Token.Active>? = null
@@ -92,16 +92,28 @@ data class SendSolanaFee constructor(
         }
 
     @IgnoredOnParcel
-    val accountCreationFeeDecimals: BigDecimal =
-        (if (feePayerToken.isSOL) feeRelayerFee.accountCreationFeeInSol else feeRelayerFee.accountCreationFeeInSpl)
-            .fromLamports(feePayerToken.decimals)
-            .scaleLong()
+    val accountCreationFeeDecimals: BigDecimal
+        get() {
+            val amount = if (feePayerToken.isSOL) {
+                feeRelayerFee.accountCreationFeeInSol
+            } else {
+                feeRelayerFee.accountCreationFeeInFeePayerToken
+            }
+            return amount.fromLamports(feePayerToken.decimals).scaleLong()
+        }
 
     @IgnoredOnParcel
-    val transactionDecimals: BigDecimal =
-        (if (feePayerToken.isSOL) feeRelayerFee.transactionFeeInSol else feeRelayerFee.transactionFeeInSpl)
-            .fromLamports(feePayerToken.decimals)
-            .scaleLong()
+    val transactionDecimals: BigDecimal
+        get() {
+            val amount = if (feePayerToken.isSOL) {
+                feeRelayerFee.transactionFeeInSol
+            } else {
+                feeRelayerFee.transactionFeeInFeePayerToken
+            }
+
+            return amount.fromLamports(feePayerToken.decimals)
+                .scaleLong()
+        }
 
     @IgnoredOnParcel
     private val feePayerTotalLamports: BigInteger
@@ -131,10 +143,10 @@ data class SendSolanaFee constructor(
         }
         // assuming that source token and fee payer are same
         sourceTokenSymbol == feePayerSymbol ->
-            sourceTokenTotal >= inputAmount + feeRelayerFee.totalInSpl
+            sourceTokenTotal >= inputAmount + feeRelayerFee.totalInSourceToken
         // assuming that source token and fee payer are different
         else ->
-            feePayerToken.totalInLamports >= feeRelayerFee.totalInSpl
+            feePayerToken.totalInLamports >= feeRelayerFee.totalInFeePayerToken
     }
 
     private fun isEnoughSol(
@@ -153,9 +165,10 @@ data class SendSolanaFee constructor(
         sourceTokenTotal: BigInteger,
         inputAmount: BigInteger
     ): FeePayerState {
+        val feePayerTokenCanCoverExpenses = feePayerToken.totalInLamports >= feeRelayerFee.totalInFeePayerToken
         val isSourceSol = sourceTokenSymbol == SOL_SYMBOL
         val isAllowedToCorrectAmount = strategy == CORRECT_AMOUNT
-        val totalNeeded = feeRelayerFee.totalInSpl + inputAmount
+        val totalNeeded = feeRelayerFee.totalInSourceToken + inputAmount
         val isEnoughSolBalance = isEnoughSolBalance()
         val shouldTryReduceAmount = isAllowedToCorrectAmount && !isSourceSol && !isEnoughSolBalance
         val hasAlternativeFeePayerTokens = alternativeFeePayerTokens.isNotEmpty()
@@ -177,9 +190,18 @@ data class SendSolanaFee constructor(
                 appendLine("alternativeFeePayerTokens = ${alternativeFeePayerTokens.map(Token.Active::tokenSymbol)}")
                 appendLine("isValidToSwitchOnSource = $isValidToSwitchOnSource")
                 appendLine("shouldSwitchToSpl = $shouldSwitchToSpl")
+                appendLine("feePayerToken = ${feePayerToken.tokenSymbol}")
+                appendLine("feePayerTokenCanCoverExpenses = $feePayerTokenCanCoverExpenses")
             }
         )
         return when {
+            feePayerTokenCanCoverExpenses -> {
+                if (feePayerToken.isSOL) {
+                    SwitchToSol
+                } else {
+                    SwitchToSpl(feePayerToken)
+                }
+            }
             shouldSwitchToSpl -> {
                 SwitchToSpl(sourceToken)
             }

@@ -100,6 +100,17 @@ fun BigDecimal.formatTokenWithSymbol(
     return "$formattedAmount $tokenSymbol"
 }
 
+fun BigDecimal.formatTokenWithSymbol(
+    token: Token.Active,
+    exactDecimals: Boolean = false,
+    keepInitialDecimals: Boolean = false,
+): String = formatTokenWithSymbol(
+    token.tokenSymbol,
+    token.decimals,
+    exactDecimals,
+    keepInitialDecimals
+)
+
 // case: 10000.000000007900 -> 100 000.00
 fun BigDecimal.formatTokenForMoonpay(): String = formatWithDecimals(MOONPAY_DECIMAL)
 

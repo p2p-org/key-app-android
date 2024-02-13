@@ -39,7 +39,7 @@ private const val PREFS_SWAP = "swap_prefs"
 private const val PREFS_STRIGA = "striga_prefs"
 
 object StorageModule {
-    const val PREFS_PNL = "pnl_prefs"
+    const val PREFS_SEND = "send_prefs"
 
     private fun Scope.androidPreferences(prefsName: String): SharedPreferences {
         return with(androidContext()) {
@@ -70,7 +70,7 @@ object StorageModule {
             SecureStorageContract::class
         factory { AccountStorage(get(named(PREFS_ACCOUNT))) } bind
             AccountStorageContract::class
-        single { JupiterSwapStorage(androidPreferences(PREFS_SWAP),) } bind
+        single { JupiterSwapStorage(androidPreferences(PREFS_SWAP)) } bind
             JupiterSwapStorageContract::class
         factory { StrigaStorage(get(named(PREFS_STRIGA))) } bind
             StrigaStorageContract::class
@@ -94,8 +94,8 @@ object StorageModule {
         single(named(PREFS_STRIGA)) {
             androidEncryptedPreferences(PREFS_STRIGA)
         }
-        single(named(PREFS_PNL)) {
-            androidPreferences(PREFS_PNL)
+        single(named(PREFS_SEND)) {
+            androidPreferences(PREFS_SEND)
         }
     }
 
