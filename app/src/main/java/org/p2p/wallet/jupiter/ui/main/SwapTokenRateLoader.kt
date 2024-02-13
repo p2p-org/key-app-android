@@ -66,7 +66,7 @@ class SwapTokenRateLoader(
     ) {
         emitAndSaveState(SwapRateLoaderState.Loading)
         try {
-            val tokenPrice = tokenServiceRepository.findTokenPriceByAddress(
+            val tokenPrice = tokenServiceRepository.getTokenPriceByAddress(
                 tokenAddress = token.details.tokenMint.base58Value,
                 networkChain = TokenServiceNetwork.SOLANA
             )?.usdRate

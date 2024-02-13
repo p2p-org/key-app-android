@@ -2,22 +2,21 @@ package org.p2p.wallet.jupiter.ui.settings.presenter
 
 import timber.log.Timber
 import java.math.BigDecimal
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.onEach
+import java.math.BigInteger
 import kotlinx.coroutines.supervisorScope
 import org.p2p.core.common.DrawableContainer
 import org.p2p.core.common.TextContainer
+import org.p2p.core.crypto.Base58String
 import org.p2p.core.utils.asUsdSwap
 import org.p2p.core.utils.divideSafe
-import org.p2p.core.utils.formatFiat
-import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.isNotZero
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.model.TokenServicePrice
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.uikit.components.finance_block.MainCellModel
 import org.p2p.uikit.components.finance_block.MainCellStyle
 import org.p2p.uikit.components.left_side.LeftSideCellModel
@@ -26,11 +25,10 @@ import org.p2p.uikit.utils.image.ImageViewCellModel
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
+import org.p2p.wallet.jupiter.repository.model.JupiterSwapRoutePlanV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
-import org.p2p.wallet.jupiter.ui.main.SwapRateLoaderState
-import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 
 class SwapSettingsFeeBox(
     val cellModel: MainCellModel,
@@ -38,20 +36,24 @@ class SwapSettingsFeeBox(
 )
 
 class SwapFeeCellsBuilder(
-    private val rateLoader: SwapTokenRateLoader,
+    private val tokenServiceRepository: TokenServiceRepository,
     private val swapTokensRepository: JupiterSwapTokensRepository
 ) {
+
+    private class SwapFeeBuildFailed(
+        message: String,
+        cause: Throwable? = null
+    ) : Exception(message, cause)
 
     suspend fun buildNetworkFeeCell(
         activeRoute: JupiterSwapRouteV6?,
         solToken: JupiterSwapToken,
     ): SwapSettingsFeeBox {
-        if (activeRoute != null) {
-            val networkFee = activeRoute.fees.signatureFee.fromLamports(solToken.decimals)
-            val solTokenRate: BigDecimal? = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate
-            val feeUsd: BigDecimal? = solTokenRate?.let { networkFee.multiply(it) }
-            // amount is not used, network fee is free right now
-        }
+        // amount is not used, network fee is free right now
+//        val networkFee = activeRoute.fees.signatureFee.fromLamports(solToken.decimals)
+//        val solTokenRate: BigDecimal? = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate
+//        val feeUsd: BigDecimal? = solTokenRate?.let { networkFee.multiply(it) }
+
         val cellModel = MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
                 firstLineText = TextViewCellModel.Raw(
@@ -92,12 +94,12 @@ class SwapFeeCellsBuilder(
             return null
         }
 
-        val solRate = loadRateForToken(SwapTokenModel.JupiterToken(solToken))?.rate ?: kotlin.run {
-            Timber.e(IllegalStateException("Sol rate is null"))
+        val solRate = loadRateForToken(solToken.tokenMint)?.usdRate ?: kotlin.run {
+            Timber.e(SwapFeeBuildFailed("Sol rate is null"))
             return null
         }
-        val tokenBRate = loadRateForToken(tokenB)?.rate ?: kotlin.run {
-            Timber.e(IllegalStateException("Token B (${tokenB.mintAddress} rate is null"))
+        val tokenBRate = loadRateForToken(tokenB.mintAddress)?.usdRate ?: kotlin.run {
+            Timber.e(SwapFeeBuildFailed("Token B (${tokenB.mintAddress} rate is null"))
             return null
         }
         val ataFeeInTokenB: BigDecimal = solRate.divideSafe(tokenBRate) * ataFeeInSol
@@ -136,24 +138,20 @@ class SwapFeeCellsBuilder(
 
     suspend fun buildLiquidityFeeCell(
         activeRoute: JupiterSwapRouteV6,
-    ): SwapSettingsFeeBox? = supervisorScope {
-        val lpTokensRates = activeRoute.routePlans.map { routePlan ->
-            val lpToken = swapTokensRepository.findTokenByMint(routePlan.feeMint) ?: return@supervisorScope null
-            async { loadRateForToken(SwapTokenModel.JupiterToken(lpToken)) }
-        }
-            .awaitAll()
-            .filterNotNull()
+        tokenB: SwapTokenModel,
+    ): SwapSettingsFeeBox = supervisorScope {
+        val keyAppFee = activeRoute.fees.platformFeeTokenB
 
-        val feeAmountFormatted = formatLiquidityFeeString(activeRoute)
-
-        val usdAmounts = activeRoute.routePlans.map { routePlan ->
-            val (lpToken, tokenRate) = lpTokensRates
-                .find { it.token.mintAddress == routePlan.feeMint }
-                ?: return@map null
-
-            val amountLamports = routePlan.feeAmount.fromLamports(lpToken.decimals)
-            amountLamports * tokenRate
-        }
+        val feeAmountFormatted = formatLiquidityFeeString(
+            routePlans = activeRoute.routePlans,
+            keyAppFee = keyAppFee,
+            tokenB = tokenB
+        )
+        val usdAmounts = getLiquidityFeeUsdRates(
+            routePlans = activeRoute.routePlans,
+            keyAppFee = keyAppFee,
+            tokenB = tokenB
+        )
 
         val someAmountsUsdNotLoaded = usdAmounts.any { it == null }
         val liquidityFeeInUsd = if (someAmountsUsdNotLoaded) {
@@ -186,72 +184,66 @@ class SwapFeeCellsBuilder(
         SwapSettingsFeeBox(cellModel, liquidityFeeInUsd)
     }
 
-    private suspend fun formatLiquidityFeeString(route: JupiterSwapRouteV6): String {
+    /**
+     * Append KeyApp fee to liquidity fee string
+     */
+    private suspend fun formatLiquidityFeeString(
+        routePlans: List<JupiterSwapRoutePlanV6>,
+        keyAppFee: BigInteger,
+        tokenB: SwapTokenModel
+    ): String {
         return buildString {
-            route.routePlans.forEachIndexed { index, routePlan ->
-                val lpFee = routePlan.feeAmount
+            routePlans.forEachIndexed { index, routePlan ->
                 val lpToken = swapTokensRepository.findTokenByMint(routePlan.feeMint) ?: return@forEachIndexed
 
+                val lpFee = routePlan.feeAmount
                 val feeAmount = lpFee
                     .fromLamports(lpToken.decimals)
-                    .formatToken(lpToken.decimals)
-                val fee = "$feeAmount ${lpToken.tokenSymbol}"
-                append(fee)
-                if (index != route.routePlans.lastIndex) {
+                    .formatTokenWithSymbol(lpToken.tokenSymbol, lpToken.decimals)
+                append(feeAmount)
+                if (index != routePlans.lastIndex) {
                     append(", ")
                 }
+            }
+            if (keyAppFee.isNotZero()) {
+                append(", ")
+                val feeAmount = keyAppFee
+                    .fromLamports(tokenB.decimals)
+                    .formatTokenWithSymbol(tokenB.tokenSymbol, tokenB.decimals)
+                append(feeAmount)
             }
         }
     }
 
-    suspend fun buildKeyAppFee(activeRoute: JupiterSwapRouteV6, tokenB: SwapTokenModel): SwapSettingsFeeBox? {
-        val platformFee = activeRoute.fees.platformFeeTokenB
-        if (platformFee.isZero()) {
-            return null
+    private suspend fun getLiquidityFeeUsdRates(
+        routePlans: List<JupiterSwapRoutePlanV6>,
+        keyAppFee: BigInteger,
+        tokenB: SwapTokenModel,
+    ): List<BigDecimal?> {
+        val tokenBRate = loadRateForToken(tokenB.mintAddress)?.usdRate
+        val keyAppFeeUsd = tokenBRate?.let { it * keyAppFee.fromLamports(tokenB.decimals) }
+
+        return routePlans.map { routePlan ->
+            val lpToken = swapTokensRepository.findTokenByMint(routePlan.feeMint) ?: return@map null
+            val usdRate = loadRateForToken(lpToken.tokenMint)?.usdRate ?: return@map null
+            val amountLamports = routePlan.feeAmount.fromLamports(lpToken.decimals)
+
+            amountLamports * usdRate
         }
-
-        val tokenBRate = loadRateForToken(tokenB)?.rate
-
-        val platformFeeUsd = activeRoute.fees.platformFeeTokenB
-            .fromLamports(tokenB.decimals)
-            .multiply(tokenBRate.orZero())
-
-        val formattedPlatformFee = "${activeRoute.fees.platformFeePercent.formatFiat()} %"
-
-        val cellModel = MainCellModel(
-            leftSideCellModel = LeftSideCellModel.IconWithText(
-                firstLineText = TextViewCellModel.Raw(
-                    text = TextContainer("KeyApp Fee"),
-                ),
-                secondLineText = TextViewCellModel.Raw(
-                    text = TextContainer(formattedPlatformFee)
-                ),
-            ),
-            rightSideCellModel = null,
-            styleType = MainCellStyle.BASE_CELL,
-        )
-        return SwapSettingsFeeBox(
-            cellModel = cellModel,
-            feeInUsd = platformFeeUsd
-        )
+            .plus(keyAppFeeUsd)
     }
 
     fun buildEstimatedFeeString(
         networkFees: SwapSettingsFeeBox,
         accountFee: SwapSettingsFeeBox?,
-        liquidityFees: SwapSettingsFeeBox?,
+        liquidityFees: SwapSettingsFeeBox,
         token2022Fee: SwapSettingsFeeBox?,
-        keyAppFee: SwapSettingsFeeBox?,
     ): MainCellModel? {
-        if (liquidityFees?.feeInUsd == null) {
-            return null
-        }
-
-        val totalFee: String = liquidityFees.feeInUsd
+        val totalFee = liquidityFees.feeInUsd.orZero()
             .plus(accountFee?.feeInUsd.orZero())
             .plus(token2022Fee?.feeInUsd.orZero())
-            .plus(keyAppFee?.feeInUsd.orZero())
-            .asUsdSwap()
+
+        if (totalFee.isZero()) return null
 
         return MainCellModel(
             leftSideCellModel = LeftSideCellModel.IconWithText(
@@ -261,19 +253,21 @@ class SwapFeeCellsBuilder(
                 ),
             ),
             rightSideCellModel = RightSideCellModel.SingleTextTwoIcon(
-                text = totalFee.let {
-                    TextViewCellModel.Raw(text = TextContainer(it))
-                },
+                text = TextViewCellModel.Raw(text = TextContainer(totalFee.asUsdSwap()))
             ),
             payload = SwapSettingsPayload.ESTIMATED_FEE,
             styleType = MainCellStyle.BASE_CELL,
         )
     }
 
-    private suspend fun loadRateForToken(token: SwapTokenModel): SwapRateLoaderState.Loaded? {
-        return rateLoader.getRate(token)
-            .onEach { Timber.i("JupiterSwapFeeBuilder getting rate for ${token.tokenSymbol}") }
-            .filterIsInstance<SwapRateLoaderState.Loaded>()
-            .firstOrNull()
+    private suspend fun loadRateForToken(tokenMint: Base58String): TokenServicePrice? {
+        return kotlin.runCatching {
+            tokenServiceRepository.getTokenPriceByAddress(
+                tokenAddress = tokenMint.base58Value,
+                networkChain = TokenServiceNetwork.SOLANA
+            )
+        }
+            .onFailure { Timber.e(SwapFeeBuildFailed("Failed to get rate for $tokenMint", it)) }
+            .getOrNull()
     }
 }

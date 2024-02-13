@@ -112,7 +112,7 @@ class TokenPriceDatabaseRepositoryTest {
                     TokenServiceNetwork.ETHEREUM
                 }
                 this += TokenServicePrice(
-                    address = Constants.SOL_MINT + it,
+                    tokenAddress = Constants.SOL_MINT + it,
                     rate = TokenRate(usd = it.toLong().toBigDecimal()),
                     network = randomNetwork,
                 )

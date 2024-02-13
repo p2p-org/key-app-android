@@ -201,7 +201,9 @@ object JupiterSwapTestHelpers {
                 totalFees = BigInteger.ZERO,
                 platformFeePercent = BigDecimal.ZERO,
                 platformFeeTokenB = BigInteger.ZERO
-            )
+            ),
+            inTokenMint = data.inputMint,
+            outTokenMint = data.outputMint
         )
     }
 

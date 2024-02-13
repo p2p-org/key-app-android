@@ -135,9 +135,10 @@ class UserTokensInteractor(
 
         val tokenMetadataData = userLocalRepository.findTokenData(mintAddress.base58Value) ?: return null
 
-        val price = tokenServiceRepository.fetchTokenPriceByAddress(
+        val price = tokenServiceRepository.getTokenPriceByAddress(
             networkChain = TokenServiceNetwork.SOLANA,
-            tokenAddress = mintAddress.base58Value
+            tokenAddress = mintAddress.base58Value,
+            forceRemote = true
         )
 
         return TokenConverter.createToken(

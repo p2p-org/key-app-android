@@ -69,7 +69,7 @@ class UserTokensDatabaseRepository(
         val oldTokens = getUserTokens()
 
         val newTokens = oldTokens.map { token ->
-            val newTokenRate = prices.firstOrNull { token.tokenServiceAddress == it.address }
+            val newTokenRate = prices.firstOrNull { token.tokenServiceAddress == it.tokenAddress }
             val oldTokenRate = token.rate
             val tokenRate = newTokenRate?.usdRate ?: oldTokenRate
             token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })

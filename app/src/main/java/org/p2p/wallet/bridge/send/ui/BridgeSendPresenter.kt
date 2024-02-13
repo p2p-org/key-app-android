@@ -11,6 +11,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatTokenWithSymbol
@@ -300,7 +301,7 @@ class BridgeSendPresenter(
                 }
                 is CurrencyMode.Token -> {
                     val tokenSymbol = mode.symbol
-                    amountPlusTotalFee.formatTokenWithSymbol(tokenSymbol)
+                    amountPlusTotalFee.formatTokenWithSymbol(tokenSymbol, SOL_DECIMALS)
                 }
                 else -> {
                     emptyString()

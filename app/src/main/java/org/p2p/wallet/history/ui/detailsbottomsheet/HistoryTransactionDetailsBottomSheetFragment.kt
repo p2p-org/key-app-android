@@ -16,7 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.glide.GlideManager
-import org.p2p.core.utils.DEFAULT_DECIMAL
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.lessThenMinValue
@@ -324,7 +324,7 @@ class HistoryTransactionDetailsBottomSheetFragment :
 
                     val highlightedText = "($formattedUsdAmount)"
                     val commonText = buildString {
-                        append(feeAmount.totalInTokens.formatToken(feeAmount.tokensDecimals ?: DEFAULT_DECIMAL))
+                        append(feeAmount.totalInTokens.formatToken(feeAmount.tokensDecimals ?: SOL_DECIMALS))
                         appendWhitespace()
                         append(feeAmount.tokenSymbol.orEmpty())
                         appendWhitespace()

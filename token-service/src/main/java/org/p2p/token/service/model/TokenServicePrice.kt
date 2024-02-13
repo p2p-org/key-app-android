@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import org.p2p.core.utils.scaleShort
 
 data class TokenServicePrice(
-    val address: String,
+    val tokenAddress: String,
     val rate: TokenRate,
     val network: TokenServiceNetwork
 ) {
@@ -15,6 +15,6 @@ data class TokenServicePrice(
         get() = rate.usd
 
     override fun toString(): String {
-        return "TokenServicePrice($address - ${rate.usd} - ${network.networkName})"
+        return "TokenServicePrice($tokenAddress - ${rate.usd} - ${network.networkName})"
     }
 }
