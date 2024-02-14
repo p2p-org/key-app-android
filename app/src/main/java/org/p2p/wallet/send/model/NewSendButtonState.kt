@@ -20,7 +20,8 @@ class NewSendButtonState(
     private val feeRelayerState: FeeRelayerState,
     private val calculationMode: CalculationMode,
     private val minRentExemption: BigInteger,
-    private val resources: Resources
+    private val resources: Resources,
+    private val totalFee: SendFeeTotal,
 ) {
 
     private val minSolValidator = SendButtonStateMinSolValidator(
@@ -114,7 +115,7 @@ class NewSendButtonState(
             else -> {
                 State.Enabled(
                     textResId = R.string.send_format,
-                    value = "${calculationMode.getCurrentAmount().toPlainString()} ${tokenToSend.tokenSymbol}",
+                    value = totalFee.totalSumWithSymbol,
                     totalAmountTextColor = R.color.text_night
                 )
             }

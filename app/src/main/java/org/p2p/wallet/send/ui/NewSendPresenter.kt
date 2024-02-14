@@ -649,7 +649,12 @@ class NewSendPresenter(
             calculationMode = calculationMode,
             feeRelayerState = feeRelayerState,
             minRentExemption = sendFeeRelayerManager.getMinRentExemption(),
-            resources = resources
+            resources = resources,
+            totalFee = sendFeeRelayerManager.buildTotalFee(
+                sourceToken = sourceToken,
+                calculationMode = calculationMode,
+                tokenExtensions = (feeRelayerState as? FeeRelayerState.UpdateFee)?.tokenExtensions.orEmpty()
+            )
         )
 
         when (val state = sendButton.getCurrentState()) {
