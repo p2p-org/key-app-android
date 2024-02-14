@@ -11,16 +11,19 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.history.api.model.RpcHistoryFeeResponse
 import org.p2p.wallet.history.api.model.RpcHistoryStatusResponse
+import org.p2p.wallet.history.api.model.RpcHistoryTokenResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionInfoResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTransactionResponse
 import org.p2p.wallet.history.api.model.RpcHistoryTypeResponse
 import org.p2p.wallet.history.model.rpc.RpcFee
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.UsernameFormatter
+import org.p2p.wallet.utils.emptyString
 
 class RpcHistoryTransactionConverter(
     private val tokenKeyProvider: TokenKeyProvider,
@@ -74,10 +77,8 @@ class RpcHistoryTransactionConverter(
             type = transaction.type.toDomain(),
             senderAddress = info.counterParty.address,
             counterPartyUsername = usernameFormatter.formatOrNull(info.counterParty.username),
-            iconUrl = info.token.logoUrl,
+            token = info.token.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            symbol = info.token.symbol.orEmpty(),
-            decimals = info.token.decimals,
             destination = tokenKeyProvider.publicKey,
             fees = transaction.fees.parseFees()
         )
@@ -122,10 +123,8 @@ class RpcHistoryTransactionConverter(
             type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
             counterPartyUsername = usernameFormatter.formatOrNull(info.counterParty.username),
-            iconUrl = info.token.logoUrl,
+            token = info.token.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
-            symbol = info.token.symbol.orEmpty(),
-            decimals = info.token.decimals,
             destination = info.counterParty.address,
             fees = transaction.fees.parseFees()
         )
@@ -147,18 +146,12 @@ class RpcHistoryTransactionConverter(
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            tokenAAddress = tokenA.mint,
-            tokenBAddress = tokenB.mint,
+            tokenA = tokenA.toDomain(),
+            tokenB = tokenB.toDomain(),
             tokenAAmount = RpcHistoryAmount(sourceTotal, sourceTotalInUsd),
             tokenBAmount = RpcHistoryAmount(destinationTotal, destinationTotalInUsd),
             fees = transaction.fees.parseFees(),
-            tokenASymbol = tokenA.symbol.orEmpty(),
-            tokenAIconUrl = tokenA.logoUrl,
-            tokenBSymbol = tokenB.symbol.orEmpty(),
-            tokenBIconUrl = tokenB.logoUrl,
             type = transaction.type.toDomain(),
-            tokenADecimals = tokenA.decimals,
-            tokenBDecimals = tokenB.decimals
         )
     }
 
@@ -175,10 +168,8 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             senderAddress = tokenKeyProvider.publicKey,
-            iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
-            symbol = info.token.symbol.orEmpty(),
-            decimals = info.token.decimals,
+            token = info.token.toDomain(),
             destination = info.token.mint,
             fees = transaction.fees.parseFees()
         )
@@ -198,9 +189,7 @@ class RpcHistoryTransactionConverter(
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
             senderAddress = info.token.mint,
-            iconUrl = info.token.logoUrl,
-            symbol = info.token.symbol.orEmpty(),
-            decimals = info.token.decimals,
+            token = info.token.toDomain(),
             destination = tokenKeyProvider.publicKey,
             fees = transaction.fees.parseFees()
         )
@@ -217,10 +206,8 @@ class RpcHistoryTransactionConverter(
             signature = transaction.signature,
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            iconUrl = info.token.logoUrl,
             fees = transaction.fees.parseFees(),
-            tokenSymbol = info.token.symbol.orEmpty(),
-            tokenDecimals = info.token.decimals,
+            token = info.token.toDomain(),
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd)
         )
@@ -254,9 +241,7 @@ class RpcHistoryTransactionConverter(
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            tokenSymbol = info.token.symbol.orEmpty(),
-            tokenDecimals = info.token.decimals,
-            iconUrl = info.token.logoUrl,
+            token = info.token.toDomain(),
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
             fees = transaction.fees.parseFees()
@@ -274,9 +259,7 @@ class RpcHistoryTransactionConverter(
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            tokenSymbol = info.token.symbol.orEmpty(),
-            tokenDecimals = info.token.decimals,
-            iconUrl = info.token.logoUrl,
+            token = info.token.toDomain(),
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
             fees = transaction.fees.parseFees()
@@ -308,10 +291,10 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
-            tokenDecimals = info.tokenAmount?.token?.decimals ?: SOL_DECIMALS,
+            token = info.tokenAmount?.token?.toDomain() ?: RpcHistoryTransactionToken(
+                symbol = emptyString(), decimals = SOL_DECIMALS, logoUrl = null
+            ),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = fees,
             claimKey = claimKey
         )
@@ -339,10 +322,10 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
-            tokenDecimals = info.tokenAmount?.token?.decimals ?: SOL_DECIMALS,
+            token = info.tokenAmount?.token?.toDomain() ?: RpcHistoryTransactionToken(
+                symbol = emptyString(), decimals = SOL_DECIMALS, logoUrl = null
+            ),
             amount = RpcHistoryAmount(total, totalInUsd),
-            iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees(),
             sourceAddress = info.to?.address.orEmpty(),
             message = message
@@ -361,8 +344,9 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
-            tokenSymbol = info.token?.symbol.orEmpty(),
-            tokenDecimals = info.token?.decimals ?: SOL_DECIMALS,
+            token = info.token?.toDomain() ?: RpcHistoryTransactionToken(
+                symbol = emptyString(), decimals = SOL_DECIMALS, logoUrl = null
+            ),
             amount = RpcHistoryAmount(total = total, totalInUsd = totalInUsd)
         )
     }
@@ -392,6 +376,12 @@ private fun RpcHistoryTypeResponse?.toDomain(): RpcHistoryTransactionType {
         else -> RpcHistoryTransactionType.UNKNOWN
     }
 }
+
+private fun RpcHistoryTokenResponse.toDomain(): RpcHistoryTransactionToken = RpcHistoryTransactionToken(
+    symbol = symbol.orEmpty(),
+    decimals = decimals,
+    logoUrl = logoUrl
+)
 
 private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
     return if (this.all { fee -> fee.payer in FEE_RELAYER_ACCOUNTS }) {

@@ -57,8 +57,8 @@ class HistoryAnalytics(
         swapAnalytics.logSwapShowingDetails(
             swapStatus = SwapAnalytics.SwapStatus.SUCCESS,
             lastScreenName = analyticsInteractor.getPreviousScreenName(),
-            tokenAName = transaction.tokenASymbol,
-            tokenBName = transaction.tokenBSymbol,
+            tokenAName = transaction.tokenA.symbol,
+            tokenBName = transaction.tokenB.symbol,
             swapSum = transaction.tokenAAmount.total,
             swapUSD = transaction.tokenBAmount.totalInUsd.orZero(),
             feesSource = SwapAnalytics.FeeSource.UNKNOWN

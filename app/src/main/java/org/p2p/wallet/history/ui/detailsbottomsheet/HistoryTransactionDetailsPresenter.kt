@@ -93,8 +93,8 @@ class HistoryTransactionDetailsPresenter(
                 showFee(transaction.fees)
             }
 
-            val sourceIcon = transaction.tokenAIconUrl
-            val destinationIcon = transaction.tokenBIconUrl
+            val sourceIcon = transaction.tokenA.logoUrl
+            val destinationIcon = transaction.tokenB.logoUrl
             if (sourceIcon.isNullOrEmpty() && destinationIcon.isNullOrEmpty()) {
                 showTransferView(null, R.drawable.ic_swap_arrows)
             } else {
@@ -110,7 +110,7 @@ class HistoryTransactionDetailsPresenter(
                 showSubtitle(resources.getString(R.string.details_pending))
                 showProgressTransactionInProgress()
             }
-            showTransferView(transaction.iconUrl, transaction.getIcon())
+            showTransferView(transaction.token.logoUrl, transaction.getIcon())
             if (!transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
@@ -218,7 +218,7 @@ class HistoryTransactionDetailsPresenter(
             if (!transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
-            showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_image)
             showStateTitleValue(
                 resources.getString(
                     if (transaction.isBurn) R.string.transaction_details_burn
@@ -235,7 +235,7 @@ class HistoryTransactionDetailsPresenter(
                 view?.showSubtitle(resources.getString(R.string.details_pending))
                 showProgressTransactionInProgress()
             }
-            showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_image)
             if (transaction.fees != null && !transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
@@ -259,7 +259,7 @@ class HistoryTransactionDetailsPresenter(
                 view?.showSubtitle(resources.getString(R.string.details_pending))
                 showProgressTransactionInProgress()
             }
-            showTransferView(transaction.iconUrl, R.drawable.ic_placeholder_image)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_image)
             if (transaction.fees != null && !transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
@@ -283,7 +283,7 @@ class HistoryTransactionDetailsPresenter(
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
             showFee(transaction.fees)
-            showTransferView(transaction.iconUrl, R.drawable.ic_transaction_create)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_transaction_create)
             showStateTitleValue(
                 resources.getString(R.string.transaction_details_signature),
                 transaction.signature.cutMiddle()
@@ -309,7 +309,7 @@ class HistoryTransactionDetailsPresenter(
             val total = transaction.getFormattedTotal()
             showAmount(total, usdTotal)
             showFee(transaction.fees)
-            showTransferView(transaction.iconUrl, transaction.getIcon())
+            showTransferView(transaction.token.logoUrl, transaction.getIcon())
             showStateTitleValue(
                 title = resources.getString(
                     if (transaction.isStake) {

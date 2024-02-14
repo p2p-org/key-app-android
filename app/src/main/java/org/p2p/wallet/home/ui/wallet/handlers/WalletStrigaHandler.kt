@@ -11,6 +11,7 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.home.events.AppLoaderFacade
 import org.p2p.wallet.home.events.StrigaFeatureLoader
@@ -165,10 +166,12 @@ class WalletStrigaHandler(
             status = HistoryTransactionStatus.PENDING,
             type = RpcHistoryTransactionType.RECEIVE,
             senderAddress = strigaUserCryptoAddress,
-            iconUrl = claimedToken.tokenIcon,
+            token = RpcHistoryTransactionToken(
+                symbol = claimedToken.tokenSymbol,
+                decimals = SOL_DECIMALS,
+                logoUrl = claimedToken.tokenIcon
+            ),
             amount = claimedToken.amountAvailable.let { RpcHistoryAmount(it, it) },
-            symbol = claimedToken.tokenSymbol,
-            decimals = SOL_DECIMALS,
             destination = tokenKeyProvider.publicKey,
             counterPartyUsername = null,
             fees = null

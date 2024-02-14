@@ -17,6 +17,7 @@ import org.p2p.wallet.feerelayer.model.FeeRelayerStatistics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
@@ -135,9 +136,11 @@ class StrigaWithdrawInteractor(
             destination = recipientAddress,
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol,
-            decimals = token.decimals,
+            token = RpcHistoryTransactionToken(
+                symbol = token.tokenSymbol,
+                decimals = token.decimals,
+                logoUrl = token.iconUrl
+            ),
             counterPartyUsername = null
         )
     }

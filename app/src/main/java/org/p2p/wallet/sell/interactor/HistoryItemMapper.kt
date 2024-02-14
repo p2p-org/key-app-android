@@ -135,11 +135,11 @@ class HistoryItemMapper(
         val iconRes: Int
         when (transaction) {
             is RpcHistoryTransaction.Swap -> with(transaction) {
-                sourceTokenIconUrl = tokenAIconUrl
-                destinationTokenIconUrl = tokenBIconUrl
+                sourceTokenIconUrl = tokenA.logoUrl
+                destinationTokenIconUrl = tokenB.logoUrl
 
                 iconRes = R.drawable.ic_swap_arrows
-                startTitle = "$tokenASymbol to $tokenBSymbol"
+                startTitle = "${tokenA.symbol} to ${tokenB.symbol}"
                 startSubtitle = resources.getString(getTypeName())
                 endTopValue = "+${getTokenBTotal()}"
                 endTopValueTextColor = getTextColor()
@@ -176,7 +176,7 @@ class HistoryItemMapper(
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_placeholder_image
 
                 startTitle = resources.getString(getTitle())
@@ -189,7 +189,7 @@ class HistoryItemMapper(
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.CreateAccount -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
@@ -209,7 +209,7 @@ class HistoryItemMapper(
                 )
             }
             is RpcHistoryTransaction.WormholeSend -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_send
                 startTitle = resources.getString(getTitle())
                 startSubtitle = resources.getString(getSubtitle())
@@ -218,7 +218,7 @@ class HistoryItemMapper(
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_send
                 startTitle = resources.getString(getTitle())
                 startSubtitle = resources.getString(getSubtitle())

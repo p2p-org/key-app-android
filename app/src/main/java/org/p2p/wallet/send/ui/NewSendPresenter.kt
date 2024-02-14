@@ -38,6 +38,7 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -612,9 +613,11 @@ class NewSendPresenter(
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol,
-            decimals = token.decimals
+            token = RpcHistoryTransactionToken(
+                symbol = token.tokenSymbol,
+                decimals = token.decimals,
+                logoUrl = token.iconUrl
+            )
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {

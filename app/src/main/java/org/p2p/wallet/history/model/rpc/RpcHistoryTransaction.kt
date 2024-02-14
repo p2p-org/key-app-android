@@ -19,6 +19,13 @@ import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 
+@Parcelize
+data class RpcHistoryTransactionToken(
+    val symbol: String,
+    val decimals: Int,
+    val logoUrl: String?,
+) : Parcelable
+
 sealed class RpcHistoryTransaction(
     override val date: ZonedDateTime,
     open val signature: String,
@@ -44,9 +51,7 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         val amount: RpcHistoryAmount,
-        val tokenSymbol: String,
-        val tokenDecimals: Int,
-        val iconUrl: String?,
+        val token: RpcHistoryTransactionToken,
         override val type: RpcHistoryTransactionType,
         val fees: List<RpcFee>?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -60,12 +65,12 @@ sealed class RpcHistoryTransaction(
 
         fun getTotal(): String {
             val symbol = getSymbol(isBurn)
-            val amount = amount.total.abs().formatTokenWithSymbol(tokenSymbol, tokenDecimals)
+            val amount = amount.total.abs().formatTokenWithSymbol(token.symbol, token.decimals)
             return "$symbol$amount"
         }
 
         fun getFormattedAbsTotal(): String {
-            return amount.total.abs().formatTokenWithSymbol(tokenSymbol, tokenDecimals)
+            return amount.total.abs().formatTokenWithSymbol(token.symbol, token.decimals)
         }
 
         override fun getSymbol(isNegativeOperation: Boolean): String {
@@ -105,13 +110,11 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val amount: RpcHistoryAmount,
-        val iconUrl: String?,
+        val token: RpcHistoryTransactionToken,
         val fees: List<RpcFee>?,
-        val tokenSymbol: String,
-        val tokenDecimals: Int
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
         fun getFormattedTotal(): String =
-            amount.total.formatTokenWithSymbol(tokenSymbol, tokenDecimals)
+            amount.total.formatTokenWithSymbol(token.symbol, token.decimals)
 
         fun getFormattedAmountUsd(): String? =
             amount.totalInUsd?.asNegativeUsdTransaction()
@@ -124,26 +127,20 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
-        val tokenAAddress: String,
-        val tokenBAddress: String,
+        val tokenA: RpcHistoryTransactionToken,
+        val tokenB: RpcHistoryTransactionToken,
         val fees: List<RpcFee>?,
         val tokenAAmount: RpcHistoryAmount,
         val tokenBAmount: RpcHistoryAmount,
-        val tokenASymbol: String,
-        val tokenAIconUrl: String?,
-        val tokenBSymbol: String,
-        val tokenBIconUrl: String?,
-        val tokenADecimals: Int,
-        val tokenBDecimals: Int
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
 
         fun getTokenBUsdAmount(): String? = tokenAAmount.totalInUsd?.asPositiveUsdTransaction()
 
         fun getFormattedAmountWithArrow(): String {
             return buildString {
-                append(tokenAAmount.total.abs().formatTokenWithSymbol(tokenASymbol, tokenADecimals))
+                append(tokenAAmount.total.abs().formatTokenWithSymbol(tokenA.symbol, tokenA.decimals))
                 append(" → ")
-                append(tokenBAmount.total.formatTokenWithSymbol(tokenBSymbol, tokenBDecimals))
+                append(tokenBAmount.total.formatTokenWithSymbol(tokenB.symbol, tokenB.decimals))
             }
         }
 
@@ -159,9 +156,9 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_rose
         }
 
-        fun getTokenATotal(): String = tokenAAmount.total.formatTokenWithSymbol(tokenASymbol, tokenADecimals)
+        fun getTokenATotal(): String = tokenAAmount.total.formatTokenWithSymbol(tokenA.symbol, tokenA.decimals)
 
-        fun getTokenBTotal(): String = tokenBAmount.total.formatTokenWithSymbol(tokenBSymbol, tokenBDecimals)
+        fun getTokenBTotal(): String = tokenBAmount.total.formatTokenWithSymbol(tokenB.symbol, tokenB.decimals)
     }
 
     @Parcelize
@@ -172,10 +169,8 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val senderAddress: String,
-        val iconUrl: String?,
         val amount: RpcHistoryAmount,
-        val symbol: String,
-        val decimals: Int,
+        val token: RpcHistoryTransactionToken,
         val destination: String,
         val counterPartyUsername: String?,
         val fees: List<RpcFee>?,
@@ -189,16 +184,16 @@ sealed class RpcHistoryTransaction(
         val isSend: Boolean
             get() = type == RpcHistoryTransactionType.SEND
 
-        fun getTokenIconUrl(): String? = iconUrl
+        fun getTokenIconUrl(): String? = token.logoUrl
 
         @DrawableRes
         fun getIcon(): Int = if (isSend) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
 
         fun getTitle(resources: Resources): String {
             val (from: String, to: String) = if (isSend) {
-                symbol to destination.cutMiddle()
+                token.symbol to destination.cutMiddle()
             } else {
-                destination.cutMiddle() to symbol
+                destination.cutMiddle() to token.symbol
             }
             return resources.getString(R.string.details_transfer_format, from, to)
         }
@@ -237,19 +232,13 @@ sealed class RpcHistoryTransaction(
         }
 
         @ColorRes
-        fun getTextColor() = when {
-            !status.isCompleted() -> {
-                R.color.text_rose
-            }
-            isSend -> {
-                R.color.text_night
-            }
-            else -> {
-                R.color.text_mint
-            }
+        fun getTextColor(): Int = when {
+            !status.isCompleted() -> R.color.text_rose
+            isSend -> R.color.text_night
+            else -> R.color.text_mint
         }
 
-        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(symbol, decimals)
+        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(token.symbol, token.decimals)
         fun getFormattedAmountUsd(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isSend))
     }
 
@@ -297,10 +286,8 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val senderAddress: String,
-        val iconUrl: String?,
+        val token: RpcHistoryTransactionToken,
         val amount: RpcHistoryAmount,
-        val symbol: String,
-        val decimals: Int,
         val destination: String,
         val fees: List<RpcFee>?,
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -309,7 +296,7 @@ sealed class RpcHistoryTransaction(
         val isStake: Boolean
             get() = type == RpcHistoryTransactionType.STAKE
 
-        fun getTokenIconUrl(): String? = iconUrl
+        fun getTokenIconUrl(): String? = token.logoUrl
 
         @DrawableRes
         fun getIcon(): Int = if (isStake) R.drawable.ic_transaction_send else R.drawable.ic_transaction_receive
@@ -337,7 +324,7 @@ sealed class RpcHistoryTransaction(
             else -> R.color.text_mint
         }
 
-        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(symbol, decimals)
+        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(token.symbol, token.decimals)
 
         fun getFormattedAmountUsd(): String? = amount.totalInUsd?.asUsdTransaction(getSymbol(isStake))
     }
@@ -350,9 +337,7 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val amount: RpcHistoryAmount,
-        val tokenSymbol: String,
-        val tokenDecimals: Int,
-        val iconUrl: String?,
+        val token: RpcHistoryTransactionToken,
         val fees: List<RpcFee>?,
         val claimKey: String
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -371,7 +356,7 @@ sealed class RpcHistoryTransaction(
 
         fun getTotalWithSymbol(): String = "+${getFormattedTotal()}"
 
-        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(tokenSymbol, tokenDecimals)
+        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(token.symbol, token.decimals)
 
         @ColorRes
         fun getTextColor(): Int = when {
@@ -394,10 +379,8 @@ sealed class RpcHistoryTransaction(
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
         val amount: RpcHistoryAmount,
+        val token: RpcHistoryTransactionToken,
         val sourceAddress: String,
-        val tokenSymbol: String,
-        val tokenDecimals: Int,
-        val iconUrl: String?,
         val fees: List<RpcFee>?,
         val message: String
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
@@ -416,7 +399,7 @@ sealed class RpcHistoryTransaction(
 
         fun getTotal(): String = getFormattedTotal()
 
-        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(tokenSymbol, tokenDecimals)
+        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(token.symbol, token.decimals)
 
         fun getFormattedUsdAmount(): String? = amount.totalInUsd?.abs()?.asNegativeUsdTransaction()
 
@@ -434,11 +417,10 @@ sealed class RpcHistoryTransaction(
         override val blockNumber: Int,
         override val status: HistoryTransactionStatus,
         override val type: RpcHistoryTransactionType,
-        val tokenSymbol: String,
-        val tokenDecimals: Int,
+        val token: RpcHistoryTransactionToken,
         val amount: RpcHistoryAmount
     ) : RpcHistoryTransaction(date, signature, blockNumber, status, type) {
-        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(tokenSymbol, tokenDecimals)
+        fun getFormattedTotal(): String = amount.total.formatTokenWithSymbol(token.symbol, token.decimals)
 
         fun getFormattedAmountUsd(): String? = amount.totalInUsd?.asNegativeUsdTransaction()
     }
