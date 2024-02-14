@@ -15,7 +15,10 @@ sealed interface FeeRelayerState {
         val solanaFee: SendSolanaFee?,
         val feeLimitInfo: TransactionFeeLimits,
         val tokenExtensions: TokenExtensionsMap
-    ) : FeeRelayerState
+    ) : FeeRelayerState {
+        val hasToken2022Fee: Boolean
+            get() = tokenExtensions.isNotEmpty()
+    }
 
     data class Failure(
         val previousState: FeeRelayerState,

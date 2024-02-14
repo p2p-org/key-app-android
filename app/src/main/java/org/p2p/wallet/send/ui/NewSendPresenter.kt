@@ -38,6 +38,7 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -264,7 +265,6 @@ class NewSendPresenter(
         view.setFeeLabel(feesLabel)
         updateButton(sourceToken, feeRelayerState)
 
-        // FIXME: only for debug needs, remove after release
         if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
@@ -466,16 +466,24 @@ class NewSendPresenter(
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
-        if (calculationMode.isCurrentInputEmpty() && solanaFee == null) {
-            newSendAnalytics.logFreeTransactionsClicked(flow)
-            view?.showFreeTransactionsInfo()
-        } else {
-            val total = sendFeeRelayerManager.buildTotalFee(
-                sourceToken = requireToken(),
-                calculationMode = calculationMode,
-                tokenExtensions = currentState.tokenExtensions
-            )
-            view?.showTransactionDetails(total)
+
+        when {
+            calculationMode.isCurrentInputEmpty() && currentState.hasToken2022Fee -> {
+                return
+            }
+            calculationMode.isCurrentInputEmpty() && solanaFee == null -> {
+                newSendAnalytics.logFreeTransactionsClicked(flow)
+                view?.showFreeTransactionsInfo()
+            }
+            else -> {
+                val total = sendFeeRelayerManager.buildTotalFee(
+                    sourceToken = requireToken(),
+                    calculationMode = calculationMode,
+                    tokenExtensions = currentState.tokenExtensions
+                )
+
+                view?.showTransactionDetails(total)
+            }
         }
     }
 
@@ -605,8 +613,11 @@ class NewSendPresenter(
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol
+            token = RpcHistoryTransactionToken(
+                symbol = token.tokenSymbol,
+                decimals = token.decimals,
+                logoUrl = token.iconUrl
+            )
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {

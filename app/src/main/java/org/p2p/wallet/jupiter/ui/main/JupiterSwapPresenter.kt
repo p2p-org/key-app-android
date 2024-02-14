@@ -33,6 +33,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -749,15 +750,23 @@ class JupiterSwapPresenter(
             blockNumber = -1,
             status = HistoryTransactionStatus.PENDING,
             type = RpcHistoryTransactionType.SWAP,
-            sourceSymbol = currentState.tokenA.tokenSymbol,
-            sourceAddress = currentState.tokenA.mintAddress.toString(),
+            tokenA = currentState.tokenA.run {
+                RpcHistoryTransactionToken(
+                    symbol = tokenSymbol,
+                    decimals = decimals,
+                    logoUrl = iconUrl,
+                )
+            },
+            tokenB = currentState.tokenB.run {
+                RpcHistoryTransactionToken(
+                    symbol = tokenSymbol,
+                    decimals = decimals,
+                    logoUrl = iconUrl,
+                )
+            },
             fees = emptyList(),
-            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
-            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
-            sourceIconUrl = currentState.tokenA.iconUrl,
-            destinationSymbol = currentState.tokenB.tokenSymbol,
-            destinationIconUrl = currentState.tokenB.iconUrl,
-            destinationAddress = currentState.tokenB.mintAddress.toString()
+            tokenAAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            tokenBAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
         )
     }
 }
