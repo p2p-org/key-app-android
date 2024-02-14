@@ -466,16 +466,24 @@ class NewSendPresenter(
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
-        if (calculationMode.isCurrentInputEmpty() && solanaFee == null) {
-            newSendAnalytics.logFreeTransactionsClicked(flow)
-            view?.showFreeTransactionsInfo()
-        } else {
-            val total = sendFeeRelayerManager.buildTotalFee(
-                sourceToken = requireToken(),
-                calculationMode = calculationMode,
-                tokenExtensions = currentState.tokenExtensions
-            )
-            view?.showTransactionDetails(total)
+
+        when {
+            calculationMode.isCurrentInputEmpty() && currentState.hasToken2022Fee -> {
+                return
+            }
+            calculationMode.isCurrentInputEmpty() && solanaFee == null -> {
+                newSendAnalytics.logFreeTransactionsClicked(flow)
+                view?.showFreeTransactionsInfo()
+            }
+            else -> {
+                val total = sendFeeRelayerManager.buildTotalFee(
+                    sourceToken = requireToken(),
+                    calculationMode = calculationMode,
+                    tokenExtensions = currentState.tokenExtensions
+                )
+
+                view?.showTransactionDetails(total)
+            }
         }
     }
 
