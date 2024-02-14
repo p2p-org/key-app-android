@@ -35,7 +35,7 @@ interface SwapTokensDao {
     suspend fun findTokensByMints(mints: Set<String>): List<SwapTokenEntity>
 
     // todo: should be done with pagination
-    @Query("SELECT * from swap_tokens LIMIT 150")
+    @Query("SELECT * from swap_tokens LIMIT 100")
     suspend fun getAllSwapTokens(): List<SwapTokenEntity>
 
     @Query("SELECT COUNT(*) from swap_tokens")

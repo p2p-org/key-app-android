@@ -21,6 +21,7 @@ import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.repository.UserLocalRepository
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
@@ -134,15 +135,15 @@ class HistoryItemMapper(
         val iconRes: Int
         when (transaction) {
             is RpcHistoryTransaction.Swap -> with(transaction) {
-                sourceTokenIconUrl = sourceIconUrl
-                destinationTokenIconUrl = destinationIconUrl
+                sourceTokenIconUrl = tokenA.logoUrl
+                destinationTokenIconUrl = tokenB.logoUrl
 
                 iconRes = R.drawable.ic_swap_arrows
-                startTitle = "$sourceSymbol to $destinationSymbol"
+                startTitle = "${tokenA.symbol} to ${tokenB.symbol}"
                 startSubtitle = resources.getString(getTypeName())
-                endTopValue = "+${getDestinationTotal()}"
+                endTopValue = "+${getTokenBTotal()}"
                 endTopValueTextColor = getTextColor()
-                endBottomValue = getSourceTotal()
+                endBottomValue = getTokenATotal()
             }
             is RpcHistoryTransaction.Transfer -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
@@ -175,34 +176,40 @@ class HistoryItemMapper(
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_placeholder_image
 
                 startTitle = resources.getString(getTitle())
-                startSubtitle =
-                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
-                endTopValue = getUsdAmount()
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    signature.cutMiddle()
+                )
+                endTopValue = getFormattedAmountUsd()
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.CreateAccount -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
-                startSubtitle =
-                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    signature.cutMiddle()
+                )
             }
             is RpcHistoryTransaction.CloseAccount -> with(transaction) {
                 tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
-                startSubtitle =
-                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    signature.cutMiddle()
+                )
             }
             is RpcHistoryTransaction.WormholeSend -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_send
                 startTitle = resources.getString(getTitle())
                 startSubtitle = resources.getString(getSubtitle())
@@ -210,24 +217,20 @@ class HistoryItemMapper(
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
-
             is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_send
                 startTitle = resources.getString(getTitle())
                 startSubtitle = resources.getString(getSubtitle())
                 endTopValue = getUsdAmount()
                 endTopValueTextColor = getTextColor()
-                endBottomValue = getTotal()
+                endBottomValue = getTotalWithSymbol()
             }
             else -> {
                 iconRes = R.drawable.ic_transaction_unknown
 
-                startTitle = resources.getString(R.string.transaction_history_unknown)
-                startSubtitle = resources.getString(
-                    R.string.transaction_history_signature_format,
-                    transaction.signature.cutStart()
-                )
+                startTitle = resources.getString(R.string.transaction_history_unknown_title)
+                startSubtitle = transaction.signature.cutMiddle(cutCount = 8)
             }
         }
         val historyItem = HistoryItem.TransactionItem(

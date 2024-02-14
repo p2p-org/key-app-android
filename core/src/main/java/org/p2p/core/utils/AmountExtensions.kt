@@ -6,7 +6,7 @@ import java.math.RoundingMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 
-private val POWER_VALUE = BigDecimal("10")
+private val POWER_VALUE = BigDecimal.TEN
 const val SOL_DECIMALS = 9
 const val MOONPAY_DECIMAL = 2
 const val STRIGA_FIAT_DECIMALS = 2
@@ -185,7 +185,11 @@ fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
 fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
-): String = if (lessThenMinValue()) "<$0.01" else "$transactionSymbol$ ${formatFiat()}"
+): String {
+    if (lessThenMinValue()) return "<$0.01"
+    val fiatAmountWithSymbol = "$${formatFiat()}"
+    return "$transactionSymbol $fiatAmountWithSymbol"
+}
 
 fun BigDecimal.asUsdSwap(): String = when {
     isZero() -> "0 USD"

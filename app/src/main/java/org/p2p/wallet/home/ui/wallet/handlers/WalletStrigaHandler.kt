@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.wallet.handlers
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.util.UUID
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -10,6 +11,7 @@ import org.p2p.wallet.common.InAppFeatureFlags
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.home.events.AppLoaderFacade
 import org.p2p.wallet.home.events.StrigaFeatureLoader
@@ -164,9 +166,12 @@ class WalletStrigaHandler(
             status = HistoryTransactionStatus.PENDING,
             type = RpcHistoryTransactionType.RECEIVE,
             senderAddress = strigaUserCryptoAddress,
-            iconUrl = claimedToken.tokenIcon,
+            token = RpcHistoryTransactionToken(
+                symbol = claimedToken.tokenSymbol,
+                decimals = SOL_DECIMALS,
+                logoUrl = claimedToken.tokenIcon
+            ),
             amount = claimedToken.amountAvailable.let { RpcHistoryAmount(it, it) },
-            symbol = claimedToken.tokenSymbol,
             destination = tokenKeyProvider.publicKey,
             counterPartyUsername = null,
             fees = null

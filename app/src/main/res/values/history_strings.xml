@@ -8,6 +8,7 @@
     <string name="history_error_message">Oops! Something happened.</string>
 
     <string name="transaction_history_unknown">Unknown</string>
+    <string name="transaction_history_unknown_title">Transaction</string>
     <string name="transaction_history_swap">Swap</string>
     <string name="transaction_history_swap_pending">Swap…</string>
     <string name="transaction_history_send">Send</string>

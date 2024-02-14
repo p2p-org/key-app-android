@@ -95,9 +95,8 @@ object NetworkCoreModule : InjectionModule {
     }
 
     fun Scope.httpLoggingInterceptor(logTag: String): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor(DebugHttpLoggingLogger(gson = get(), logTag = logTag)).apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        }
+        return HttpLoggingInterceptor(DebugHttpLoggingLogger(gson = get(), logTag = logTag))
+            .apply { level = HttpLoggingInterceptor.Level.BODY }
     }
 
     fun Scope.getClient(

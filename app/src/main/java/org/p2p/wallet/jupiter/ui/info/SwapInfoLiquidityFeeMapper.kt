@@ -43,6 +43,9 @@ class SwapInfoLiquidityFeeMapper(
     fun mapLiquidityFees(
         route: JupiterSwapRouteV6,
     ): Flow<List<AnyCellItem>> = flow {
+        // emit banner while we load
+        emit(listOf(createLiquidityFeeBanner()))
+
         val keyAppFee = route.fees.platformFeeTokenB
         val tokenBMint = route.outTokenMint
 
