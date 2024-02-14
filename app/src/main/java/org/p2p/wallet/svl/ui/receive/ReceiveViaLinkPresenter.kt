@@ -4,13 +4,14 @@ import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.net.UnknownHostException
 import kotlinx.coroutines.launch
+import org.p2p.core.common.di.AppScope
+import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.network.ConnectionManager
 import org.p2p.core.token.Token
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
 import org.p2p.wallet.auth.interactor.UsernameInteractor
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
@@ -27,7 +28,6 @@ import org.p2p.wallet.svl.model.TemporaryAccountState
 import org.p2p.wallet.svl.ui.error.SendViaLinkError
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.utils.emptyString
-import org.p2p.core.crypto.toBase58Instance
 import org.p2p.wallet.utils.toPublicKey
 
 class ReceiveViaLinkPresenter(
@@ -159,7 +159,8 @@ class ReceiveViaLinkPresenter(
             fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol
+            symbol = token.tokenSymbol,
+            decimals = token.decimals
         )
 
     private fun logCvlError(

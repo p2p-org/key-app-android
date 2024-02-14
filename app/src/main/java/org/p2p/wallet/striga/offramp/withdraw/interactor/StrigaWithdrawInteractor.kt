@@ -137,6 +137,7 @@ class StrigaWithdrawInteractor(
             status = HistoryTransactionStatus.PENDING,
             iconUrl = token.iconUrl,
             symbol = token.tokenSymbol,
+            decimals = token.decimals,
             counterPartyUsername = null
         )
     }

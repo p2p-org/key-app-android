@@ -2,6 +2,7 @@ package org.p2p.wallet.history.interactor.mapper
 
 import com.google.gson.Gson
 import org.p2p.core.utils.Constants.FEE_RELAYER_ACCOUNTS
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.fromJsonReified
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.wallet.bridge.claim.repository.EthereumBridgeInMemoryRepository
@@ -76,6 +77,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
+            decimals = info.token.decimals,
             destination = tokenKeyProvider.publicKey,
             fees = transaction.fees.parseFees()
         )
@@ -100,6 +102,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
+            decimals = info.token.decimals,
             destination = tokenKeyProvider.publicKey,
             fees = transaction.fees.parseFees()
         )
@@ -122,6 +125,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
+            decimals = info.token.decimals,
             destination = info.counterParty.address,
             fees = transaction.fees.parseFees()
         )
@@ -135,21 +139,26 @@ class RpcHistoryTransactionConverter(
         val destinationTotal = info.to.amounts.amount.toBigDecimalOrZero()
         val destinationTotalInUsd = info.to.amounts.usdAmount.toBigDecimalOrZero()
 
+        val tokenA = info.from.token
+        val tokenB = info.to.token
+
         return RpcHistoryTransaction.Swap(
             signature = transaction.signature,
             date = transaction.date.toZonedDateTime(),
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
-            sourceAddress = info.from.token.mint,
-            destinationAddress = info.to.token.mint,
-            receiveAmount = RpcHistoryAmount(sourceTotal, sourceTotalInUsd),
-            sentAmount = RpcHistoryAmount(destinationTotal, destinationTotalInUsd),
+            tokenAAddress = tokenA.mint,
+            tokenBAddress = tokenB.mint,
+            tokenAAmount = RpcHistoryAmount(sourceTotal, sourceTotalInUsd),
+            tokenBAmount = RpcHistoryAmount(destinationTotal, destinationTotalInUsd),
             fees = transaction.fees.parseFees(),
-            sourceSymbol = info.from.token.symbol.orEmpty(),
-            sourceIconUrl = info.from.token.logoUrl,
-            destinationSymbol = info.to.token.symbol.orEmpty(),
-            destinationIconUrl = info.to.token.logoUrl,
-            type = transaction.type.toDomain()
+            tokenASymbol = tokenA.symbol.orEmpty(),
+            tokenAIconUrl = tokenA.logoUrl,
+            tokenBSymbol = tokenB.symbol.orEmpty(),
+            tokenBIconUrl = tokenB.logoUrl,
+            type = transaction.type.toDomain(),
+            tokenADecimals = tokenA.decimals,
+            tokenBDecimals = tokenB.decimals
         )
     }
 
@@ -169,6 +178,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             amount = RpcHistoryAmount(total, totalInUsd),
             symbol = info.token.symbol.orEmpty(),
+            decimals = info.token.decimals,
             destination = info.token.mint,
             fees = transaction.fees.parseFees()
         )
@@ -190,6 +200,7 @@ class RpcHistoryTransactionConverter(
             senderAddress = info.token.mint,
             iconUrl = info.token.logoUrl,
             symbol = info.token.symbol.orEmpty(),
+            decimals = info.token.decimals,
             destination = tokenKeyProvider.publicKey,
             fees = transaction.fees.parseFees()
         )
@@ -209,6 +220,7 @@ class RpcHistoryTransactionConverter(
             iconUrl = info.token.logoUrl,
             fees = transaction.fees.parseFees(),
             tokenSymbol = info.token.symbol.orEmpty(),
+            tokenDecimals = info.token.decimals,
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd)
         )
@@ -243,6 +255,7 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             tokenSymbol = info.token.symbol.orEmpty(),
+            tokenDecimals = info.token.decimals,
             iconUrl = info.token.logoUrl,
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
@@ -262,6 +275,7 @@ class RpcHistoryTransactionConverter(
             blockNumber = transaction.blockNumber.toInt(),
             status = transaction.status.toDomain(),
             tokenSymbol = info.token.symbol.orEmpty(),
+            tokenDecimals = info.token.decimals,
             iconUrl = info.token.logoUrl,
             type = transaction.type.toDomain(),
             amount = RpcHistoryAmount(total, totalInUsd),
@@ -295,6 +309,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
+            tokenDecimals = info.tokenAmount?.token?.decimals ?: SOL_DECIMALS,
             amount = RpcHistoryAmount(total, totalInUsd),
             iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = fees,
@@ -325,6 +340,7 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             tokenSymbol = info.tokenAmount?.token?.symbol.orEmpty(),
+            tokenDecimals = info.tokenAmount?.token?.decimals ?: SOL_DECIMALS,
             amount = RpcHistoryAmount(total, totalInUsd),
             iconUrl = info.tokenAmount?.token?.logoUrl,
             fees = bundleFees.parseBridgeFees() ?: transaction.fees.parseFees(),
@@ -346,7 +362,8 @@ class RpcHistoryTransactionConverter(
             status = transaction.status.toDomain(),
             type = transaction.type.toDomain(),
             tokenSymbol = info.token?.symbol.orEmpty(),
-            amount = RpcHistoryAmount(total, totalInUsd)
+            tokenDecimals = info.token?.decimals ?: SOL_DECIMALS,
+            amount = RpcHistoryAmount(total = total, totalInUsd = totalInUsd)
         )
     }
 }
@@ -377,7 +394,7 @@ private fun RpcHistoryTypeResponse?.toDomain(): RpcHistoryTransactionType {
 }
 
 private fun List<RpcHistoryFeeResponse>.parseFees(): List<RpcFee>? {
-    return if (this.all { fee -> FEE_RELAYER_ACCOUNTS.contains(fee.payer) }) {
+    return if (this.all { fee -> fee.payer in FEE_RELAYER_ACCOUNTS }) {
         null
     } else {
         map { fee ->

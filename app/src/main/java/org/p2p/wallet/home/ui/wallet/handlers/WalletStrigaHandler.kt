@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.wallet.handlers
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.util.UUID
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.emptyString
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
@@ -167,6 +168,7 @@ class WalletStrigaHandler(
             iconUrl = claimedToken.tokenIcon,
             amount = claimedToken.amountAvailable.let { RpcHistoryAmount(it, it) },
             symbol = claimedToken.tokenSymbol,
+            decimals = SOL_DECIMALS,
             destination = tokenKeyProvider.publicKey,
             counterPartyUsername = null,
             fees = null

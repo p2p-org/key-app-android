@@ -749,15 +749,17 @@ class JupiterSwapPresenter(
             blockNumber = -1,
             status = HistoryTransactionStatus.PENDING,
             type = RpcHistoryTransactionType.SWAP,
-            sourceSymbol = currentState.tokenA.tokenSymbol,
-            sourceAddress = currentState.tokenA.mintAddress.toString(),
+            tokenASymbol = currentState.tokenA.tokenSymbol,
+            tokenAAddress = currentState.tokenA.mintAddress.toString(),
             fees = emptyList(),
-            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
-            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
-            sourceIconUrl = currentState.tokenA.iconUrl,
-            destinationSymbol = currentState.tokenB.tokenSymbol,
-            destinationIconUrl = currentState.tokenB.iconUrl,
-            destinationAddress = currentState.tokenB.mintAddress.toString()
+            tokenAAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            tokenBAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
+            tokenAIconUrl = currentState.tokenA.iconUrl,
+            tokenBSymbol = currentState.tokenB.tokenSymbol,
+            tokenBIconUrl = currentState.tokenB.iconUrl,
+            tokenBAddress = currentState.tokenB.mintAddress.toString(),
+            tokenADecimals = currentState.tokenA.decimals,
+            tokenBDecimals = currentState.tokenB.decimals
         )
     }
 }

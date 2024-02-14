@@ -174,7 +174,11 @@ fun BigDecimal.asPositiveUsdTransaction(): String = asUsdTransaction("+")
 fun BigDecimal.asNegativeUsdTransaction(): String = asUsdTransaction("-")
 fun BigDecimal.asUsdTransaction(
     transactionSymbol: String
-): String = if (lessThenMinValue()) "<$0.01" else "$transactionSymbol$ ${formatFiat()}"
+): String {
+    if (lessThenMinValue()) return "<$0.01"
+    val fiatAmountWithSymbol = "$${formatFiat()}"
+    return "$transactionSymbol $fiatAmountWithSymbol"
+}
 
 fun BigDecimal.asUsdSwap(): String = when {
     isZero() -> "0 USD"

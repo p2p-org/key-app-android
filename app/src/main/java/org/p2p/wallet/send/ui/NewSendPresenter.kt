@@ -264,7 +264,6 @@ class NewSendPresenter(
         view.setFeeLabel(feesLabel)
         updateButton(sourceToken, feeRelayerState)
 
-        // FIXME: only for debug needs, remove after release
         if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
@@ -614,7 +613,8 @@ class NewSendPresenter(
             fees = null,
             status = HistoryTransactionStatus.PENDING,
             iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol
+            symbol = token.tokenSymbol,
+            decimals = token.decimals
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
