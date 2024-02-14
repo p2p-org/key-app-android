@@ -57,7 +57,7 @@ fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
 // do not use BigDecimal(double) sometimes it makes the amount less
 // example: pass 0.030, get 0.029
 fun BigInteger.fromLamports(decimals: Int): BigDecimal =
-    (this.toBigDecimal() / (POWER_VALUE.pow(decimals)))
+    (this.toBigDecimal().divide(POWER_VALUE.pow(decimals), 18, RoundingMode.HALF_DOWN))
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
         .scaleLong(decimals)
 

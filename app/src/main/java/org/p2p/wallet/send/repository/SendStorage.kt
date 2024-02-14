@@ -12,17 +12,17 @@ class SendStorage(
         const val KEY_TOKEN_MINT = "TOKEN_MINT"
     }
 
-    override fun restoreFeePayerToken(): Base58String? {
+    override fun restore(): Base58String? {
         return prefs.getString(KEY_TOKEN_MINT, null)?.toBase58Instance()
     }
 
-    override fun saveFeePayerToken(tokenMint: Base58String) {
+    override fun save(tokenMint: Base58String) {
         prefs.edit {
             putString(KEY_TOKEN_MINT, tokenMint.base58Value)
         }
     }
 
-    override fun removeFeePayerToken() {
+    override fun remove() {
         prefs.edit {
             remove(KEY_TOKEN_MINT)
         }

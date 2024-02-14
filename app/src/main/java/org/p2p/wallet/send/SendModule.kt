@@ -23,6 +23,7 @@ import org.p2p.wallet.send.interactor.usecase.CalculateToken2022TransferFeeUseCa
 import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.interactor.usecase.GetTokenExtensionsUseCase
 import org.p2p.wallet.send.model.SearchResult
+import org.p2p.wallet.send.repository.FeePayerTokenValidityRepository
 import org.p2p.wallet.send.repository.RecipientsDatabaseRepository
 import org.p2p.wallet.send.repository.RecipientsLocalRepository
 import org.p2p.wallet.send.repository.SendServiceInMemoryRepository
@@ -96,8 +97,7 @@ object SendModule : InjectionModule {
                 userTokensInteractor = get(),
                 tokenServiceCoordinator = get(),
                 sendFeeRelayerManager = get(),
-                maximumAmountCalculator = get(),
-                sendStorage = get()
+                maximumAmountCalculator = get()
             )
         } bind NewSendContract.Presenter::class
         factoryOf(::NewSendDetailsPresenter) bind NewSendDetailsContract.Presenter::class
@@ -125,6 +125,7 @@ object SendModule : InjectionModule {
                 prefs = get(named(StorageModule.PREFS_SEND))
             )
         } bind SendStorageContract::class
+        singleOf(::FeePayerTokenValidityRepository)
     }
 
     private fun Module.initSendService() {

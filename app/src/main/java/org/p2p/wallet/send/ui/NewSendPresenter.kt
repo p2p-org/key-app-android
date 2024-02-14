@@ -55,7 +55,6 @@ import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.model.SendFatalError
 import org.p2p.wallet.send.model.SendSolanaFee
 import org.p2p.wallet.send.model.getFee
-import org.p2p.wallet.send.repository.SendStorageContract
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
 import org.p2p.wallet.transaction.model.NewShowProgress
@@ -88,7 +87,6 @@ class NewSendPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val sendFeeRelayerManager: SendFeeRelayerManager,
     private val maximumAmountCalculator: SendMaximumAmountCalculator,
-    private val sendStorage: SendStorageContract,
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private val flow: NewSendAnalytics.AnalyticsSendFlow = if (openedFrom == SendOpenedFrom.SELL_FLOW) {
@@ -239,15 +237,15 @@ class NewSendPresenter(
         initialAmount?.let(::setupDefaultFields)
     }
 
-    private fun requireDefaultFeePayerToken(userNonZeroTokens: List<Token.Active>): Token.Active {
-        val restoredFeePayerTokenMint = sendStorage.restoreFeePayerToken() ?: return requireToken()
+    private suspend fun requireDefaultFeePayerToken(userNonZeroTokens: List<Token.Active>): Token.Active {
+        val restoredFeePayerTokenMint = sendInteractor.restoreSavedFeePayerToken() ?: return requireToken()
 
         val restoredToken = userNonZeroTokens.firstOrNull {
             it.mintAddressB58 == restoredFeePayerTokenMint
         }
 
-        if (restoredToken == null) {
-            sendStorage.removeFeePayerToken()
+        if (restoredToken == null || !sendInteractor.checkTokenIsValidFeePayer(restoredToken)) {
+            sendInteractor.removeSavedFeePayerToken()
             return requireToken()
         }
 
@@ -451,7 +449,9 @@ class NewSendPresenter(
 
     override fun updateFeePayerToken(feePayerToken: Token.Active) {
         try {
-            sendStorage.saveFeePayerToken(feePayerToken.mintAddressB58)
+            launch {
+                sendInteractor.saveFeePayerToken(feePayerToken)
+            }
             sendInteractor.setFeePayerToken(feePayerToken)
             executeSmartSelection(
                 token = requireToken(),
