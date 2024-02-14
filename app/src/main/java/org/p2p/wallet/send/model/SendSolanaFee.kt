@@ -14,7 +14,6 @@ import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
 import org.p2p.core.utils.isZeroOrLess
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleLong
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
@@ -99,7 +98,7 @@ data class SendSolanaFee constructor(
             } else {
                 feeRelayerFee.accountCreationFeeInFeePayerToken
             }
-            return amount.fromLamports(feePayerToken.decimals).scaleLong()
+            return amount.fromLamports(feePayerToken.decimals)
         }
 
     @IgnoredOnParcel
@@ -112,7 +111,6 @@ data class SendSolanaFee constructor(
             }
 
             return amount.fromLamports(feePayerToken.decimals)
-                .scaleLong()
         }
 
     @IgnoredOnParcel
