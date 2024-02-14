@@ -6,7 +6,7 @@ import java.math.RoundingMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants.FIAT_FRACTION_LENGTH
 
-private val POWER_VALUE = BigDecimal("10")
+private val POWER_VALUE = BigDecimal.TEN
 const val SOL_DECIMALS = 9
 const val MOONPAY_DECIMAL = 2
 const val STRIGA_FIAT_DECIMALS = 2
@@ -57,7 +57,7 @@ fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
 // do not use BigDecimal(double) sometimes it makes the amount less
 // example: pass 0.030, get 0.029
 fun BigInteger.fromLamports(decimals: Int): BigDecimal =
-    (this.toBigDecimal() / (POWER_VALUE.pow(decimals)))
+    (this.toBigDecimal().divide(POWER_VALUE.pow(decimals), 18, RoundingMode.HALF_DOWN))
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
         .scaleLong(decimals)
 

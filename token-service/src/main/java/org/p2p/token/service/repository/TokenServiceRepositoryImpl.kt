@@ -1,28 +1,32 @@
 package org.p2p.token.service.repository
 
+import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataRepository
+import org.p2p.token.service.repository.price.JupiterTokenPriceRepository
 import org.p2p.token.service.repository.price.TokenPriceLocalRepository
 import org.p2p.token.service.repository.price.TokenPriceRepository
 
 internal class TokenServiceRepositoryImpl(
     private val priceRemoteRepository: TokenPriceRepository,
+    private val jupiterPriceRepository: JupiterTokenPriceRepository,
     private val priceLocalRepository: TokenPriceLocalRepository,
     private val metadataLocalRepository: TokenMetadataLocalRepository,
     private val metadataRemoteRepository: TokenMetadataRepository
 ) : TokenServiceRepository {
 
+    @Deprecated("Use getTokenPriceByAddress")
     override suspend fun fetchTokenPricesForTokens(chain: TokenServiceNetwork, tokenAddresses: List<String>) {
-        val result = priceRemoteRepository.loadTokensPrice(
-            chain = chain,
-            addresses = tokenAddresses
-        )
-        val tokensPrices = result.flatMap { it.items }
-        priceLocalRepository.saveTokensPrice(tokensPrices)
+//        val result = priceRemoteRepository.loadTokensPrice(
+//            chain = chain,
+//            addresses = tokenAddresses
+//        )
+//        val tokensPrices = result.flatMap { it.items }
+//        priceLocalRepository.saveTokensPrice(tokensPrices)
     }
 
     override suspend fun fetchMetadataForTokens(
@@ -46,12 +50,25 @@ internal class TokenServiceRepositoryImpl(
         networkChain: TokenServiceNetwork,
         forceRemote: Boolean
     ): TokenServicePrice? {
-        val localPrice = priceLocalRepository.findTokenPriceByAddress(tokenAddress, networkChain)
-        if (forceRemote || localPrice == null) {
-            fetchTokenPricesForTokens(networkChain, listOf(tokenAddress))
-        }
+        return getTokenPricesByAddress(listOf(tokenAddress), networkChain).firstOrNull()
+    }
 
-        return priceLocalRepository.findTokenPriceByAddress(tokenAddress, networkChain)
+    override suspend fun getTokenPricesByAddress(
+        tokenAddress: List<String>,
+        networkChain: TokenServiceNetwork,
+        forceRemote: Boolean
+    ): List<TokenServicePrice> = try {
+        when (networkChain) {
+            TokenServiceNetwork.SOLANA -> {
+                jupiterPriceRepository.loadTokensPrice(networkChain, tokenAddress).items
+            }
+            TokenServiceNetwork.ETHEREUM -> {
+                priceRemoteRepository.loadTokensPrice(networkChain, tokenAddress).flatMap { it.items }
+            }
+        }
+    } catch (error: Exception) {
+        Timber.i(error)
+        emptyList()
     }
 
     override fun findTokenMetadataByAddress(

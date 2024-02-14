@@ -21,6 +21,13 @@ interface TokenServiceRepository {
         networkChain: TokenServiceNetwork,
         forceRemote: Boolean = false
     ): TokenServicePrice?
+
+    suspend fun getTokenPricesByAddress(
+        tokenAddress: List<String>,
+        networkChain: TokenServiceNetwork,
+        forceRemote: Boolean = false
+    ): List<TokenServicePrice>
+
     fun findTokenMetadataByAddress(
         networkChain: TokenServiceNetwork,
         tokenAddress: String
