@@ -34,7 +34,9 @@ import org.p2p.wallet.send.model.SendTransactionFailed
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
 import org.p2p.wallet.send.model.send_service.SendRentPayerMode
 import org.p2p.wallet.send.model.send_service.SendTransferMode
+import org.p2p.wallet.send.repository.FeePayerTokenValidityRepository
 import org.p2p.wallet.send.repository.SendServiceRepository
+import org.p2p.wallet.send.repository.SendStorageContract
 import org.p2p.wallet.swap.interactor.orca.OrcaInfoInteractor
 import org.p2p.wallet.utils.toPublicKey
 
@@ -51,6 +53,8 @@ class SendInteractor(
     private val dispatchers: CoroutineDispatchers,
     private val sendServiceRepository: SendServiceRepository,
     private val feePayersRepository: FeePayersRepository,
+    private val feePayerTokenValidityRepository: FeePayerTokenValidityRepository,
+    private val sendStorage: SendStorageContract,
 ) {
 
     /*
@@ -62,8 +66,8 @@ class SendInteractor(
     /*
     * Initialize fee payer token
     * */
-    suspend fun initialize(token: Token.Active) {
-        feePayerToken = token
+    suspend fun initialize(feePayer: Token.Active) {
+        feePayerToken = feePayer
         feeRelayerInteractor.load()
         orcaInfoInteractor.load()
     }
@@ -462,4 +466,21 @@ class SendInteractor(
             accountCreationFeeInSol = accountCreationFeeInSOL
         )
     }
+
+    fun restoreSavedFeePayerToken(): Base58String? {
+        return sendStorage.restore()
+    }
+
+    fun removeSavedFeePayerToken() {
+        sendStorage.remove()
+    }
+
+    suspend fun saveFeePayerToken(token: Token.Active) {
+        if (checkTokenIsValidFeePayer(token)) {
+            sendStorage.save(token.mintAddressB58)
+        }
+    }
+
+    suspend fun checkTokenIsValidFeePayer(token: Token.Active): Boolean =
+        feePayerTokenValidityRepository.checkIsValid(token)
 }

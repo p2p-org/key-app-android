@@ -8,11 +8,9 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.FeeAmount
 import org.p2p.token.service.converter.TokenServiceAmountsConverter
-import org.p2p.wallet.send.repository.SendServiceRepository
 
 class GetFeesInPayingTokenUseCase(
     private val amountsConverter: TokenServiceAmountsConverter,
-    private val sendServiceRepository: SendServiceRepository
 ) {
 
     suspend fun execute(
@@ -39,22 +37,30 @@ class GetFeesInPayingTokenUseCase(
         emptyMap()
     }
 
+    /**
+     * This function calculates how many target tokens we need in SOL equivalent to pay for the transaction
+     */
     suspend fun execute(
-        feePayerToken: Token.Active,
+        targetToken: Token.Active,
         transactionFeeInSol: BigInteger,
         accountCreationFeeInSol: BigInteger
     ): FeeAmount? {
-        val transactionFeeSpl = amountsConverter.convertAmount(
-            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to transactionFeeInSol,
-            mintsToConvertTo = listOf(feePayerToken.mintAddress.toBase58Instance())
-        )[feePayerToken.mintAddress.toBase58Instance()]
-        val accountCreationFee = amountsConverter.convertAmount(
-            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to accountCreationFeeInSol,
-            mintsToConvertTo = listOf(feePayerToken.mintAddress.toBase58Instance())
-        )[feePayerToken.mintAddress.toBase58Instance()]
+        if (targetToken.isSOL) {
+            return FeeAmount(transactionFeeInSol, accountCreationFeeInSol)
+        }
 
-        return if (transactionFeeSpl != null && accountCreationFee != null) {
-            FeeAmount(transactionFeeSpl, accountCreationFee)
+        val transactionFeeInTargetToken = amountsConverter.convertAmount(
+            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to transactionFeeInSol,
+            mintsToConvertTo = listOf(targetToken.mintAddress.toBase58Instance())
+        )[targetToken.mintAddress.toBase58Instance()]
+
+        val accountCreationFeeInTargetToken = amountsConverter.convertAmount(
+            amountFrom = Constants.WRAPPED_SOL_MINT.toBase58Instance() to accountCreationFeeInSol,
+            mintsToConvertTo = listOf(targetToken.mintAddress.toBase58Instance())
+        )[targetToken.mintAddress.toBase58Instance()]
+
+        return if (transactionFeeInTargetToken != null && accountCreationFeeInTargetToken != null) {
+            FeeAmount(transactionFeeInTargetToken, accountCreationFeeInTargetToken)
         } else {
             null
         }

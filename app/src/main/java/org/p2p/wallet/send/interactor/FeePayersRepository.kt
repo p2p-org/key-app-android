@@ -38,7 +38,7 @@ class FeePayersRepository(
         val feePayerTokensMints = sendServiceRepository.getCompensationTokens()
         val tokenToExcludeSymbol = feePayerToExclude.tokenSymbol
 
-        val fees: Map<Base58String, BigInteger> = getFeesInPayingTokenUseCase.execute(
+        val feesInGivenTokens: Map<Base58String, BigInteger> = getFeesInPayingTokenUseCase.execute(
             findFeesIn = feePayerTokensMints,
             transactionFeeInSol = transactionFeeInSol,
             accountCreationFeeInSol = accountCreationFeeInSol
@@ -61,9 +61,9 @@ class FeePayersRepository(
                 }
 
                 // assuming that all other tokens are SPL
-                val feesInSpl = fees[token.mintAddress.toBase58Instance()]
+                val feesInSpl = feesInGivenTokens[token.mintAddress.toBase58Instance()]
                 if (feesInSpl == null) {
-                    Timber.i("Fee in SPL not found for ${token.tokenSymbol} in ${fees.keys}")
+                    Timber.i("Fee in SPL not found for ${token.tokenSymbol} in ${feesInGivenTokens.keys}")
                     return@filter false
                 }
                 val isTokenCoversTheFee = token.totalInLamports >= feesInSpl
