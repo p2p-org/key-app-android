@@ -71,7 +71,7 @@ class RootPresenter(
             Timber.tag(TAG).i("Total requests added: ${it.size}")
         }
 
-    override fun initializeDeeplinks() {
+    override fun observeDeeplinks() {
         launchSupervisor {
             val supportedTargets = setOf(
                 DeeplinkTarget.BUY,

@@ -13,6 +13,6 @@ interface RootContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun initializeDeeplinks()
+        fun observeDeeplinks()
     }
 }

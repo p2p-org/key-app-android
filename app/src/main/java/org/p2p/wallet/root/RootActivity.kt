@@ -366,7 +366,7 @@ class RootActivity :
     fun handleSigninSuccess() {
         // do deeplinks handling init only after user signed in, otherwise it will be handled on splash
         // and pin/biometric screens will be skipped
-        presenter.initializeDeeplinks()
+        presenter.observeDeeplinks()
         popAndReplaceFragment(MainContainerFragment.create(), inclusive = true)
     }
 }
