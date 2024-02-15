@@ -2,7 +2,7 @@ package org.p2p.wallet.jupiter.ui.main.mapper
 
 import java.math.BigDecimal
 import org.p2p.core.common.TextContainer
-import org.p2p.core.utils.formatToken
+import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.wallet.R
 import org.p2p.wallet.jupiter.interactor.model.SwapTokenModel
 import org.p2p.wallet.jupiter.ui.main.SwapButtonState
@@ -26,14 +26,11 @@ class SwapButtonMapper {
 
     fun mapInsufficientSolBalance(
         solToken: SwapTokenModel.UserToken,
-        remainingAmount: BigDecimal
+        allowedAmount: BigDecimal
     ): SwapButtonState.Disabled {
-        val formatAmount = remainingAmount.formatToken(solToken.decimals)
+        val formatAmount = allowedAmount.formatTokenWithSymbol(solToken.tokenSymbol, solToken.decimals)
         return SwapButtonState.Disabled(
-            TextContainer(
-                R.string.swap_main_button_sol_error,
-                "$formatAmount ${solToken.tokenSymbol}"
-            )
+            TextContainer(R.string.swap_main_button_sol_error, formatAmount)
         )
     }
 

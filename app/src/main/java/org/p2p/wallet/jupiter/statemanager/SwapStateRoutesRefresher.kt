@@ -32,11 +32,12 @@ class SwapStateRoutesRefresher(
         amountTokenA: BigDecimal,
         slippage: Slippage,
     ) {
-        minSolBalanceValidator.validateMinimumSolAmount(
-            tokenA = tokenA,
-            newAmount = amountTokenA,
-            slippage = slippage
-        )
+        if (tokenA !is SwapTokenModel.JupiterToken && tokenA.isWrappedSol) {
+            minSolBalanceValidator.validateMinimumSolAmount(
+                solToken = tokenA as SwapTokenModel.UserToken,
+                newAmount = amountTokenA,
+            )
+        }
         swapValidator.validateIsSameTokens(tokenA = tokenA, tokenB = tokenB)
         state.value = SwapState.LoadingRoutes(
             tokenA = tokenA,

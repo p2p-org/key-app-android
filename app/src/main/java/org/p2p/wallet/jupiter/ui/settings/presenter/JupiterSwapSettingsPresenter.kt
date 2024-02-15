@@ -14,7 +14,6 @@ import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.jupiter.analytics.JupiterSwapSettingsAnalytics
 import org.p2p.wallet.jupiter.model.SwapRateTickerState
-import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
 import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.statemanager.SwapState
 import org.p2p.wallet.jupiter.statemanager.SwapStateAction
@@ -43,9 +42,8 @@ class JupiterSwapSettingsPresenter(
 
     private var featureState: SwapState = SwapState.InitialLoading
 
-    private var jupiterTokens: List<JupiterSwapToken> = listOf()
     private var debounceInputJob: Job? = null
-    private var isSelectedCustom: Boolean? = null
+    private var isCustomSlippageSelected: Boolean? = null
     private var currentContentList = listOf<AnyCellItem>()
         get() = field.addSlippageSettings(featureState)
 
@@ -65,8 +63,8 @@ class JupiterSwapSettingsPresenter(
 
     private suspend fun handleFeatureState(state: SwapState) {
         featureState = state
-        if (isSelectedCustom == null) {
-            isSelectedCustom = state.getCurrentSlippage() is Slippage.Custom
+        if (isCustomSlippageSelected == null) {
+            isCustomSlippageSelected = state.getCurrentSlippage() is Slippage.Custom
         }
         val contentList = getContentListByFeatureState(state)
         currentContentList = contentList
@@ -119,22 +117,22 @@ class JupiterSwapSettingsPresenter(
         val payload = item.payload ?: return
         when (payload) {
             SwapSlippagePayload.ZERO_POINT_ONE -> {
-                isSelectedCustom = false
+                isCustomSlippageSelected = false
                 analytics.logSlippageChangedClicked(Slippage.Min)
                 stateManager.onNewAction(SwapStateAction.SlippageChanged(Slippage.Min))
             }
             SwapSlippagePayload.ZERO_POINT_FIVE -> {
-                isSelectedCustom = false
+                isCustomSlippageSelected = false
                 analytics.logSlippageChangedClicked(Slippage.Medium)
                 stateManager.onNewAction(SwapStateAction.SlippageChanged(Slippage.Medium))
             }
             SwapSlippagePayload.ONE -> {
-                isSelectedCustom = false
+                isCustomSlippageSelected = false
                 analytics.logSlippageChangedClicked(Slippage.One)
                 stateManager.onNewAction(SwapStateAction.SlippageChanged(Slippage.One))
             }
             SwapSlippagePayload.CUSTOM -> {
-                isSelectedCustom = true
+                isCustomSlippageSelected = true
                 view?.bindSettingsList(currentContentList)
             }
             is SwapSettingsPayload -> {
@@ -252,7 +250,7 @@ class JupiterSwapSettingsPresenter(
         val currentSlippage = state.getCurrentSlippage()
         return this + commonMapper.mapSlippageList(
             slippage = currentSlippage,
-            isSelectedCustom = isSelectedCustom ?: false
+            isSelectedCustom = isCustomSlippageSelected ?: false
         )
     }
 }
