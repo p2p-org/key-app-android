@@ -8,6 +8,8 @@ import org.koin.android.ext.android.get
 import org.p2p.wallet.R
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentReferralBinding
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.url.OpenUrlFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
@@ -38,7 +40,8 @@ class ReferralFragment :
             tokenKeyProvider = get(),
             onShareLinkCalled = ::showShareLinkDialog,
             openTerms = ::navigateToTerms,
-            onWebViewLoaded = ::onWebViewLoaded
+            onWebViewLoaded = ::onWebViewLoaded,
+            navigateToSwap = ::navigateToSwap
         )
         binding.toolbar.setNavigationOnClickListener {
             popBackStack()
@@ -69,6 +72,11 @@ class ReferralFragment :
             url = link,
             title = getString(R.string.onboarding_terms_of_use)
         )
+        replaceFragment(target)
+    }
+
+    private fun navigateToSwap() {
+        val target = JupiterSwapFragment.create(source = SwapOpenedFrom.MAIN_SCREEN)
         replaceFragment(target)
     }
 

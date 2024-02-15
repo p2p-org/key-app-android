@@ -15,6 +15,9 @@ window.ReferralBridge = {
     openTermsUrl: function(link) {
         AndroidReferralBridge.openTermsUrl(link);
     },
+    navigateToSwap: function() {
+        AndroidReferralBridge.navigateToSwap();
+    },
     getClipboardContent: function() {
         return JSON.parse(AndroidReferralBridge.getClipboardValue());
     },
