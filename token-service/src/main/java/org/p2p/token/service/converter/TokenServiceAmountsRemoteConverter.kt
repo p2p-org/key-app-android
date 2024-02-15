@@ -2,6 +2,7 @@ package org.p2p.token.service.converter
 
 import java.math.BigInteger
 import org.p2p.core.crypto.Base58String
+import org.p2p.core.utils.isZero
 import org.p2p.token.service.api.TokenServiceDataSource
 import org.p2p.token.service.api.request.TokenAmountsBodyRequest
 import org.p2p.token.service.api.request.TokenAmountsRequest
@@ -15,6 +16,12 @@ internal class TokenServiceAmountsRemoteConverter(
         amountFrom: Pair<Base58String, BigInteger>,
         mintsToConvertTo: List<Base58String>
     ): Map<Base58String, BigInteger> {
+
+        // do not request if amount is zero, output will obviously be zero
+        if (amountFrom.second.isZero()) {
+            return mintsToConvertTo.associateWith { BigInteger.ZERO }
+        }
+
         val request = TokenAmountsBodyRequest(
             vsTokenMint = amountFrom.first.base58Value,
             amountLamports = amountFrom.second.toString(),

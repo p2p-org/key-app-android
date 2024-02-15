@@ -42,7 +42,9 @@ object MainContainerModule : InjectionModule {
                 tokenKeyProvider = get(),
                 dispatchers = get(),
                 sendServiceRepository = get(),
-                feePayersRepository = get()
+                feePayersRepository = get(),
+                feePayerTokenValidityRepository = get(),
+                sendStorage = get(),
             )
         }
         factoryOf(::SearchInteractor)
