@@ -1,10 +1,13 @@
 package org.p2p.token.service.repository.price
 
 import timber.log.Timber
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.utils.Constants
 import org.p2p.token.service.api.JupiterPricesDataSource
+import org.p2p.token.service.api.JupiterPricesResponse
 import org.p2p.token.service.model.TokenRate
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
@@ -23,10 +26,20 @@ internal class JupiterTokenPriceRepository(
 
             val isNativeRequested = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN in addresses
 
-            val mintsAsQuery = addresses.joinToString(separator = ",") {
-                if (it == Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN) Constants.WRAPPED_SOL_MINT else it
+            val chunkedMints = addresses.chunked(100)
+
+            val mintsAsQueries = chunkedMints.map {
+                it.joinToString(separator = ",") {
+                    if (it == Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN) Constants.WRAPPED_SOL_MINT else it
+                }
             }
-            val tokenMintsToRates = api.getPrices(mintsAsQuery).tokenMintsToPrices
+
+            val tokenMintsToRates = mintsAsQueries.map {
+                // jupiter supports only 100 tokens in one query
+                async { api.getPrices(it).tokenMintsToPrices }
+            }
+                .awaitAll()
+                .reduce(Map<String, JupiterPricesResponse>::plus)
                 .mapValues { it.value.usdPrice }
                 .run {
                     if (isNativeRequested) {
