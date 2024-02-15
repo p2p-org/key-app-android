@@ -12,7 +12,7 @@ open class SwapFeatureException : Exception() {
     data class InsufficientSolBalance(
         val inputAmount: BigDecimal,
         val userSolToken: SwapTokenModel.UserToken,
-        val remainingAmount: BigDecimal,
+        val allowedAmount: BigDecimal,
     ) : SwapFeatureException()
 
     object SameTokens : SwapFeatureException()

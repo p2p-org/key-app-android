@@ -441,9 +441,8 @@ class JupiterSwapPresenter(
                     notValidAmount = featureException.inputAmount
                 )
                 val solToken = featureException.userSolToken
-                val remainingAmount = featureException.remainingAmount
+                val remainingAmount = featureException.allowedAmount
                 view?.setButtonState(buttonState = buttonMapper.mapInsufficientSolBalance(solToken, remainingAmount))
-                view?.showSolErrorToast()
             }
         }
         updateWidgets()
