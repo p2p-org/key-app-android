@@ -161,14 +161,13 @@ fun Fragment.replaceFragment(
     @AnimRes exit: Int = R.anim.nav_exit,
     @AnimRes popEnter: Int = R.anim.nav_pop_enter,
     @AnimRes popExit: Int = R.anim.nav_pop_exit,
-    fragmentManager: FragmentManager = requireActivity().supportFragmentManager,
-    tag: String = target.javaClass.name
+    fragmentManager: FragmentManager = requireActivity().supportFragmentManager
 ) = whenStateAtLeast(Lifecycle.State.STARTED) {
     requireActivity().hideKeyboard()
     fragmentManager.commit(allowStateLoss = true) {
         setCustomAnimations(enter, exit, popEnter, popExit)
-        replace(containerId, target, tag)
-        if (addToBackStack) addToBackStack(tag)
+        replace(containerId, target, target.javaClass.name)
+        if (addToBackStack) addToBackStack(target.javaClass.name)
     }
 }
 
