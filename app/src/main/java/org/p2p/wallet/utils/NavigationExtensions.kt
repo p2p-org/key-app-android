@@ -82,8 +82,32 @@ fun Fragment.popAndReplaceFragment(
     @AnimRes popEnter: Int = R.anim.nav_pop_enter,
     @AnimRes popExit: Int = R.anim.nav_pop_exit,
     fragmentManager: FragmentManager = requireActivity().supportFragmentManager
+) = requireActivity().popAndReplaceFragment(
+    target = target,
+    popTo = popTo,
+    containerId = containerId,
+    addToBackStack = addToBackStack,
+    inclusive = inclusive,
+    enter = enter,
+    exit = exit,
+    popEnter = popEnter,
+    popExit = popExit,
+    fragmentManager = fragmentManager
+)
+
+fun FragmentActivity.popAndReplaceFragment(
+    target: Fragment,
+    popTo: KClass<out Fragment>? = null,
+    @IdRes containerId: Int = R.id.rootContainer,
+    addToBackStack: Boolean = true,
+    inclusive: Boolean = false,
+    @AnimRes enter: Int = R.anim.nav_enter,
+    @AnimRes exit: Int = R.anim.nav_exit,
+    @AnimRes popEnter: Int = R.anim.nav_pop_enter,
+    @AnimRes popExit: Int = R.anim.nav_pop_exit,
+    fragmentManager: FragmentManager = supportFragmentManager
 ) = whenStateAtLeast(Lifecycle.State.STARTED) {
-    requireActivity().hideKeyboard()
+    hideKeyboard()
     with(fragmentManager) {
         // Override exit animation for popping fragment
         if (this@popAndReplaceFragment is BaseFragmentContract) {

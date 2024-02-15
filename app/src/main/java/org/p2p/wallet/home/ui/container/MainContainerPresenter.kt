@@ -1,6 +1,5 @@
 package org.p2p.wallet.home.ui.container
 
-import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -25,28 +24,16 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.unsafeLazy
 
 class MainContainerPresenter(
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
-    private val userInteractor: UserInteractor,
     private val walletStrigaInteractor: WalletStrigaInteractor,
     private val balanceMapper: WalletBalanceMapper,
-    private val deeplinkHandlerFactory: MainFragmentDeeplinkHandlerFactory,
     private val mainScreenAnalytics: MainScreenAnalytics,
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
-
-    private val deeplinkHandler by unsafeLazy {
-        deeplinkHandlerFactory.create(
-            navigator = view,
-            scope = this,
-            deeplinkTopLevelHandler = ::handleDeeplinkTarget
-        )
-    }
 
     override fun attach(view: MainContainerContract.View) {
         super.attach(view)
@@ -78,23 +65,15 @@ class MainContainerPresenter(
     }
 
     override fun initializeDeeplinks() {
+        // deeplinks that should be handled only at MainContainer level, because it's a tab switching
         val supportedTargets = setOf(
             DeeplinkTarget.HISTORY,
-            DeeplinkTarget.SETTINGS,
-            DeeplinkTarget.BUY,
-            DeeplinkTarget.SEND,
-            DeeplinkTarget.SWAP,
-            DeeplinkTarget.CASH_OUT,
-            DeeplinkTarget.REFERRAL
+            DeeplinkTarget.SETTINGS
         )
         launchSupervisor {
             deeplinksManager.subscribeOnDeeplinks(supportedTargets)
                 .onEach { view?.navigateToTabFromDeeplink(it) }
-                .onEach(deeplinkHandler::handle)
                 .launchIn(this)
-
-            deeplinksManager.executeHomePendingDeeplink()
-            deeplinksManager.executeTransferPendingAppLink()
         }
     }
 
@@ -120,33 +99,12 @@ class MainContainerPresenter(
         mainScreenAnalytics.logMainScreenSettingsClick()
     }
 
-    override fun handleSendDeeplink() {
-        mainScreenAnalytics.logMainScreenSendClick()
-        launch {
-            val userTokens = tokenServiceCoordinator.getUserTokens()
-            val isAccountEmpty = userTokens.isEmpty() || userTokens.all(Token.Active::isZero)
-            if (isAccountEmpty) {
-                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
-                view?.navigateToSendNoTokens(validTokenToBuy)
-            } else {
-                view?.navigateToSendScreen()
-            }
-        }
-    }
-
     private fun observeInternetState() {
         connectionManager.connectionStatus
             .onEach { isConnected ->
                 if (!isConnected) view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
             }
             .launchIn(this)
-    }
-
-    private fun handleDeeplinkTarget(target: DeeplinkTarget) {
-        when (target) {
-            DeeplinkTarget.SEND -> handleSendDeeplink()
-            else -> Timber.d("Unsupported deeplink target! $target")
-        }
     }
 
     private fun checkDeviceShare() {
