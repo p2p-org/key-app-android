@@ -6,17 +6,17 @@ import androidx.appcompat.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import javax.crypto.Cipher
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.onboarding.root.OnboardingRootFragment
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentSignInPinBinding
-import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import javax.crypto.Cipher
 
 class SignInPinFragment :
     BaseMvpFragment<SignInPinContract.View, SignInPinContract.Presenter>(R.layout.fragment_sign_in_pin),
@@ -74,7 +74,7 @@ class SignInPinFragment :
 
     override fun onSignInSuccess() {
         binding.pinView.onSuccessPin()
-        popAndReplaceFragment(MainContainerFragment.create(), inclusive = true)
+        (activity as? RootActivity)?.handleSigninSuccess()
     }
 
     override fun onLogout() {
