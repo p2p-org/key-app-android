@@ -54,13 +54,11 @@ private fun AdapterDelegateViewBindingViewHolder<TokenCellModel, ItemTokenBindin
     bindBalance()
 
     val iconUrl = item.iconUrl
-    if (!iconUrl.isNullOrEmpty()) {
-        glideManager.load(
-            imageView = imageViewToken,
-            url = iconUrl,
-            circleCrop = true
-        )
-    }
+    glideManager.load(
+        imageView = imageViewToken,
+        url = iconUrl,
+        circleCrop = true
+    )
     imageViewWrapped.isVisible = item.isWrapped
     textViewName.text = item.tokenName
 }

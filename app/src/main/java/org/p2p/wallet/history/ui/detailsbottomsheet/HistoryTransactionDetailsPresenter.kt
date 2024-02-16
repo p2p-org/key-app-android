@@ -218,7 +218,7 @@ class HistoryTransactionDetailsPresenter(
             if (!transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
-            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_image)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_v2)
             showStateTitleValue(
                 resources.getString(
                     if (transaction.isBurn) R.string.transaction_details_burn
@@ -235,7 +235,7 @@ class HistoryTransactionDetailsPresenter(
                 view?.showSubtitle(resources.getString(R.string.details_pending))
                 showProgressTransactionInProgress()
             }
-            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_image)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_v2)
             if (transaction.fees != null && !transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
@@ -259,7 +259,7 @@ class HistoryTransactionDetailsPresenter(
                 view?.showSubtitle(resources.getString(R.string.details_pending))
                 showProgressTransactionInProgress()
             }
-            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_image)
+            showTransferView(transaction.token.logoUrl, R.drawable.ic_placeholder_v2)
             if (transaction.fees != null && !transaction.status.isPending()) {
                 showFee(transaction.fees)
             }
