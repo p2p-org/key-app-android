@@ -19,4 +19,5 @@ interface DeeplinkScreenNavigator {
         source: SwapOpenedFrom
     )
     fun navigateToSwap()
+    fun navigateToHomeScreen()
 }
