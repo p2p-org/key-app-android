@@ -8,7 +8,4 @@ class ReferralProgramEnabledFeatureToggle(
     override val featureKey: String = "referral_program_enabled"
     override val featureDescription: String = "Enables referral program functions"
     override val defaultValue: Boolean = false
-
-    override val value: Boolean
-        get() = true
 }
