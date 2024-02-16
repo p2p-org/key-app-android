@@ -49,7 +49,7 @@ class UiKitTransactionImageView @JvmOverloads constructor(
         tokenIconUrl: String
     ) = with(binding) {
         imageViewToken.scaleType = ImageView.ScaleType.FIT_CENTER
-        glideManager.load(imageViewToken, tokenIconUrl, IMAGE_SIZE, circleCrop = true)
+        glideManager.load(imageView = imageViewToken, url = tokenIconUrl, size = IMAGE_SIZE, circleCrop = true)
     }
 
     fun setStatusIcon(@DrawableRes statusIcon: Int?) {

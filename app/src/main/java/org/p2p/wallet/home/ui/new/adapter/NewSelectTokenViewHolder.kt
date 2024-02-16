@@ -105,7 +105,7 @@ class NewSelectTokenViewHolder(
             Glide
                 .with(imageView)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder_image)
+                .placeholder(R.drawable.ic_placeholder_v2)
                 .into(imageView)
         }
     }

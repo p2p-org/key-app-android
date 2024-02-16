@@ -39,7 +39,7 @@ sealed class DrawableContainer : Parcelable {
             val requestBuilder: RequestBuilder<PictureDrawable> = Glide.with(imageView.context)
                 .`as`(PictureDrawable::class.java)
                 .listener(SvgSoftwareLayerSetter())
-            val placeholder: Int = R.drawable.ic_placeholder_image
+            val placeholder: Int = R.drawable.ic_placeholder_v2
 
             if (iconUrl.contains(".svg")) {
                 requestBuilder

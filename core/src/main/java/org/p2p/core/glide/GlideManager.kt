@@ -27,13 +27,15 @@ class GlideManager(context: Context) {
         url: String?,
         size: Int = DEFAULT_IMAGE_SIZE,
         circleCrop: Boolean = false,
-        placeholder: Int = R.drawable.ic_placeholder_image
+        placeholder: Int = R.drawable.ic_placeholder_v2
     ) {
         if (url?.contains(".svg") == true) {
             requestBuilder
                 .load(Uri.parse(url))
                 .apply(RequestOptions().override(size, size))
                 .scaleCrop(url, circleCrop)
+                .placeholder(placeholder)
+                .error(placeholder)
                 .into(imageView)
         } else {
             Glide

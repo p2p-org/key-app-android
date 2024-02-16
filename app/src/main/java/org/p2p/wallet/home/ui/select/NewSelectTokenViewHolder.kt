@@ -1,21 +1,21 @@
 package org.p2p.wallet.home.ui.select
 
+import androidx.core.view.isVisible
 import android.graphics.drawable.PictureDrawable
 import android.net.Uri
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.request.RequestOptions
+import java.util.Locale
 import org.p2p.core.R
 import org.p2p.core.glide.SvgSoftwareLayerSetter
+import org.p2p.core.token.Token
 import org.p2p.wallet.common.ui.recycler.adapter.BaseSelectionViewHolder
 import org.p2p.wallet.databinding.ItemNewTokenSimpleBinding
-import org.p2p.core.token.Token
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
-import java.util.Locale
 
 class NewSelectTokenViewHolder(
     parent: ViewGroup,
@@ -59,7 +59,7 @@ class NewSelectTokenViewHolder(
             Glide
                 .with(imageView)
                 .load(url)
-                .placeholder(R.drawable.ic_placeholder_image)
+                .placeholder(R.drawable.ic_placeholder_v2)
                 .into(imageView)
         }
     }

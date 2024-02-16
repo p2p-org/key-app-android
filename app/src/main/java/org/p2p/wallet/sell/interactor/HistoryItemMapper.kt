@@ -177,7 +177,7 @@ class HistoryItemMapper(
             }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
                 tokenIconUrl = token.logoUrl
-                iconRes = R.drawable.ic_placeholder_image
+                iconRes = R.drawable.ic_placeholder_v2
 
                 startTitle = resources.getString(getTitle())
                 startSubtitle = resources.getString(

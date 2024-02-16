@@ -21,7 +21,7 @@ fun ImageView.loadUrl(
     url: String?,
     size: Int = DEFAULT_IMAGE_SIZE,
     circleCrop: Boolean = false,
-    placeholder: Int = R.drawable.ic_placeholder_image
+    placeholder: Int = R.drawable.ic_placeholder_v2
 ) {
     glide.load(
         imageView = this,
