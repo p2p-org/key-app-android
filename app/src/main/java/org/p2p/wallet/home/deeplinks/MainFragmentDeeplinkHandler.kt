@@ -81,6 +81,7 @@ class MainFragmentDeeplinkHandler(
 
     private fun handleReferralDeeplink(data: DeeplinkData) {
         referralDeeplinkHandler.handleDeeplink(data)
+        screenNavigator?.navigateToHomeScreen()
     }
 
     private suspend fun handleSendDeeplink() {

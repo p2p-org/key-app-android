@@ -56,7 +56,6 @@ import org.p2p.wallet.svl.interactor.SendViaLinkWrapper
 import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
-import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
@@ -319,6 +318,13 @@ class RootActivity :
         )
     }
 
+    override fun navigateToHomeScreen() {
+        val isNavigated = popBackStackTo(MainContainerFragment::class)
+        if (!isNavigated) {
+            replaceFragment(MainContainerFragment.create())
+        }
+    }
+
     override fun navigateToBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
         replaceFragment(BuyFragment.create(token, fiatToken, fiatAmount))
     }
@@ -363,10 +369,9 @@ class RootActivity :
         replaceFragment(NewSearchFragment.create(SearchOpenedFromScreen.MAIN))
     }
 
-    fun handleSigninSuccess() {
+    fun onSignInSuccess() {
         // do deeplinks handling init only after user signed in, otherwise it will be handled on splash
         // and pin/biometric screens will be skipped
         presenter.observeDeeplinks()
-        popAndReplaceFragment(MainContainerFragment.create(), inclusive = true)
     }
 }

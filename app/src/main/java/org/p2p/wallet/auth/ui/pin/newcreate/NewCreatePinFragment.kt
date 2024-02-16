@@ -1,14 +1,15 @@
 package org.p2p.wallet.auth.ui.pin.newcreate
 
+import androidx.activity.addCallback
 import android.os.Bundle
 import android.view.View
-import androidx.activity.addCallback
 import org.koin.android.ext.android.inject
+import javax.crypto.Cipher
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.uikit.organisms.UiKitToolbar
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameFragment
 import org.p2p.wallet.auth.ui.reserveusername.ReserveUsernameOpenedFrom
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentNewCreatePinBinding
@@ -16,12 +17,12 @@ import org.p2p.wallet.home.ui.container.MainContainerFragment
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction.PlayAnimation
 import org.p2p.wallet.intercom.IntercomService
+import org.p2p.wallet.root.RootActivity
 import org.p2p.wallet.utils.BiometricPromptWrapper
 import org.p2p.wallet.utils.popAndReplaceFragment
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.vibrate
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import javax.crypto.Cipher
 
 private const val VIBRATE_DURATION = 10L
 
@@ -125,6 +126,7 @@ class NewCreatePinFragment :
         } else {
             arrayListOf()
         }
+        (activity as? RootActivity)?.onSignInSuccess()
         popAndReplaceFragment(
             MainContainerFragment.create(actions),
             inclusive = true
