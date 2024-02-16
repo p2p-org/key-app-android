@@ -33,7 +33,7 @@ class UserTokensInteractor(
 
     suspend fun loadAndSaveUserRates(userTokens: List<Token.Active>) {
         val tokenAddresses = userTokens.map { it.tokenServiceAddress }
-        val prices = tokenServiceRepository.getTokenPricesByAddress(tokenAddresses, TokenServiceNetwork.SOLANA)
+        val prices = tokenServiceRepository.getTokenPricesByAddresses(tokenAddresses, TokenServiceNetwork.SOLANA)
         saveUserTokensRates(prices)
     }
 

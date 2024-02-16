@@ -22,11 +22,17 @@ interface TokenServiceRepository {
         forceRemote: Boolean = false
     ): TokenServicePrice?
 
-    suspend fun getTokenPricesByAddress(
+    suspend fun getTokenPricesByAddresses(
         tokenAddress: List<String>,
         networkChain: TokenServiceNetwork,
         forceRemote: Boolean = false
     ): List<TokenServicePrice>
+
+    suspend fun getTokenPricesByAddressAsMap(
+        tokenAddress: List<String>,
+        networkChain: TokenServiceNetwork,
+        forceRemote: Boolean = false
+    ): Map<String, TokenServicePrice>
 
     fun findTokenMetadataByAddress(
         networkChain: TokenServiceNetwork,

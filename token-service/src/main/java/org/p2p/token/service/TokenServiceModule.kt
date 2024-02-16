@@ -47,7 +47,7 @@ object TokenServiceModule : InjectionModule {
         }
 
         single<JupiterPricesDataSource> {
-            getRetrofit(baseUrl = "https://price.jup.ag/", tag = null, interceptor = null).create()
+            getRetrofit(baseUrl = "https://price.jup.ag/", interceptor = null).create()
         }
 
         single(named(TOKEN_SERVICE_RETROFIT_QUALIFIER)) {

@@ -26,6 +26,7 @@ class ReferralWebViewBridge(
     private val tokenKeyProvider: TokenKeyProvider,
     private val onShareLinkCalled: (String) -> Unit,
     private val openTerms: (link: String) -> Unit,
+    private val navigateToSwap: () -> Unit,
     private val onWebViewLoaded: () -> Unit
 ) {
     companion object {
@@ -129,6 +130,11 @@ class ReferralWebViewBridge(
         @JavascriptInterface
         fun openTermsUrl(link: String) {
             openTerms.invoke(link)
+        }
+
+        @JavascriptInterface
+        fun navigateToSwap() {
+            navigateToSwap.invoke()
         }
 
         @JavascriptInterface

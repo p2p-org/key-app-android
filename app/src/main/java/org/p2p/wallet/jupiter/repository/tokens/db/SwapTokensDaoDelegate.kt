@@ -4,14 +4,15 @@ import org.json.JSONArray
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.token.TokenExtensions
+import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.jupiter.api.response.tokens.JupiterTokenResponse
 import org.p2p.wallet.jupiter.repository.model.JupiterSwapToken
-import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.utils.toStringSet
 
 class SwapTokensDaoDelegate(
     private val dao: SwapTokensDao,
-    private val userLocalRepository: UserLocalRepository
+    private val tokenServiceRepository: TokenServiceRepository,
 ) {
     private val tokenEntityInserter = SwapTokenEntityInserter(dao)
 
@@ -44,17 +45,20 @@ class SwapTokensDaoDelegate(
     }
 
     private suspend fun SwapTokenEntity.toDomain(): JupiterSwapToken {
-        val appTokens = userLocalRepository.findTokenByMint(address)
+        val appTokens = tokenServiceRepository.findTokenMetadataByAddress(
+            networkChain = TokenServiceNetwork.SOLANA,
+            tokenAddress = address
+        )
         return JupiterSwapToken(
-            tokenMint = appTokens?.mintAddress?.toBase58Instance() ?: address.toBase58Instance(),
+            tokenMint = appTokens?.address?.toBase58Instance() ?: address.toBase58Instance(),
             chainId = chainId,
             decimals = appTokens?.decimals ?: decimals,
             coingeckoId = coingeckoId,
-            logoUri = appTokens?.iconUrl ?: logoUri.orEmpty(),
-            tokenName = appTokens?.tokenName ?: name,
-            tokenSymbol = appTokens?.tokenSymbol ?: symbol,
+            logoUri = appTokens?.logoUrl ?: logoUri.orEmpty(),
+            tokenName = appTokens?.name ?: name,
+            tokenSymbol = appTokens?.symbol ?: symbol,
             tags = JSONArray(tagsAsJsonList).toStringSet(),
-            tokenExtensions = appTokens?.tokenExtensions ?: TokenExtensions.NONE,
+            tokenExtensions = TokenExtensions.NONE,
         )
     }
 

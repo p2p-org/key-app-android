@@ -50,10 +50,10 @@ internal class TokenServiceRepositoryImpl(
         networkChain: TokenServiceNetwork,
         forceRemote: Boolean
     ): TokenServicePrice? {
-        return getTokenPricesByAddress(listOf(tokenAddress), networkChain).firstOrNull()
+        return getTokenPricesByAddresses(listOf(tokenAddress), networkChain).firstOrNull()
     }
 
-    override suspend fun getTokenPricesByAddress(
+    override suspend fun getTokenPricesByAddresses(
         tokenAddress: List<String>,
         networkChain: TokenServiceNetwork,
         forceRemote: Boolean
@@ -69,6 +69,15 @@ internal class TokenServiceRepositoryImpl(
     } catch (error: Exception) {
         Timber.i(error)
         emptyList()
+    }
+
+    override suspend fun getTokenPricesByAddressAsMap(
+        tokenAddress: List<String>,
+        networkChain: TokenServiceNetwork,
+        forceRemote: Boolean
+    ): Map<String, TokenServicePrice> {
+        return getTokenPricesByAddresses(tokenAddress, networkChain, forceRemote)
+            .associateBy { it.tokenAddress }
     }
 
     override fun findTokenMetadataByAddress(
