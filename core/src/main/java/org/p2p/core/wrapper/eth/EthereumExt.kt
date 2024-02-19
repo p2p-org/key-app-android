@@ -77,6 +77,10 @@ fun String.hexStringToBigIntegerOrNull(): BigInteger? {
     return this.stripHexPrefix().toBigIntegerOrNull(16)
 }
 
+fun String.hexStringToBigInteger(): BigInteger {
+    return this.stripHexPrefix().toBigInteger(16)
+}
+
 // Converts positive long values to a byte array without leading zero byte (for sign bit)
 fun Long.toByteArray(): ByteArray {
     var array = this.toBigInteger().toByteArray()

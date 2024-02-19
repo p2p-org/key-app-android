@@ -25,9 +25,6 @@ import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFea
 import org.p2p.wallet.infrastructure.network.provider.SeedPhraseProvider
 import org.p2p.wallet.tokenservice.model.EthTokenLoadState
 
-private const val TAG = "EthereumTokensLoader"
-private val MINIMAL_DUST = BigDecimal("5")
-
 class EthereumTokensLoader(
     private val seedPhraseProvider: SeedPhraseProvider,
     private val bridgeFeatureToggle: EthAddressEnabledFeatureToggle,
@@ -37,10 +34,17 @@ class EthereumTokensLoader(
     appScope: AppScope
 ) : CoroutineScope {
 
-    private val state: MutableStateFlow<EthTokenLoadState> = MutableStateFlow(EthTokenLoadState.Idle)
+    private companion object {
+        private const val TAG = "EthereumTokensLoader"
+        private val MINIMAL_DUST = BigDecimal("5")
+    }
+
+    private val state = MutableStateFlow<EthTokenLoadState>(EthTokenLoadState.Idle)
 
     // Caching last ethereum tokens, to prevent hiding tokens while refreshing
     private var lastLoadedEthTokens = listOf<Token.Eth>()
+
+    override val coroutineContext: CoroutineContext = appScope.coroutineContext
 
     init {
         ethereumInteractor.observeTokensFlow()
@@ -57,14 +61,13 @@ class EthereumTokensLoader(
             .launchIn(appScope)
     }
 
-    override val coroutineContext: CoroutineContext = appScope.coroutineContext
-
     fun observeState(): Flow<EthTokenLoadState> = state.asStateFlow()
 
     fun getLastLoadedTokens(): List<Token.Eth> = lastLoadedEthTokens
 
     suspend fun loadIfEnabled() {
         if (!isEnabled()) {
+            Timber.i("ETH tokens are not enabled, or seed is empty")
             updateState(EthTokenLoadState.Loaded(emptyList()))
             return
         }
@@ -129,7 +132,7 @@ class EthereumTokensLoader(
 
     private fun saveTokensRates(list: List<TokenServicePrice>) {
         launch {
-            ethereumInteractor.updateTokensRates(list)
+            ethereumInteractor.saveTokensRates(list)
         }
     }
 
@@ -149,6 +152,7 @@ class EthereumTokensLoader(
     }
 
     private fun updateState(newState: EthTokenLoadState) {
+        Timber.i("Updating ETH tokens state: ${newState::class.simpleName}")
         state.value = newState
     }
 }

@@ -9,6 +9,7 @@ import org.p2p.core.utils.Constants.TOKEN_SERVICE_NATIVE_ETH_TOKEN
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.core.wrapper.eth.hexStringToBigInteger
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenConverter
@@ -142,7 +143,8 @@ internal class EthereumKitRepository(
         val erc20TokensMetadata = tokensMetadata.map { metadata ->
             val tokenBalance = tokensBalances
                 .firstOrNull { it.contractAddress.hex == metadata.address }
-                ?.tokenBalance
+                ?.tokenBalanceHex
+                ?.hexStringToBigInteger()
                 .orZero()
 
             converter.toEthTokenMetadata(

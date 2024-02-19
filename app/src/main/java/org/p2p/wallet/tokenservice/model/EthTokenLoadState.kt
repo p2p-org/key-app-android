@@ -2,6 +2,7 @@ package org.p2p.wallet.tokenservice.model
 
 import org.p2p.core.token.Token
 
+@androidx.annotation.Keep
 sealed interface EthTokenLoadState {
     object Loading : EthTokenLoadState
     object Refreshing : EthTokenLoadState
