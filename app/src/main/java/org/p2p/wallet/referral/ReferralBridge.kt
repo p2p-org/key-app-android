@@ -153,8 +153,10 @@ class ReferralWebViewBridge(
 
         @JavascriptInterface
         fun reloadPage() {
-            isJsProviderInjected = false
-            referralWebView?.reload()
+            referralWebView?.post {
+                isJsProviderInjected = false
+                referralWebView?.reload()
+            }
         }
 
         private fun wrapInJsResult(value: String): JsResultWrapper {
