@@ -86,7 +86,7 @@ class CalculateSendFeesUseCase(
     }
 
     /**
-     * this is special case, because if we have fee payer token the same as source token
+     * this is a special case, because if we have fee payer token the same as source token
      * we have to be very precise with amounts we use
      * since the math is calculated manually when "max" button is pressed
      * transaction will fail if account creation fee in token has incorrect value (rates in usd I guess)
@@ -100,17 +100,17 @@ class CalculateSendFeesUseCase(
         sourceToken: Token.Active,
         feePayerToken: Token.Active
     ): BigInteger {
-        return if (!sourceToken.isSOL && sourceToken.mintAddress == feePayerToken.mintAddress) {
-            sendServiceRepository
-                .getTokenRentExemption(
-                    userWallet = sourceToken.publicKey.toBase58Instance(),
-                    token = sourceToken,
-                    // return in TOKEN
-                    returnInToken = true
-                )
-        } else {
-            BigInteger.ZERO
+        if (sourceToken.isSOL || sourceToken.mintAddress != feePayerToken.mintAddress) {
+            return BigInteger.ZERO
         }
+
+        return sendServiceRepository
+            .getTokenRentExemption(
+                userWallet = sourceToken.publicKey.toBase58Instance(),
+                token = sourceToken,
+                // return in TOKEN
+                returnInToken = true
+            )
     }
 
     /**

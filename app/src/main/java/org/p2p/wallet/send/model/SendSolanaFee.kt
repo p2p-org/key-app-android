@@ -167,11 +167,6 @@ data class SendSolanaFee constructor(
         sourceTokenTotal: BigInteger,
         inputAmount: BigInteger
     ): FeePayerState {
-        // don't do anything if amount is not entered or it is zero
-        if (inputAmount.isZero()) {
-            return KeepSame
-        }
-
         val feePayerTokenCanCoverExpenses = feePayerToken.totalInLamports >= feeRelayerFee.totalInFeePayerToken
         val feePayerIsSourceToken = feePayerSymbol == sourceTokenSymbol
         val isNotSourceSol = sourceTokenSymbol != SOL_SYMBOL
@@ -204,6 +199,11 @@ data class SendSolanaFee constructor(
             }
         )
         return when {
+            // don't do anything if amount is not entered or it is zero
+            inputAmount.isZero() -> {
+                Timber.i("FeePayer: input amount is zero")
+                KeepSame
+            }
             feePayerTokenCanCoverExpenses && !feePayerIsSourceToken && !shouldTryReduceAmount -> {
                 Timber.i("FeePayer: keep the same fee payer token")
                 KeepSame
@@ -213,7 +213,7 @@ data class SendSolanaFee constructor(
                 SwitchToSpl(sourceToken)
             }
             hasAlternativeFeePayerTokens && !shouldTryReduceAmount -> {
-                Timber.i("FeePayer: switch to max by balance alternative token")
+                Timber.i("FeePayer: switch to a token with highest USD balance")
                 SwitchToSpl(alternativeFeePayerTokens.maxBy { it.totalInUsd.orZero() })
             }
             // if there is not enough SPL token balance to cover amount and fee, then try to reduce input amount

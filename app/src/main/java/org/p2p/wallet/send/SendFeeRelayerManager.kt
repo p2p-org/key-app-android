@@ -8,6 +8,7 @@ import kotlinx.coroutines.CancellationException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.fromLamports
+import org.p2p.core.utils.orZero
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toUsd
 import org.p2p.solanaj.kits.AccountInfoTokenExtensionConfig.Companion.interestBearingConfig
@@ -73,7 +74,7 @@ class SendFeeRelayerManager(
             return this.transferFeeConfig
                 ?.getActualTransferFee(currentSolanaEpoch)
                 ?.transferFeePercent
-                ?: BigDecimal.ZERO
+                .orZero()
         }
 
     suspend fun initialize(
