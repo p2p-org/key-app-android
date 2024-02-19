@@ -19,6 +19,7 @@ import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksDatabaseRepository
 import org.p2p.wallet.infrastructure.sendvialink.UserSendLinksLocalRepository
 import org.p2p.wallet.send.api.SendServiceApi
 import org.p2p.wallet.send.interactor.SendMaximumAmountCalculator
+import org.p2p.wallet.send.interactor.usecase.CalculateSendFeesUseCase
 import org.p2p.wallet.send.interactor.usecase.CalculateToken2022TransferFeeUseCase
 import org.p2p.wallet.send.interactor.usecase.GetFeesInPayingTokenUseCase
 import org.p2p.wallet.send.interactor.usecase.GetTokenExtensionsUseCase
@@ -113,6 +114,7 @@ object SendModule : InjectionModule {
         factoryOf(::GetFeesInPayingTokenUseCase)
         factoryOf(::CalculateToken2022TransferFeeUseCase)
         factoryOf(::GetTokenExtensionsUseCase)
+        factoryOf(::CalculateSendFeesUseCase)
     }
 
     private fun Module.initDataLayer() {

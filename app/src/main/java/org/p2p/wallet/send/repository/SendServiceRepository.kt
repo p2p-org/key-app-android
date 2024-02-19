@@ -28,4 +28,10 @@ interface SendServiceRepository {
         recipient: Base58String,
         token: Token.Active
     ): BigInteger
+
+    suspend fun getTokenRentExemption(
+        userWallet: Base58String,
+        token: Token.Active,
+        returnInToken: Boolean = false
+    ): BigInteger
 }
