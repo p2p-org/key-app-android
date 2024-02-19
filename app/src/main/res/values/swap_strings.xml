@@ -100,7 +100,7 @@
     </string>
     <string name="swap_info_details_interest_fee_title">Interest bearing</string>
 
-    <string name="swap_info_details_liquidity_cell_title">%s Liquidity fee %s</string>
+    <string name="swap_info_details_liquidity_cell_title">%s Liquidity fee</string>
     <string name="swap_info_details_key_app_fee_title">Swap fee</string>
 
     <string name="swap_non_strict_warning_title">The token %s is out of the strict list</string>

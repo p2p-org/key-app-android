@@ -92,13 +92,12 @@ class SwapInfoLiquidityFeeMapper(
         val liquidityToken = swapTokensRepository.findTokenByMint(routePlan.feeMint)
         val liquidityFee = routePlan.feeAmount
 
-        val feePercent = "${routePlan.percent}%"
-        val firstLineText = TextViewCellModel.Raw(
-            text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label, feePercent),
+        val liquidityOwner = TextViewCellModel.Raw(
+            text = TextContainer(R.string.swap_info_details_liquidity_cell_title, label),
             maxLines = 2
         )
 
-        val secondLineText = liquidityToken?.let {
+        val feeAmountFormatted = liquidityToken?.let {
             val feeInTokenLamports = liquidityFee
                 .fromLamports(it.decimals)
                 .formatTokenWithSymbol(it.tokenSymbol, it.decimals)
@@ -108,8 +107,8 @@ class SwapInfoLiquidityFeeMapper(
         return MainCellModel(
             styleType = MainCellStyle.BASE_CELL,
             leftSideCellModel = LeftSideCellModel.IconWithText(
-                firstLineText = firstLineText,
-                secondLineText = secondLineText
+                firstLineText = liquidityOwner,
+                secondLineText = feeAmountFormatted
             ),
             rightSideCellModel = rightSideSkeleton(),
         )
