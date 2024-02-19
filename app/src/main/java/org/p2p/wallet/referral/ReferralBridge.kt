@@ -39,7 +39,7 @@ class ReferralWebViewBridge(
     /**
      * Should be set to false when reloading the page
      */
-    var isJsProviderInjected = false
+    private var isJsProviderInjected = false
 
     private val onPageLoadingFinishedClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
