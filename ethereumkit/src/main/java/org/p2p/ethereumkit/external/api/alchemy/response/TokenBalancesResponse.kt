@@ -1,7 +1,6 @@
 package org.p2p.ethereumkit.external.api.alchemy.response
 
 import com.google.gson.annotations.SerializedName
-import java.math.BigInteger
 import org.p2p.core.wrapper.eth.EthAddress
 
 internal data class TokenBalancesResponse(
@@ -15,7 +14,7 @@ internal data class TokenBalanceResponse(
     @SerializedName("contractAddress")
     val contractAddress: EthAddress,
     @SerializedName("tokenBalance")
-    val tokenBalance: BigInteger
+    val tokenBalanceHex: String
 )
 
 internal data class TokenMetadataResponse(

@@ -41,7 +41,7 @@ class EthereumInteractor(
         ethereumRepository.cacheWalletTokens(tokens)
     }
 
-    suspend fun updateTokensRates(tokensRates: List<TokenServicePrice>) {
+    suspend fun saveTokensRates(tokensRates: List<TokenServicePrice>) {
         ethereumRepository.updateTokensRates(tokensRates)
     }
 

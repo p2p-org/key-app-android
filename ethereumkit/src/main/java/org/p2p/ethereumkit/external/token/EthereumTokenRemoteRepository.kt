@@ -1,17 +1,18 @@
 package org.p2p.ethereumkit.external.token
 
 import com.google.gson.Gson
-import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
+import java.math.BigInteger
+import java.net.URI
+import org.p2p.core.model.DefaultBlockParameter
+import org.p2p.core.rpc.RpcApi
+import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.core.wrapper.eth.hexStringToBigInteger
 import org.p2p.ethereumkit.external.api.alchemy.request.GetBalanceJsonRpc
 import org.p2p.ethereumkit.external.api.alchemy.request.GetTokenBalancesJsonRpc
 import org.p2p.ethereumkit.external.api.alchemy.request.GetTokenMetadataJsonRpc
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalancesResponse
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenMetadataResponse
-import org.p2p.core.wrapper.eth.EthAddress
-import java.math.BigInteger
-import java.net.URI
-import org.p2p.core.rpc.RpcApi
-import org.p2p.core.model.DefaultBlockParameter
+import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 
 internal class EthereumTokenRemoteRepository(
     private val alchemyService: RpcApi,
@@ -29,7 +30,7 @@ internal class EthereumTokenRemoteRepository(
             uri = URI.create(networkEnvironment.baseUrl),
             jsonRpc = requestGson
         )
-        return request.parseResponse(response, gson)
+        return request.parseResponse(response, gson).hexStringToBigInteger()
     }
 
     override suspend fun getTokenBalances(

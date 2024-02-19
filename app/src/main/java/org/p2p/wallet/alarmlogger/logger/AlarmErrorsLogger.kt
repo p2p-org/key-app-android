@@ -176,8 +176,8 @@ class AlarmErrorsLogger(
         error: Throwable,
         noinline requestProvider: suspend T.() -> AlarmErrorsRequest,
     ) {
-        val isErrorShouldBeLogged = error is CancellationException || error.cause is CancellationException
-        if (!isLoggerEnabled || !isErrorShouldBeLogged) return
+        val isFilteredError = error is CancellationException || error.cause is CancellationException
+        if (!isLoggerEnabled || isFilteredError) return
 
         appScope.launch {
             try {
