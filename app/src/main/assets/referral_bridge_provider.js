@@ -18,6 +18,9 @@ window.ReferralBridge = {
     navigateToSwap: function() {
         AndroidReferralBridge.navigateToSwap();
     },
+    reloadPage: function() {
+        AndroidReferralBridge.reloadPage();
+    }
     getClipboardContent: function() {
         return JSON.parse(AndroidReferralBridge.getClipboardValue());
     },

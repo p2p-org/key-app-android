@@ -36,7 +36,10 @@ class ReferralWebViewBridge(
 
     private var referralWebView: WebView? = null
 
-    private var isJsProviderInjected = false
+    /**
+     * Should be set to false when reloading the page
+     */
+    var isJsProviderInjected = false
 
     private val onPageLoadingFinishedClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView, url: String?, favicon: Bitmap?) {
@@ -146,6 +149,12 @@ class ReferralWebViewBridge(
         fun getClipboardValue(): JsResultWrapper {
             val context = referralWebView?.context ?: return wrapInJsResult(Exception("No Android context found"))
             return wrapInJsResult(context.getClipboardText(trimmed = true).orEmpty())
+        }
+
+        @JavascriptInterface
+        fun reloadPage() {
+            isJsProviderInjected = false
+            referralWebView?.reload()
         }
 
         private fun wrapInJsResult(value: String): JsResultWrapper {
