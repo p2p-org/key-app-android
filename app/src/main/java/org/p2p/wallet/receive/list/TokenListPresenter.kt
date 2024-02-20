@@ -13,12 +13,12 @@ class TokenListPresenter(
     private val interactor: UserInteractor,
     private val browseAnalytics: BrowseAnalytics,
     private val analyticsInteractor: ScreensAnalyticsInteractor
-) : BasePresenter<TokenListContract.View>(), TokenListContract.Presenter {
+) : BasePresenter<ReceiveTokenListContract.View>(), ReceiveTokenListContract.Presenter {
 
     private var searchText = emptyString()
     private var scrollToUp = false
 
-    override fun attach(view: TokenListContract.View) {
+    override fun attach(view: ReceiveTokenListContract.View) {
         super.attach(view)
         browseAnalytics.logTokenListViewed(
             analyticsInteractor.getPreviousScreenName(),
@@ -29,9 +29,9 @@ class TokenListPresenter(
 
     override fun load(isRefresh: Boolean, scrollToUp: Boolean) {
         launch {
-            view?.showLoading(true)
+            view?.showLoading(isLoading = true)
             this@TokenListPresenter.scrollToUp = scrollToUp
-            interactor.fetchTokens(searchText, PAGE_SIZE, isRefresh)
+            interactor.getReceiveTokens(searchText, PAGE_SIZE, isRefresh)
             view?.showLoading(false)
         }
     }

@@ -17,7 +17,7 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.list.TokenListFragment
+import org.p2p.wallet.receive.list.ReceiveTokenListFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.utils.args
@@ -44,7 +44,8 @@ class ReceiveSolanaFragment :
 
     override val presenter: ReceiveSolanaContract.Presenter by inject { parametersOf(token) }
 
-    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
+    override val receiveCardView: ReceiveCardView
+        get() = binding.receiveCardView
 
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
@@ -57,7 +58,7 @@ class ReceiveSolanaFragment :
         with(receiveCardView) {
             setOnFaqClickListener {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.LIST)
-                replaceFragment(TokenListFragment.create())
+                replaceFragment(ReceiveTokenListFragment.create())
             }
             setOnRequestPermissions(::checkStatusAndRequestPermissionsIfNotGranted)
             setOnShareQrClickListener { qrValue, qrImage, shareText ->

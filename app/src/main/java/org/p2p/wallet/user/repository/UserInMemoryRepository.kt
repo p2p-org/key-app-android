@@ -20,7 +20,13 @@ class UserInMemoryRepository(
     private val tokenConverter: TokenConverter,
     private val tokenServiceRepository: TokenServiceRepository
 ) : UserLocalRepository {
-    private val popularItems = arrayOf("SOL", "USDC", "BTC", "USDT", "ETH")
+    private val popularTokensMints = arrayOf(
+        Constants.WRAPPED_SOL_MINT,
+        Constants.USDC_MINT,
+        Constants.WRAPPED_BTC_MINT,
+        Constants.USDT_MINT,
+        Constants.WRAPPED_ETH_MINT,
+    )
     private val allTokensFlow = MutableStateFlow<List<TokenMetadata>>(emptyList())
 
     private val tokensSearchResultFlow = MutableStateFlow(TokenListData())
@@ -47,13 +53,15 @@ class UserInMemoryRepository(
             return
         }
 
+        val popularTokens = getPopularTokensMetadata()
+
         when {
             searchText.isEmpty() -> {
                 val defaultTokens = searchTextByTokens.getOrDefault(DEFAULT_TOKEN_KEY, emptyList())
-                val newSize = (defaultTokens.size - getPopularDecimals().size) + count
+                val newSize = (defaultTokens.size - popularTokens.size) + count
                 val needToLoadMore = newSize > defaultTokens.size
                 if (needToLoadMore) {
-                    searchTextByTokens[DEFAULT_TOKEN_KEY] = getPopularDecimals() + allInMemoryTokens.take(newSize)
+                    searchTextByTokens[DEFAULT_TOKEN_KEY] = popularTokens + allInMemoryTokens.take(newSize)
                 }
                 setSearchResult(DEFAULT_TOKEN_KEY)
             }
@@ -122,14 +130,11 @@ class UserInMemoryRepository(
         return resultToken
     }
 
-    private fun getPopularDecimals(): List<TokenMetadata> {
-        val popularTokens = mutableListOf<TokenMetadata>()
-        val tokens = allTokensFlow.value
-        for (symbol in popularItems) {
-            val token = tokens.firstOrNull { it.symbol == symbol }
-            if (token != null) popularTokens.add(token)
+    private fun getPopularTokensMetadata(): List<TokenMetadata> {
+        val allTokens = allTokensFlow.value
+        return popularTokensMints.mapNotNull { popularMint ->
+            allTokens.find { it.mintAddress == popularMint }
         }
-        return popularTokens
     }
 
     @Deprecated("This repository should not return [Token] objects but only [TokenMetadata]")

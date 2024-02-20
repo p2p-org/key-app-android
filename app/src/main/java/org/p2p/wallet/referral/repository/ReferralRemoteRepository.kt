@@ -40,15 +40,19 @@ class ReferralRemoteRepository(
 
     override suspend fun registerReferent() {
         if (referralEnabledFt.isFeatureEnabled) {
-            retryOnException(
-                exceptionTypes = setOf(
-                    ReferralServiceTimedOut::class,
-                    SocketTimeoutException::class
-                ),
-                maxAttempts = 10,
-                delayMillis = 5.seconds.inWholeMilliseconds,
-                block = ::registerReferentInternal
-            )
+            try {
+                retryOnException(
+                    exceptionTypes = setOf(
+                        ReferralServiceTimedOut::class,
+                        SocketTimeoutException::class
+                    ),
+                    maxAttempts = 10,
+                    delayMillis = 5.seconds.inWholeMilliseconds,
+                    block = ::registerReferentInternal
+                )
+            } catch (error: Exception) {
+                Timber.e(error, "Failed to register referent after 10 attempts")
+            }
         }
     }
 

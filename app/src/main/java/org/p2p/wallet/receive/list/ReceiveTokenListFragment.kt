@@ -1,12 +1,14 @@
 package org.p2p.wallet.receive.list
 
-import android.os.Bundle
-import android.view.View
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.os.Bundle
+import android.view.View
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
+import org.p2p.core.token.TokenMetadata
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.uikit.utils.attachAdapter
 import org.p2p.uikit.utils.focusAndShowKeyboard
@@ -15,23 +17,26 @@ import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.common.ui.recycler.EndlessScrollListener
 import org.p2p.wallet.databinding.FragmentReceiveListBinding
 import org.p2p.wallet.home.analytics.BrowseAnalytics
-import org.p2p.core.token.TokenMetadata
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.viewbinding.viewBinding
 
-class TokenListFragment :
-    BaseMvpFragment<TokenListContract.View, TokenListContract.Presenter>(R.layout.fragment_receive_list),
-    TokenListContract.View {
+class ReceiveTokenListFragment :
+    BaseMvpFragment<ReceiveTokenListContract.View, ReceiveTokenListContract.Presenter>(R.layout.fragment_receive_list),
+    ReceiveTokenListContract.View {
 
     companion object {
-        fun create() = TokenListFragment()
+        fun create() = ReceiveTokenListFragment()
     }
 
-    override val presenter: TokenListContract.Presenter by inject()
+    override val presenter: ReceiveTokenListContract.Presenter by inject()
     private val binding: FragmentReceiveListBinding by viewBinding()
     private val browseAnalytics: BrowseAnalytics by inject()
-    private val adapter = TokenListAdapter()
-    private val linearLayoutManager by lazy { LinearLayoutManager(requireContext()) }
+
+    private val adapter = TokenListAdapter(glideManager = get())
+    private val linearLayoutManager by lazy {
+        LinearLayoutManager(requireContext())
+    }
+
     private val scrollListener by lazy {
         EndlessScrollListener(linearLayoutManager, ::loadNextPage, ::onScrollYChanged)
     }
@@ -41,7 +46,7 @@ class TokenListFragment :
         with(binding) {
             with(binding.recyclerView) {
                 layoutManager = linearLayoutManager
-                attachAdapter(this@TokenListFragment.adapter)
+                attachAdapter(this@ReceiveTokenListFragment.adapter)
 
                 clearOnScrollListeners()
                 addOnScrollListener(scrollListener)

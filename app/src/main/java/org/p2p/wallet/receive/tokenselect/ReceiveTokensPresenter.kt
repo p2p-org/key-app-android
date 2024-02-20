@@ -78,7 +78,7 @@ class ReceiveTokensPresenter(
                 tokensFlow.value = emptyList()
             }
             this@ReceiveTokensPresenter.scrollToUp = scrollToUp
-            interactor.fetchTokens(searchText, PAGE_SIZE, isRefresh)
+            interactor.getReceiveTokens(searchText, PAGE_SIZE, isRefresh)
         }
     }
 
