@@ -6,7 +6,7 @@ import io.reactivex.Single
 
 data class RpcResponse(
     @SerializedName("id")
-    val id: Int,
+    val id: String,
     @SerializedName("result")
     val result: JsonElement?,
     @SerializedName("error")
