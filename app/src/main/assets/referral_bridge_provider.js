@@ -20,7 +20,7 @@ window.ReferralBridge = {
     },
     reloadPage: function() {
         AndroidReferralBridge.reloadPage();
-    }
+    },
     getClipboardContent: function() {
         return JSON.parse(AndroidReferralBridge.getClipboardValue());
     },
