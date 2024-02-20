@@ -8,15 +8,15 @@ import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.RpcApi
 import org.p2p.core.token.TokensMetadataInfo
-import org.p2p.token.service.api.TokenServiceDataSource
-import org.p2p.token.service.api.mapper.TokenServiceMapper
-import org.p2p.token.service.api.request.TokenServiceMetadataRequest
-import org.p2p.token.service.api.response.TokenListResponse
+import org.p2p.token.service.api.tokenservice.TokenServiceDataSource
+import org.p2p.token.service.api.tokenservice.request.TokenServiceMetadataRequest
+import org.p2p.token.service.api.tokenservice.response.TokenListResponse
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServiceQueryResult
 import org.p2p.token.service.model.UpdateTokenMetadataResult
 import org.p2p.token.service.model.successOrNull
+import org.p2p.token.service.repository.mapper.TokenServiceMapper
 
 private const val ALL_TOKENS_MAP_CHUNKED_COUNT = 50
 private const val HEADER_LAST_MODIFIED = "last-modified"

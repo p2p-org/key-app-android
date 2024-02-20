@@ -1,4 +1,4 @@
-package org.p2p.token.service.api
+package org.p2p.token.service.api.jupiter
 
 import retrofit2.http.GET
 import retrofit2.http.Query

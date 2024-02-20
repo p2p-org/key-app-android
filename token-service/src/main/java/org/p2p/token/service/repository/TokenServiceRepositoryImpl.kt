@@ -2,6 +2,7 @@ package org.p2p.token.service.repository
 
 import timber.log.Timber
 import kotlinx.coroutines.flow.Flow
+import org.p2p.token.service.api.coingecko.CoinGeckoTokenPriceRepository
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
@@ -14,6 +15,7 @@ import org.p2p.token.service.repository.price.TokenPriceRepository
 internal class TokenServiceRepositoryImpl(
     private val priceRemoteRepository: TokenPriceRepository,
     private val jupiterPriceRepository: JupiterTokenPriceRepository,
+    private val coinGeckoTokenPriceRepository: CoinGeckoTokenPriceRepository,
     private val priceLocalRepository: TokenPriceLocalRepository,
     private val metadataLocalRepository: TokenMetadataLocalRepository,
     private val metadataRemoteRepository: TokenMetadataRepository
@@ -54,20 +56,20 @@ internal class TokenServiceRepositoryImpl(
     }
 
     override suspend fun getTokenPricesByAddresses(
-        tokenAddress: List<String>,
+        tokensAddresses: List<String>,
         networkChain: TokenServiceNetwork,
         forceRemote: Boolean
     ): List<TokenServicePrice> = try {
         when (networkChain) {
             TokenServiceNetwork.SOLANA -> {
-                jupiterPriceRepository.loadTokensPrice(networkChain, tokenAddress).items
+                jupiterPriceRepository.loadTokensPrice(networkChain, tokensAddresses).items
             }
             TokenServiceNetwork.ETHEREUM -> {
-                priceRemoteRepository.loadTokensPrice(networkChain, tokenAddress).flatMap { it.items }
+                coinGeckoTokenPriceRepository.loadEthereumTokenPrices(tokensAddresses)
             }
         }
     } catch (error: Exception) {
-        Timber.i(error)
+        Timber.e(error, "failed to get prices for $tokensAddresses")
         emptyList()
     }
 

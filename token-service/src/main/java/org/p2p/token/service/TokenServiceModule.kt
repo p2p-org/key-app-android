@@ -11,18 +11,20 @@ import org.p2p.core.common.di.InjectionModule
 import org.p2p.core.network.NetworkCoreModule.getRetrofit
 import org.p2p.core.network.environment.NetworkServicesUrlProvider
 import org.p2p.core.rpc.RPC_JSON_QUALIFIER
-import org.p2p.token.service.api.JupiterPricesDataSource
-import org.p2p.token.service.api.TokenServiceDataSource
-import org.p2p.token.service.api.TokenServiceRemoteDataSource
+import org.p2p.token.service.api.coingecko.CoinGeckoDataSource
+import org.p2p.token.service.api.coingecko.CoinGeckoTokenPriceRepository
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
 import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
-import org.p2p.token.service.api.mapper.TokenServiceMapper
+import org.p2p.token.service.api.jupiter.JupiterPricesDataSource
+import org.p2p.token.service.api.tokenservice.TokenServiceDataSource
+import org.p2p.token.service.api.tokenservice.TokenServiceRemoteDataSource
 import org.p2p.token.service.converter.TokenServiceAmountsConverter
 import org.p2p.token.service.converter.TokenServiceAmountsRemoteConverter
 import org.p2p.token.service.database.TokenServiceDatabaseModule
 import org.p2p.token.service.database.mapper.TokenServiceDatabaseMapper
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.token.service.repository.TokenServiceRepositoryImpl
+import org.p2p.token.service.repository.mapper.TokenServiceMapper
 import org.p2p.token.service.repository.metadata.TokenMetadataInMemoryRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataLocalRepository
 import org.p2p.token.service.repository.metadata.TokenMetadataRemoteRepository
@@ -50,6 +52,14 @@ object TokenServiceModule : InjectionModule {
             getRetrofit(baseUrl = "https://price.jup.ag/", interceptor = null).create()
         }
 
+        single<CoinGeckoDataSource> {
+            getRetrofit(
+                baseUrl = "https://api.coingecko.com/api/v3/",
+                tag = "CoinGeckoApi",
+                interceptor = null,
+            ).create()
+        }
+
         single(named(TOKEN_SERVICE_RETROFIT_QUALIFIER)) {
             val url = get<NetworkServicesUrlProvider>()
             getRetrofit(
@@ -63,6 +73,8 @@ object TokenServiceModule : InjectionModule {
         singleOf(::TokenPriceDatabaseRepository) bind TokenPriceLocalRepository::class
         factoryOf(::TokenPriceRemoteRepository) bind TokenPriceRepository::class
         factoryOf(::JupiterTokenPriceRepository)
+        // caches data across app
+        singleOf(::CoinGeckoTokenPriceRepository)
         factoryOf(::TokenServiceAmountsRemoteConverter) bind TokenServiceAmountsConverter::class
 
         factoryOf(::TokenServiceMapper)
@@ -73,7 +85,8 @@ object TokenServiceModule : InjectionModule {
                 priceLocalRepository = get(),
                 metadataLocalRepository = get(),
                 metadataRemoteRepository = get(),
-                jupiterPriceRepository = get()
+                jupiterPriceRepository = get(),
+                coinGeckoTokenPriceRepository = get()
             )
         }
         singleOf(::TokenServiceEventPublisher)

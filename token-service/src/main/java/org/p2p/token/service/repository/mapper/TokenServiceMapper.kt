@@ -1,21 +1,21 @@
-package org.p2p.token.service.api.mapper
+package org.p2p.token.service.repository.mapper
 
 import org.p2p.core.token.TokenMetadata
 import org.p2p.core.token.TokenMetadataExtension
-import org.p2p.token.service.api.request.TokenServiceItemRequest
-import org.p2p.token.service.api.request.TokenServiceQueryRequest
-import org.p2p.token.service.api.response.MetadataExtensionResponse
-import org.p2p.token.service.api.response.TokenItemMetadataResponse
-import org.p2p.token.service.api.response.TokenItemPriceResponse
-import org.p2p.token.service.api.response.TokenRateResponse
-import org.p2p.token.service.api.response.TokenResponse
-import org.p2p.token.service.api.response.TokenServiceNetworkResponse
+import org.p2p.token.service.api.tokenservice.request.TokenServiceItemRequest
+import org.p2p.token.service.api.tokenservice.request.TokenServiceQueryRequest
+import org.p2p.token.service.api.tokenservice.response.MetadataExtensionResponse
+import org.p2p.token.service.api.tokenservice.response.TokenItemMetadataResponse
+import org.p2p.token.service.api.tokenservice.response.TokenItemPriceResponse
+import org.p2p.token.service.api.tokenservice.response.TokenRateResponse
+import org.p2p.token.service.api.tokenservice.response.TokenResponse
+import org.p2p.token.service.api.tokenservice.response.TokenServiceNetworkResponse
 import org.p2p.token.service.model.TokenRate
 import org.p2p.token.service.model.TokenServiceMetadata
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 
-class TokenServiceMapper {
+internal class TokenServiceMapper {
 
     internal fun fromNetwork(response: TokenResponse): TokenMetadata =
         TokenMetadata(

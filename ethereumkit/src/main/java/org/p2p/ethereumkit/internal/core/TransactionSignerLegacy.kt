@@ -12,8 +12,8 @@ class TransactionSignerLegacy(
     private val chainId: Int
 ) {
 
-    fun signatureLegacy(encodedTransaction: HexString): Signature {
-        val decodedTransaction = TransactionDecoder.decode(encodedTransaction.rawValue)
+    fun signatureLegacy(encodedTransactionHex: HexString): Signature {
+        val decodedTransaction = TransactionDecoder.decode(encodedTransactionHex.rawValue)
         val encodedTransaction = TransactionEncoder.encode(decodedTransaction, chainId.toLong())
         val rawTransactionHash = CryptoUtils.sha3(encodedTransaction)
         val sign = CryptoUtils.ellipticSign(rawTransactionHash, privateKey)

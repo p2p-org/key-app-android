@@ -43,7 +43,7 @@ internal class EthereumKitRepository(
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
         )
 
-        val ethAddress = tokenKeyProvider?.publicKey ?: return
+        tokenKeyProvider?.publicKey ?: return
     }
 
     override fun isInitialized(): Boolean {

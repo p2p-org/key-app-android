@@ -1,6 +1,7 @@
 package org.p2p.wallet.home.events
 
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.new
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -48,20 +49,8 @@ object HomeEventsModule : InjectionModule {
         }
 
         single {
-            val solTokensLoader = SolanaTokensLoader(
-                userTokensInteractor = get(),
-                tokenKeyProvider = get(),
-                tokenServiceEventManager = get(),
-                appScope = get()
-            )
-            val ethTokensLoader = EthereumTokensLoader(
-                seedPhraseProvider = get(),
-                bridgeFeatureToggle = get(),
-                ethereumInteractor = get(),
-                tokenServiceEventManager = get(),
-                tokenServiceEventPublisher = get(),
-                appScope = get()
-            )
+            val solTokensLoader = new(::SolanaTokensLoader)
+            val ethTokensLoader = new(::EthereumTokensLoader)
 
             TokenServiceCoordinator(
                 solanaTokensLoader = solTokensLoader,
