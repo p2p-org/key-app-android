@@ -8,7 +8,7 @@ import org.p2p.wallet.common.di.factoryOf
 import org.p2p.wallet.home.interactor.MyCryptoInteractor
 import org.p2p.wallet.home.ui.crypto.handlers.BridgeClaimBundleClickHandler
 import org.p2p.wallet.home.ui.crypto.mapper.MyCryptoMapper
-import org.p2p.wallet.receive.list.TokenListContract
+import org.p2p.wallet.receive.list.ReceiveTokenListContract
 import org.p2p.wallet.receive.list.TokenListPresenter
 
 object CryptoModule : InjectionModule {
@@ -18,6 +18,6 @@ object CryptoModule : InjectionModule {
         factoryOf(::BridgeClaimBundleClickHandler)
         factoryOf(::MyCryptoMapper)
         factoryOf(::MyCryptoPresenter) bind MyCryptoContract.Presenter::class
-        factoryOf(::TokenListPresenter) bind TokenListContract.Presenter::class
+        factoryOf(::TokenListPresenter) bind ReceiveTokenListContract.Presenter::class
     }
 }

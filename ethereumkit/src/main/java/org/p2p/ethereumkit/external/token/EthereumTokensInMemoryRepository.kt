@@ -11,9 +11,9 @@ class EthereumTokensInMemoryRepository : EthereumTokensLocalRepository {
 
     private val cachedTokens = MutableStateFlow<List<Token.Eth>>(emptyList())
 
-    override suspend fun cacheTokens(newTokens: List<Token.Eth>) {
+    override suspend fun cacheTokens(tokens: List<Token.Eth>) {
         val oldTokens = cachedTokens.value
-        val validatedTokens = newTokens.map { newToken ->
+        val validatedTokens = tokens.map { newToken ->
             val oldToken = oldTokens.firstOrNull { newToken.tokenServiceAddress == it.tokenServiceAddress }
 
             val newTokenRate = newToken.rate ?: oldToken?.rate

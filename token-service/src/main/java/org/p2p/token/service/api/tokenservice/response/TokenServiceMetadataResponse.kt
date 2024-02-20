@@ -1,10 +1,10 @@
-package org.p2p.token.service.api.response
+package org.p2p.token.service.api.tokenservice.response
 
 import com.google.gson.annotations.SerializedName
 
-internal data class TokenServicePriceResponse(
+internal data class TokenServiceMetadataResponse(
     @SerializedName("chain_id")
     val tokenServiceChainResponse: TokenServiceNetworkResponse,
     @SerializedName("data")
-    val tokenServiceItemsResponse: List<TokenItemPriceResponse>
+    val tokenServiceItemsResponse: List<TokenItemMetadataResponse>
 )

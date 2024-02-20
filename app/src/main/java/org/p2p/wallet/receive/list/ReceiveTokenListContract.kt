@@ -1,10 +1,10 @@
 package org.p2p.wallet.receive.list
 
+import org.p2p.core.token.TokenMetadata
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
-import org.p2p.core.token.TokenMetadata
 
-interface TokenListContract {
+interface ReceiveTokenListContract {
 
     interface View : MvpView {
         fun showLoading(isLoading: Boolean)

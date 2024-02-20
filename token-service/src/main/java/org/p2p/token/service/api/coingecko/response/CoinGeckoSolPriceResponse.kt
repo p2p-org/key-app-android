@@ -1,9 +1,9 @@
-package org.p2p.wallet.infrastructure.network.coingecko.response
+package org.p2p.token.service.api.coingecko.response
 
 import com.google.gson.annotations.SerializedName
 import java.math.BigDecimal
 
-class CoinGeckoPriceResponse(
+internal class CoinGeckoSolPriceResponse(
     @SerializedName("id")
     val id: String,
     @SerializedName("symbol")

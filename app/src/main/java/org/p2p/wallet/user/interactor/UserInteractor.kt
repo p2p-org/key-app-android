@@ -60,7 +60,11 @@ class UserInteractor(
 
     suspend fun getBalance(address: PublicKey): Long = rpcRepository.getBalance(address)
 
-    fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {
+    fun getReceiveTokens(
+        searchText: String = emptyString(),
+        count: Int,
+        refresh: Boolean
+    ) {
         userLocalRepository.fetchTokens(searchText, count, refresh)
     }
 

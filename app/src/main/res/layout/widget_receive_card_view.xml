@@ -34,19 +34,23 @@
                     app:layout_constraintTop_toBottomOf="@id/toolbar">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/textView2"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
                         android:text="@string/debug_settings_network"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Regular16"
-                        app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
+                        app:layout_constraintBottom_toBottomOf="@+id/networkTextView"
+                        app:layout_constraintEnd_toStartOf="@+id/networkTextView"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/arrowImageView" />
+                        app:layout_constraintTop_toTopOf="@+id/networkTextView" />
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/arrowImageView"
-                        android:layout_width="28dp"
+                        android:layout_width="0dp"
                         android:layout_height="28dp"
                         android:src="@drawable/ic_chevron_right"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/textIconSecondary" />
@@ -59,9 +63,9 @@
                         android:text="@string/send_solana_network"
                         android:textAppearance="@style/WalletTheme.TextAppearance.Bold16"
                         android:textColor="@color/bg_night"
-                        app:layout_constraintBottom_toBottomOf="@id/arrowImageView"
+                        app:layout_constraintBottom_toBottomOf="@+id/arrowImageView"
                         app:layout_constraintEnd_toStartOf="@id/arrowImageView"
-                        app:layout_constraintTop_toTopOf="@id/arrowImageView" />
+                        app:layout_constraintTop_toTopOf="@+id/arrowImageView" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

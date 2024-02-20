@@ -5,6 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import timber.log.Timber
 import java.lang.reflect.Type
+import java.util.UUID
 
 private const val TAG = "JsonRpcParser"
 
@@ -12,13 +13,13 @@ abstract class JsonRpc<Body, Response>(
     @SerializedName("method")
     val method: String,
     @SerializedName("params")
-    val params: Body
+    val params: Body,
 ) {
     @SerializedName("jsonrpc")
     val version: String = "2.0"
 
     @SerializedName("id")
-    var id: Int = 1
+    val id: String = UUID.randomUUID().toString()
 
     protected abstract val typeOfResult: Type
 

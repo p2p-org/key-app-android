@@ -7,17 +7,17 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.io.File
+import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.model.Username
-import org.p2p.core.analytics.constants.ScreenNames
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentReceiveSolanaBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.list.TokenListFragment
+import org.p2p.wallet.receive.list.ReceiveTokenListFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
 import org.p2p.wallet.utils.args
@@ -33,42 +33,42 @@ class ReceiveSolanaFragment :
     ReceiveSolanaContract.View {
 
     companion object {
-        private const val EXTRA_TOKEN = "EXTRA_TOKEN"
-        fun create(token: Token?) = ReceiveSolanaFragment().withArgs(
-            EXTRA_TOKEN to token
-        )
+        private const val ARG_TOKEN = "EXTRA_TOKEN"
+
+        fun create(token: Token?): ReceiveSolanaFragment =
+            ReceiveSolanaFragment()
+                .withArgs(ARG_TOKEN to token)
     }
 
-    private val token: Token? by args(EXTRA_TOKEN)
-    override val presenter: ReceiveSolanaContract.Presenter by inject {
-        parametersOf(token)
-    }
-    override val receiveCardView: ReceiveCardView by lazy { binding.receiveCardView }
+    private val token: Token? by args(ARG_TOKEN)
+
+    override val presenter: ReceiveSolanaContract.Presenter by inject { parametersOf(token) }
+
+    override val receiveCardView: ReceiveCardView
+        get() = binding.receiveCardView
+
     private val binding: FragmentReceiveSolanaBinding by viewBinding()
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
     private val receiveAnalytics: ReceiveAnalytics by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(binding) {
-            toolbar.setNavigationOnClickListener { popBackStack() }
-            receiveCardView.setOnFaqClickListener {
+        binding.toolbar.setNavigationOnClickListener { popBackStack() }
+
+        with(receiveCardView) {
+            setOnFaqClickListener {
                 analyticsInteractor.logScreenOpenEvent(ScreenNames.Receive.LIST)
-                replaceFragment(TokenListFragment.create())
+                replaceFragment(ReceiveTokenListFragment.create())
             }
-            receiveCardView.setOnRequestPermissions {
-                checkStatusAndRequestPermissionsIfNotGranted()
-            }
-            receiveCardView.setOnShareQrClickListener { qrValue, qrImage, shareText ->
+            setOnRequestPermissions(::checkStatusAndRequestPermissionsIfNotGranted)
+            setOnShareQrClickListener { qrValue, qrImage, shareText ->
                 presenter.saveQr(qrValue, qrImage, shareText)
                 receiveAnalytics.logUserCardShared(analyticsInteractor.getPreviousScreenName())
             }
-            receiveCardView.setOnCopyQrClickListener {
+            setOnCopyQrClickListener {
                 receiveAnalytics.logReceiveAddressCopied(analyticsInteractor.getPreviousScreenName())
             }
-            receiveCardView.setOnSaveQrClickListener { qrValue, qrImage ->
-                presenter.saveQr(qrValue, qrImage)
-            }
+            setOnSaveQrClickListener(presenter::saveQr)
             receiveCardView.setTokenSymbol(token?.tokenSymbol ?: Constants.SOL_SYMBOL)
             receiveCardView.setSelectNetworkVisibility(isVisible = true)
             receiveCardView.setChevronInvisible(isInvisible = true)

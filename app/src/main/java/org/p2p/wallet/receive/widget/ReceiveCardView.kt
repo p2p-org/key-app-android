@@ -8,8 +8,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.text.Spannable
 import android.util.AttributeSet
-import android.view.LayoutInflater
 import org.p2p.wallet.databinding.WidgetReceiveCardViewBinding
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
 class ReceiveCardView @JvmOverloads constructor(
     context: Context,
@@ -17,7 +17,7 @@ class ReceiveCardView @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
-    val binding = WidgetReceiveCardViewBinding.inflate(LayoutInflater.from(context), this)
+    val binding = inflateViewBinding<WidgetReceiveCardViewBinding>()
 
     fun setOnNetworkClickListener(block: () -> Unit) {
         binding.networkView.setOnClickListener { block() }

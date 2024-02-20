@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import org.koin.android.ext.android.inject
+import java.io.File
+import org.p2p.core.utils.Constants
 import org.p2p.uikit.utils.SpanUtils.highlightPublicKey
 import org.p2p.uikit.utils.toast
 import org.p2p.wallet.R
@@ -11,15 +13,13 @@ import org.p2p.wallet.auth.model.Username
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.databinding.FragmentUsernameBinding
 import org.p2p.wallet.receive.analytics.ReceiveAnalytics
-import org.p2p.wallet.receive.list.TokenListFragment
+import org.p2p.wallet.receive.list.ReceiveTokenListFragment
 import org.p2p.wallet.receive.widget.BaseQrCodeFragment
 import org.p2p.wallet.receive.widget.ReceiveCardView
-import org.p2p.core.utils.Constants
 import org.p2p.wallet.utils.popBackStack
 import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.shareScreenShot
 import org.p2p.wallet.utils.viewbinding.viewBinding
-import java.io.File
 
 class UsernameFragment :
     BaseQrCodeFragment<UsernameContract.View, UsernameContract.Presenter>(R.layout.fragment_username),
@@ -42,7 +42,7 @@ class UsernameFragment :
             toolbar.setNavigationOnClickListener { popBackStack() }
             receiveCardView.initReceiveCardView()
             progressButton.setOnClickListener {
-                replaceFragment(TokenListFragment.create())
+                replaceFragment(ReceiveTokenListFragment.create())
             }
         }
         presenter.loadData()

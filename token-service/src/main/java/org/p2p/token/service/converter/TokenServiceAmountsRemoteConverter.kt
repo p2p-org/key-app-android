@@ -3,10 +3,10 @@ package org.p2p.token.service.converter
 import java.math.BigInteger
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.utils.isZero
-import org.p2p.token.service.api.TokenServiceDataSource
-import org.p2p.token.service.api.request.TokenAmountsBodyRequest
-import org.p2p.token.service.api.request.TokenAmountsRequest
-import org.p2p.token.service.api.response.TokenAmountsResponse
+import org.p2p.token.service.api.tokenservice.TokenServiceDataSource
+import org.p2p.token.service.api.tokenservice.request.TokenAmountsBodyRequest
+import org.p2p.token.service.api.tokenservice.request.TokenAmountsRequest
+import org.p2p.token.service.api.tokenservice.response.TokenAmountsResponse
 import org.p2p.token.service.model.successOrNull
 
 internal class TokenServiceAmountsRemoteConverter(

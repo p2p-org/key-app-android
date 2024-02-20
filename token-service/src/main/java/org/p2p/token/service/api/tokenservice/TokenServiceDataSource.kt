@@ -1,4 +1,4 @@
-package org.p2p.token.service.api
+package org.p2p.token.service.api.tokenservice
 
 import org.p2p.core.rpc.JsonRpc
 import org.p2p.token.service.model.TokenServiceResult

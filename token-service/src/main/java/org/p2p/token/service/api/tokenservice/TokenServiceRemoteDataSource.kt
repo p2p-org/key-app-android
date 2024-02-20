@@ -1,4 +1,4 @@
-package org.p2p.token.service.api
+package org.p2p.token.service.api.tokenservice
 
 import com.google.gson.Gson
 import timber.log.Timber

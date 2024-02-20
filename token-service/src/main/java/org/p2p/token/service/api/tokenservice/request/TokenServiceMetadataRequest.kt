@@ -1,9 +1,9 @@
-package org.p2p.token.service.api.request
+package org.p2p.token.service.api.tokenservice.request
 
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import org.p2p.core.rpc.JsonRpc
-import org.p2p.token.service.api.response.TokenServiceMetadataResponse
+import org.p2p.token.service.api.tokenservice.response.TokenServiceMetadataResponse
 
 private typealias MetadataResponse = List<TokenServiceMetadataResponse>
 

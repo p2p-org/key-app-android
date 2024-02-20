@@ -1,7 +1,7 @@
-package org.p2p.token.service.api.request
+package org.p2p.token.service.api.tokenservice.request
 
 import com.google.gson.annotations.SerializedName
-import org.p2p.token.service.api.response.TokenServiceNetworkResponse
+import org.p2p.token.service.api.tokenservice.response.TokenServiceNetworkResponse
 
 internal data class TokenServiceItemRequest(
     @SerializedName("chain_id")

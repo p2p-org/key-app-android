@@ -1,4 +1,4 @@
-package org.p2p.token.service.api.request
+package org.p2p.token.service.api.tokenservice.request
 
 import com.google.gson.annotations.SerializedName
 
