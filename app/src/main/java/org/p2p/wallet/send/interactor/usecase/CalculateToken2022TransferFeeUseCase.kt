@@ -2,6 +2,7 @@ package org.p2p.wallet.send.interactor.usecase
 
 import java.math.BigDecimal
 import java.math.BigInteger
+import java.math.RoundingMode
 import org.p2p.core.token.Token
 import org.p2p.core.utils.divideSafe
 import org.p2p.core.utils.isZero
@@ -36,7 +37,12 @@ class CalculateToken2022TransferFeeUseCase(
         }
         val transferFeeBasisPoints = transferFeeBasisPoints.toBigInteger()
         val numerator = preFeeAmount * transferFeeBasisPoints
-        val rawFee = numerator.divideSafe(BigInteger("10000"))
+
+        // calculate with ceiling rounding mode so that we don't lose any lamports
+        val rawFee = numerator.toBigDecimal()
+            .divideSafe(BigDecimal("10000"), 6, RoundingMode.CEILING)
+            .setScale(0, RoundingMode.CEILING)
+            .toBigInteger()
 
         return minOf(rawFee, maximumFee)
     }

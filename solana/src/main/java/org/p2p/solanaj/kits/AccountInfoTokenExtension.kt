@@ -41,6 +41,10 @@ sealed interface AccountInfoTokenExtensionConfig {
             @SerializedName("transferFeeBasisPoints")
             val transferFeeBasisPoints: Long,
         ) {
+            /**
+             * Value in percents (e.g. 6.65) in range [0, 100]
+             * todo: I think we should use ratio instead of percent, it's useless except for UI
+             */
             val transferFeePercent: BigDecimal
                 get() = transferFeeBasisPoints.toBigDecimal().setScale(4)
                     .divideSafe("10000".toBigDecimal().setScale(4))

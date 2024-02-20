@@ -7,6 +7,7 @@ import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.network.data.EmptyDataException
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.core.wrapper.eth.helpers.RandomHelper.randomBytes
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.send.api.SendServiceApi
@@ -37,7 +38,7 @@ class SendServiceRemoteRepository(
         recipient: Base58String,
         token: Token.Active
     ): BigInteger {
-        val cachedFeeInfo = inMemoryRepository.getMaxAmountToSned(token.mintAddress.toBase58Instance())
+        val cachedFeeInfo = inMemoryRepository.getMaxAmountToSend(token.mintAddress.toBase58Instance())
         if (cachedFeeInfo != null) {
             return cachedFeeInfo
         }
@@ -56,6 +57,36 @@ class SendServiceRemoteRepository(
             maxAmount = generatedTransaction.recipientGetsAmount.amount
         )
         return generatedTransaction.recipientGetsAmount.amount
+    }
+
+    /**
+     * todo: this and getMaxAmountToSend are very similar, maybe we can merge them
+     *       but this method should not use cache, values may change very often due to volatility
+     */
+    override suspend fun getTokenRentExemption(
+        userWallet: Base58String,
+        token: Token.Active,
+        returnInToken: Boolean
+    ): BigInteger {
+        val generatedTransaction = generateTransaction(
+            userWallet = userWallet,
+            amountLamports = token.totalInLamports,
+            recipient = randomBytes(32).toBase58Instance(),
+            tokenMint = if (token.isSOL) null else token.mintAddress.toBase58Instance(),
+            // exactIn because we need to get totalAmount less than amount with send
+            transferMode = SendTransferMode.ExactIn,
+
+            feePayerMode = SendFeePayerMode.UserSol,
+            // get rent exemption in SOL
+            rentPayerMode = if (returnInToken) SendRentPayerMode.Custom else SendRentPayerMode.UserSol,
+            customRentPayerTokenMint = if (returnInToken) token.mintAddress.toBase58Instance() else null
+        )
+
+        if (generatedTransaction.tokenAccountRent == null) {
+            return BigInteger.ZERO
+        }
+
+        return generatedTransaction.tokenAccountRent.amount.amount
     }
 
     override suspend fun generateTransaction(

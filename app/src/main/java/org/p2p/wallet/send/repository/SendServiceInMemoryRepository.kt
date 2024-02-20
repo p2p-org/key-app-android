@@ -10,7 +10,7 @@ class SendServiceInMemoryRepository {
         cache[mintAddress] = maxAmount
     }
 
-    fun getMaxAmountToSned(mintAddress: Base58String): BigInteger? {
+    fun getMaxAmountToSend(mintAddress: Base58String): BigInteger? {
         return cache[mintAddress]
     }
 }
