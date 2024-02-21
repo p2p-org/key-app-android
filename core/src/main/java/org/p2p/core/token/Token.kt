@@ -8,10 +8,9 @@ import kotlinx.parcelize.Parcelize
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.utils.Constants
-import org.p2p.core.utils.Constants.REN_BTC_SYMBOL
 import org.p2p.core.utils.Constants.SOL_NAME
-import org.p2p.core.utils.Constants.USDC_SYMBOL
-import org.p2p.core.utils.Constants.USDT_SYMBOL
+import org.p2p.core.utils.Constants.USDC_MINT
+import org.p2p.core.utils.Constants.USDT_MINT
 import org.p2p.core.utils.Constants.WRAPPED_ETH_MINT
 import org.p2p.core.utils.Constants.WRAPPED_SOL_MINT
 import org.p2p.core.utils.asCurrency
@@ -202,35 +201,31 @@ sealed class Token constructor(
 
     @IgnoredOnParcel
     val isSOL: Boolean
-        get() = mintAddress == WRAPPED_SOL_MINT
+        get() = mintAddress.equals(WRAPPED_SOL_MINT, ignoreCase = true)
 
     @IgnoredOnParcel
     val isSpl: Boolean
-        get() = mintAddress != WRAPPED_SOL_MINT
+        get() = !isSOL
 
     @IgnoredOnParcel
     val isToken2022: Boolean
         get() = programId == Constants.SOLANA_TOKEN_2022_PROGRAM_ID
 
     @IgnoredOnParcel
-    val isRenBTC: Boolean
-        get() = tokenSymbol == REN_BTC_SYMBOL
-
-    @IgnoredOnParcel
     val isUSDC: Boolean
-        get() = tokenSymbol.equals(USDC_SYMBOL, ignoreCase = true)
+        get() = mintAddress.equals(USDC_MINT, ignoreCase = true)
 
     @IgnoredOnParcel
     val isUSDT: Boolean
-        get() = tokenSymbol == USDT_SYMBOL
+        get() = mintAddress.equals(USDT_MINT, ignoreCase = true)
 
     @IgnoredOnParcel
     val usdRateOrZero: BigDecimal
-        get() = rate ?: BigDecimal.ZERO
+        get() = rate.orZero()
 
     @IgnoredOnParcel
     val currencyFormattedRate: String
-        get() = (rate ?: BigDecimal.ZERO).asCurrency(currencySymbol)
+        get() = usdRateOrZero.asCurrency(currencySymbol)
 
     @IgnoredOnParcel
     val currencySymbol: String
@@ -289,9 +284,9 @@ fun List<Token.Active>.findByMintAddress(mintAddress: String?): Token.Active? =
 fun List<Token.Active>.sortedWithPreferredStableCoins(): List<Token.Active> {
     return sortedWith(
         compareBy<Token.Active> {
-            when (it.tokenSymbol) {
-                USDC_SYMBOL -> 1
-                USDT_SYMBOL -> 2
+            when (it.mintAddress) {
+                USDC_MINT -> 1
+                USDT_MINT -> 2
                 else -> 3
             }
         }

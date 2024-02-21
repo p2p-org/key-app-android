@@ -177,7 +177,7 @@ class BuyPresenter(
 
     override fun onSelectTokenClicked() {
         buyInteractor.getQuotesByCurrency(selectedCurrency).forEach { quote ->
-            tokensToBuy.find { it.tokenSymbol == quote.token.tokenSymbol }?.let {
+            tokensToBuy.find { it.tokenSymbol == quote.tokenToBuy.tokenSymbol }?.let {
                 it.rate = quote.price
                 it.currency = quote.currency.abbreviation.uppercase()
             }

@@ -54,6 +54,7 @@ class SwapFee constructor(
         }
     }
 
+    @Deprecated("Old")
     fun isEnoughToCoverExpenses(sourceTokenTotal: BigInteger, inputAmount: BigInteger): Boolean =
         when {
             // if source is SOL, then fee payer is SOL as well

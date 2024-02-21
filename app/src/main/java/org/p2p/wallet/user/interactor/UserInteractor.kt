@@ -19,7 +19,7 @@ import org.p2p.wallet.user.repository.UserTokensLocalRepository
 import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
-val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(Constants.USDC_SYMBOL, Constants.SOL_SYMBOL)
+val TOKEN_MINTS_VALID_FOR_BUY: List<String> = listOf(Constants.USDC_MINT, Constants.WRAPPED_SOL_MINT)
 
 class UserInteractor(
     private val userLocalRepository: UserLocalRepository,
@@ -42,17 +42,17 @@ class UserInteractor(
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
-    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY): Token? =
-        getTokensForBuy(availableTokensSymbols).firstOrNull()
+    suspend fun getSingleTokenForBuy(availableTokensMints: List<String> = TOKEN_MINTS_VALID_FOR_BUY): Token? =
+        getTokensForBuy(availableTokensMints).firstOrNull()
 
     suspend fun getTokensForBuy(
-        availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY
+        availableTokensMints: List<String> = TOKEN_MINTS_VALID_FOR_BUY
     ): List<Token> {
-        val tokensToBuy = findTokensMetadataBySymbols(availableTokensSymbols)
+        val tokensToBuy = findTokensMetadataByMints(availableTokensMints)
 
         if (tokensToBuy.isEmpty()) {
             Timber.e(
-                IllegalStateException("No tokens to buy! All tokens: $availableTokensSymbols")
+                IllegalStateException("No tokens to buy! All tokens: $availableTokensMints")
             )
         }
         return tokensToBuy
@@ -92,8 +92,8 @@ class UserInteractor(
         return userTokens.any { it.publicKey == address }
     }
 
-    private suspend fun findTokensMetadataBySymbols(symbols: List<String>): List<Token.Other> {
-        val tokensData = symbols.mapNotNull { userLocalRepository.findTokenDataBySymbol(it) }
+    private suspend fun findTokensMetadataByMints(mints: List<String>): List<Token.Other> {
+        val tokensData = mints.mapNotNull(userLocalRepository::findTokenData)
         val prices = tokensData.let {
             tokenServiceRepository.getTokenPricesByAddressAsMap(
                 tokenAddress = it.map(TokenMetadata::mintAddress),
