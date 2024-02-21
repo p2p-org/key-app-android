@@ -104,13 +104,21 @@ class CalculateSendFeesUseCase(
             return BigInteger.ZERO
         }
 
-        return sendServiceRepository
-            .getTokenRentExemption(
-                userWallet = sourceToken.publicKey.toBase58Instance(),
-                token = sourceToken,
-                // return in TOKEN
-                returnInToken = true
-            )
+        return try {
+            sendServiceRepository
+                .getTokenRentExemption(
+                    userWallet = sourceToken.publicKey.toBase58Instance(),
+                    token = sourceToken,
+                    // return in TOKEN
+                    returnInToken = true
+                )
+        } catch (e: Throwable) {
+            // send service can return "insufficient funds" when fee payer token is the same as source token
+            // and there's not enough balance to cover account creation fee
+            // todo: errors should be checked specifically for this type of error, because send-service may fail
+            //       by another reason
+            BigInteger.ZERO
+        }
     }
 
     /**
