@@ -13,7 +13,7 @@ import org.p2p.core.utils.asCurrency
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleToTwo
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.components.FocusField
 import org.p2p.wallet.R
@@ -405,13 +405,13 @@ class BuyPresenter(
         val data = BuyViewData(
             tokenSymbol = selectedToken.tokenSymbol,
             currencySymbol = selectedCurrency.uiSymbol,
-            price = buyCurrencyInfo.price.scaleShort(),
+            price = buyCurrencyInfo.price.scaleToTwo(),
             receiveAmount = buyCurrencyInfo.receiveAmount,
-            processingFee = buyCurrencyInfo.feeAmount.scaleShort(),
-            networkFee = buyCurrencyInfo.networkFeeAmount.scaleShort(),
-            extraFee = buyCurrencyInfo.extraFeeAmount.scaleShort(),
+            processingFee = buyCurrencyInfo.feeAmount.scaleToTwo(),
+            networkFee = buyCurrencyInfo.networkFeeAmount.scaleToTwo(),
+            extraFee = buyCurrencyInfo.extraFeeAmount.scaleToTwo(),
             accountCreationCost = null,
-            total = buyCurrencyInfo.totalFiatAmount.scaleShort(),
+            total = buyCurrencyInfo.totalFiatAmount.scaleToTwo(),
             receiveAmountText = amount,
             purchaseCostText = currencyForTokensAmount.asCurrency(selectedCurrency.uiSymbol)
         )

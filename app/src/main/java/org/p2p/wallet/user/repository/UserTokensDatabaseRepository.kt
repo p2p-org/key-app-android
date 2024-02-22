@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleToTwo
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenDao
 import org.p2p.wallet.home.model.TokenComparator
@@ -57,7 +57,7 @@ class UserTokensDatabaseRepository(
     private fun calculateUserBalance(tokens: List<Token.Active>): BigDecimal =
         tokens.mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)
-            .scaleShort()
+            .scaleToTwo()
 
     override suspend fun getUserTokens(): List<Token.Active> {
         return tokensDao.getTokens()

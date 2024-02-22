@@ -11,46 +11,45 @@ const val SOL_DECIMALS = 9
 const val MOONPAY_DECIMAL = 2
 const val STRIGA_FIAT_DECIMALS = 2
 
-private const val SCALE_VALUE_SHORT = 2
-private const val SCALE_VALUE_MEDIUM = 6
-private const val SCALE_VALUE_LONG = 9
+private const val SCALE_VALUE_TWO = 2
+private const val SCALE_VALUE_SIX = 6
+private const val SCALE_VALUE_NINE = 9
 
 private const val AMOUNT_MIN_VALUE = 0.01
 
 fun String?.toBigDecimalOrZero(): BigDecimal {
     val removedZeros = this?.replace("(?<=\\d)\\.?0+(?![\\d\\.])", emptyString())
-    return removedZeros?.toBigDecimalOrNull() ?: BigDecimal.ZERO
+    return removedZeros?.toBigDecimalOrNull().orZero()
 }
 
 fun String?.toBigIntegerOrZero(): BigInteger {
-    return this?.toBigIntegerOrNull() ?: BigInteger.ZERO
+    return this?.toBigIntegerOrNull().orZero()
 }
 
 fun Int.toPowerValue(): BigDecimal = BASE_TEN.pow(this)
 
-fun BigDecimal.scaleShortOrFirstNotZero(): BigDecimal {
-    return if (isZero()) {
-        this
-    } else {
-        val scale = if (scale() > SCALE_VALUE_SHORT) {
-            scale() - (unscaledValue().toString().length - SCALE_VALUE_SHORT)
-        } else {
-            SCALE_VALUE_SHORT
-        }
-        // removing zeros, case: 0.02000 -> 0.2
-        setScale(scale, RoundingMode.DOWN).stripTrailingZeros()
+fun BigDecimal.scaleToTwoOrFirstNotZero(): BigDecimal {
+    if (isZero()) {
+        return this
     }
+    val scale = if (scale() > SCALE_VALUE_TWO) {
+        scale() - (unscaledValue().toString().length - SCALE_VALUE_TWO)
+    } else {
+        SCALE_VALUE_TWO
+    }
+    // removing zeros, case: 0.02000 -> 0.2
+    return setScale(scale, RoundingMode.DOWN).stripTrailingZeros()
 }
 
-fun BigDecimal.scaleShort(): BigDecimal =
-    this.setScale(SCALE_VALUE_SHORT, RoundingMode.DOWN)
+fun BigDecimal.scaleToTwo(): BigDecimal =
+    this.setScale(SCALE_VALUE_TWO, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
-fun BigDecimal.scaleMedium(): BigDecimal =
-    if (this.isZero()) this else this.setScale(SCALE_VALUE_MEDIUM, RoundingMode.DOWN)
+fun BigDecimal.scaleToSix(): BigDecimal =
+    if (this.isZero()) this else this.setScale(SCALE_VALUE_SIX, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
-fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
+fun BigDecimal.scaleToNine(decimals: Int = SCALE_VALUE_NINE): BigDecimal =
     if (this.isZero()) this else this.setScale(decimals, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
@@ -59,16 +58,16 @@ fun BigDecimal.scaleLong(decimals: Int = SCALE_VALUE_LONG): BigDecimal =
 fun BigInteger.fromLamports(decimals: Int): BigDecimal =
     (this.toBigDecimal().divide(BASE_TEN.pow(decimals), 18, RoundingMode.HALF_DOWN))
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
-        .scaleLong(decimals)
+        .scaleToNine(decimals)
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
 
 fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
-    usdRate?.let { this.multiply(it).scaleShort() }
+    usdRate?.let { this.multiply(it).scaleToTwo() }
 
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
-    token.rate?.let { this.multiply(it).scaleShort() }
+    token.rate?.let { this.multiply(it).scaleToTwo() }
 
 // case: 1000.023000 -> 1 000.02
 fun BigDecimal.formatFiat(): String = formatWithDecimals(FIAT_FRACTION_LENGTH)

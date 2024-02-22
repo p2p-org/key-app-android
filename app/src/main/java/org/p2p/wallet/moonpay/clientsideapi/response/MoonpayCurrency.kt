@@ -8,7 +8,7 @@ sealed class MoonpayCurrency {
 
     // it's okay to keep equals by symbol here
     // because we only have non-scam wrapped SOL in/out Moonpay
-    fun isSol() = this is CryptoToken && tokenSymbol == Constants.SOL_SYMBOL
+    fun isSol() = this is CryptoToken && tokenSymbol.equals(Constants.SOL_SYMBOL, ignoreCase = true)
 
     data class CryptoToken(
         val tokenSymbol: String,

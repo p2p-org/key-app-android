@@ -24,7 +24,7 @@ import org.p2p.core.token.findByMintAddress
 import org.p2p.core.token.sortedWithPreferredStableCoins
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleToTwo
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
@@ -274,7 +274,7 @@ class NewSendPresenter(
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
-            val newTextValue = inputAmount.scaleShort().toPlainString()
+            val newTextValue = inputAmount.scaleToTwo().toPlainString()
             updateInputValue(newTextValue, forced = true)
             calculationMode.updateInputAmount(newTextValue)
             disableInputs()

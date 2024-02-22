@@ -11,7 +11,7 @@ import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
 import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.scaleMedium
+import org.p2p.core.utils.scaleToSix
 import org.p2p.core.utils.toUsd
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.send.model.FeePayerState
@@ -69,10 +69,10 @@ class SwapFee constructor(
         }
 
     val feeAmountInPayingToken: BigDecimal
-        get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals).scaleMedium()
+        get() = fee.feeInPayingToken.fromLamports(feePayerToken.decimals).scaleToSix()
 
     val feeAmountInSol: BigDecimal
-        get() = fee.feeInSol.fromLamports(SOL_DECIMALS).scaleMedium()
+        get() = fee.feeInSol.fromLamports(SOL_DECIMALS).scaleToSix()
 
     val feePayerSymbol: String = feePayerToken.tokenSymbol
 
@@ -97,7 +97,7 @@ class SwapFee constructor(
             } else {
                 fee.feeInPayingToken.fromLamports(feePayerToken.decimals)
             }
-                .scaleMedium()
+                .scaleToSix()
         }
 
     private val accountCreationFeeUsdDecimals: BigDecimal?
@@ -106,7 +106,7 @@ class SwapFee constructor(
     private val currentDecimals: BigDecimal =
         (if (feePayerToken.isSOL) fee.feeInSol else fee.feeInPayingToken)
             .fromLamports(feePayerToken.decimals)
-            .scaleMedium()
+            .scaleToSix()
 
     private val feePayerTotalLamports: BigInteger
         get() = feePayerToken.totalInLamports
