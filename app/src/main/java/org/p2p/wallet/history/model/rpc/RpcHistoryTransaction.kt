@@ -12,7 +12,7 @@ import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asPositiveUsdTransaction
 import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatTokenWithSymbol
-import org.p2p.core.utils.scaleToTwoOrFirstNotZero
+import org.p2p.core.utils.scaleTwoOrFirstNotZero
 import org.p2p.wallet.R
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.transaction.model.HistoryTransactionStatus
@@ -210,7 +210,7 @@ sealed class RpcHistoryTransaction(
 
         fun getFormattedFiatValue(): String? {
             return amount.totalInUsd
-                ?.scaleToTwoOrFirstNotZero()
+                ?.scaleTwoOrFirstNotZero()
                 ?.asUsdTransaction(getSymbol(isSend))
         }
 
@@ -263,7 +263,7 @@ sealed class RpcHistoryTransaction(
 
         fun getFormattedFiatValue(): String? {
             return amount.totalInUsd
-                ?.scaleToTwoOrFirstNotZero()
+                ?.scaleTwoOrFirstNotZero()
                 ?.asPositiveUsdTransaction()
         }
 
@@ -305,7 +305,7 @@ sealed class RpcHistoryTransaction(
 
         fun getValue(): String? {
             return amount.totalInUsd
-                ?.scaleToTwoOrFirstNotZero()
+                ?.scaleTwoOrFirstNotZero()
                 ?.asUsdTransaction(getSymbol(isStake))
         }
 

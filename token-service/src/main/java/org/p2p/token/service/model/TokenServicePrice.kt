@@ -1,7 +1,7 @@
 package org.p2p.token.service.model
 
 import java.math.BigDecimal
-import org.p2p.core.utils.scaleToTwo
+import org.p2p.core.utils.scaleTwo
 
 data class TokenServicePrice(
     val tokenAddress: String,
@@ -9,7 +9,7 @@ data class TokenServicePrice(
     val network: TokenServiceNetwork
 ) {
     val scaledUsdRate: BigDecimal?
-        get() = rate.usd?.scaleToTwo()
+        get() = rate.usd?.scaleTwo()
 
     val usdRate: BigDecimal?
         get() = rate.usd

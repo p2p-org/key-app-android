@@ -19,8 +19,8 @@ import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleToNine
-import org.p2p.core.utils.scaleToTwo
+import org.p2p.core.utils.scaleNine
+import org.p2p.core.utils.scaleTwo
 import org.p2p.core.utils.toLamports
 import org.p2p.core.utils.toPowerValue
 import org.p2p.core.wrapper.eth.EthAddress
@@ -77,7 +77,7 @@ sealed class Token constructor(
 
         @IgnoredOnParcel
         val totalInUsdScaled: BigDecimal?
-            get() = totalInUsd?.scaleToTwo()
+            get() = totalInUsd?.scaleTwo()
 
         @IgnoredOnParcel
         val isZero: Boolean
@@ -259,7 +259,7 @@ sealed class Token constructor(
                 tokenName = SOL_NAME,
                 iconUrl = tokenMetadata.iconUrl,
                 totalInUsd = if (amount == 0L) null else solPrice?.let { total.multiply(it) },
-                total = total.scaleToNine(tokenMetadata.decimals),
+                total = total.scaleNine(tokenMetadata.decimals),
                 rate = solPrice,
                 tokenServiceAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN,
                 visibility = TokenVisibility.DEFAULT,

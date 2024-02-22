@@ -5,7 +5,7 @@ import android.annotation.SuppressLint
 import android.view.ViewGroup
 import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.isZero
-import org.p2p.core.utils.scaleToTwo
+import org.p2p.core.utils.scaleTwo
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemTokenSimpleBinding
 import org.p2p.wallet.restore.model.DerivableAccount
@@ -50,7 +50,7 @@ class DerivableAccountsAdapter(
 
         @SuppressLint("SetTextI18n")
         fun onBind(account: DerivableAccount) {
-            val total = account.totalInUsd?.scaleToTwo()
+            val total = account.totalInUsd?.scaleTwo()
             val tokenTotal = account.totalInSol
 
             startAmountView.title = SOL_SYMBOL

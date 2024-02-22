@@ -28,7 +28,7 @@ fun String?.toBigIntegerOrZero(): BigInteger {
 
 fun Int.toPowerValue(): BigDecimal = BASE_TEN.pow(this)
 
-fun BigDecimal.scaleToTwoOrFirstNotZero(): BigDecimal {
+fun BigDecimal.scaleTwoOrFirstNotZero(): BigDecimal {
     if (isZero()) {
         return this
     }
@@ -41,15 +41,15 @@ fun BigDecimal.scaleToTwoOrFirstNotZero(): BigDecimal {
     return setScale(scale, RoundingMode.DOWN).stripTrailingZeros()
 }
 
-fun BigDecimal.scaleToTwo(): BigDecimal =
+fun BigDecimal.scaleTwo(): BigDecimal =
     this.setScale(SCALE_VALUE_TWO, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
-fun BigDecimal.scaleToSix(): BigDecimal =
+fun BigDecimal.scaleSix(): BigDecimal =
     if (this.isZero()) this else this.setScale(SCALE_VALUE_SIX, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
-fun BigDecimal.scaleToNine(decimals: Int = SCALE_VALUE_NINE): BigDecimal =
+fun BigDecimal.scaleNine(decimals: Int = SCALE_VALUE_NINE): BigDecimal =
     if (this.isZero()) this else this.setScale(decimals, RoundingMode.DOWN)
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
 
@@ -58,16 +58,16 @@ fun BigDecimal.scaleToNine(decimals: Int = SCALE_VALUE_NINE): BigDecimal =
 fun BigInteger.fromLamports(decimals: Int): BigDecimal =
     (this.toBigDecimal().divide(BASE_TEN.pow(decimals), 18, RoundingMode.HALF_DOWN))
         .stripTrailingZeros() // removing zeros, case: 0.02000 -> 0.02
-        .scaleToNine(decimals)
+        .scaleNine(decimals)
 
 fun BigDecimal.toLamports(decimals: Int): BigInteger =
     this.multiply(decimals.toPowerValue()).toBigInteger()
 
 fun BigDecimal.toUsd(usdRate: BigDecimal?): BigDecimal? =
-    usdRate?.let { this.multiply(it).scaleToTwo() }
+    usdRate?.let { this.multiply(it).scaleTwo() }
 
 fun BigDecimal.toUsd(token: Token): BigDecimal? =
-    token.rate?.let { this.multiply(it).scaleToTwo() }
+    token.rate?.let { this.multiply(it).scaleTwo() }
 
 // case: 1000.023000 -> 1 000.02
 fun BigDecimal.formatFiat(): String = formatWithDecimals(FIAT_FRACTION_LENGTH)
