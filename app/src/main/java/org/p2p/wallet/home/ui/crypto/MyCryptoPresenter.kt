@@ -13,7 +13,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleTwo
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -199,7 +199,7 @@ class MyCryptoPresenter(
             .mapNotNull(Token.Active::totalInUsd)
             .filter { it.isMoreThan(MINIMAL_DUST_FOR_BALANCE) }
             .fold(BigDecimal.ZERO, BigDecimal::add)
-            .scaleShort()
+            .scaleTwo()
     }
 
     private fun handleEmptyAccount() {

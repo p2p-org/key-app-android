@@ -28,6 +28,7 @@ interface UserLocalRepository {
     /**
      * Find [TokenMetadata] by its symbol
      */
+    @Deprecated("use findTokenData with mint address")
     fun findTokenDataBySymbol(symbol: String): TokenMetadata?
 
     /**

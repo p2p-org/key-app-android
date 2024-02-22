@@ -102,13 +102,13 @@ class MainFragmentDeeplinkHandler(
      * Handles buy token for fiat deeplink
      */
     private fun handleBuyDeeplink(data: DeeplinkData) {
-        val cryptoToken = data.args["to"]
+        val cryptoTokenMint = data.args["to"]
         val fiatToken = data.args["from"]
         val fiatAmount = data.args["amount"]
 
-        if (!cryptoToken.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
+        if (!cryptoTokenMint.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
             coroutineScope.launch {
-                val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
+                val token = userInteractor.getSingleTokenForBuy(listOf(cryptoTokenMint))
                 if (token != null) {
                     screenNavigator?.navigateToBuyScreen(token, fiatToken, fiatAmount)
                 } else {
