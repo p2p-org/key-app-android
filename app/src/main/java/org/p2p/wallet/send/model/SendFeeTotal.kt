@@ -3,7 +3,6 @@ package org.p2p.wallet.send.model
 import androidx.annotation.ColorInt
 import android.os.Parcelable
 import java.math.BigDecimal
-import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.model.TextHighlighting
@@ -13,9 +12,6 @@ import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
-import org.p2p.wallet.feerelayer.model.Limits
-import org.p2p.wallet.feerelayer.model.ProcessedFee
-import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 
 /**
  * [SendSolanaFee] can be null only if total fees is Zero. (transaction fee and account creation fee)
@@ -28,11 +24,12 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 @Parcelize
 class SendFeeTotal constructor(
     val currentAmount: BigDecimal,
+    val tokenTotalAmount: BigDecimal,
+    val isMaxButtonUsed: Boolean,
     val currentAmountUsd: BigDecimal?,
     val receiveFormatted: String,
     val receiveUsd: BigDecimal?,
     val sendFee: SendSolanaFee?,
-    val feeLimit: TransactionFeeLimits,
     val sourceSymbol: String,
     val recipientAddress: String,
     val transferFeePercent: BigDecimal? = null,
@@ -42,25 +39,12 @@ class SendFeeTotal constructor(
     companion object {
         fun createEmpty(): SendFeeTotal = SendFeeTotal(
             currentAmount = BigDecimal.ZERO,
+            tokenTotalAmount = BigDecimal.ZERO,
+            isMaxButtonUsed = false,
             currentAmountUsd = null,
             receiveFormatted = "",
             receiveUsd = null,
             sendFee = null,
-            feeLimit = TransactionFeeLimits(
-                limits = Limits(
-                    maxFeeCountAllowed = 0,
-                    maxFeeAmountAllowed = BigInteger.ZERO,
-                    maxAccountCreationCountAllowed = 0,
-                    maxAccountCreationAmountAllowed = BigInteger.ZERO
-                ),
-                processedFee = ProcessedFee(
-                    totalFeeAmountUsed = BigInteger.ZERO,
-                    totalRentAmountUsed = BigInteger.ZERO,
-                    totalFeeCountUsed = 0,
-                    totalRentCountUsed = 0,
-                    totalAmountUsed = BigInteger.ZERO
-                )
-            ),
             sourceSymbol = "",
             recipientAddress = ""
         )
@@ -147,6 +131,10 @@ class SendFeeTotal constructor(
 
     val totalSumWithSymbol: String
         get() {
+            if (isMaxButtonUsed) {
+                return tokenTotalAmount.formatTokenWithSymbol(sourceSymbol, SOL_DECIMALS)
+            }
+
             val transferFee = transferFeePercent
                 ?.multiply("0.01".toBigDecimal())
                 ?.multiply(currentAmount)
