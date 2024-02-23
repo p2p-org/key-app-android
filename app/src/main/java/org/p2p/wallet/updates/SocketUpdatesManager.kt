@@ -17,7 +17,10 @@ import kotlinx.coroutines.plus
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.p2p.core.BuildConfig.rpcPoolApiKey
+import org.p2p.core.common.di.AppScope
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.network.environment.NetworkEnvironment
+import org.p2p.core.network.environment.NetworkEnvironmentManager
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.solanaj.ws.SocketClientCreateResult
@@ -26,10 +29,7 @@ import org.p2p.solanaj.ws.SubscriptionEventListener
 import org.p2p.solanaj.ws.SubscriptionSocketClient
 import org.p2p.solanaj.ws.SubscriptionSocketClientFactory
 import org.p2p.solanaj.ws.impl.SocketClientException
-import org.p2p.core.common.di.AppScope
 import org.p2p.wallet.common.feature_toggles.toggles.remote.SocketSubscriptionsFeatureToggle
-import org.p2p.core.network.environment.NetworkEnvironment
-import org.p2p.core.network.environment.NetworkEnvironmentManager
 
 private const val DELAY_MS = 5000L
 
@@ -149,8 +149,10 @@ class SocketUpdatesManager(
         }
     }
 
-    override fun onClosed(code: Int, message: String) {
+    override fun onClientClosed(code: Int, message: String) {
         Timber.tag(TAG).i("Event updates connection is closed: $message")
+        isStarted = false
+        state = SocketState.DISCONNECTED
     }
 
     private suspend fun startActual() {
