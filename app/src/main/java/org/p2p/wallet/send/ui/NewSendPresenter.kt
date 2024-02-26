@@ -178,12 +178,18 @@ class NewSendPresenter(
         val currentState = sendFeeRelayerManager.getState()
         handleFeeRelayerStateUpdate(currentState, view)
 
+        calculateMaxAvailableAmount(token)
+    }
+
+    private suspend fun calculateMaxAvailableAmount(token: Token.Active) {
         maximumAmountCalculator.getMaxAvailableAmountToSend(
             token = token,
             recipient = recipientAddress.address.toBase58Instance()
         )
             // set max available amount
-            ?.also { calculationMode.setMaxAmounts(it) }
+            ?.also {
+                calculationMode.setMaxAmounts(it)
+            }
     }
 
     private suspend fun setupInitialToken(view: NewSendContract.View) {
@@ -223,11 +229,6 @@ class NewSendPresenter(
             Timber.tag(TAG).e(SendFatalError("Couldn't find user's SOL account!"))
             return
         }
-        maximumAmountCalculator.getMaxAvailableAmountToSend(
-            token = initialToken,
-            recipient = recipientAddress.address.toBase58Instance()
-        )
-            ?.also { calculationMode.setMaxAmounts(it) }
 
         initializeFeeRelayer(
             view = view,
@@ -235,6 +236,7 @@ class NewSendPresenter(
             feePayerToken = feePayerToken,
             solToken = solToken
         )
+        calculateMaxAvailableAmount(initialToken)
         initialAmount?.let(::setupDefaultFields)
     }
 
@@ -375,12 +377,8 @@ class NewSendPresenter(
         launch {
             newSendAnalytics.logTokenChanged(newToken.tokenSymbol, flow)
             token = newToken
-            maximumAmountCalculator.getMaxAvailableAmountToSend(
-                token = newToken,
-                recipient = recipientAddress.address.toBase58Instance()
-            )
-                // set max available amount
-                ?.also { calculationMode.setMaxAmounts(it) }
+            calculationMode.setUseMax(false)
+            calculateMaxAvailableAmount(newToken)
 
             checkTokenRatesAndSetSwitchAmountState(newToken)
 
@@ -431,6 +429,7 @@ class NewSendPresenter(
 
     override fun updateInputAmount(amount: String) {
         newSendAnalytics.logTokenAmountChanged(token?.tokenSymbol.orEmpty(), amount, flow)
+        calculationMode.setUseMax(false)
         calculationMode.updateInputAmount(amount)
         view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
@@ -449,6 +448,7 @@ class NewSendPresenter(
 
     override fun updateFeePayerToken(feePayerToken: Token.Active) {
         try {
+            calculationMode.setUseMax(false)
             launch {
                 sendInteractor.saveFeePayerToken(feePayerToken)
             }
@@ -468,6 +468,7 @@ class NewSendPresenter(
                 Timber.tag(TAG).e(SendFatalError("Token can't be null"))
                 return@launch
             }
+            calculationMode.setUseMax(true)
             val totalAvailable = maximumAmountCalculator.getMaxAvailableAmountToSend(
                 token = token,
                 recipient = recipientAddress.address.toBase58Instance()
@@ -517,7 +518,11 @@ class NewSendPresenter(
                     tokenExtensions = currentState.tokenExtensions
                 )
 
-                view?.showTransactionDetails(total)
+                view?.showTransactionDetails(
+                    total,
+                    calculationMode.getCurrentAmountLamports(),
+                    calculationMode.isMaxUsed()
+                )
             }
         }
     }
@@ -622,6 +627,7 @@ class NewSendPresenter(
                 feePayerToken = sendInteractor.getFeePayerToken(),
                 strategy = strategy,
                 tokenAmount = calculationMode.getCurrentAmount(),
+                useMax = calculationMode.isMaxUsed(),
                 useCache = useCache
             )
         }
