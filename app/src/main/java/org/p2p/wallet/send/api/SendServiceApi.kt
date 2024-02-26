@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.api
 
+import com.google.gson.JsonElement
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Url
@@ -25,8 +26,20 @@ interface SendServiceApi {
     ): CommonResponse<SendGeneratedTransactionResponse>
 
     @POST
+    suspend fun generateTransactionRaw(
+        @Body rpcRequest: RpcMapRequest,
+        @Url url: String = emptyString()
+    ): JsonElement
+
+    @POST
     suspend fun getTokenAmounts(
         @Body rpcRequest: RpcMapRequest,
         @Url url: String = emptyString()
     ): CommonResponse<List<SendTokenAmountsResponse>>
+
+    @POST
+    suspend fun getTokenAccountRentExemption(
+        @Body rpcRequest: RpcMapRequest,
+        @Url url: String = emptyString()
+    ): CommonResponse<Map<Base58String, String>>
 }

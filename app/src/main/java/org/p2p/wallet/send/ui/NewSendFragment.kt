@@ -8,6 +8,7 @@ import android.view.View
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.organisms.UiKitToolbar
@@ -143,10 +144,16 @@ class NewSendFragment :
         }
     }
 
-    override fun showTransactionDetails(sendFeeTotal: SendFeeTotal) {
+    override fun showTransactionDetails(
+        sendFeeTotal: SendFeeTotal,
+        inputAmount: BigInteger,
+        useMax: Boolean,
+    ) {
         NewSendDetailsBottomSheet.show(
             fm = childFragmentManager,
             totalFee = sendFeeTotal,
+            inputAmount = inputAmount,
+            useMax = useMax,
             requestKey = KEY_REQUEST_SEND,
             feeResultKey = KEY_RESULT_FEE,
             feePayerTokensResultKey = KEY_RESULT_FEE_PAYER_TOKENS

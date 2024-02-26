@@ -1,5 +1,6 @@
 package org.p2p.wallet.send.ui.details
 
+import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.wallet.common.mvp.MvpPresenter
 import org.p2p.wallet.common.mvp.MvpView
@@ -13,6 +14,10 @@ interface NewSendDetailsContract {
     }
 
     interface Presenter : MvpPresenter<View> {
-        fun loadFeePayerTokens(fee: SendSolanaFee)
+        fun loadFeePayerTokens(
+            fee: SendSolanaFee,
+            inputAmount: BigInteger,
+            useMax: Boolean
+        )
     }
 }
