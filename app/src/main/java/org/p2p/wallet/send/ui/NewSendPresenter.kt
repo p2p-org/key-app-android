@@ -517,7 +517,10 @@ class NewSendPresenter(
                     tokenExtensions = currentState.tokenExtensions
                 )
 
-                view?.showTransactionDetails(total)
+                view?.showTransactionDetails(
+                    total,
+                    calculationMode.getCurrentAmountLamports(),
+                    calculationMode.isMaxUsed())
             }
         }
     }
@@ -622,6 +625,7 @@ class NewSendPresenter(
                 feePayerToken = sendInteractor.getFeePayerToken(),
                 strategy = strategy,
                 tokenAmount = calculationMode.getCurrentAmount(),
+                useMax = calculationMode.isMaxUsed(),
                 useCache = useCache
             )
         }

@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.koin.android.ext.android.inject
+import java.math.BigInteger
 import org.p2p.core.token.Token
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
@@ -27,6 +28,8 @@ import org.p2p.wallet.utils.withArgs
 import org.p2p.wallet.utils.withTextOrGone
 
 private const val ARG_SEND_FEE_TOTAL = "ARG_SEND_FEE_TOTAL"
+private const val ARG_AMOUNT = "ARG_AMOUNT"
+private const val ARG_USE_MAX = "ARG_USE_MAX"
 private const val ARG_REQUEST_KEY = "ARG_REQUEST_KEY"
 private const val ARG_RESULT_KEY_FEE = "ARG_RESULT_KEY_FEE"
 private const val ARG_RESULT_KEY_FEE_PAYER_TOKENS = "ARG_RESULT_KEY_FEE_PAYER_TOKENS"
@@ -41,12 +44,16 @@ class NewSendDetailsBottomSheet :
         fun show(
             fm: FragmentManager,
             totalFee: SendFeeTotal,
+            inputAmount: BigInteger,
+            useMax: Boolean,
             requestKey: String,
             feeResultKey: String,
             feePayerTokensResultKey: String,
         ) = NewSendDetailsBottomSheet()
             .withArgs(
                 ARG_SEND_FEE_TOTAL to totalFee,
+                ARG_AMOUNT to inputAmount,
+                ARG_USE_MAX to useMax,
                 ARG_REQUEST_KEY to requestKey,
                 ARG_RESULT_KEY_FEE to feeResultKey,
                 ARG_RESULT_KEY_FEE_PAYER_TOKENS to feePayerTokensResultKey
@@ -59,6 +66,9 @@ class NewSendDetailsBottomSheet :
     private lateinit var binding: DialogNewSendDetailsBinding
 
     private val sendFee: SendFeeTotal by args(ARG_SEND_FEE_TOTAL)
+    private val inputAmount: BigInteger by args(ARG_AMOUNT)
+    private val useMax: Boolean by args(ARG_USE_MAX)
+
     private val feeResultKey: String by args(ARG_RESULT_KEY_FEE)
     private val feePayerTokensResultKey: String by args(ARG_RESULT_KEY_FEE_PAYER_TOKENS)
     private val requestKey: String by args(ARG_REQUEST_KEY)
@@ -202,8 +212,8 @@ class NewSendDetailsBottomSheet :
                 highlightedText = fee.getApproxAccountCreationFeeUsd().orEmpty(),
                 color = colorMountain
             )
-            imageViewAccountFeeInfo.setOnClickListener { presenter.loadFeePayerTokens(fee) }
-            textViewTitleAccountFee.setOnClickListener { presenter.loadFeePayerTokens(fee) }
+            imageViewAccountFeeInfo.setOnClickListener { presenter.loadFeePayerTokens(fee, inputAmount, useMax) }
+            textViewTitleAccountFee.setOnClickListener { presenter.loadFeePayerTokens(fee, inputAmount, useMax) }
         } else {
             textViewSubtitleAccountFee.setTextColor(colorMint)
             textViewSubtitleAccountFee.text = getString(R.string.send_free_fee_format)

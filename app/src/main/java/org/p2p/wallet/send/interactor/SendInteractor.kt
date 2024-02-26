@@ -455,12 +455,18 @@ class SendInteractor(
 
     suspend fun findAlternativeFeePayerTokens(
         userTokens: List<Token.Active>,
+        sourceToken: Token.Active,
+        sourceTokenAmount: BigInteger,
+        useMax: Boolean,
         feePayerToExclude: Token.Active,
         transactionFeeInSOL: BigInteger,
         accountCreationFeeInSOL: BigInteger
     ): List<Token.Active> {
         return feePayersRepository.findAlternativeFeePayerTokens(
             userTokens = userTokens,
+            sourceToken = sourceToken,
+            sourceTokenAmount = sourceTokenAmount,
+            useMax = useMax,
             feePayerToExclude = feePayerToExclude,
             transactionFeeInSol = transactionFeeInSOL,
             accountCreationFeeInSol = accountCreationFeeInSOL

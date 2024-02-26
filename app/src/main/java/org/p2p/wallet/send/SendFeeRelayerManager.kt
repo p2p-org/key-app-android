@@ -155,6 +155,7 @@ class SendFeeRelayerManager(
         feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy,
         tokenAmount: BigDecimal,
+        useMax: Boolean,
         useCache: Boolean
     ) {
         val feePayer = feePayerToken ?: sendInteractor.getFeePayerToken()
@@ -172,6 +173,7 @@ class SendFeeRelayerManager(
             val feeState = calculateFees(
                 sourceToken = sourceToken,
                 feePayerToken = feePayer,
+                sourceTokenAmount = tokenAmount.toLamports(sourceToken.decimals),
                 result = recipientAddress,
                 useCache = useCache
             )
@@ -189,6 +191,8 @@ class SendFeeRelayerManager(
                     val solanaFee = buildSolanaFee(
                         newFeePayer = solToken,
                         source = sourceToken,
+                        sourceTokenAmount = tokenAmount.toLamports(sourceToken.decimals),
+                        useMax = useMax,
                         feeRelayerFee = feeState.feeInSol,
                         token2022TransferFee = token2022TransferFee,
                         token2022TransferFeePercent = tokenExtensions.actualTransferFeePercent
@@ -208,6 +212,7 @@ class SendFeeRelayerManager(
                         feeRelayerFee = feeState.fee,
                         feePayerToken = feePayer,
                         inputAmount = inputAmount,
+                        useMax = useMax,
                         strategy = strategy,
                         token2022TransferFee = token2022TransferFee,
                         tokenExtensions = tokenExtensions
@@ -286,11 +291,13 @@ class SendFeeRelayerManager(
     private suspend fun calculateFees(
         sourceToken: Token.Active,
         feePayerToken: Token.Active,
+        sourceTokenAmount: BigInteger,
         result: SearchResult,
         @Suppress("UNUSED_PARAMETER") useCache: Boolean = true
     ): FeeCalculationState = calculateSendFeesUseCase.execute(
         sourceToken = sourceToken,
         feePayerToken = feePayerToken,
+        sourceTokenAmount = sourceTokenAmount,
         searchResult = result
     )
 
@@ -300,12 +307,15 @@ class SendFeeRelayerManager(
         feePayerToken: Token.Active,
         token2022TransferFee: BigInteger,
         inputAmount: BigInteger,
+        useMax: Boolean,
         strategy: FeePayerSelectionStrategy,
         tokenExtensions: TokenExtensionsMap,
     ) {
         val fee = buildSolanaFee(
             newFeePayer = feePayerToken,
             source = sourceToken,
+            sourceTokenAmount = inputAmount,
+            useMax = useMax,
             feeRelayerFee = feeRelayerFee,
             token2022TransferFee = token2022TransferFee,
             token2022TransferFeePercent = tokenExtensions.actualTransferFeePercent
@@ -323,6 +333,7 @@ class SendFeeRelayerManager(
                 sourceToken = sourceToken,
                 fee = fee,
                 inputAmount = inputAmount,
+                useMax = useMax,
                 strategy = strategy
             )
         }
@@ -343,6 +354,8 @@ class SendFeeRelayerManager(
     private suspend fun buildSolanaFee(
         newFeePayer: Token.Active,
         source: Token.Active,
+        sourceTokenAmount: BigInteger,
+        useMax: Boolean,
         feeRelayerFee: FeeRelayerFee,
         token2022TransferFee: BigInteger,
         token2022TransferFeePercent: BigDecimal,
@@ -352,6 +365,9 @@ class SendFeeRelayerManager(
         if (alternativeTokens == null) {
             alternativeTokens = sendInteractor.findAlternativeFeePayerTokens(
                 userTokens = userInteractor.getNonZeroUserTokens(),
+                sourceToken = source,
+                sourceTokenAmount = sourceTokenAmount,
+                useMax = useMax,
                 feePayerToExclude = newFeePayer,
                 transactionFeeInSOL = feeRelayerFee.transactionFeeInSol,
                 accountCreationFeeInSOL = feeRelayerFee.accountCreationFeeInSol
@@ -373,6 +389,7 @@ class SendFeeRelayerManager(
         sourceToken: Token.Active,
         fee: SendSolanaFee,
         inputAmount: BigInteger,
+        useMax: Boolean,
         strategy: FeePayerSelectionStrategy
     ) {
 
@@ -413,10 +430,14 @@ class SendFeeRelayerManager(
             }
         }
 
-        recalculate(sourceToken, amountToCheck)
+        recalculate(sourceToken, amountToCheck, useMax)
     }
 
-    private suspend fun recalculate(sourceToken: Token.Active, inputAmount: BigInteger) {
+    private suspend fun recalculate(
+        sourceToken: Token.Active,
+        inputAmount: BigInteger,
+        useMax: Boolean,
+    ) {
         /*
          * Optimized recalculation and UI update
          * */
@@ -425,6 +446,7 @@ class SendFeeRelayerManager(
             calculateFees(
                 sourceToken = sourceToken,
                 feePayerToken = newFeePayer,
+                sourceTokenAmount = inputAmount,
                 result = recipientAddress
             )
         } catch (e: CancellationException) {
@@ -451,6 +473,8 @@ class SendFeeRelayerManager(
                 val solanaFee = buildSolanaFee(
                     newFeePayer = solToken,
                     source = sourceToken,
+                    sourceTokenAmount = inputAmount,
+                    useMax = useMax,
                     feeRelayerFee = feeState.feeInSol,
                     token2022TransferFee = token2022TransferFee,
                     token2022TransferFeePercent = tokenExtensions.actualTransferFeePercent
@@ -466,6 +490,8 @@ class SendFeeRelayerManager(
                 val fee = buildSolanaFee(
                     newFeePayer = newFeePayer,
                     source = sourceToken,
+                    sourceTokenAmount = inputAmount,
+                    useMax = useMax,
                     feeRelayerFee = feeState.fee,
                     token2022TransferFee = token2022TransferFee,
                     token2022TransferFeePercent = tokenExtensions.actualTransferFeePercent
