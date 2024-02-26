@@ -42,6 +42,8 @@ class CalculationMode(
     var inputAmountDecimal: BigDecimal = BigDecimal.ZERO
         private set
 
+    private var useMax = false
+
     val formatInputAmount: String
         get() = when (currencyMode) {
             is CurrencyMode.Fiat -> inputAmountDecimal.formatFiat()
@@ -270,4 +272,10 @@ class CalculationMode(
         currencyMode = newMode
         return inputAmount
     }
+
+    fun setUseMax(value: Boolean) {
+        useMax = value
+    }
+
+    fun isMaxUsed(): Boolean = useMax
 }
