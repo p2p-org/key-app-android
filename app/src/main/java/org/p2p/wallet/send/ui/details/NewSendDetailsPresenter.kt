@@ -2,6 +2,7 @@ package org.p2p.wallet.send.ui.details
 
 import android.content.res.Resources
 import timber.log.Timber
+import java.math.BigInteger
 import kotlinx.coroutines.launch
 import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.send.interactor.SendInteractor
@@ -15,13 +16,20 @@ class NewSendDetailsPresenter(
     private val resources: Resources
 ) : BasePresenter<NewSendDetailsContract.View>(), NewSendDetailsContract.Presenter {
 
-    override fun loadFeePayerTokens(fee: SendSolanaFee) {
+    override fun loadFeePayerTokens(
+        fee: SendSolanaFee,
+        inputAmount: BigInteger,
+        useMax: Boolean,
+    ) {
         view?.showAccountCreationFeeLoading(isLoading = true)
         launch {
             try {
                 val userTokens = userInteractor.getUserTokens()
                 val feePayerTokens = sendInteractor.findAlternativeFeePayerTokens(
                     userTokens = userTokens,
+                    sourceToken = fee.sourceToken,
+                    sourceTokenAmount = inputAmount,
+                    useMax = useMax,
                     feePayerToExclude = fee.feePayerToken,
                     transactionFeeInSOL = fee.feeRelayerFee.transactionFeeInSol,
                     accountCreationFeeInSOL = fee.feeRelayerFee.accountCreationFeeInSol
