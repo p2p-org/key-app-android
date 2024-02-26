@@ -31,7 +31,7 @@ data class GeneratedTransaction(
         val logoUrl: String?,
         val coingeckoId: String?,
         val price: Map<String, BigDecimal>,
-    ): Parcelable {
+    ) : Parcelable {
         companion object {
             val EMPTY = AmountData(
                 amount = BigInteger.ZERO,
@@ -51,5 +51,5 @@ data class GeneratedTransaction(
     data class NetworkFeeData(
         val source: NetworkFeeSource,
         val amount: AmountData,
-    ): Parcelable
+    ) : Parcelable
 }

@@ -520,7 +520,8 @@ class NewSendPresenter(
                 view?.showTransactionDetails(
                     total,
                     calculationMode.getCurrentAmountLamports(),
-                    calculationMode.isMaxUsed())
+                    calculationMode.isMaxUsed()
+                )
             }
         }
     }
