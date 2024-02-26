@@ -18,7 +18,6 @@ import org.p2p.solanaj.rpc.RpcSolanaRepository
 import org.p2p.wallet.feerelayer.model.FeeCalculationState
 import org.p2p.wallet.feerelayer.model.FeePayerSelectionStrategy
 import org.p2p.wallet.feerelayer.model.FeeRelayerFee
-import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 import org.p2p.wallet.send.interactor.SendInteractor
 import org.p2p.wallet.send.interactor.usecase.CalculateSendFeesUseCase
 import org.p2p.wallet.send.interactor.usecase.CalculateToken2022TransferFeeUseCase
@@ -59,7 +58,6 @@ class SendFeeRelayerManager(
         onStateUpdated?.invoke(newState)
     }
 
-    private lateinit var feeLimitInfo: TransactionFeeLimits
     private lateinit var recipientAddress: SearchResult
     private lateinit var solToken: Token.Active
     private var initializeCompleted = false
@@ -103,7 +101,6 @@ class SendFeeRelayerManager(
     private suspend fun initializeWithToken(feePayerToken: Token.Active) {
         Timber.tag(TAG).i("initialize for SendFeeRelayerManager with token ${feePayerToken.mintAddress}")
         minRentExemption = sendInteractor.getMinRelayRentExemption()
-        feeLimitInfo = sendInteractor.getFreeTransactionsInfo()
         currentSolanaEpoch = solanaRepository.getEpochInfo(useCache = true).epoch
         sendInteractor.initialize(feePayerToken)
     }
@@ -131,6 +128,8 @@ class SendFeeRelayerManager(
 
         return SendFeeTotal(
             currentAmount = currentAmount,
+            tokenTotalAmount = sourceToken.total,
+            isMaxButtonUsed = calculationMode.isMaxUsed(),
             currentAmountUsd = calculationMode.getCurrentAmountUsd(),
             receiveFormatted = currentAmount.formatTokenWithSymbol(
                 tokenSymbol = sourceToken.tokenSymbol,
@@ -140,7 +139,6 @@ class SendFeeRelayerManager(
             sourceSymbol = sourceToken.tokenSymbol,
             sendFee = (currentState as? UpdateFee)?.solanaFee,
             recipientAddress = recipientAddress.address,
-            feeLimit = feeLimitInfo,
             transferFeePercent = transferFeePercent,
             interestBearingPercent = interestBearingPercent
         )
@@ -182,7 +180,6 @@ class SendFeeRelayerManager(
                 is FeeCalculationState.NoFees -> {
                     currentState = UpdateFee(
                         solanaFee = null,
-                        feeLimitInfo = feeLimitInfo,
                         tokenExtensions = tokenExtensions
                     )
                     sendInteractor.setFeePayerToken(feePayer)
@@ -199,7 +196,6 @@ class SendFeeRelayerManager(
                     )
                     currentState = UpdateFee(
                         solanaFee = solanaFee,
-                        feeLimitInfo = feeLimitInfo,
                         tokenExtensions = tokenExtensions,
                     )
                     sendInteractor.setFeePayerToken(solToken)
@@ -325,7 +321,6 @@ class SendFeeRelayerManager(
             validateFunds(sourceToken, fee, inputAmount)
             currentState = UpdateFee(
                 solanaFee = fee,
-                feeLimitInfo = feeLimitInfo,
                 tokenExtensions = tokenExtensions,
             )
         } else {
@@ -465,7 +460,6 @@ class SendFeeRelayerManager(
             is FeeCalculationState.NoFees -> {
                 currentState = UpdateFee(
                     solanaFee = null,
-                    feeLimitInfo = feeLimitInfo,
                     tokenExtensions = tokenExtensions
                 )
             }
@@ -481,7 +475,6 @@ class SendFeeRelayerManager(
                 )
                 currentState = UpdateFee(
                     solanaFee = solanaFee,
-                    feeLimitInfo = feeLimitInfo,
                     tokenExtensions = tokenExtensions
                 )
                 sendInteractor.setFeePayerToken(solToken)
@@ -499,7 +492,6 @@ class SendFeeRelayerManager(
                 validateFunds(sourceToken, fee, inputAmount)
                 currentState = UpdateFee(
                     solanaFee = fee,
-                    feeLimitInfo = feeLimitInfo,
                     tokenExtensions = tokenExtensions
                 )
             }
