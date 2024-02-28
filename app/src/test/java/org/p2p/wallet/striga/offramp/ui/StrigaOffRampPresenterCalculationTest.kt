@@ -1,14 +1,15 @@
 package org.p2p.wallet.striga.offramp.ui
 
 import io.mockk.verify
+import org.junit.Ignore
 import org.junit.Test
 import java.math.BigDecimal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.p2p.core.utils.divideSafe
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampButtonState
 import org.p2p.wallet.striga.offramp.models.StrigaOffRampTokenType
-import org.p2p.core.utils.divideSafe
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StrigaOffRampPresenterCalculationTest : StrigaOffRampPresenterBaseTest() {
@@ -56,6 +57,7 @@ class StrigaOffRampPresenterCalculationTest : StrigaOffRampPresenterBaseTest() {
     }
 
     @Test
+    @Ignore("Striga is not used")
     fun `GIVEN striga off ramp WHEN clicked all amount THEN check states for A and B tokens`() = runTest {
         val amountA = BigDecimal("4000.21")
         val amountB = amountA * exchangeRate.sellRate

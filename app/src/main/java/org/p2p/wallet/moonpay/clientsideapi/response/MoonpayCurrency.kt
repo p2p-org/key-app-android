@@ -6,7 +6,9 @@ sealed class MoonpayCurrency {
     abstract val currencyId: String
     abstract val amounts: MoonpayCurrencyAmounts
 
-    fun isSol() = this is CryptoToken && tokenSymbol.uppercase() == Constants.SOL_SYMBOL
+    // it's okay to keep equals by symbol here
+    // because we only have non-scam wrapped SOL in/out Moonpay
+    fun isSol() = this is CryptoToken && tokenSymbol.equals(Constants.SOL_SYMBOL, ignoreCase = true)
 
     data class CryptoToken(
         val tokenSymbol: String,

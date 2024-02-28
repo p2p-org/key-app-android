@@ -24,6 +24,7 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
+import org.p2p.wallet.updates.SocketUpdatesManager
 
 class MainContainerPresenter(
     private val deeplinksManager: AppDeeplinksManager,
@@ -31,6 +32,7 @@ class MainContainerPresenter(
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
     private val walletStrigaInteractor: WalletStrigaInteractor,
+    private val socketUpdatesManager: SocketUpdatesManager,
     private val balanceMapper: WalletBalanceMapper,
     private val mainScreenAnalytics: MainScreenAnalytics,
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
@@ -102,7 +104,14 @@ class MainContainerPresenter(
     private fun observeInternetState() {
         connectionManager.connectionStatus
             .onEach { isConnected ->
-                if (!isConnected) view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
+                if (!isConnected) {
+                    view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
+                    socketUpdatesManager.stop()
+                } else {
+                    if (!socketUpdatesManager.isStarted()) {
+                        socketUpdatesManager.restart()
+                    }
+                }
             }
             .launchIn(this)
     }

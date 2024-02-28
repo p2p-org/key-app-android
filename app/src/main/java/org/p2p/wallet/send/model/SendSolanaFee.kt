@@ -7,7 +7,6 @@ import java.math.BigInteger
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.token.Token
-import org.p2p.core.utils.Constants.SOL_SYMBOL
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.fromLamports
 import org.p2p.core.utils.isLessThan
@@ -135,7 +134,7 @@ data class SendSolanaFee constructor(
         minRentExemption: BigInteger
     ): Boolean = when {
         // if source is SOL, then fee payer is SOL as well
-        sourceTokenSymbol == SOL_SYMBOL -> {
+        sourceToken.isSOL -> {
             isEnoughSol(sourceTokenTotal, inputAmount, minRentExemption)
         }
         // assuming that source token is not SOL
@@ -144,11 +143,13 @@ data class SendSolanaFee constructor(
             sourceTokenTotal >= inputAmount && isEnoughSol(feePayerTotalLamports, totalInSol, minRentExemption)
         }
         // assuming that source token and fee payer are same
-        sourceTokenSymbol == feePayerSymbol ->
+        sourceTokenSymbol == feePayerSymbol -> {
             sourceTokenTotal >= inputAmount + feeRelayerFee.totalInSourceToken
+        }
         // assuming that source token and fee payer are different
-        else ->
+        else -> {
             feePayerToken.totalInLamports >= feeRelayerFee.totalInFeePayerToken
+        }
     }
 
     private fun isEnoughSol(
@@ -169,7 +170,7 @@ data class SendSolanaFee constructor(
     ): FeePayerState {
         val feePayerTokenCanCoverExpenses = feePayerToken.totalInLamports >= feeRelayerFee.totalInFeePayerToken
         val feePayerIsSourceToken = feePayerSymbol == sourceTokenSymbol
-        val isNotSourceSol = sourceTokenSymbol != SOL_SYMBOL
+        val isNotSourceSol = sourceToken.isSpl
         val isAllowedToCorrectAmount = strategy == CORRECT_AMOUNT && isNotSourceSol
         val totalNeeded = feeRelayerFee.totalInSourceToken + inputAmount
         val isInsufficientSolBalance = !isEnoughSolBalance()

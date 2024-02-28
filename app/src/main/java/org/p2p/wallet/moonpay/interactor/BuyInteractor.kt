@@ -39,10 +39,13 @@ class BuyInteractor(
 
     fun getQuotes(): List<MoonpayBuyQuote> = quotes.toList()
 
-    suspend fun loadQuotes(currencies: List<FiatCurrency>, tokens: List<Token>): Unit = withContext(dispatchers.io) {
-        Timber.i("Loading quotes for buy: currencies=$currencies; tokens=${tokens.map(Token::mintAddress)}")
+    suspend fun loadQuotes(
+        currencies: List<FiatCurrency>,
+        tokensToBuy: List<Token>
+    ): Unit = withContext(dispatchers.io) {
+        Timber.i("Loading quotes for buy: currencies=$currencies; tokens=${tokensToBuy.map(Token::mintAddress)}")
         currencies.flatMap { currency ->
-            tokens.map { token ->
+            tokensToBuy.map { token ->
                 async { loadQuote(currency, token) }
             }
         }
@@ -102,31 +105,30 @@ class BuyInteractor(
         tokenSymbol: String
     ): BigDecimal {
         val quote = quotes.find {
-            it.currency == FiatCurrency.getFromAbbreviation(currencyCode) && it.token.tokenSymbol == tokenSymbol
+            it.currency == FiatCurrency.getFromAbbreviation(currencyCode) && it.tokenToBuy.tokenSymbol == tokenSymbol
         }
 
         return HARDCODED_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
     }
 
-    private suspend fun loadQuote(currency: FiatCurrency, token: Token) {
-        Timber.d("Load quote for currency=$currency; token=${token.tokenSymbol}")
+    private suspend fun loadQuote(currency: FiatCurrency, tokenToBuy: Token) {
+        Timber.d("Load quote for currency=$currency; token=${tokenToBuy.tokenSymbol}")
         try {
             val response = moonpayRepository.getBuyCurrencyData(
                 baseCurrencyAmount = CURRENCY_AMOUNT_FOR_PRICE_REQUEST,
                 quoteCurrencyAmount = null,
-                tokenToBuy = token,
+                tokenToBuy = tokenToBuy,
                 baseCurrencyCode = currency.abbreviation.lowercase(),
                 paymentMethod = DEFAULT_PAYMENT_TYPE
             )
-            val result = MoonpayBuyQuote(
+            quotes += MoonpayBuyQuote(
                 currency = currency,
-                token = token,
+                tokenToBuy = tokenToBuy,
                 price = response.quoteCurrencyPrice,
                 minAmount = HARDCODED_MIN_BUY_CURRENCY_AMOUNT.toBigDecimal()
             )
-            quotes += result
         } catch (e: Throwable) {
-            Timber.e(e, "Error while loading quote for currency=$currency; token=${token.tokenSymbol}")
+            Timber.e(e, "Error while loading quote for currency=$currency; token=${tokenToBuy.tokenSymbol}")
         }
     }
 

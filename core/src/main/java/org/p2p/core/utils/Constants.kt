@@ -1,5 +1,7 @@
 package org.p2p.core.utils
 
+import org.p2p.core.crypto.toBase58Instance
+
 object Constants {
 
     const val MIN_REQUIRED_ACCOUNT_INFO_DATA_LENGTH = 0
@@ -26,6 +28,7 @@ object Constants {
     const val TOKEN_SERVICE_NATIVE_ETH_TOKEN = "native"
 
     const val WRAPPED_SOL_MINT = "So11111111111111111111111111111111111111112"
+    val WRAPPED_SOL_MINT_B58 = WRAPPED_SOL_MINT.toBase58Instance()
     const val WRAPPED_ETH_MINT = "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs"
     const val WRAPPED_BTC_MINT = "3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh"
 

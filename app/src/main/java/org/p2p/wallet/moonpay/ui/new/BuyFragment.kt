@@ -18,7 +18,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.analytics.interactor.ScreensAnalyticsInteractor
 import org.p2p.wallet.common.mvp.BaseMvpFragment
 import org.p2p.wallet.databinding.FragmentBuyBinding
-import org.p2p.wallet.home.ui.select.bottomsheet.NewSelectTokenBottomSheet
+import org.p2p.wallet.home.ui.select.bottomsheet.BuySelectTokenBottomSheet
 import org.p2p.wallet.home.ui.select.bottomsheet.SelectCurrencyBottomSheet
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.moonpay.model.BuyDetailsState
@@ -171,10 +171,10 @@ class BuyFragment :
     }
 
     override fun showTokensToBuy(selectedToken: Token, tokensToBuy: List<Token>) {
-        NewSelectTokenBottomSheet.show(
+        BuySelectTokenBottomSheet.show(
             fm = childFragmentManager,
             title = getString(R.string.buy_select_token_title),
-            tokens = tokensToBuy,
+            tokensToBuy = tokensToBuy,
             preselectedToken = selectedToken,
             requestKey = KEY_REQUEST,
             resultKey = KEY_RESULT_TOKEN

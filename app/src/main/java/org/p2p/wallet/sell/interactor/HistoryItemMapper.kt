@@ -13,6 +13,7 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
@@ -31,7 +32,8 @@ private const val USDC_ETH_TOKEN_SYMBOL = "USDCet"
 class HistoryItemMapper(
     private val resources: Resources,
     private val dispatchers: CoroutineDispatchers,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle
 ) {
 
     private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
@@ -91,6 +93,10 @@ class HistoryItemMapper(
     }
 
     private fun createSwapBanner(tokenMintAddress: Base58String): HistoryItem.SwapBannerItem? {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return null
+        }
+
         return when (tokenMintAddress.base58Value) {
             Constants.USDC_MINT -> {
                 HistoryItem.SwapBannerItem(
