@@ -25,7 +25,7 @@ sealed class PushServiceError(message: String, val code: Int) : Throwable(messag
     class TooManyRequests(
         code: Int,
         message: String,
-        val cooldownTtl: Long = 0
+        val cooldownTtl: Long
     ) : PushServiceError(message, code)
 
     class SmsDeliverFailed(
@@ -66,6 +66,6 @@ sealed class PushServiceError(message: String, val code: Int) : Throwable(messag
     class TooManyOtpRequests(
         code: Int,
         message: String,
-        val cooldownTtl: Long = 0
+        val cooldownTtl: Long
     ) : PushServiceError(message, code)
 }

@@ -33,7 +33,6 @@ import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesRemoteV6Repository
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesRepositoryV6Mapper
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
-import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.jupiter.statemanager.SwapStateRoutesRefresher
@@ -85,8 +84,6 @@ object JupiterSwapModule : InjectionModule {
     override fun create() = module {
         singleOf(::SwapCoroutineScope)
         single { get<Retrofit>(named(JUPITER_RETROFIT_QUALIFIER)).create<SwapJupiterApi>() }
-
-        singleOf(::SwapProfiler)
 
         factoryOf(::JupiterSwapRoutesMapper)
         factoryOf(::JupiterSwapTransactionMapper)

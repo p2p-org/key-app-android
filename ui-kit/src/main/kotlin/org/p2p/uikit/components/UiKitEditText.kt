@@ -13,10 +13,10 @@ import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import org.p2p.core.common.TextContainer
 import org.p2p.core.common.bind
+import org.p2p.core.utils.SimpleTagTextWatcher
 import org.p2p.uikit.R
 import org.p2p.uikit.components.edittext.UiKitEditTextSavedState
 import org.p2p.uikit.databinding.WidgetUiKitEdittextBinding
-import org.p2p.uikit.utils.SimpleTagTextWatcher
 import org.p2p.uikit.utils.focusAndShowKeyboard
 import org.p2p.uikit.utils.inflateViewBinding
 

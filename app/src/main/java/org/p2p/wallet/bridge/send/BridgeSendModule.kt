@@ -50,7 +50,7 @@ object BridgeSendModule : InjectionModule {
 
         factory { (recipientAddress: SearchResult, initialToken: Token.Active?, inputAmount: BigDecimal?) ->
             val initialBridgeToken = initialToken?.let { SendToken.Bridge(it) }
-            val recipient = EthAddress(recipientAddress.address)
+            val recipient = EthAddress(recipientAddress.addressState.address)
             val initialData = SendInitialData.Bridge(
                 initialToken = initialBridgeToken,
                 initialAmount = inputAmount,

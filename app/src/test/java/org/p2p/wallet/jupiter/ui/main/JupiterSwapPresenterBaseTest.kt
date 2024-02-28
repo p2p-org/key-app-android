@@ -51,7 +51,6 @@ import org.p2p.wallet.jupiter.repository.tokens.JupiterSwapTokensRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
-import org.p2p.wallet.jupiter.statemanager.SwapProfiler
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
 import org.p2p.wallet.jupiter.statemanager.SwapStateManagerHolder
 import org.p2p.wallet.jupiter.statemanager.SwapStateRoutesRefresher
@@ -140,9 +139,6 @@ open class JupiterSwapPresenterBaseTest {
 
     @MockK
     lateinit var swapButtonMapper: SwapButtonMapper
-
-    @MockK(relaxed = true)
-    lateinit var swapProfiler: SwapProfiler
 
     private var swapButtonMapperBackend = SwapButtonMapper()
 
@@ -247,8 +243,7 @@ open class JupiterSwapPresenterBaseTest {
                 minSolBalanceValidator = SwapMinimumSolAmountValidator(
                     rpcAmountRepository = rpcAmountRepository
                 ),
-                swapValidator = SwapValidator(),
-                swapProfiler = swapProfiler
+                swapValidator = SwapValidator()
             )
         )
     }
