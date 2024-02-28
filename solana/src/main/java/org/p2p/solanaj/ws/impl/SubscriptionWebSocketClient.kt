@@ -130,7 +130,7 @@ internal class SubscriptionWebSocketClient internal constructor(
 
     override fun onClose(code: Int, reason: String, remote: Boolean) {
         val closedFrom = if (remote) "remote peer" else "us"
-        stateListener.onClosed(
+        stateListener.onClientClosed(
             code = code,
             message = "Connection closed by $closedFrom Code: $code Reason: $reason"
         )

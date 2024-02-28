@@ -1,6 +1,7 @@
 package org.p2p.wallet.send.ui
 
 import java.math.BigDecimal
+import java.math.BigInteger
 import org.p2p.core.common.TextContainer
 import org.p2p.core.token.Token
 import org.p2p.uikit.components.UiKitSendDetailsWidgetContract
@@ -15,7 +16,11 @@ interface NewSendContract {
         fun updateInputFraction(newInputFractionLength: Int)
 
         fun showFreeTransactionsInfo()
-        fun showTransactionDetails(sendFeeTotal: SendFeeTotal)
+        fun showTransactionDetails(
+            sendFeeTotal: SendFeeTotal,
+            inputAmount: BigInteger,
+            useMax: Boolean,
+        )
         fun showProgressDialog(internalTransactionId: String, data: NewShowProgress)
         fun showTokenSelection(selectedToken: Token.Active?)
         fun showDebugInfo(text: CharSequence)

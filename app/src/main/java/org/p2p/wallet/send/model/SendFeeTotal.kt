@@ -6,12 +6,12 @@ import java.math.BigDecimal
 import kotlinx.parcelize.IgnoredOnParcel
 import kotlinx.parcelize.Parcelize
 import org.p2p.core.model.TextHighlighting
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.asApproximateUsd
 import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.orZero
 import org.p2p.uikit.utils.SpanUtils
 import org.p2p.wallet.R
-import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 
 /**
  * [SendSolanaFee] can be null only if total fees is Zero. (transaction fee and account creation fee)
@@ -24,16 +24,31 @@ import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 @Parcelize
 class SendFeeTotal constructor(
     val currentAmount: BigDecimal,
+    val tokenTotalAmount: BigDecimal,
+    val isMaxButtonUsed: Boolean,
     val currentAmountUsd: BigDecimal?,
     val receiveFormatted: String,
     val receiveUsd: BigDecimal?,
     val sendFee: SendSolanaFee?,
-    val feeLimit: TransactionFeeLimits,
     val sourceSymbol: String,
     val recipientAddress: String,
     val transferFeePercent: BigDecimal? = null,
     val interestBearingPercent: BigDecimal? = null
 ) : Parcelable {
+
+    companion object {
+        fun createEmpty(): SendFeeTotal = SendFeeTotal(
+            currentAmount = BigDecimal.ZERO,
+            tokenTotalAmount = BigDecimal.ZERO,
+            isMaxButtonUsed = false,
+            currentAmountUsd = null,
+            receiveFormatted = "",
+            receiveUsd = null,
+            sendFee = null,
+            sourceSymbol = "",
+            recipientAddress = ""
+        )
+    }
 
     @IgnoredOnParcel
     val isSendingToken2022: Boolean
@@ -112,12 +127,16 @@ class SendFeeTotal constructor(
         get() = receiveUsd?.asApproximateUsd().orEmpty()
 
     private val totalWithSymbolFormatted: String
-        get() = currentAmount.formatTokenWithSymbol(sourceSymbol)
+        get() = currentAmount.formatTokenWithSymbol(sourceSymbol, SOL_DECIMALS)
 
-    private val totalSumWithSymbol: String
+    val totalSumWithSymbol: String
         get() {
+            if (isMaxButtonUsed) {
+                return tokenTotalAmount.formatTokenWithSymbol(sourceSymbol, SOL_DECIMALS)
+            }
+
             val transferFee = transferFeePercent
-                ?.let { it / 100.toBigDecimal() }
+                ?.multiply("0.01".toBigDecimal())
                 ?.multiply(currentAmount)
 
             val totalSum = currentAmount
@@ -130,6 +149,6 @@ class SendFeeTotal constructor(
                     }
                 }
                 .plus(transferFee.orZero())
-            return totalSum.formatTokenWithSymbol(sourceSymbol)
+            return totalSum.formatTokenWithSymbol(sourceSymbol, SOL_DECIMALS)
         }
 }

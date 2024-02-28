@@ -9,8 +9,6 @@ import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.koin.android.ext.android.inject
 import kotlin.reflect.KClass
-import org.p2p.core.crypto.Base58String
-import org.p2p.core.token.Token
 import org.p2p.core.utils.insets.doOnApplyWindowInsets
 import org.p2p.core.utils.insets.ime
 import org.p2p.core.utils.insets.systemBars
@@ -25,19 +23,10 @@ import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.MainTabsSwitcher
 import org.p2p.wallet.home.ui.main.MainFragmentOnCreateAction
-import org.p2p.wallet.jupiter.model.SwapOpenedFrom
-import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
-import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
-import org.p2p.wallet.moonpay.ui.new.NewBuyFragment
 import org.p2p.wallet.notification.AppNotificationManager
 import org.p2p.wallet.push_notifications.analytics.AnalyticsPushChannel
-import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.send.ui.SearchOpenedFromScreen
-import org.p2p.wallet.send.ui.search.NewSearchFragment
-import org.p2p.wallet.send.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.utils.args
 import org.p2p.wallet.utils.doOnAnimationEnd
-import org.p2p.wallet.utils.replaceFragment
 import org.p2p.wallet.utils.viewbinding.viewBinding
 import org.p2p.wallet.utils.withArgs
 
@@ -165,50 +154,6 @@ class MainContainerFragment :
             title = getString(R.string.common_crypto)
         )
     }
-
-    override fun navigateToSendNoTokens(fallbackToken: Token) {
-        replaceFragment(SendUnavailableFragment.create(fallbackToken))
-    }
-
-    override fun navigateToSendScreen() {
-        replaceFragment(NewSearchFragment.create(SearchOpenedFromScreen.MAIN))
-    }
-
-    //region DeeplinkScreenNavigator
-    override fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
-        replaceFragment(NewBuyFragment.create(token, fiatToken, fiatAmount))
-    }
-
-    override fun navigateToBuyScreen(token: Token) {
-        replaceFragment(NewBuyFragment.create(token))
-    }
-
-    override fun showCashOut() {
-        replaceFragment(SellPayloadFragment.create())
-    }
-
-    override fun showSwapWithArgs(
-        tokenAMint: Base58String,
-        tokenBMint: Base58String,
-        amountA: String,
-        strictWarning: SwapDeeplinkStrictTokenWarning?,
-        source: SwapOpenedFrom
-    ) {
-        replaceFragment(
-            JupiterSwapFragment.create(
-                tokenAMint = tokenAMint,
-                tokenBMint = tokenBMint,
-                amountA = amountA,
-                strictWarning = strictWarning,
-                source = source
-            )
-        )
-    }
-
-    override fun showSwap() {
-        replaceFragment(JupiterSwapFragment.create(source = SwapOpenedFrom.MAIN_SCREEN))
-    }
-    //endregion
 
     override fun navigateToTabFromDeeplink(data: DeeplinkData) {
         when (data.target) {

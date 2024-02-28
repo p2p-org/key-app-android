@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.token.Token
 import org.p2p.token.service.api.events.manager.TokenServiceEventManager
@@ -23,10 +22,9 @@ class SolanaTokensLoader(
     private val userTokensInteractor: UserTokensInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceEventManager: TokenServiceEventManager,
-    private val appScope: AppScope
+    appScope: AppScope
 ) {
-
-    private val state: MutableStateFlow<SolanaTokenLoadState> = MutableStateFlow(SolanaTokenLoadState.Idle)
+    private val state = MutableStateFlow<SolanaTokenLoadState>(SolanaTokenLoadState.Idle)
 
     init {
         userTokensInteractor.observeUserTokens()
@@ -40,10 +38,9 @@ class SolanaTokensLoader(
         try {
             updateState(SolanaTokenLoadState.Loading)
 
-            tokenServiceEventManager.subscribe(SolanaTokensRatesEventSubscriber(::saveTokensRates))
             val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
             userTokensInteractor.saveUserTokens(tokens)
-            userTokensInteractor.loadUserRates(tokens)
+            userTokensInteractor.loadAndSaveUserRates(tokens)
         } catch (e: CancellationException) {
             Timber.d("Loading sol tokens job cancelled")
         } catch (e: Throwable) {
@@ -58,7 +55,7 @@ class SolanaTokensLoader(
 
             val tokens = userTokensInteractor.loadUserTokens(tokenKeyProvider.publicKey.toPublicKey())
             userTokensInteractor.saveUserTokens(tokens)
-            userTokensInteractor.loadUserRates(tokens)
+            userTokensInteractor.loadAndSaveUserRates(tokens)
         } catch (e: CancellationException) {
             Timber.d("Refreshing sol tokens job cancelled")
         } catch (e: Throwable) {
@@ -69,12 +66,6 @@ class SolanaTokensLoader(
 
     suspend fun getUserTokens(): List<Token.Active> {
         return userTokensInteractor.getUserTokens()
-    }
-
-    private fun saveTokensRates(list: List<TokenServicePrice>) {
-        appScope.launch {
-            userTokensInteractor.saveUserTokensRates(list)
-        }
     }
 
     private fun updateState(newState: SolanaTokenLoadState) {

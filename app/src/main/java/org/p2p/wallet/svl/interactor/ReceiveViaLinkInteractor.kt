@@ -124,16 +124,11 @@ class ReceiveViaLinkInteractor(
     }
 
     private suspend fun fetchPriceForToken(mintAddress: String): TokenServicePrice? {
-        val price = tokenServiceRepository.findTokenPriceByAddress(
-            tokenAddress = mintAddress,
-            networkChain = TokenServiceNetwork.SOLANA
-        )
-        if (price != null) return price
-
         return kotlin.runCatching {
-            tokenServiceRepository.fetchTokenPriceByAddress(
+            tokenServiceRepository.getTokenPriceByAddress(
+                tokenAddress = mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA,
-                tokenAddress = mintAddress
+                forceRemote = true
             )
         }
             .onFailure { Timber.i(it) }

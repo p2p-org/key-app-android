@@ -6,9 +6,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
 import org.p2p.core.dispatchers.CoroutineDispatchers
-import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.token.service.model.TokenServiceNetwork
+import org.p2p.token.service.repository.TokenServiceRepository
 
+@Deprecated("Maybe deprecated due to fetching prices from remote only without cache")
 class TokenServiceEventPublisher(
     private val tokenServiceInteractor: TokenServiceRepository,
     private val eventManager: TokenServiceEventManager,
@@ -27,7 +28,7 @@ class TokenServiceEventPublisher(
             eventType = TokenServiceEventType.from(networkChain),
             data = TokenServiceUpdate.Loading
         )
-        tokenServiceInteractor.loadPriceForTokens(
+        tokenServiceInteractor.fetchTokenPricesForTokens(
             chain = networkChain,
             tokenAddresses = addresses
         )

@@ -5,8 +5,7 @@ import androidx.annotation.DrawableRes
 import org.threeten.bp.ZonedDateTime
 import org.p2p.core.utils.asUsdTransaction
 import org.p2p.core.utils.formatToken
-import org.p2p.core.utils.scaleMedium
-import org.p2p.core.utils.scaleShortOrFirstNotZero
+import org.p2p.core.utils.scaleSix
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.recycler.RoundedItem
 import org.p2p.wallet.bridge.model.BridgeBundle
@@ -93,7 +92,7 @@ sealed interface HistoryItem {
             val tokenSymbol = sendDetails.amount.symbol
 
             return if (scaleMedium) {
-                "${totalAmount.scaleMedium().formatToken()} $tokenSymbol"
+                "${totalAmount.scaleSix().formatToken()} $tokenSymbol"
             } else {
                 "${totalAmount.formatToken()} $tokenSymbol"
             }
@@ -119,7 +118,7 @@ sealed interface HistoryItem {
             val tokenSymbol = bundle.resultAmount.symbol
 
             return if (scaleMedium) {
-                "${totalAmount.scaleMedium().formatToken()} $tokenSymbol"
+                "${totalAmount.scaleSix().formatToken()} $tokenSymbol"
             } else {
                 "${totalAmount.formatToken()} $tokenSymbol"
             }

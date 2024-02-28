@@ -13,7 +13,7 @@ import org.p2p.core.token.Token
 import org.p2p.core.token.TokenVisibility
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.core.utils.isMoreThan
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleTwo
 import org.p2p.uikit.model.AnyCellItem
 import org.p2p.wallet.R
 import org.p2p.wallet.auth.interactor.UsernameInteractor
@@ -49,7 +49,7 @@ class MyCryptoPresenter(
     private val usernameInteractor: UsernameInteractor,
     private val tokenKeyProvider: TokenKeyProvider,
     private val mainScreenAnalytics: MainScreenAnalytics,
-    private val pnlInteractor: PnlDataObserver,
+    private val pnlDataObserver: PnlDataObserver,
     private val pnlUiMapper: PnlUiMapper,
 ) : BasePresenter<MyCryptoContract.View>(), MyCryptoContract.Presenter {
 
@@ -85,7 +85,11 @@ class MyCryptoPresenter(
             try {
                 tokenServiceCoordinator.refresh()
                 // pnl must restart it's 5 minutes timer after force refresh
-                pnlInteractor.restartAndRefresh()
+                // and we should restart it only if it was initially started
+                // other cases might indicate that we didn't start observer due to empty state
+                if (pnlDataObserver.isStarted()) {
+                    pnlDataObserver.restartAndRefresh()
+                }
             } catch (cancelled: CancellationException) {
                 Timber.i("Loading tokens job cancelled")
             } catch (error: Throwable) {
@@ -106,21 +110,16 @@ class MyCryptoPresenter(
 
     private fun observeCryptoTokens() {
         cryptoTokensSubscription?.cancel()
-        cryptoTokensSubscription = launch {
-            tokenServiceCoordinator.observeUserTokens()
-                .collect { handleTokenState(it) }
-        }
+        cryptoTokensSubscription = tokenServiceCoordinator.observeUserTokens()
+            .onEach { handleTokenState(it) }
+            .launchIn(this)
     }
 
     private fun observePnlData() {
         pnlDataSubscription?.cancel()
-        pnlDataSubscription = launch {
-            pnlInteractor.state
-                .onEach {
-                    handleTokenState(tokenServiceCoordinator.observeLastState().value)
-                }
-                .launchIn(this)
-        }
+        pnlDataSubscription = pnlDataObserver.pnlState
+            .onEach { handleTokenState(tokenServiceCoordinator.observeLastState().value) }
+            .launchIn(this)
     }
 
     private fun handleTokenState(newState: UserTokensState) {
@@ -138,12 +137,12 @@ class MyCryptoPresenter(
             is UserTokensState.Loaded -> {
                 view?.showEmptyState(isEmpty = false)
 
-                if (!pnlInteractor.isStarted()) {
-                    pnlInteractor.start()
+                if (!pnlDataObserver.isStarted()) {
+                    pnlDataObserver.start()
                 }
 
                 showTokensAndBalance(
-                    pnlDataState = pnlInteractor.state.value,
+                    pnlDataState = pnlDataObserver.pnlState.value,
                     // separated screens logic: solTokens = filterCryptoTokens(newState.solTokens),
                     solTokens = newState.solTokens,
                     ethTokens = newState.ethTokens
@@ -182,8 +181,8 @@ class MyCryptoPresenter(
     }
 
     override fun onBalancePnlClicked() {
-        if (pnlInteractor.state.value.isResult()) {
-            view?.showPnlDetails(pnlInteractor.state.value.toResultOrNull()!!.total.percent)
+        if (pnlDataObserver.pnlState.value.isLoaded()) {
+            view?.showPnlDetails(pnlDataObserver.pnlState.value.toLoadedOrNull()!!.total.percent)
         }
     }
 
@@ -200,12 +199,14 @@ class MyCryptoPresenter(
             .mapNotNull(Token.Active::totalInUsd)
             .filter { it.isMoreThan(MINIMAL_DUST_FOR_BALANCE) }
             .fold(BigDecimal.ZERO, BigDecimal::add)
-            .scaleShort()
+            .scaleTwo()
     }
 
     private fun handleEmptyAccount() {
         cryptoScreenAnalytics.logUserAggregateBalanceBase(BigDecimal.ZERO)
+        view?.showBalancePnl(null)
         view?.showBalance(cryptoMapper.mapBalance(BigDecimal.ZERO))
+        view?.showItems(cryptoMapper.mapEmptyStateCellItems())
     }
 
     override fun toggleTokenVisibility(token: Token.Active) {
@@ -257,10 +258,6 @@ class MyCryptoPresenter(
         view?.navigateToReceive()
     }
 
-    override fun onSendClicked() {
-        view?.navigateToSend()
-    }
-
     override fun onSwapClicked() {
         cryptoScreenAnalytics.logCryptoSwapClick()
         view?.navigateToSwap()
@@ -273,12 +270,17 @@ class MyCryptoPresenter(
     override fun onClaimClicked(canBeClaimed: Boolean, token: Token.Eth) {
         cryptoScreenAnalytics.logCryptoClaimTransferedClicked()
         launch {
-            claimHandler.handle(view, canBeClaimed, token)
+            claimHandler.handle(view = view, canBeClaimed = canBeClaimed, token = token)
         }
     }
 
     override fun detach() {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
+        cryptoTokensSubscription?.cancel()
+        cryptoTokensSubscription = null
+
+        pnlDataSubscription?.cancel()
+        pnlDataSubscription = null
         super.detach()
     }
 

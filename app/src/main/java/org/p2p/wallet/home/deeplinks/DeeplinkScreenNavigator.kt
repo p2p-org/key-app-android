@@ -6,15 +6,18 @@ import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
 
 interface DeeplinkScreenNavigator {
-    fun navigateToNewBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
+    fun navigateToBuyScreen(token: Token, fiatToken: String, fiatAmount: String?)
     fun navigateToBuyScreen(token: Token)
-    fun showCashOut()
-    fun showSwapWithArgs(
+    fun navigateToSendNoTokens(fallbackToken: Token)
+    fun navigateToSendScreen()
+    fun navigateToCashOut()
+    fun navigateToSwapWithArgs(
         tokenAMint: Base58String,
         tokenBMint: Base58String,
         amountA: String,
         strictWarning: SwapDeeplinkStrictTokenWarning?,
         source: SwapOpenedFrom
     )
-    fun showSwap()
+    fun navigateToSwap()
+    fun navigateToHomeScreen()
 }

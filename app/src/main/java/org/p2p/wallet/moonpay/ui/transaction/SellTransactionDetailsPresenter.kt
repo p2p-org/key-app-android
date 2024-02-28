@@ -1,6 +1,12 @@
 package org.p2p.wallet.moonpay.ui.transaction
 
 import android.content.res.Resources
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import timber.log.Timber
+import java.util.Locale
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.getHtmlString
 import org.p2p.core.utils.removeLinksUnderline
@@ -8,24 +14,19 @@ import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
 import org.p2p.wallet.common.date.toZonedDateTime
 import org.p2p.wallet.common.mvp.BasePresenter
-import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
-import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
-import org.p2p.wallet.sell.interactor.SellInteractor
-import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
-import org.p2p.wallet.utils.cutMiddle
-import org.p2p.wallet.utils.emptyString
-import org.p2p.wallet.utils.unsafeLazy
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.DateTimeFormatter
-import timber.log.Timber
-import java.util.Locale
-import kotlinx.coroutines.launch
 import org.p2p.wallet.history.analytics.HistoryAnalytics
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.moonpay.model.SellTransaction
+import org.p2p.wallet.moonpay.repository.sell.MoonpaySellCancelResult
+import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.interactor.HistoryItemMapper
+import org.p2p.wallet.sell.interactor.SellInteractor
+import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.interactor.UserTokensInteractor
 import org.p2p.wallet.utils.CUT_ADDRESS_SYMBOLS_COUNT
+import org.p2p.wallet.utils.cutMiddle
+import org.p2p.wallet.utils.emptyString
+import org.p2p.wallet.utils.unsafeLazy
 
 private const val DATE_FORMAT = "MMMM dd, yyyy"
 private const val TIME_FORMAT = "HH:mm"
@@ -213,6 +214,9 @@ class SellTransactionDetailsPresenter(
             when (val result = sellInteractor.cancelTransaction(transaction.transactionId)) {
                 is MoonpaySellCancelResult.CancelSuccess -> {
                     view?.showUiKitSnackBar(messageResId = R.string.sell_details_cancel_success)
+                    // I put a 1 second delay here because Snackbar doesn't have any change to appear
+                    // the view closes too fast
+                    delay(1000)
                     view?.close()
                 }
                 is MoonpaySellCancelResult.CancelFailed -> {

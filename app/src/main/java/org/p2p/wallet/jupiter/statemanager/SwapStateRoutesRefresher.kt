@@ -13,7 +13,7 @@ import org.p2p.wallet.jupiter.repository.model.JupiterSwapRouteV6
 import org.p2p.wallet.jupiter.repository.model.SwapFailure
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
-import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
+import org.p2p.wallet.jupiter.statemanager.validator.SwapMinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
 import org.p2p.wallet.swap.model.Slippage
 
@@ -21,7 +21,7 @@ class SwapStateRoutesRefresher(
     private val tokenKeyProvider: TokenKeyProvider,
     private val swapRoutesRepository: JupiterSwapRoutesV6Repository,
     private val swapTransactionRepository: JupiterSwapTransactionRepository,
-    private val minSolBalanceValidator: MinimumSolAmountValidator,
+    private val minSolBalanceValidator: SwapMinimumSolAmountValidator,
     private val swapValidator: SwapValidator,
     private val swapProfiler: SwapProfiler,
 ) {
@@ -32,11 +32,12 @@ class SwapStateRoutesRefresher(
         amountTokenA: BigDecimal,
         slippage: Slippage,
     ) {
-        minSolBalanceValidator.validateMinimumSolAmount(
-            tokenA = tokenA,
-            newAmount = amountTokenA,
-            slippage = slippage
-        )
+        if (tokenA !is SwapTokenModel.JupiterToken && tokenA.isWrappedSol) {
+            minSolBalanceValidator.validateMinimumSolAmount(
+                solToken = tokenA as SwapTokenModel.UserToken,
+                newAmount = amountTokenA,
+            )
+        }
         swapValidator.validateIsSameTokens(tokenA = tokenA, tokenB = tokenB)
         state.value = SwapState.LoadingRoutes(
             tokenA = tokenA,

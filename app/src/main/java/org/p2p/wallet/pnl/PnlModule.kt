@@ -33,7 +33,8 @@ object PnlModule : InjectionModule {
         factory {
             val api = get<Retrofit>(named(RETROFIT_QUALIFIER)).create(PnlServiceApi::class.java)
             PnlRemoteRepository(
-                api = api
+                api = api,
+                dispatchers = get()
             )
         } bind PnlRepository::class
 

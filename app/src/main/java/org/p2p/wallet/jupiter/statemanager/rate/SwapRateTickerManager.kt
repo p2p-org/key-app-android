@@ -131,7 +131,7 @@ class SwapRateTickerManager(
 
     private suspend fun findJupiterTokenRate(to: SwapTokenModel.JupiterToken): BigDecimal? {
         val tokenData = userLocalRepository.findTokenData(to.mintAddress.base58Value) ?: return null
-        val cachedPrice = tokenServiceRepository.findTokenPriceByAddress(
+        val cachedPrice = tokenServiceRepository.getTokenPriceByAddress(
             tokenAddress = tokenData.mintAddress,
             networkChain = TokenServiceNetwork.SOLANA
         )

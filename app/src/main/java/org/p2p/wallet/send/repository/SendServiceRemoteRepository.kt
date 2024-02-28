@@ -5,12 +5,17 @@ import java.math.BigInteger
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.crypto.toBase58Instance
 import org.p2p.core.network.data.EmptyDataException
+import org.p2p.core.network.gson.GsonProvider
 import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
+import org.p2p.core.utils.isZeroOrLess
 import org.p2p.solanaj.model.types.RpcMapRequest
 import org.p2p.solanaj.model.types.RpcRequest
 import org.p2p.wallet.send.api.SendServiceApi
+import org.p2p.wallet.send.api.responses.SendGeneratedTransactionResponse
+import org.p2p.wallet.send.model.SendServiceFees
 import org.p2p.wallet.send.model.send_service.GeneratedTransaction
+import org.p2p.wallet.send.model.send_service.NetworkFeeSource
 import org.p2p.wallet.send.model.send_service.SendFeePayerMode
 import org.p2p.wallet.send.model.send_service.SendRentPayerMode
 import org.p2p.wallet.send.model.send_service.SendTransferMode
@@ -37,7 +42,7 @@ class SendServiceRemoteRepository(
         recipient: Base58String,
         token: Token.Active
     ): BigInteger {
-        val cachedFeeInfo = inMemoryRepository.getMaxAmountToSned(token.mintAddress.toBase58Instance())
+        val cachedFeeInfo = inMemoryRepository.getMaxAmountToSend(token.mintAddress.toBase58Instance())
         if (cachedFeeInfo != null) {
             return cachedFeeInfo
         }
@@ -56,6 +61,62 @@ class SendServiceRemoteRepository(
             maxAmount = generatedTransaction.recipientGetsAmount.amount
         )
         return generatedTransaction.recipientGetsAmount.amount
+    }
+
+    override suspend fun getTokenRentExemption(tokenMint: Base58String): BigInteger {
+        val params = buildMap {
+            this += "mints" to listOf(
+                tokenMint.base58Value
+            )
+        }
+        val rpcRequest = RpcMapRequest("get_token_account_rent_exempt", params)
+        val response = api.getTokenAccountRentExemption(rpcRequest).result.mapValues { it.value.toBigInteger() }
+        return response[tokenMint] ?: BigInteger.ZERO
+    }
+
+    override suspend fun getTokenRentExemption(token: Token.Active): BigInteger =
+        getTokenRentExemption(token.mintAddressB58)
+
+    override suspend fun estimateFees(
+        userWallet: Base58String,
+        recipient: Base58String,
+        sourceToken: Token.Active,
+        feePayerToken: Token.Active,
+        amount: BigInteger
+    ): SendServiceFees {
+        val generatedTransaction = generateTransaction(
+            userWallet = userWallet,
+            // 2 is the minimum amount to make send-service work correct while estimating fees
+            amountLamports = if (amount.isZeroOrLess()) {
+                // uint64::MAX in rust
+                SendServiceRepository.UINT64_MAX
+            } else {
+                maxOf(amount, BigInteger("2"))
+            },
+            recipient = recipient,
+            tokenMint = if (sourceToken.isSOL) null else sourceToken.mintAddressB58,
+            // exactIn because we need to get totalAmount less than amount with send
+            transferMode = SendTransferMode.ExactIn,
+            feePayerMode = SendFeePayerMode.UserSol,
+            // get rent exemption in SOL
+            rentPayerMode = if (feePayerToken.isSOL) SendRentPayerMode.UserSol else SendRentPayerMode.Custom,
+            customRentPayerTokenMint = if (feePayerToken.isSOL) null else feePayerToken.mintAddressB58
+        )
+
+        return SendServiceFees(
+            recipientGetsAmount = generatedTransaction.recipientGetsAmount,
+            totalAmount = generatedTransaction.totalAmount,
+            networkFee = generatedTransaction.networkFee,
+            tokenAccountRent = generatedTransaction.tokenAccountRent
+                ?: GeneratedTransaction.NetworkFeeData(
+                    NetworkFeeSource.UserCompensated,
+                    GeneratedTransaction.AmountData.EMPTY
+                ),
+            token2022TransferFee = generatedTransaction.token2022TransferFee ?: GeneratedTransaction.NetworkFeeData(
+                NetworkFeeSource.UserCompensated,
+                GeneratedTransaction.AmountData.EMPTY
+            )
+        )
     }
 
     override suspend fun generateTransaction(
@@ -100,6 +161,18 @@ class SendServiceRemoteRepository(
         }
 
         val rpcRequest = RpcMapRequest("transfer", params)
-        return api.generateTransaction(rpcRequest).result.toDomain()
+        val responseJson = api.generateTransactionRaw(rpcRequest).asJsonObject
+        if (responseJson.has("result")) {
+            val parsed: SendGeneratedTransactionResponse = GsonProvider().provide()
+                .fromJson(responseJson.get("result"), SendGeneratedTransactionResponse::class.java)
+            return parsed.toDomain()
+        } else if (responseJson.has("error")) {
+            val error = responseJson.get("error").asJsonObject
+            val code = error.get("code")?.asInt ?: -1
+            val message = error.get("message")?.asString ?: "Unknown error"
+            throw SendServiceTransactionError(message, code)
+        } else {
+            throw Exception("Unknown RPC error: $responseJson")
+        }
     }
 }

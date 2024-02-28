@@ -5,12 +5,13 @@ import org.p2p.wallet.pnl.models.PnlData
 import org.p2p.wallet.pnl.models.PnlTokenData
 
 sealed class PnlDataState {
+    object Idle : PnlDataState()
     object Loading : PnlDataState()
-    data class Result(val data: PnlData) : PnlDataState()
+    data class Loaded(val data: PnlData) : PnlDataState()
     data class Error(val error: Throwable) : PnlDataState()
 
-    fun toResultOrNull(): PnlData? = (this as? Result)?.data
-    fun isResult(): Boolean = this is Result
+    fun toLoadedOrNull(): PnlData? = (this as? Loaded)?.data
+    fun isLoaded(): Boolean = this is Loaded
 
-    fun findForToken(tokenMint: Base58String): PnlTokenData? = toResultOrNull()?.findForToken(tokenMint)
+    fun findForToken(tokenMint: Base58String): PnlTokenData? = toLoadedOrNull()?.findForToken(tokenMint)
 }

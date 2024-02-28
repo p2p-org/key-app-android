@@ -1,12 +1,12 @@
 package org.p2p.wallet.home.ui.container
 
-import timber.log.Timber
 import java.math.BigDecimal
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.p2p.core.network.ConnectionManager
+import org.p2p.core.token.Token
 import org.p2p.core.token.filterTokensForWalletScreen
 import org.p2p.uikit.components.ScreenTab
 import org.p2p.wallet.R
@@ -24,28 +24,18 @@ import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
 import org.p2p.wallet.settings.ui.settings.SettingsFragment
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
 import org.p2p.wallet.tokenservice.UserTokensState
-import org.p2p.wallet.user.interactor.UserInteractor
-import org.p2p.wallet.utils.unsafeLazy
+import org.p2p.wallet.updates.SocketUpdatesManager
 
 class MainContainerPresenter(
     private val deeplinksManager: AppDeeplinksManager,
     private val connectionManager: ConnectionManager,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val metadataInteractor: MetadataInteractor,
-    private val userInteractor: UserInteractor,
     private val walletStrigaInteractor: WalletStrigaInteractor,
+    private val socketUpdatesManager: SocketUpdatesManager,
     private val balanceMapper: WalletBalanceMapper,
-    private val deeplinkHandlerFactory: MainFragmentDeeplinkHandlerFactory,
     private val mainScreenAnalytics: MainScreenAnalytics,
 ) : BasePresenter<MainContainerContract.View>(), MainContainerContract.Presenter {
-
-    private val deeplinkHandler by unsafeLazy {
-        deeplinkHandlerFactory.create(
-            navigator = view,
-            scope = this,
-            deeplinkTopLevelHandler = ::handleDeeplinkTarget
-        )
-    }
 
     override fun attach(view: MainContainerContract.View) {
         super.attach(view)
@@ -77,31 +67,22 @@ class MainContainerPresenter(
     }
 
     override fun initializeDeeplinks() {
+        // deeplinks that should be handled only at MainContainer level, because it's a tab switching
         val supportedTargets = setOf(
             DeeplinkTarget.HISTORY,
-            DeeplinkTarget.SETTINGS,
-            DeeplinkTarget.BUY,
-            DeeplinkTarget.SEND,
-            DeeplinkTarget.SWAP,
-            DeeplinkTarget.CASH_OUT,
-            DeeplinkTarget.REFERRAL
+            DeeplinkTarget.SETTINGS
         )
         launchSupervisor {
             deeplinksManager.subscribeOnDeeplinks(supportedTargets)
                 .onEach { view?.navigateToTabFromDeeplink(it) }
-                .onEach { deeplinkHandler.handle(it) }
                 .launchIn(this)
-
-            deeplinksManager.executeHomePendingDeeplink()
-            deeplinksManager.executeTransferPendingAppLink()
         }
     }
 
     override fun observeUserTokens() {
-        launch {
-            tokenServiceCoordinator.observeUserTokens()
-                .collect { handleTokenState(it) }
-        }
+        tokenServiceCoordinator.observeUserTokens()
+            .onEach(::handleTokenState)
+            .launchIn(this)
     }
 
     override fun logWalletOpened() {
@@ -120,33 +101,19 @@ class MainContainerPresenter(
         mainScreenAnalytics.logMainScreenSettingsClick()
     }
 
-    override fun onSendClicked() {
-        mainScreenAnalytics.logMainScreenSendClick()
-        launch {
-            val userTokens = tokenServiceCoordinator.getUserTokens()
-            val isAccountEmpty = userTokens.isEmpty() || userTokens.all { it.isZero }
-            if (isAccountEmpty) {
-                val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return@launch
-                view?.navigateToSendNoTokens(validTokenToBuy)
-            } else {
-                view?.navigateToSendScreen()
-            }
-        }
-    }
-
     private fun observeInternetState() {
         connectionManager.connectionStatus
             .onEach { isConnected ->
-                if (!isConnected) view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
+                if (!isConnected) {
+                    view?.showUiKitSnackBar(messageResId = R.string.error_no_internet_message)
+                    socketUpdatesManager.stop()
+                } else {
+                    if (!socketUpdatesManager.isStarted()) {
+                        socketUpdatesManager.restart()
+                    }
+                }
             }
             .launchIn(this)
-    }
-
-    private fun handleDeeplinkTarget(target: DeeplinkTarget) {
-        when (target) {
-            DeeplinkTarget.SEND -> onSendClicked()
-            else -> Timber.d("Unsupported deeplink target! $target")
-        }
     }
 
     private fun checkDeviceShare() {
@@ -179,9 +146,9 @@ class MainContainerPresenter(
             is UserTokensState.Loaded -> {
                 // todo: this new filter supposed to be used for new design
                 val filteredTokens = newState.solTokens.filterTokensForWalletScreen()
-                val balance = filteredTokens.sumOf { it.total }
-                view?.showWalletBalance(balanceMapper.formatBalance(balance))
-                view?.showWalletBalance("Wallet")
+                val balance = filteredTokens.sumOf(Token.Active::total)
+                view?.showWalletBalance(balance = balanceMapper.formatBalance(balance))
+                view?.showWalletBalance(balance = "Wallet")
                 view?.showCryptoBadgeVisible(isVisible = newState.ethTokens.isNotEmpty())
             }
         }

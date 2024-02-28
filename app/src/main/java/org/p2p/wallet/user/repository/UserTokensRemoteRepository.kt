@@ -6,7 +6,6 @@ import org.p2p.core.token.Token
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.solanaj.model.types.Account
-import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.rpc.repository.account.RpcAccountRepository
@@ -41,15 +40,12 @@ class UserTokensRemoteRepository(
 
             val tokenData = userLocalRepository.findTokenData(mintAddress) ?: return@mapNotNull null
             if (tokenData.decimals == NFT_DECIMALS) return@mapNotNull null
-            val tokenPrice = tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = tokenData.mintAddress,
-                networkChain = TokenServiceNetwork.SOLANA
-            )
+
             TokenConverter.fromNetwork(
                 programId = programId,
                 account = token,
                 tokenMetadata = tokenData,
-                price = tokenPrice
+                price = null // fetched after loading tokens
             )
         }
 
@@ -58,15 +54,11 @@ class UserTokensRemoteRepository(
          * */
         val solBalance = rpcBalanceRepository.getBalance(publicKey)
         val tokenData = userLocalRepository.findTokenData(Constants.WRAPPED_SOL_MINT) ?: return tokens
-        val solPrice = tokenServiceRepository.findTokenPriceByAddress(
-            tokenAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN,
-            networkChain = TokenServiceNetwork.SOLANA
-        )
         val solToken = Token.createSOL(
             publicKey = publicKey.toBase58(),
             tokenMetadata = tokenData,
             amount = solBalance,
-            solPrice = solPrice?.usdRate
+            solPrice = null // fetched after loading tokens
         )
 
         return listOf(solToken) + tokens

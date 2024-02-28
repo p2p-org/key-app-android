@@ -11,13 +11,14 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.model.CurrencyMode
 import org.p2p.core.token.Token
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.asUsd
 import org.p2p.core.utils.formatTokenWithSymbol
 import org.p2p.core.utils.isConnectionError
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleTwo
 import org.p2p.core.utils.toBigDecimalOrZero
 import org.p2p.uikit.utils.text.TextViewCellModel
 import org.p2p.wallet.R
@@ -241,7 +242,7 @@ class BridgeSendPresenter(
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
-            val newTextValue = inputAmount.scaleShort().toPlainString()
+            val newTextValue = inputAmount.scaleTwo().toPlainString()
             updateInputValue(newTextValue, forced = true)
             calculationMode.updateInputAmount(newTextValue)
             disableInputs()
@@ -300,7 +301,7 @@ class BridgeSendPresenter(
                 }
                 is CurrencyMode.Token -> {
                     val tokenSymbol = mode.symbol
-                    amountPlusTotalFee.formatTokenWithSymbol(tokenSymbol)
+                    amountPlusTotalFee.formatTokenWithSymbol(tokenSymbol, SOL_DECIMALS)
                 }
                 else -> {
                     emptyString()

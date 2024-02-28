@@ -108,6 +108,44 @@ fun Fragment.popAndReplaceFragment(
     }
 }
 
+fun FragmentActivity.popAndReplaceFragment(
+    target: Fragment,
+    popTo: KClass<out Fragment>? = null,
+    @IdRes containerId: Int = R.id.rootContainer,
+    addToBackStack: Boolean = true,
+    inclusive: Boolean = false,
+    @AnimRes enter: Int = R.anim.nav_enter,
+    @AnimRes exit: Int = R.anim.nav_exit,
+    @AnimRes popEnter: Int = R.anim.nav_pop_enter,
+    @AnimRes popExit: Int = R.anim.nav_pop_exit,
+    fragmentManager: FragmentManager = supportFragmentManager
+) = whenStateAtLeast(Lifecycle.State.STARTED) {
+    hideKeyboard()
+    with(fragmentManager) {
+        // Override exit animation for popping fragment
+        if (this@popAndReplaceFragment is BaseFragmentContract) {
+            this@popAndReplaceFragment.overrideExitAnimation(exit)
+        }
+
+        // Make pop entering fragment invisible during transition
+        popTo?.java?.name
+            ?.let { findFragmentByTag(it) as? BaseFragmentContract }
+            ?.apply { overrideEnterAnimation(R.anim.nav_stay_transparent) }
+
+        popBackStack(
+            popTo?.java?.name,
+            if (inclusive) FragmentManager.POP_BACK_STACK_INCLUSIVE else 0
+        )
+
+        commit(allowStateLoss = true) {
+            // Preform immediate replace
+            setCustomAnimations(enter, 0, popEnter, popExit)
+            replace(containerId, target, target.javaClass.name)
+            if (addToBackStack) addToBackStack(target.javaClass.name)
+        }
+    }
+}
+
 fun Fragment.addFragment(
     target: Fragment,
     @IdRes containerId: Int = R.id.rootContainer,

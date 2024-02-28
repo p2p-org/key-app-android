@@ -3,23 +3,26 @@ package org.p2p.wallet.sell.interactor
 import android.content.res.Resources
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.utils.Constants
 import org.p2p.core.utils.formatFiat
 import org.p2p.core.utils.formatToken
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.wallet.R
 import org.p2p.wallet.common.date.isSameDayAs
+import org.p2p.wallet.common.date.toDateString
 import org.p2p.wallet.common.date.toZonedDateTime
+import org.p2p.wallet.common.feature_toggles.toggles.remote.EthAddressEnabledFeatureToggle
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.bridge.BridgeHistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
 import org.p2p.wallet.history.ui.model.HistoryItem
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.moonpay.model.SellTransaction
 import org.p2p.wallet.moonpay.serversideapi.response.SellTransactionStatus
 import org.p2p.wallet.sell.ui.lock.SellTransactionViewDetails
 import org.p2p.wallet.user.repository.UserLocalRepository
-import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.utils.cutMiddle
 import org.p2p.wallet.utils.cutStart
 import org.p2p.wallet.utils.getStatusIcon
 
@@ -29,7 +32,8 @@ private const val USDC_ETH_TOKEN_SYMBOL = "USDCet"
 class HistoryItemMapper(
     private val resources: Resources,
     private val dispatchers: CoroutineDispatchers,
-    private val userLocalRepository: UserLocalRepository
+    private val userLocalRepository: UserLocalRepository,
+    private val ethAddressEnabledFeatureToggle: EthAddressEnabledFeatureToggle
 ) {
 
     private val historyItemFlow = MutableStateFlow<List<HistoryItem>?>(null)
@@ -89,6 +93,10 @@ class HistoryItemMapper(
     }
 
     private fun createSwapBanner(tokenMintAddress: Base58String): HistoryItem.SwapBannerItem? {
+        if (!ethAddressEnabledFeatureToggle.isFeatureEnabled) {
+            return null
+        }
+
         return when (tokenMintAddress.base58Value) {
             Constants.USDC_MINT -> {
                 HistoryItem.SwapBannerItem(
@@ -133,15 +141,15 @@ class HistoryItemMapper(
         val iconRes: Int
         when (transaction) {
             is RpcHistoryTransaction.Swap -> with(transaction) {
-                sourceTokenIconUrl = sourceIconUrl
-                destinationTokenIconUrl = destinationIconUrl
+                sourceTokenIconUrl = tokenA.logoUrl
+                destinationTokenIconUrl = tokenB.logoUrl
 
                 iconRes = R.drawable.ic_swap_arrows
-                startTitle = "$sourceSymbol to $destinationSymbol"
+                startTitle = "${tokenA.symbol} to ${tokenB.symbol}"
                 startSubtitle = resources.getString(getTypeName())
-                endTopValue = "+${getDestinationTotal()}"
+                endTopValue = "+${getTokenBTotal()}"
                 endTopValueTextColor = getTextColor()
-                endBottomValue = getSourceTotal()
+                endBottomValue = getTokenATotal()
             }
             is RpcHistoryTransaction.Transfer -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
@@ -152,6 +160,16 @@ class HistoryItemMapper(
                 endTopValue = getFormattedFiatValue()
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotalWithSymbol()
+            }
+            is RpcHistoryTransaction.ReferralReward -> with(transaction) {
+                tokenIconUrl = iconUrl
+                iconRes = getIcon()
+
+                startTitle = resources.getString(R.string.transaction_details_referral_title)
+                startSubtitle = date.toDateString(resources)
+                endTopValue = getTotalWithSymbol()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getFormattedFiatValue()
             }
             is RpcHistoryTransaction.StakeUnstake -> with(transaction) {
                 tokenIconUrl = getTokenIconUrl()
@@ -164,59 +182,61 @@ class HistoryItemMapper(
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.BurnOrMint -> with(transaction) {
-                tokenIconUrl = iconUrl
-                iconRes = R.drawable.ic_placeholder_image
+                tokenIconUrl = token.logoUrl
+                iconRes = R.drawable.ic_placeholder_v2
 
                 startTitle = resources.getString(getTitle())
-                startSubtitle =
-                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
-                endTopValue = getUsdAmount()
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    signature.cutMiddle()
+                )
+                endTopValue = getFormattedAmountUsd()
                 endTopValueTextColor = getTextColor()
                 endBottomValue = getTotal()
             }
             is RpcHistoryTransaction.CreateAccount -> with(transaction) {
-                tokenIconUrl = iconUrl
+                tokenIconUrl = token.logoUrl
                 iconRes = R.drawable.ic_transaction_create
 
                 startTitle = resources.getString(R.string.transaction_history_create)
-                startSubtitle =
-                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
+                startSubtitle = resources.getString(
+                    R.string.transaction_history_signature_format,
+                    signature.cutMiddle()
+                )
             }
             is RpcHistoryTransaction.CloseAccount -> with(transaction) {
                 tokenIconUrl = iconUrl
                 iconRes = R.drawable.ic_transaction_closed
 
                 startTitle = resources.getString(R.string.transaction_history_closed)
-                startSubtitle =
-                    resources.getString(R.string.transaction_history_signature_format, signature.cutStart())
-            }
-            is RpcHistoryTransaction.WormholeSend -> with(transaction) {
-                tokenIconUrl = iconUrl
-                iconRes = R.drawable.ic_transaction_send
-                startTitle = resources.getString(getTitle())
-                startSubtitle = resources.getString(getSubtitle())
-                endTopValue = getUsdAmount()
-                endTopValueTextColor = getTextColor()
-                endBottomValue = getTotal()
-            }
-
-            is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
-                tokenIconUrl = iconUrl
-                iconRes = R.drawable.ic_transaction_send
-                startTitle = resources.getString(getTitle())
-                startSubtitle = resources.getString(getSubtitle())
-                endTopValue = getUsdAmount()
-                endTopValueTextColor = getTextColor()
-                endBottomValue = getTotal()
-            }
-            is RpcHistoryTransaction.Unknown -> {
-                iconRes = R.drawable.ic_transaction_unknown
-
-                startTitle = resources.getString(R.string.transaction_history_unknown)
                 startSubtitle = resources.getString(
                     R.string.transaction_history_signature_format,
-                    transaction.signature.cutStart()
+                    signature.cutMiddle()
                 )
+            }
+            is RpcHistoryTransaction.WormholeSend -> with(transaction) {
+                tokenIconUrl = token.logoUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = resources.getString(getTitle())
+                startSubtitle = resources.getString(getSubtitle())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotal()
+            }
+            is RpcHistoryTransaction.WormholeReceive -> with(transaction) {
+                tokenIconUrl = token.logoUrl
+                iconRes = R.drawable.ic_transaction_send
+                startTitle = resources.getString(getTitle())
+                startSubtitle = resources.getString(getSubtitle())
+                endTopValue = getUsdAmount()
+                endTopValueTextColor = getTextColor()
+                endBottomValue = getTotalWithSymbol()
+            }
+            else -> {
+                iconRes = R.drawable.ic_transaction_unknown
+
+                startTitle = resources.getString(R.string.transaction_history_unknown_title)
+                startSubtitle = transaction.signature.cutMiddle(cutCount = 8)
             }
         }
         val historyItem = HistoryItem.TransactionItem(

@@ -248,6 +248,7 @@ class SellPayloadPresenter(
     override fun switchCurrencyMode() {
         val oldAmount = rawUserSelectedAmount.toBigDecimalOrZero()
         selectedCurrencyMode = currencyModeToSwitch
+
         val switchedAmount = when (selectedCurrencyMode) {
             is CurrencyMode.Fiat -> oldAmount.toFiat()
             is CurrencyMode.Token -> oldAmount.toToken()
@@ -290,10 +291,12 @@ class SellPayloadPresenter(
 
         val buttonState = determineButtonState()
         when (buttonState) {
-            is CashOutButtonState.CashOutAvailable, is CashOutButtonState.NotEnoughUserTokenError -> {
+            is CashOutButtonState.CashOutAvailable,
+            is CashOutButtonState.NotEnoughUserTokenError -> {
                 startLoadSellQuoteJob()
             }
-            is CashOutButtonState.MinAmountEntered, is CashOutButtonState.MaxAmountExceeded -> {
+            is CashOutButtonState.MinAmountEntered,
+            is CashOutButtonState.MaxAmountExceeded -> {
                 sellQuoteJob?.cancel()
             }
         }
@@ -311,11 +314,9 @@ class SellPayloadPresenter(
             is CurrencyMode.Fiat -> userSolBalance.toFiat()
             is CurrencyMode.Token -> userSolBalance
         }.formatTokenForMoonpay()
-        viewState = viewState.copy(
-            widgetViewState = viewState.widgetViewState.copy(
-                inputAmount = maxAmount
-            )
-        )
+
+        val newWidgetViewState = viewState.widgetViewState.copy(inputAmount = maxAmount)
+        viewState = viewState.copy(widgetViewState = newWidgetViewState)
         view?.updateViewState(viewState)
         onTokenAmountChanged(maxAmount)
     }
@@ -325,15 +326,12 @@ class SellPayloadPresenter(
             selectedTokenAmount.isLessThan(minTokenSellAmount) -> {
                 CashOutButtonState.MinAmountEntered(resources, minTokenSellAmount)
             }
-
             selectedTokenAmount.isMoreThan(maxTokenSellAmount.orZero()) -> {
                 CashOutButtonState.MaxAmountExceeded(resources, maxTokenSellAmount.orZero())
             }
-
             selectedTokenAmount.isMoreThan(userSolBalance) -> {
                 CashOutButtonState.NotEnoughUserTokenError(resources)
             }
-
             else -> {
                 CashOutButtonState.CashOutAvailable(resources)
             }
@@ -356,6 +354,10 @@ class SellPayloadPresenter(
         }
     }
 
-    private fun BigDecimal.toFiat() = this.multiply(tokenPrice).setScale(2, RoundingMode.DOWN)
-    private fun BigDecimal.toToken() = this.divide(tokenPrice, 2, RoundingMode.DOWN)
+    private fun BigDecimal.toFiat(): BigDecimal {
+        return this.multiply(tokenPrice).setScale(MOONPAY_DECIMAL, RoundingMode.HALF_UP)
+    }
+    private fun BigDecimal.toToken(): BigDecimal {
+        return this.divide(tokenPrice, MOONPAY_DECIMAL, RoundingMode.HALF_UP)
+    }
 }

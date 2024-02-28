@@ -3,6 +3,7 @@ package org.p2p.wallet.home.ui.crypto
 import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.SimpleItemAnimator
 import android.content.Context
 import android.os.Bundle
@@ -13,6 +14,7 @@ import com.google.android.material.appbar.AppBarLayout.LayoutParams.SCROLL_FLAG_
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import timber.log.Timber
+import kotlinx.coroutines.launch
 import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.Token
 import org.p2p.uikit.model.AnyCellItem
@@ -47,8 +49,6 @@ import org.p2p.wallet.referral.banner.ReferralFragmentFactory
 import org.p2p.wallet.referral.banner.referralBannerDelegate
 import org.p2p.wallet.root.RootListener
 import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
-import org.p2p.wallet.send.ui.SearchOpenedFromScreen
-import org.p2p.wallet.send.ui.search.NewSearchFragment
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.progresshandler.ClaimProgressHandler
 import org.p2p.wallet.utils.HomeScreenLayoutManager
@@ -90,7 +90,7 @@ class MyCryptoFragment :
                 }
             }
         },
-        tokenButtonDelegate() { binding, _ ->
+        tokenButtonDelegate { binding, _ ->
             binding.root.setOnClickListener { onVisibilityToggleClicked() }
         },
         ethClaimTokenDelegate(glideManager) { binding, item ->
@@ -178,7 +178,9 @@ class MyCryptoFragment :
                 presenter.onReceiveClicked()
             }
             ActionButton.SEND_BUTTON -> {
-                presenter.onSendClicked()
+                lifecycleScope.launch {
+                    sendFragmentFactory.searchFragment()?.also { replaceFragment(it) }
+                }
             }
             ActionButton.SWAP_BUTTON -> {
                 presenter.onSwapClicked()
@@ -192,11 +194,6 @@ class MyCryptoFragment :
 
     override fun showAddMoneyDialog() {
         onOffRampNavigator.navigateToAddMoney(this)
-    }
-
-    override fun navigateToSend() {
-        val target = NewSearchFragment.create(SearchOpenedFromScreen.MAIN)
-        replaceFragment(target)
     }
 
     override fun showBalance(cellModel: TextViewCellModel?) {
@@ -246,14 +243,19 @@ class MyCryptoFragment :
 
     override fun showItems(items: List<AnyCellItem>) {
         cellAdapter.setItems(items) {
-            binding.recyclerViewCrypto.invalidateItemDecorations()
+            // very stupid check but
+            // when user logouts, data layer emits new cell items and update the list
+            // async stuff is going inside when items are set and when this callback is called
+            // view is already null because we navigated to auth screen
+            if (view != null) {
+                binding.recyclerViewCrypto.invalidateItemDecorations()
+            }
         }
     }
 
     override fun showEmptyState(isEmpty: Boolean) {
         with(binding) {
             textViewEmpty.isVisible = isEmpty
-            recyclerViewCrypto.isVisible = !isEmpty
         }
         setAppBarScrollingState(!isEmpty)
     }

@@ -9,6 +9,8 @@ import org.p2p.core.crypto.Base58String
 data class JupiterSwapRouteV6(
     val inAmountInLamports: BigInteger,
     val outAmountInLamports: BigInteger,
+    val inTokenMint: Base58String,
+    val outTokenMint: Base58String,
     val priceImpactPercent: BigDecimal,
     @IntRange(from = 0, to = 10000)
     val slippageBps: Int,
@@ -32,11 +34,13 @@ data class JupiterSwapRoutePlanV6(
 )
 
 data class SwapKeyAppFees(
-    // maybe totalFees, maybe else,
-    // I don't know what fees, no doc at the moment
+    // totalFeeAndDeposits + transfer fee if exists + some other fee
     val totalFees: BigInteger,
     val signatureFee: BigInteger,
-    val ataDeposits: BigInteger,
+    val ataDepositsInSol: BigInteger,
+    // signatureFee + ataDeposits + minimumSolForTransaction
     val totalFeeAndDeposits: BigInteger,
     val minimumSolForTransaction: BigInteger,
+    val platformFeeTokenB: BigInteger,
+    val platformFeePercent: BigDecimal,
 )

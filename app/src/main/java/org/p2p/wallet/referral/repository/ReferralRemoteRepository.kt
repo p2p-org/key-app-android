@@ -3,9 +3,11 @@ package org.p2p.wallet.referral.repository
 import com.google.gson.Gson
 import org.near.borshj.BorshBuffer
 import timber.log.Timber
+import java.net.SocketTimeoutException
 import java.net.URI
 import java.util.Optional
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.withContext
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.rpc.JsonRpc
@@ -17,6 +19,7 @@ import org.p2p.solanaj.utils.SolanaMessageSigner
 import org.p2p.wallet.auth.gateway.repository.mapper.write
 import org.p2p.wallet.common.feature_toggles.toggles.remote.ReferralProgramEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
+import org.p2p.wallet.utils.retryOnException
 
 class ReferralRemoteRepository(
     private val api: RpcApi,
@@ -29,9 +32,27 @@ class ReferralRemoteRepository(
 
     private val url = URI("https://referral.key.app/")
 
+    /**
+     * Sometimes the service responds with the timeout error `operation timed out`
+     *
+     */
+    private class ReferralServiceTimedOut : Exception()
+
     override suspend fun registerReferent() {
         if (referralEnabledFt.isFeatureEnabled) {
-            registerReferentInternal()
+            try {
+                retryOnException(
+                    exceptionTypes = setOf(
+                        ReferralServiceTimedOut::class,
+                        SocketTimeoutException::class
+                    ),
+                    maxAttempts = 10,
+                    delayMillis = 5.seconds.inWholeMilliseconds,
+                    block = ::registerReferentInternal
+                )
+            } catch (error: Exception) {
+                Timber.e(error, "Failed to register referent after 10 attempts")
+            }
         }
     }
 
@@ -39,6 +60,7 @@ class ReferralRemoteRepository(
         try {
             val requestTimestamp = System.currentTimeMillis().milliseconds.inWholeSeconds
             val signature = signRequestHex(
+                // order matters
                 tokenKeyProvider.publicKey, Optional.empty<String>(), requestTimestamp
             )
             val request = ReferralRequest(
@@ -56,11 +78,19 @@ class ReferralRemoteRepository(
             request.parseResponse(response, gson)
         } catch (rpcError: JsonRpc.ResponseError) {
             val message = rpcError.message ?: return
-            if (message.contains("duplicate key value violates unique constraint")) {
-                Timber.i("User already registered")
-            } else {
-                Timber.e(rpcError, "Failed to register referent")
+            when {
+                message.contains("duplicate key value violates unique constraint") -> {
+                    Timber.i("User already registered")
+                }
+                message.contains("timed out") -> {
+                    throw ReferralServiceTimedOut()
+                }
+                else -> {
+                    Timber.e(rpcError, "Failed to register referent")
+                }
             }
+        } catch (error: SocketTimeoutException) {
+            throw error
         } catch (error: Throwable) {
             Timber.e(error, "Failed to register referent")
         }
@@ -76,6 +106,7 @@ class ReferralRemoteRepository(
         try {
             val requestTimestamp = System.currentTimeMillis().milliseconds.inWholeSeconds
             val signature = signRequestHex(
+                // order matters
                 tokenKeyProvider.publicKey, referent, requestTimestamp
             )
             val request = ReferralRequest(

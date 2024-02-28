@@ -9,14 +9,15 @@ import org.p2p.core.utils.Constants.TOKEN_SERVICE_NATIVE_ETH_TOKEN
 import org.p2p.core.utils.orZero
 import org.p2p.core.wrapper.HexString
 import org.p2p.core.wrapper.eth.EthAddress
+import org.p2p.core.wrapper.eth.hexStringToBigInteger
 import org.p2p.ethereumkit.external.api.alchemy.response.TokenBalanceResponse
 import org.p2p.ethereumkit.external.model.ERC20Tokens
 import org.p2p.ethereumkit.external.model.EthTokenConverter
 import org.p2p.ethereumkit.external.model.EthTokenKeyProvider
 import org.p2p.ethereumkit.external.model.EthTokenMetadata
 import org.p2p.ethereumkit.external.model.EthereumClaimToken
-import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.external.token.EthereumTokenRepository
+import org.p2p.ethereumkit.external.token.EthereumTokensLocalRepository
 import org.p2p.ethereumkit.internal.core.TransactionSignerEip1559
 import org.p2p.ethereumkit.internal.core.TransactionSignerLegacy
 import org.p2p.ethereumkit.internal.core.signer.Signer
@@ -42,7 +43,7 @@ internal class EthereumKitRepository(
             privateKey = Signer.privateKey(words = seedPhrase, chain = Chain.Ethereum)
         )
 
-        val ethAddress = tokenKeyProvider?.publicKey ?: return
+        tokenKeyProvider?.publicKey ?: return
     }
 
     override fun isInitialized(): Boolean {
@@ -131,7 +132,7 @@ internal class EthereumKitRepository(
             this += erc20TokensAddresses
         }
         // Fetch tokens metadata
-        val tokensMetadata = tokenServiceRepository.loadMetadataForTokens(
+        val tokensMetadata = tokenServiceRepository.fetchMetadataForTokens(
             chain = TokenServiceNetwork.ETHEREUM,
             tokenAddresses = allTokensAddresses
         )
@@ -142,7 +143,8 @@ internal class EthereumKitRepository(
         val erc20TokensMetadata = tokensMetadata.map { metadata ->
             val tokenBalance = tokensBalances
                 .firstOrNull { it.contractAddress.hex == metadata.address }
-                ?.tokenBalance
+                ?.tokenBalanceHex
+                ?.hexStringToBigInteger()
                 .orZero()
 
             converter.toEthTokenMetadata(

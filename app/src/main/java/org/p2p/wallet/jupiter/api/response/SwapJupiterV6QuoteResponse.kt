@@ -2,6 +2,7 @@ package org.p2p.wallet.jupiter.api.response
 
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
+import java.math.BigDecimal
 
 data class SwapJupiterV6QuoteResponse(
     @SerializedName("inputMint")
@@ -35,7 +36,7 @@ data class SwapJupiterV6QuoteResponse(
         @SerializedName("amount")
         val amount: String,
         @SerializedName("feeBps")
-        val feeBps: Int
+        val feeBps: BigDecimal
     )
 
     data class RoutePlanResponse(

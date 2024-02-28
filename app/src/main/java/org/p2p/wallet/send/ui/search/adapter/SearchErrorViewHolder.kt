@@ -1,8 +1,9 @@
 package org.p2p.wallet.send.ui.search.adapter
 
-import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import timber.log.Timber
 import org.p2p.wallet.R
 import org.p2p.wallet.databinding.ItemSearchInvalidResultBinding
 import org.p2p.wallet.send.model.SearchResult
@@ -12,7 +13,6 @@ import org.p2p.wallet.utils.toPx
 import org.p2p.wallet.utils.viewbinding.getString
 import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 import org.p2p.wallet.utils.withTextOrGone
-import timber.log.Timber
 
 class SearchErrorViewHolder(
     parent: ViewGroup,
@@ -70,8 +70,8 @@ class SearchErrorViewHolder(
             Glide.with(this)
                 .load(iconUrl)
                 .circleCrop()
-                .error(R.drawable.ic_placeholder_image)
-                .placeholder(R.drawable.ic_placeholder_image)
+                .error(R.drawable.ic_placeholder_v2)
+                .placeholder(R.drawable.ic_placeholder_v2)
                 .into(this)
         }
     }

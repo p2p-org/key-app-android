@@ -4,11 +4,13 @@ import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.token.Token
 import org.p2p.wallet.deeplinks.DeeplinkData
 import org.p2p.wallet.deeplinks.DeeplinkTarget
 import org.p2p.wallet.deeplinks.ReferralDeeplinkHandler
 import org.p2p.wallet.deeplinks.SwapDeeplinkData
 import org.p2p.wallet.deeplinks.SwapDeeplinkHandler
+import org.p2p.wallet.home.ui.wallet.analytics.MainScreenAnalytics
 import org.p2p.wallet.infrastructure.coroutines.waitForCondition
 import org.p2p.wallet.jupiter.model.SwapOpenedFrom
 import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
@@ -28,6 +30,7 @@ class MainFragmentDeeplinkHandler(
     private val swapDeeplinkHandler: SwapDeeplinkHandler,
     private val deeplinkTopLevelHandler: (target: DeeplinkTarget) -> Unit,
     private val referralDeeplinkHandler: ReferralDeeplinkHandler,
+    private val mainScreenAnalytics: MainScreenAnalytics,
 ) {
 
     suspend fun handle(data: DeeplinkData) {
@@ -43,13 +46,13 @@ class MainFragmentDeeplinkHandler(
     }
 
     private fun handleCashOutDeeplink() {
-        screenNavigator?.showCashOut()
+        screenNavigator?.navigateToCashOut()
     }
 
     private suspend fun handleSwapDeeplink(data: DeeplinkData) {
         when (val parsedData = swapDeeplinkHandler.parseDeeplink(data)) {
             is SwapDeeplinkData.TokensFound -> {
-                screenNavigator?.showSwapWithArgs(
+                screenNavigator?.navigateToSwapWithArgs(
                     tokenAMint = parsedData.tokenAMint,
                     tokenBMint = parsedData.tokenBMint,
                     amountA = "0",
@@ -59,7 +62,7 @@ class MainFragmentDeeplinkHandler(
             }
             is SwapDeeplinkData.NonStrictTokensFound -> {
                 // pass empty strings to rollback tokens to default values
-                screenNavigator?.showSwapWithArgs(
+                screenNavigator?.navigateToSwapWithArgs(
                     tokenAMint = emptyString().toBase58Instance(),
                     tokenBMint = emptyString().toBase58Instance(),
                     amountA = "0",
@@ -71,33 +74,43 @@ class MainFragmentDeeplinkHandler(
                 )
             }
             SwapDeeplinkData.TokensNotFound -> {
-                screenNavigator?.showSwap()
+                screenNavigator?.navigateToSwap()
             }
         }
     }
 
     private fun handleReferralDeeplink(data: DeeplinkData) {
         referralDeeplinkHandler.handleDeeplink(data)
+        screenNavigator?.navigateToHomeScreen()
     }
 
     private suspend fun handleSendDeeplink() {
         waitForCondition(1000) { tokenServiceCoordinator.getUserTokens().isNotEmpty() }
-        deeplinkTopLevelHandler(DeeplinkTarget.SEND)
+        mainScreenAnalytics.logMainScreenSendClick()
+
+        val userTokens = tokenServiceCoordinator.getUserTokens()
+        val isAccountEmpty = userTokens.isEmpty() || userTokens.all(Token.Active::isZero)
+        if (isAccountEmpty) {
+            val validTokenToBuy = userInteractor.getSingleTokenForBuy() ?: return
+            screenNavigator?.navigateToSendNoTokens(validTokenToBuy)
+        } else {
+            screenNavigator?.navigateToSendScreen()
+        }
     }
 
     /**
      * Handles buy token for fiat deeplink
      */
     private fun handleBuyDeeplink(data: DeeplinkData) {
-        val cryptoToken = data.args["to"]
+        val cryptoTokenMint = data.args["to"]
         val fiatToken = data.args["from"]
         val fiatAmount = data.args["amount"]
 
-        if (!cryptoToken.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
+        if (!cryptoTokenMint.isNullOrBlank() && !fiatToken.isNullOrBlank()) {
             coroutineScope.launch {
-                val token = userInteractor.getSingleTokenForBuy(listOf(cryptoToken))
+                val token = userInteractor.getSingleTokenForBuy(listOf(cryptoTokenMint))
                 if (token != null) {
-                    screenNavigator?.navigateToNewBuyScreen(token, fiatToken, fiatAmount)
+                    screenNavigator?.navigateToBuyScreen(token, fiatToken, fiatAmount)
                 } else {
                     onBuyHandled()
                 }

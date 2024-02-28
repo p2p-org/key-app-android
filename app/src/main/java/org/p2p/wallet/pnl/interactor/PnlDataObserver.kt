@@ -15,6 +15,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.p2p.core.common.di.AppScope
 import org.p2p.core.crypto.Base58String
+import org.p2p.wallet.common.feature_toggles.toggles.remote.PnlEnabledFeatureToggle
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.pnl.repository.PnlRepository
 import org.p2p.wallet.tokenservice.TokenServiceCoordinator
@@ -43,6 +44,7 @@ class PnlDataObserver(
     private val pnlRepository: PnlRepository,
     private val tokenKeyProvider: TokenKeyProvider,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
+    private val pnlEnabledFt: PnlEnabledFeatureToggle
 ) {
 
     private companion object {
@@ -52,13 +54,14 @@ class PnlDataObserver(
     private var updaterJob: Job? = null
     private val tokenMints = mutableListOf<Base58String>()
     private val tokenMintsMutex = Mutex()
-    private val _state = MutableStateFlow<PnlDataState>(PnlDataState.Loading)
-    val state = _state.asStateFlow()
+    private val _pnlState = MutableStateFlow<PnlDataState>(PnlDataState.Idle)
+    val pnlState = _pnlState.asStateFlow()
 
     fun isStarted(): Boolean = updaterJob != null
 
     fun start() {
-        if (updaterJob != null) return
+        if (!pnlEnabledFt.isFeatureEnabled || isStarted()) return
+        _pnlState.value = PnlDataState.Loading
         launchJob()
     }
 
@@ -73,6 +76,8 @@ class PnlDataObserver(
     }
 
     private fun launchJob() {
+        if (!pnlEnabledFt.isFeatureEnabled) return
+
         updaterJob = appScope.launch {
             // firstly, get current state, because observer may return actual tokens later
             tokenServiceCoordinator.observeLastState().value.extractTokenMints()
@@ -84,14 +89,11 @@ class PnlDataObserver(
 
             while (isActive) {
                 try {
-                    _state.emit(
-                        PnlDataState.Result(
-                            pnlRepository.getPnlData(tokenKeyProvider.publicKeyBase58, tokenMints)
-                        )
-                    )
+                    val pnlData = pnlRepository.getPnlData(tokenKeyProvider.publicKeyBase58, tokenMints)
+                    _pnlState.emit(PnlDataState.Loaded(pnlData))
                 } catch (e: Throwable) {
                     Timber.e(e, "Unable to get pnl data")
-                    _state.emit(
+                    _pnlState.emit(
                         PnlDataState.Error(e)
                     )
                 }

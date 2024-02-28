@@ -5,20 +5,21 @@ import android.content.SharedPreferences
 import timber.log.Timber
 import java.util.Date
 import org.p2p.core.token.Token
+import org.p2p.core.token.TokenMetadata
 import org.p2p.core.utils.Constants
 import org.p2p.solanaj.core.PublicKey
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.repository.TokenServiceRepository
 import org.p2p.wallet.home.model.TokenConverter
+import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.send.model.SearchResult
 import org.p2p.wallet.send.repository.RecipientsLocalRepository
-import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
 import org.p2p.wallet.utils.emptyString
 
 private const val KEY_HIDDEN_TOKENS_VISIBILITY = "KEY_HIDDEN_TOKENS_VISIBILITY"
-val TOKEN_SYMBOLS_VALID_FOR_BUY: List<String> = listOf(Constants.USDC_SYMBOL, Constants.SOL_SYMBOL)
+val TOKEN_MINTS_VALID_FOR_BUY: List<String> = listOf(Constants.USDC_MINT, Constants.WRAPPED_SOL_MINT)
 
 class UserInteractor(
     private val userLocalRepository: UserLocalRepository,
@@ -33,7 +34,7 @@ class UserInteractor(
     suspend fun findTokenData(mintAddress: String): Token? {
         val tokenData = userLocalRepository.findTokenData(mintAddress)
         val price = tokenData?.let {
-            tokenServiceRepository.findTokenPriceByAddress(
+            tokenServiceRepository.getTokenPriceByAddress(
                 tokenAddress = it.mintAddress,
                 networkChain = TokenServiceNetwork.SOLANA
             )
@@ -41,29 +42,29 @@ class UserInteractor(
         return tokenData?.let { TokenConverter.fromNetwork(it, price) }
     }
 
-    suspend fun getSingleTokenForBuy(availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY): Token? =
-        getTokensForBuy(availableTokensSymbols).firstOrNull()
+    suspend fun getSingleTokenForBuy(availableTokensMints: List<String> = TOKEN_MINTS_VALID_FOR_BUY): Token? =
+        getTokensForBuy(availableTokensMints).firstOrNull()
 
     suspend fun getTokensForBuy(
-        availableTokensSymbols: List<String> = TOKEN_SYMBOLS_VALID_FOR_BUY
+        availableTokensMints: List<String> = TOKEN_MINTS_VALID_FOR_BUY
     ): List<Token> {
-        val userTokens = userTokensRepository.getUserTokens()
-        val allTokens = availableTokensSymbols.mapNotNull { tokenSymbol ->
-            val userToken = userTokens.find { it.tokenSymbol == tokenSymbol }
-            userToken ?: findTokenDataBySymbol(tokenSymbol)
-        }
+        val tokensToBuy = findTokensMetadataByMints(availableTokensMints)
 
-        if (allTokens.isEmpty()) {
+        if (tokensToBuy.isEmpty()) {
             Timber.e(
-                IllegalStateException("No tokens to buy! All tokens: ${userTokens.map(Token.Active::tokenSymbol)}")
+                IllegalStateException("No tokens to buy! All tokens: $availableTokensMints")
             )
         }
-        return allTokens
+        return tokensToBuy
     }
 
     suspend fun getBalance(address: PublicKey): Long = rpcRepository.getBalance(address)
 
-    fun fetchTokens(searchText: String = emptyString(), count: Int, refresh: Boolean) {
+    fun getReceiveTokens(
+        searchText: String = emptyString(),
+        count: Int,
+        refresh: Boolean
+    ) {
         userLocalRepository.fetchTokens(searchText, count, refresh)
     }
 
@@ -91,15 +92,18 @@ class UserInteractor(
         return userTokens.any { it.publicKey == address }
     }
 
-    private suspend fun findTokenDataBySymbol(symbol: String): Token.Other? {
-        val tokenData = userLocalRepository.findTokenDataBySymbol(symbol)
-        val price = tokenData?.let {
-            tokenServiceRepository.findTokenPriceByAddress(
-                tokenAddress = it.mintAddress,
+    private suspend fun findTokensMetadataByMints(mints: List<String>): List<Token.Other> {
+        val tokensData = mints.mapNotNull(userLocalRepository::findTokenData)
+        val prices = tokensData.let {
+            tokenServiceRepository.getTokenPricesByAddressAsMap(
+                tokenAddress = it.map(TokenMetadata::mintAddress),
                 networkChain = TokenServiceNetwork.SOLANA
             )
         }
-        return tokenData?.let { TokenConverter.fromNetwork(it, price) }
+        return tokensData.map { data ->
+            val price = prices[data.mintAddress]
+            TokenConverter.fromNetwork(data, price)
+        }
     }
 
     suspend fun findTokenDataByAddress(mintAddress: String): Token? = userLocalRepository.findTokenByMint(mintAddress)

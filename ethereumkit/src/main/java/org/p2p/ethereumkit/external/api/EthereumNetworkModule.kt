@@ -9,7 +9,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import org.p2p.core.rpc.RPC_JSON_QUALIFIER
-import org.p2p.ethereumkit.external.api.coingecko.CoinGeckoService
 import org.p2p.ethereumkit.external.api.interceptor.EthereumApiLoggingInterceptor
 import org.p2p.ethereumkit.external.core.EthereumNetworkEnvironment
 
@@ -22,11 +21,11 @@ internal object EthereumNetworkModule {
         single(named(QUALIFIER_ETH_HTTP_CLIENT)) { getOkHttpClient() }
         single(named(QUALIFIER_ETH_RETROFIT)) {
             getRetrofit(
+                baseUrl = EthereumNetworkEnvironment.ALCHEMY.baseUrl,
                 httpClient = get(named(QUALIFIER_ETH_HTTP_CLIENT)),
                 gson = get(named(RPC_JSON_QUALIFIER))
             )
         }
-        single { get<Retrofit>(named(QUALIFIER_ETH_RETROFIT)).create(CoinGeckoService::class.java) }
     }
 
     private fun getOkHttpClient(): OkHttpClient {
@@ -35,9 +34,9 @@ internal object EthereumNetworkModule {
         return httpClient.build()
     }
 
-    private fun getRetrofit(httpClient: OkHttpClient, gson: Gson): Retrofit {
+    private fun getRetrofit(httpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(EthereumNetworkEnvironment.ALCHEMY.baseUrl)
+            .baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(httpClient)

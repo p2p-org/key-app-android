@@ -108,7 +108,7 @@ class HistorySendLinkDetailsBottomSheet :
 
     private fun renderContent(state: ViewState.Content) = with(binding) {
         val tokenIconContainer = state.iconUrl?.let(DrawableContainer::invoke)
-            ?: DrawableContainer.invoke(R.drawable.ic_placeholder_image)
+            ?: DrawableContainer.invoke(R.drawable.ic_placeholder_v2)
 
         imageViewSecondIcon.bind(ImageViewCellModel(icon = tokenIconContainer, clippingShape = shapeCircle()))
         textViewSubtitle.bind(TextViewCellModel.Raw(TextContainer(state.formattedDate)))

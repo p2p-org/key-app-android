@@ -24,7 +24,7 @@ import org.p2p.core.token.findByMintAddress
 import org.p2p.core.token.sortedWithPreferredStableCoins
 import org.p2p.core.utils.asNegativeUsdTransaction
 import org.p2p.core.utils.orZero
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleTwo
 import org.p2p.wallet.BuildConfig
 import org.p2p.wallet.R
 import org.p2p.wallet.alarmlogger.logger.AlarmErrorsLogger
@@ -38,6 +38,7 @@ import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.HistoryTransaction
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.network.provider.SendModeProvider
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
@@ -71,7 +72,7 @@ private const val TAG = "NewSendPresenter"
 
 class NewSendPresenter(
     private val recipientAddress: SearchResult,
-    private val openedFrom: SendOpenedFrom,
+    openedFrom: SendOpenedFrom,
     private val userInteractor: UserInteractor,
     private val userTokensInteractor: UserTokensInteractor,
     private val sendInteractor: SendInteractor,
@@ -86,7 +87,7 @@ class NewSendPresenter(
     private val historyInteractor: HistoryInteractor,
     private val tokenServiceCoordinator: TokenServiceCoordinator,
     private val sendFeeRelayerManager: SendFeeRelayerManager,
-    private val maximumAmountCalculator: SendMaximumAmountCalculator
+    private val maximumAmountCalculator: SendMaximumAmountCalculator,
 ) : BasePresenter<NewSendContract.View>(), NewSendContract.Presenter {
 
     private val flow: NewSendAnalytics.AnalyticsSendFlow = if (openedFrom == SendOpenedFrom.SELL_FLOW) {
@@ -107,6 +108,10 @@ class NewSendPresenter(
         lessThenMinString = resources.getString(R.string.common_less_than_minimum),
     )
 
+    /**
+     * Token which is selected by user before the screen is opened
+     * Used for detecting whether we need to show token selection or not
+     */
     private var selectedToken: Token.Active? = null
     private var initialAmount: BigDecimal? = null
 
@@ -152,71 +157,103 @@ class NewSendPresenter(
             }
         }
 
-        if (token != null) {
-            restoreSelectedToken(view, requireToken())
-        } else {
-            setupInitialToken(view)
+        launch {
+            if (token != null) {
+                restoreSelectedToken(view, requireToken())
+            } else {
+                setupInitialToken(view)
+            }
         }
     }
 
-    private fun restoreSelectedToken(view: NewSendContract.View, token: Token.Active) {
-        launch {
-            view.showToken(token)
-            calculationMode.updateToken(token)
-            checkTokenRatesAndSetSwitchAmountState(token)
+    private suspend fun restoreSelectedToken(view: NewSendContract.View, token: Token.Active) {
+        view.showToken(token)
+        calculationMode.updateToken(token)
+        checkTokenRatesAndSetSwitchAmountState(token)
 
-            val userTokens = getNonZeroUserTokensOrSol()
-            val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
-            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
+        val userTokens = getNonZeroUserTokensOrSol()
+        val isTokenChangeEnabled = userTokens.size > 1 && selectedToken == null
+        view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
 
-            val currentState = sendFeeRelayerManager.getState()
-            handleFeeRelayerStateUpdate(currentState, view)
+        val currentState = sendFeeRelayerManager.getState()
+        handleFeeRelayerStateUpdate(currentState, view)
 
-            maximumAmountCalculator.getMaxAvailableAmountToSend(
-                token = token,
-                recipient = recipientAddress.address.toBase58Instance()
-            )
-                // set max available amount
-                ?.also { calculationMode.setMaxAmounts(it) }
-        }
+        calculateMaxAvailableAmount(token)
     }
 
-    private fun setupInitialToken(view: NewSendContract.View) {
-        launch {
-            // We should find SOL anyway because SOL is needed for Selection Mechanism
-            // todo: check this logic as user definitely may have empty account, we should not error by this reason
-            val userNonZeroTokens = getNonZeroUserTokensOrSol()
-            if (userNonZeroTokens.isEmpty()) {
-                Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
-                // we cannot proceed if user tokens are not loaded
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                return@launch
+    private suspend fun calculateMaxAvailableAmount(token: Token.Active) {
+        maximumAmountCalculator.getMaxAvailableAmountToSend(
+            token = token,
+            recipient = recipientAddress.address.toBase58Instance()
+        )
+            // set max available amount
+            ?.also {
+                calculationMode.setMaxAmounts(it)
             }
+    }
 
-            val isTokenChangeEnabled = userNonZeroTokens.size > 1 && selectedToken == null
-            view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
-
-            val initialToken = if (selectedToken != null) selectedToken!! else userNonZeroTokens.first()
-            token = initialToken
-
-            checkTokenRatesAndSetSwitchAmountState(initialToken)
-
-            val solToken = if (initialToken.isSOL) initialToken else tokenServiceCoordinator.getUserSolToken()
-            if (solToken == null) {
-                // we cannot proceed without SOL.
-                view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
-                Timber.tag(TAG).e(SendFatalError("Couldn't find user's SOL account!"))
-                return@launch
-            }
-            maximumAmountCalculator.getMaxAvailableAmountToSend(
-                token = initialToken,
-                recipient = recipientAddress.address.toBase58Instance()
-            )
-                ?.also { calculationMode.setMaxAmounts(it) }
-
-            initializeFeeRelayer(view, initialToken, solToken)
-            initialAmount?.let(::setupDefaultFields)
+    private suspend fun setupInitialToken(view: NewSendContract.View) {
+        // We should find SOL anyway because SOL is needed for Selection Mechanism
+        // todo: check this logic as user definitely may have empty account, we should not error by this reason
+        val userNonZeroTokens = getNonZeroUserTokensOrSol()
+        if (userNonZeroTokens.isEmpty()) {
+            Timber.tag(TAG).e(SendFatalError("User non-zero tokens can't be empty!"))
+            // we cannot proceed if user tokens are not loaded
+            view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+            return
         }
+
+        val isTokenChangeEnabled = userNonZeroTokens.size > 1 && selectedToken == null
+        view.setTokenContainerEnabled(isEnabled = isTokenChangeEnabled)
+
+        val initialToken = if (selectedToken != null) selectedToken!! else userNonZeroTokens.first()
+        token = initialToken
+
+        // paths where this fee payer token is settling down:
+        //   : sendFeeRelayerManager.initialize
+        //     -> sendFeeRelayerManager.initializeWithToken
+        //       -> sendInteractor.initialize
+        //   : sendFeeRelayerManager.executeSmartSelection
+        //     -> if(!initializeCompleted)
+        //       -> sendFeeRelayerManager.initializeWithToken
+        //         -> sendInteractor.initialize
+        // so send interactor is the single source of truth for the fee payer token
+        val feePayerToken = requireDefaultFeePayerToken(userNonZeroTokens)
+
+        checkTokenRatesAndSetSwitchAmountState(initialToken)
+
+        val solToken = if (initialToken.isSOL) initialToken else tokenServiceCoordinator.getUserSolToken()
+        if (solToken == null) {
+            // we cannot proceed without SOL.
+            view.showUiKitSnackBar(resources.getString(R.string.error_general_message))
+            Timber.tag(TAG).e(SendFatalError("Couldn't find user's SOL account!"))
+            return
+        }
+
+        initializeFeeRelayer(
+            view = view,
+            sourceToken = requireToken(),
+            feePayerToken = feePayerToken,
+            solToken = solToken
+        )
+        calculateMaxAvailableAmount(initialToken)
+        initialAmount?.let(::setupDefaultFields)
+    }
+
+    private suspend fun requireDefaultFeePayerToken(userNonZeroTokens: List<Token.Active>): Token.Active {
+        val restoredFeePayerTokenMint = sendInteractor.restoreSavedFeePayerToken() ?: return requireToken()
+
+        val restoredToken = userNonZeroTokens.firstOrNull {
+            it.mintAddressB58 == restoredFeePayerTokenMint
+        }
+
+        if (restoredToken == null || !sendInteractor.checkTokenIsValidFeePayer(restoredToken)) {
+            sendInteractor.removeSavedFeePayerToken()
+            return requireToken()
+        }
+
+        Timber.d("Using user defined fee payer token ${restoredToken.tokenSymbol}")
+        return restoredToken
     }
 
     /**
@@ -239,7 +276,7 @@ class NewSendPresenter(
             if (calculationMode.getCurrencyMode() is CurrencyMode.Fiat.Usd) {
                 switchCurrencyMode()
             }
-            val newTextValue = inputAmount.scaleShort().toPlainString()
+            val newTextValue = inputAmount.scaleTwo().toPlainString()
             updateInputValue(newTextValue, forced = true)
             calculationMode.updateInputAmount(newTextValue)
             disableInputs()
@@ -264,7 +301,6 @@ class NewSendPresenter(
         view.setFeeLabel(feesLabel)
         updateButton(sourceToken, feeRelayerState)
 
-        // FIXME: only for debug needs, remove after release
         if (BuildConfig.DEBUG) buildDebugInfo(feeRelayerState.solanaFee)
     }
 
@@ -307,26 +343,29 @@ class NewSendPresenter(
 
     private suspend fun initializeFeeRelayer(
         view: NewSendContract.View,
-        initialToken: Token.Active,
+        sourceToken: Token.Active,
+        feePayerToken: Token.Active,
         solToken: Token.Active
     ) {
-        val initialFeeLabel = if (initialToken.isToken2022) {
-            resources.getString(R.string.send_fees)
-        } else {
+        val initialFeeLabel = if (sourceToken.isToken2022) {
             resources.getString(R.string.send_fees_token2022_format)
+        } else {
+            resources.getString(R.string.send_fees)
         }
         view.setFeeLabel(initialFeeLabel)
         view.setBottomButtonText(TextContainer.Res(R.string.send_calculating_fees))
 
-        sendFeeRelayerManager.initialize(initialToken, solToken, recipientAddress)
+        sendFeeRelayerManager.initialize(feePayerToken, solToken, recipientAddress)
         executeSmartSelection(
             token = requireToken(),
-            feePayerToken = requireToken(),
             strategy = SELECT_FEE_PAYER,
             useCache = false
         )
 
-        updateButton(sourceToken = initialToken, feeRelayerState = sendFeeRelayerManager.getState())
+        updateButton(
+            sourceToken = sourceToken,
+            feeRelayerState = sendFeeRelayerManager.getState()
+        )
     }
 
     override fun onTokenClicked() {
@@ -338,12 +377,8 @@ class NewSendPresenter(
         launch {
             newSendAnalytics.logTokenChanged(newToken.tokenSymbol, flow)
             token = newToken
-            maximumAmountCalculator.getMaxAvailableAmountToSend(
-                token = newToken,
-                recipient = recipientAddress.address.toBase58Instance()
-            )
-                // set max available amount
-                ?.also { calculationMode.setMaxAmounts(it) }
+            calculationMode.setUseMax(false)
+            calculateMaxAvailableAmount(newToken)
 
             checkTokenRatesAndSetSwitchAmountState(newToken)
 
@@ -352,11 +387,10 @@ class NewSendPresenter(
             updateButton(requireToken(), sendFeeRelayerManager.getState())
 
             /*
-         * Calculating if we can pay with current token instead of already selected fee payer token
-         * */
+             * Calculating if we can pay with current token instead of already selected fee payer token
+             */
             executeSmartSelection(
                 token = requireToken(),
-                feePayerToken = requireToken(),
                 strategy = CORRECT_AMOUNT,
                 useCache = false
             )
@@ -389,13 +423,13 @@ class NewSendPresenter(
          * */
         executeSmartSelection(
             token = requireToken(),
-            feePayerToken = requireToken(),
             strategy = SELECT_FEE_PAYER
         )
     }
 
     override fun updateInputAmount(amount: String) {
         newSendAnalytics.logTokenAmountChanged(token?.tokenSymbol.orEmpty(), amount, flow)
+        calculationMode.setUseMax(false)
         calculationMode.updateInputAmount(amount)
         view?.showFeeViewVisible(isVisible = true)
         showMaxButtonIfNeeded()
@@ -405,20 +439,22 @@ class NewSendPresenter(
 
         /*
          * Calculating if we can pay with current token instead of already selected fee payer token
-         * */
+         */
         executeSmartSelection(
             token = requireToken(),
-            feePayerToken = requireToken(),
             strategy = SELECT_FEE_PAYER
         )
     }
 
     override fun updateFeePayerToken(feePayerToken: Token.Active) {
         try {
+            calculationMode.setUseMax(false)
+            launch {
+                sendInteractor.saveFeePayerToken(feePayerToken)
+            }
             sendInteractor.setFeePayerToken(feePayerToken)
             executeSmartSelection(
                 token = requireToken(),
-                feePayerToken = feePayerToken,
                 strategy = NO_ACTION
             )
         } catch (e: Throwable) {
@@ -432,6 +468,7 @@ class NewSendPresenter(
                 Timber.tag(TAG).e(SendFatalError("Token can't be null"))
                 return@launch
             }
+            calculationMode.setUseMax(true)
             val totalAvailable = maximumAmountCalculator.getMaxAvailableAmountToSend(
                 token = token,
                 recipient = recipientAddress.address.toBase58Instance()
@@ -455,7 +492,6 @@ class NewSendPresenter(
             // already selected fee payer token
             executeSmartSelection(
                 token = requireToken(),
-                feePayerToken = requireToken(),
                 strategy = CORRECT_AMOUNT
             )
         }
@@ -466,16 +502,28 @@ class NewSendPresenter(
         if (currentState !is FeeRelayerState.UpdateFee) return
 
         val solanaFee = currentState.solanaFee
-        if (calculationMode.isCurrentInputEmpty() && solanaFee == null) {
-            newSendAnalytics.logFreeTransactionsClicked(flow)
-            view?.showFreeTransactionsInfo()
-        } else {
-            val total = sendFeeRelayerManager.buildTotalFee(
-                sourceToken = requireToken(),
-                calculationMode = calculationMode,
-                tokenExtensions = currentState.tokenExtensions
-            )
-            view?.showTransactionDetails(total)
+
+        when {
+            calculationMode.isCurrentInputEmpty() && currentState.hasToken2022Fee -> {
+                return
+            }
+            calculationMode.isCurrentInputEmpty() && solanaFee == null -> {
+                newSendAnalytics.logFreeTransactionsClicked(flow)
+                view?.showFreeTransactionsInfo()
+            }
+            else -> {
+                val total = sendFeeRelayerManager.buildTotalFee(
+                    sourceToken = requireToken(),
+                    calculationMode = calculationMode,
+                    tokenExtensions = currentState.tokenExtensions
+                )
+
+                view?.showTransactionDetails(
+                    total,
+                    calculationMode.getCurrentAmountLamports(),
+                    calculationMode.isMaxUsed()
+                )
+            }
         }
     }
 
@@ -529,7 +577,6 @@ class NewSendPresenter(
                 )
                 view?.showProgressDialog(internalTransactionId, progressDetails)
 
-//                val result = sendInteractor.sendTransaction(address.toPublicKey(), token, lamports)
                 val result = sendInteractor.sendTransactionV2(address.toPublicKey(), token, lamports)
                 userInteractor.addRecipient(recipientAddress, Date(transactionDate.dateMilli()))
 
@@ -570,7 +617,6 @@ class NewSendPresenter(
      * */
     private fun executeSmartSelection(
         token: Token.Active,
-        feePayerToken: Token.Active?,
         strategy: FeePayerSelectionStrategy,
         useCache: Boolean = true
     ) {
@@ -578,9 +624,10 @@ class NewSendPresenter(
         feePayerJob = launch {
             sendFeeRelayerManager.executeSmartSelection(
                 sourceToken = token,
-                feePayerToken = feePayerToken,
+                feePayerToken = sendInteractor.getFeePayerToken(),
                 strategy = strategy,
                 tokenAmount = calculationMode.getCurrentAmount(),
+                useMax = calculationMode.isMaxUsed(),
                 useCache = useCache
             )
         }
@@ -605,8 +652,11 @@ class NewSendPresenter(
             counterPartyUsername = recipientAddress.nicknameOrAddress(),
             fees = null,
             status = HistoryTransactionStatus.PENDING,
-            iconUrl = token.iconUrl,
-            symbol = token.tokenSymbol
+            token = RpcHistoryTransactionToken(
+                symbol = token.tokenSymbol,
+                decimals = token.decimals,
+                logoUrl = token.iconUrl
+            )
         )
 
     private fun updateButton(sourceToken: Token.Active, feeRelayerState: FeeRelayerState) {
@@ -616,7 +666,12 @@ class NewSendPresenter(
             calculationMode = calculationMode,
             feeRelayerState = feeRelayerState,
             minRentExemption = sendFeeRelayerManager.getMinRentExemption(),
-            resources = resources
+            resources = resources,
+            totalFee = sendFeeRelayerManager.buildTotalFee(
+                sourceToken = sourceToken,
+                calculationMode = calculationMode,
+                tokenExtensions = (feeRelayerState as? FeeRelayerState.UpdateFee)?.tokenExtensions.orEmpty()
+            )
         )
 
         when (val state = sendButton.getCurrentState()) {
@@ -635,13 +690,11 @@ class NewSendPresenter(
     }
 
     private fun buildDebugInfo(solanaFee: SendSolanaFee?) {
-        launch {
-            val debugInfo = sendFeeRelayerManager.buildDebugInfo(solanaFee)
-                .plus("\n")
-                .plus(calculationMode.getDebugInfo())
+        val debugInfo = sendFeeRelayerManager.buildDebugInfo(solanaFee)
+            .plus("\n")
+            .plus(calculationMode.getDebugInfo())
 
-            view?.showDebugInfo(debugInfo)
-        }
+        view?.showDebugInfo(debugInfo)
     }
 
     private fun isInternetConnectionEnabled(): Boolean =

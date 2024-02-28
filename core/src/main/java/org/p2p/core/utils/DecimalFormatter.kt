@@ -48,6 +48,8 @@ object DecimalFormatter {
             fmt.minimumFractionDigits = if (keepInitialDecimals) clamp(value.scale(), 0, decimals) else 0
         }
         fmt.decimalFormatSymbols = symbols
+        // HALF_DOWN to we won't round, for example, 1.505 to 1.51 which is not valid
+        fmt.roundingMode = RoundingMode.DOWN
         return fmt.format(value)
     }
 }

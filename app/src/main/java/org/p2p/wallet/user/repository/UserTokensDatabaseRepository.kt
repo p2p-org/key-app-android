@@ -5,9 +5,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.p2p.core.crypto.Base58String
 import org.p2p.core.token.Token
-import org.p2p.core.utils.scaleShort
+import org.p2p.core.utils.scaleTwo
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.wallet.home.db.TokenDao
+import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 
 class UserTokensDatabaseRepository(
@@ -33,13 +34,15 @@ class UserTokensDatabaseRepository(
 
     override fun observeUserTokens(): Flow<List<Token.Active>> {
         return tokensDao.getTokensFlow()
-            .map { tokenEntities ->
-                tokenEntities.map { TokenConverter.fromDatabase(it) }
+            .map {
+                it.map(TokenConverter::fromDatabase)
+                    .sortedWith(TokenComparator())
             }
     }
 
     override fun observeUserToken(mintAddress: Base58String): Flow<Token.Active> =
-        tokensDao.getSingleTokenFlow(mintAddress.base58Value).map { TokenConverter.fromDatabase(it) }
+        tokensDao.getSingleTokenFlow(mintAddress.base58Value)
+            .map(TokenConverter::fromDatabase)
 
     override suspend fun updateTokenBalance(publicKey: Base58String, newTotal: BigDecimal, newTotalInUsd: BigDecimal?) {
         tokensDao.updateTokenTotal(
@@ -54,11 +57,12 @@ class UserTokensDatabaseRepository(
     private fun calculateUserBalance(tokens: List<Token.Active>): BigDecimal =
         tokens.mapNotNull(Token.Active::totalInUsd)
             .fold(BigDecimal.ZERO, BigDecimal::add)
-            .scaleShort()
+            .scaleTwo()
 
     override suspend fun getUserTokens(): List<Token.Active> {
         return tokensDao.getTokens()
-            .map { TokenConverter.fromDatabase(it) }
+            .map(TokenConverter::fromDatabase)
+            .sortedWith(TokenComparator())
     }
 
     override suspend fun clear() {
@@ -69,7 +73,7 @@ class UserTokensDatabaseRepository(
         val oldTokens = getUserTokens()
 
         val newTokens = oldTokens.map { token ->
-            val newTokenRate = prices.firstOrNull { token.tokenServiceAddress == it.address }
+            val newTokenRate = prices.firstOrNull { token.tokenServiceAddress == it.tokenAddress }
             val oldTokenRate = token.rate
             val tokenRate = newTokenRate?.usdRate ?: oldTokenRate
             token.copy(rate = tokenRate, totalInUsd = tokenRate?.let { token.total.times(it) })

@@ -5,6 +5,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.inapp.DebugTogglesFeatureFl
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.DevNetFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.InAppFeatureFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.PollingFeatureFlag
+import org.p2p.wallet.common.feature_toggles.toggles.inapp.ReferralRewardTxMockFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaEnableEmailFieldFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaKycBannerMockFlag
 import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSimulateIbanNotFilledFlag
@@ -16,6 +17,7 @@ import org.p2p.wallet.common.feature_toggles.toggles.inapp.StrigaSmsVerification
 class InAppFeatureFlags(prefs: SharedPreferences) {
     val isPollingEnabled = PollingFeatureFlag(prefs)
     var isDevNetEnabled = DevNetFeatureFlag(prefs)
+    val referralRewardTxMockEnabled = ReferralRewardTxMockFlag(prefs)
     val strigaSimulateWeb3Flag = StrigaSimulateWeb3Flag(prefs)
     val strigaSimulateUserCreateFlag = StrigaSimulateUserCreateFlag(prefs)
     val strigaSmsVerificationMockFlag = StrigaSmsVerificationMockFlag(prefs)
@@ -33,6 +35,7 @@ class InAppFeatureFlags(prefs: SharedPreferences) {
         isPollingEnabled,
         isDevNetEnabled,
         isDebugRemoteConfigEnabled,
+        referralRewardTxMockEnabled,
         /*
         strigaSimulateWeb3Flag,
         strigaSimulateUserCreateFlag,

@@ -21,6 +21,7 @@ import org.p2p.core.common.TextContainer
 import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.core.network.data.ServerException
 import org.p2p.core.utils.asUsd
+import org.p2p.core.utils.emptyString
 import org.p2p.core.utils.formatToken
 import org.p2p.core.utils.isZero
 import org.p2p.core.utils.toBigDecimalOrZero
@@ -32,6 +33,7 @@ import org.p2p.wallet.common.mvp.BasePresenter
 import org.p2p.wallet.history.interactor.HistoryInteractor
 import org.p2p.wallet.history.model.rpc.RpcHistoryAmount
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransaction
+import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionToken
 import org.p2p.wallet.history.model.rpc.RpcHistoryTransactionType
 import org.p2p.wallet.infrastructure.transactionmanager.TransactionManager
 import org.p2p.wallet.jupiter.analytics.JupiterSwapMainScreenAnalytics
@@ -439,9 +441,8 @@ class JupiterSwapPresenter(
                     notValidAmount = featureException.inputAmount
                 )
                 val solToken = featureException.userSolToken
-                val remainingAmount = featureException.remainingAmount
+                val remainingAmount = featureException.allowedAmount
                 view?.setButtonState(buttonState = buttonMapper.mapInsufficientSolBalance(solToken, remainingAmount))
-                view?.showSolErrorToast()
             }
         }
         updateWidgets()
@@ -517,6 +518,7 @@ class JupiterSwapPresenter(
 
     private suspend fun handleLoadingRoutes(state: SwapState.LoadingRoutes) {
         rateTickerManager.handleRoutesLoading(state)
+        showRoutesForDebug(bestRoute = null, slippage = state.slippage)
 
         mapWidgetStates(state)
         updateWidgets()
@@ -684,7 +686,15 @@ class JupiterSwapPresenter(
         view?.setSecondTokenWidgetState(state = widgetBState)
     }
 
-    private fun showRoutesForDebug(bestRoute: JupiterSwapRouteV6, slippage: Slippage) {
+    private fun showRoutesForDebug(
+        bestRoute: JupiterSwapRouteV6?,
+        slippage: Slippage
+    ) {
+        if (bestRoute == null) {
+            view?.showDebugInfo(TextViewCellModel.Raw(TextContainer(emptyString())))
+            return
+        }
+
         val info = buildString {
             append("Route: ")
 
@@ -708,10 +718,13 @@ class JupiterSwapPresenter(
             }
 
             appendLine()
+            appendLine("Slippage: ${slippage.percentValue}")
             appendLine()
-            append("Slippage: ${slippage.percentValue}")
-            appendLine()
-            append("KeyApp fee: NONE for v6")
+            val keyApp = bestRoute.originalRoute.getAsJsonObject("keyapp")
+            appendLine("fee: ${keyApp.get("fee")}")
+            appendLine("fees: ${keyApp.getAsJsonObject("fees")}")
+            appendLine("KeyApp fee lamports: ${bestRoute.fees.platformFeeTokenB}")
+            append("KeyApp fee %: ${bestRoute.fees.platformFeePercent}")
         }
 
         view?.showDebugInfo(
@@ -736,15 +749,23 @@ class JupiterSwapPresenter(
             blockNumber = -1,
             status = HistoryTransactionStatus.PENDING,
             type = RpcHistoryTransactionType.SWAP,
-            sourceSymbol = currentState.tokenA.tokenSymbol,
-            sourceAddress = currentState.tokenA.mintAddress.toString(),
+            tokenA = currentState.tokenA.run {
+                RpcHistoryTransactionToken(
+                    symbol = tokenSymbol,
+                    decimals = decimals,
+                    logoUrl = iconUrl,
+                )
+            },
+            tokenB = currentState.tokenB.run {
+                RpcHistoryTransactionToken(
+                    symbol = tokenSymbol,
+                    decimals = decimals,
+                    logoUrl = iconUrl,
+                )
+            },
             fees = emptyList(),
-            receiveAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
-            sentAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
-            sourceIconUrl = currentState.tokenA.iconUrl,
-            destinationSymbol = currentState.tokenB.tokenSymbol,
-            destinationIconUrl = currentState.tokenB.iconUrl,
-            destinationAddress = currentState.tokenB.mintAddress.toString()
+            tokenAAmount = RpcHistoryAmount(total = currentState.amountTokenA, totalInUsd = null),
+            tokenBAmount = RpcHistoryAmount(total = currentState.amountTokenB, totalInUsd = null),
         )
     }
 }

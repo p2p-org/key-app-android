@@ -103,7 +103,7 @@ class SwapContentSettingsMapper(
             val networkFeeCell = swapFeeBuilder.buildNetworkFeeCell(route, solTokenForFee)
             this += networkFeeCell.cellModel
 
-            val accountFee = swapFeeBuilder.buildAccountFeeCell(route, tokenB)
+            val accountFee = swapFeeBuilder.buildAccountFeeCell(route, tokenB, solTokenForFee)
             if (accountFee != null) {
                 this += accountFee.cellModel
             }
@@ -118,16 +118,14 @@ class SwapContentSettingsMapper(
                 this += token2022Fee.cellModel
             }
 
-            val liquidityFee = swapFeeBuilder.buildLiquidityFeeCell(route)
-            if (liquidityFee != null) {
-                this += liquidityFee.cellModel
-            }
+            val liquidityFee = swapFeeBuilder.buildLiquidityFeeCell(route, tokenB)
+            this += liquidityFee.cellModel
 
             val estimatedFee = swapFeeBuilder.buildEstimatedFeeString(
                 networkFees = networkFeeCell,
                 accountFee = accountFee,
                 liquidityFees = liquidityFee,
-                token2022Fee = token2022Fee
+                token2022Fee = token2022Fee,
             )
             if (estimatedFee != null) {
                 this += estimatedFee

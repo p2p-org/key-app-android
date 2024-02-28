@@ -1,6 +1,7 @@
 package org.p2p.wallet.root
 
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
@@ -15,13 +16,17 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
+import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import timber.log.Timber
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.p2p.core.crashlytics.CrashLogger
 import org.p2p.core.crashlytics.helpers.FragmentLoggingLifecycleListener
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.token.Token
 import org.p2p.core.utils.KeyboardListener
 import org.p2p.uikit.natives.showSnackbarIndefinite
 import org.p2p.uikit.utils.toast
@@ -35,7 +40,15 @@ import org.p2p.wallet.common.mvp.BaseMvpActivity
 import org.p2p.wallet.databinding.ActivityRootBinding
 import org.p2p.wallet.deeplinks.AppDeeplinksManager
 import org.p2p.wallet.home.ui.container.MainContainerFragment
+import org.p2p.wallet.jupiter.model.SwapOpenedFrom
+import org.p2p.wallet.jupiter.ui.main.JupiterSwapFragment
+import org.p2p.wallet.jupiter.ui.main.SwapDeeplinkStrictTokenWarning
 import org.p2p.wallet.lokalise.LokaliseService
+import org.p2p.wallet.moonpay.ui.new.BuyFragment
+import org.p2p.wallet.sell.ui.payload.SellPayloadFragment
+import org.p2p.wallet.send.ui.SearchOpenedFromScreen
+import org.p2p.wallet.send.ui.search.NewSearchFragment
+import org.p2p.wallet.send.ui.stub.SendUnavailableFragment
 import org.p2p.wallet.solana.SolanaNetworkObserver
 import org.p2p.wallet.solana.model.SolanaNetworkState
 import org.p2p.wallet.splash.SplashFragment
@@ -44,6 +57,7 @@ import org.p2p.wallet.svl.ui.receive.ReceiveViaLinkBottomSheet
 import org.p2p.wallet.transaction.model.NewShowProgress
 import org.p2p.wallet.transaction.ui.NewTransactionProgressBottomSheet
 import org.p2p.wallet.utils.popBackStack
+import org.p2p.wallet.utils.popBackStackTo
 import org.p2p.wallet.utils.replaceFragment
 
 class RootActivity :
@@ -67,17 +81,32 @@ class RootActivity :
     private val analyticsInteractor: ScreensAnalyticsInteractor by inject()
 
     private val crashLogger: CrashLogger by inject()
+    private val appUpdateService: AppUpdateService by lazy {
+        AppUpdateService(
+            context = applicationContext,
+            forceUpdateVersionCodeFt = get()
+        )
+    }
 
     private val networkObserver: SolanaNetworkObserver by inject()
     private val decorSystemBarsDelegate by lazy { DecorSystemBarsDelegate(this) }
     private val visibilityDelegate by lazy { ActivityVisibilityDelegate(this) }
-    override val keyboardState: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    override val visibilityState: StateFlow<ActivityVisibility> = visibilityDelegate.getState()
+    override val keyboardState = MutableStateFlow(false)
 
     private lateinit var binding: ActivityRootBinding
 
     private var snackbar: Snackbar? = null
     private var splashScreenBox: SplashScreenBox? = null
     private var onSplashDataLoaded: Boolean = false
+
+    private val appUpdateIntentLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            if (result.resultCode != RESULT_OK) {
+                Timber.e(Exception("Update flow failed! Result code: ${result.resultCode}}"))
+                finishAffinity()
+            }
+        }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -105,11 +134,18 @@ class RootActivity :
 
         checkForGoogleServices()
 
-        supportFragmentManager.registerFragmentLifecycleCallbacks(FragmentLoggingLifecycleListener(), true)
+        supportFragmentManager.registerFragmentLifecycleCallbacks(
+            FragmentLoggingLifecycleListener(),
+            true
+        )
         deeplinksManager.setRootListener(this)
         handleDeeplink()
 
         registerNetworkObserver()
+
+        lifecycleScope.launch {
+            appUpdateService.startInAppUpdateIfNeeded(appUpdateIntentLauncher)
+        }
     }
 
     fun hideSplashScreen() {
@@ -169,10 +205,10 @@ class RootActivity :
         handlerQualifierName: String
     ) {
         NewTransactionProgressBottomSheet.show(
-            supportFragmentManager,
-            internalTransactionId,
-            data,
-            handlerQualifierName
+            fragmentManager = supportFragmentManager,
+            transactionId = internalTransactionId,
+            data = data,
+            handlerQualifierName = handlerQualifierName
         )
     }
 
@@ -220,6 +256,13 @@ class RootActivity :
         }
 
         crashLogger.setCustomKey("has_google_services", userHasGoogleServices)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            appUpdateService.checkUpdateIsNotStalled(appUpdateIntentLauncher)
+        }
     }
 
     override fun onStop() {
@@ -275,5 +318,60 @@ class RootActivity :
         )
     }
 
-    override val visibilityState: StateFlow<ActivityVisibility> = visibilityDelegate.getState()
+    override fun navigateToHomeScreen() {
+        val isNavigated = popBackStackTo(MainContainerFragment::class)
+        if (!isNavigated) {
+            replaceFragment(MainContainerFragment.create())
+        }
+    }
+
+    override fun navigateToBuyScreen(token: Token, fiatToken: String, fiatAmount: String?) {
+        replaceFragment(BuyFragment.create(token, fiatToken, fiatAmount))
+    }
+
+    override fun navigateToBuyScreen(token: Token) {
+        replaceFragment(BuyFragment.create(token))
+    }
+
+    override fun navigateToCashOut() {
+        replaceFragment(SellPayloadFragment.create())
+    }
+
+    override fun navigateToSwapWithArgs(
+        tokenAMint: Base58String,
+        tokenBMint: Base58String,
+        amountA: String,
+        strictWarning: SwapDeeplinkStrictTokenWarning?,
+        source: SwapOpenedFrom
+    ) {
+        // popAndReplaceFragment overrides transition animations, popBackStackTo doesn't
+        popBackStackTo(MainContainerFragment::class)
+        replaceFragment(
+            target = JupiterSwapFragment.create(
+                tokenAMint = tokenAMint,
+                tokenBMint = tokenBMint,
+                amountA = amountA,
+                strictWarning = strictWarning,
+                source = source,
+            )
+        )
+    }
+
+    override fun navigateToSwap() {
+        replaceFragment(JupiterSwapFragment.create(source = SwapOpenedFrom.MAIN_SCREEN))
+    }
+
+    override fun navigateToSendNoTokens(fallbackToken: Token) {
+        replaceFragment(SendUnavailableFragment.create(fallbackToken))
+    }
+
+    override fun navigateToSendScreen() {
+        replaceFragment(NewSearchFragment.create(SearchOpenedFromScreen.MAIN))
+    }
+
+    fun onSignInSuccess() {
+        // do deeplinks handling init only after user signed in, otherwise it will be handled on splash
+        // and pin/biometric screens will be skipped
+        presenter.observeDeeplinks()
+    }
 }

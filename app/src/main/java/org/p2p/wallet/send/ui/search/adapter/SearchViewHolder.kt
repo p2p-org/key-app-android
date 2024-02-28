@@ -87,8 +87,8 @@ class SearchViewHolder(
             Glide.with(root)
                 .load(imageObject)
                 .circleCrop()
-                .error(R.drawable.ic_placeholder_image)
-                .placeholder(R.drawable.ic_placeholder_image)
+                .error(R.drawable.ic_placeholder_v2)
+                .placeholder(R.drawable.ic_placeholder_v2)
                 .into(walletImageView)
         }
     }

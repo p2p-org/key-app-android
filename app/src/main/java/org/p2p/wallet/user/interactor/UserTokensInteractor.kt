@@ -17,7 +17,6 @@ import org.p2p.token.service.api.events.manager.TokenServiceEventPublisher
 import org.p2p.token.service.model.TokenServiceNetwork
 import org.p2p.token.service.model.TokenServicePrice
 import org.p2p.token.service.repository.TokenServiceRepository
-import org.p2p.wallet.home.model.TokenComparator
 import org.p2p.wallet.home.model.TokenConverter
 import org.p2p.wallet.user.repository.UserLocalRepository
 import org.p2p.wallet.user.repository.UserTokensLocalRepository
@@ -32,12 +31,10 @@ class UserTokensInteractor(
     private val dispatchers: CoroutineDispatchers
 ) {
 
-    suspend fun loadUserRates(userTokens: List<Token.Active>) {
+    suspend fun loadAndSaveUserRates(userTokens: List<Token.Active>) {
         val tokenAddresses = userTokens.map { it.tokenServiceAddress }
-        tokenServiceInteractor.loadTokensPrice(
-            networkChain = TokenServiceNetwork.SOLANA,
-            addresses = tokenAddresses
-        )
+        val prices = tokenServiceRepository.getTokenPricesByAddresses(tokenAddresses, TokenServiceNetwork.SOLANA)
+        saveUserTokensRates(prices)
     }
 
     suspend fun loadUserTokens(publicKey: PublicKey): List<Token.Active> {
@@ -93,7 +90,6 @@ class UserTokensInteractor(
         val cachedTokens = userTokensLocalRepository.getUserTokens()
         tokens
             .updateVisibilityState(cachedTokens)
-            .sortedWith(TokenComparator())
             .let { userTokensLocalRepository.updateTokens(it) }
     }
 
@@ -110,7 +106,8 @@ class UserTokensInteractor(
     }
 
     fun observeUserTokens(): Flow<List<Token.Active>> {
-        return userTokensLocalRepository.observeUserTokens().map { it.filterTokensByAvailability() }
+        return userTokensLocalRepository.observeUserTokens()
+            .map { it.filterTokensByAvailability() }
     }
 
     fun observeUserToken(mintAddress: Base58String): Flow<Token.Active> {
@@ -135,9 +132,10 @@ class UserTokensInteractor(
 
         val tokenMetadataData = userLocalRepository.findTokenData(mintAddress.base58Value) ?: return null
 
-        val price = tokenServiceRepository.fetchTokenPriceByAddress(
+        val price = tokenServiceRepository.getTokenPriceByAddress(
             networkChain = TokenServiceNetwork.SOLANA,
-            tokenAddress = mintAddress.base58Value
+            tokenAddress = mintAddress.base58Value,
+            forceRemote = true
         )
 
         return TokenConverter.createToken(

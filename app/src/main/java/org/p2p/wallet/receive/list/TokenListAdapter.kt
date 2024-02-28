@@ -1,15 +1,18 @@
 package org.p2p.wallet.receive.list
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import org.p2p.wallet.databinding.ItemTokenListBinding
+import android.view.ViewGroup
+import org.p2p.core.glide.GlideManager
 import org.p2p.core.token.TokenMetadata
+import org.p2p.core.utils.Constants
 import org.p2p.core.utils.Constants.SOL_NAME
+import org.p2p.wallet.databinding.ItemTokenListBinding
+import org.p2p.wallet.utils.viewbinding.inflateViewBinding
 
-class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
+class TokenListAdapter(
+    private val glideManager: GlideManager
+) : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
 
     private val data = mutableListOf<TokenMetadata>()
 
@@ -17,12 +20,13 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
         val old = ArrayList(data)
         data.clear()
         data.addAll(new)
-        DiffUtil.calculateDiff(getDiffCallback(old, data)).dispatchUpdatesTo(this)
+        DiffUtil.calculateDiff(getDiffCallback(old, data))
+            .dispatchUpdatesTo(this)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder = ViewHolder(
-        ItemTokenListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-    )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder(parent, glideManager)
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(data[position])
@@ -31,7 +35,9 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
     override fun getItemCount(): Int = data.size
 
     inner class ViewHolder(
-        binding: ItemTokenListBinding
+        parent: ViewGroup,
+        private val glideManager: GlideManager,
+        binding: ItemTokenListBinding = parent.inflateViewBinding(attachToRoot = false)
     ) : RecyclerView.ViewHolder(binding.root) {
 
         private val imageView = binding.imageView
@@ -39,14 +45,13 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
         private val symbolTextView = binding.symbolTextView
 
         fun bind(value: TokenMetadata) {
-            // TODO temporary solution
-            if (value.symbol == "SOL") {
+            if (value.mintAddress == Constants.WRAPPED_SOL_MINT) {
                 textView.text = SOL_NAME
             } else {
                 textView.text = value.name
             }
             symbolTextView.text = value.symbol
-            Glide.with(imageView).load(value.iconUrl).into(imageView)
+            glideManager.load(imageView, value.iconUrl)
         }
     }
 
@@ -64,7 +69,7 @@ class TokenListAdapter : RecyclerView.Adapter<TokenListAdapter.ViewHolder>() {
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             val old = oldList[oldItemPosition]
             val new = newList[newItemPosition]
-            return old.name == new.name && old.symbol == new.symbol
+            return old.mintAddress == new.mintAddress
         }
 
         override fun getOldListSize(): Int = oldList.size

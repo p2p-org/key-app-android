@@ -52,8 +52,8 @@
 
     <string name="swap_settings_estimated_fee_title">Estimated fees</string>
 
-    <string name="swap_settings_interest_fee_title">Interest bearing</string>
-    <string name="swap_settings_transfer_fee_title">Transfer fee</string>
+    <string name="swap_settings_interest_fee_title">Token-2022 interest bearing</string>
+    <string name="swap_settings_transfer_fee_title">Token-2022 transfer fee</string>
 
     <string name="swap_settings_minimum_received_title">Minimum received</string>
     <string name="swap_settings_minimum_received_subtitle">%s %s</string>
@@ -100,8 +100,9 @@
     </string>
     <string name="swap_info_details_interest_fee_title">Interest bearing</string>
 
-    <string name="swap_info_details_liquidity_cell_title">%s Liquidity fee %s</string>
-    
+    <string name="swap_info_details_liquidity_cell_title">%s Liquidity fee</string>
+    <string name="swap_info_details_key_app_fee_title">Swap fee</string>
+
     <string name="swap_non_strict_warning_title">The token %s is out of the strict list</string>
     <string name="swap_non_strict_warning_body">Make sure the mint address for %s %s is correct before confirming</string>
     <string name="swap_non_strict_warning_button">Confirm selection</string>

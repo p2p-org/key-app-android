@@ -7,23 +7,23 @@ import org.bitcoinj.crypto.MnemonicException
 import timber.log.Timber
 import java.math.BigInteger
 import kotlinx.coroutines.withContext
+import org.p2p.core.crypto.Base58String
+import org.p2p.core.crypto.toBase58Instance
+import org.p2p.core.dispatchers.CoroutineDispatchers
+import org.p2p.core.utils.SOL_DECIMALS
 import org.p2p.core.utils.fromLamports
-import org.p2p.core.utils.scaleLong
 import org.p2p.solanaj.core.Account
+import org.p2p.solanaj.core.toBase58Instance
 import org.p2p.solanaj.crypto.DerivationPath
 import org.p2p.uikit.organisms.seedphrase.SeedPhraseWord
 import org.p2p.wallet.auth.analytics.AdminAnalytics
 import org.p2p.wallet.auth.interactor.UsernameInteractor
 import org.p2p.wallet.auth.repository.AuthRepository
-import org.p2p.core.dispatchers.CoroutineDispatchers
 import org.p2p.wallet.infrastructure.network.provider.TokenKeyProvider
 import org.p2p.wallet.restore.model.DerivableAccount
 import org.p2p.wallet.restore.model.SeedPhraseVerifyResult
 import org.p2p.wallet.rpc.repository.balance.RpcBalanceRepository
-import org.p2p.core.crypto.Base58String
 import org.p2p.wallet.utils.mnemoticgenerator.English
-import org.p2p.core.crypto.toBase58Instance
-import org.p2p.solanaj.core.toBase58Instance
 
 // duck-taped, extract to storage some day
 const val KEY_IS_AUTH_BY_SEED_PHRASE = "KEY_IS_AUTH_BY_SEED_PHRASE"
@@ -71,15 +71,15 @@ class SeedPhraseInteractor(
         balances: List<Pair<String, BigInteger>>,
         path: DerivationPath
     ): List<DerivableAccount> = accounts.mapNotNull { account ->
-        val balance = balances.find { it.first == account.publicKey.toBase58() }
+        val solBalance = balances.find { it.first == account.publicKey.toBase58() }
             ?.second
             ?: return@mapNotNull null
 
-        val total = balance.fromLamports().scaleLong()
+        val totalSol = solBalance.fromLamports(SOL_DECIMALS)
         DerivableAccount(
             path = path,
             account = account,
-            totalInSol = total
+            totalInSol = totalSol
         )
     }
 

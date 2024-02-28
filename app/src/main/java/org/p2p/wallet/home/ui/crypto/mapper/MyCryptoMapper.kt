@@ -71,7 +71,7 @@ class MyCryptoMapper(
         result += visibleTokens.map {
             it.mapToCellModel(
                 isZerosHidden = isZerosHidden,
-                pnlTokenData = pnlDataState.toResultOrNull()?.findForToken(it.mintAddressB58)
+                pnlTokenData = pnlDataState.toLoadedOrNull()?.findForToken(it.mintAddressB58)
             )
         }
 
@@ -85,12 +85,22 @@ class MyCryptoMapper(
             result += hiddenTokens.map {
                 it.mapToCellModel(
                     isZerosHidden = isZerosHidden,
-                    pnlTokenData = pnlDataState.toResultOrNull()?.findForToken(it.mintAddressB58)
+                    pnlTokenData = pnlDataState.toLoadedOrNull()?.findForToken(it.mintAddressB58)
                 )
             }
         }
 
         return result.toList()
+    }
+
+    fun mapEmptyStateCellItems(): List<AnyCellItem> {
+        val result = mutableListOf<AnyCellItem>()
+
+        if (referralProgramEnabledFeatureToggle.isFeatureEnabled) {
+            result += ReferralBannerCellModel
+        }
+
+        return result
     }
 
     private fun Token.Active.mapToCellModel(

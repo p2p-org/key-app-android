@@ -30,7 +30,7 @@ import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionMappe
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRemoteRepository
 import org.p2p.wallet.jupiter.repository.transaction.JupiterSwapTransactionRepository
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesRemoteV6Repository
-import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Mapper
+import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesRepositoryV6Mapper
 import org.p2p.wallet.jupiter.repository.v6.JupiterSwapRoutesV6Repository
 import org.p2p.wallet.jupiter.statemanager.SwapCoroutineScope
 import org.p2p.wallet.jupiter.statemanager.SwapStateManager
@@ -48,11 +48,11 @@ import org.p2p.wallet.jupiter.statemanager.handler.SwapStateTokenAZeroHandler
 import org.p2p.wallet.jupiter.statemanager.rate.SwapRateTickerManager
 import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokenSelector
 import org.p2p.wallet.jupiter.statemanager.token_selector.SwapInitialTokensData
-import org.p2p.wallet.jupiter.statemanager.validator.MinimumSolAmountValidator
+import org.p2p.wallet.jupiter.statemanager.validator.SwapMinimumSolAmountValidator
 import org.p2p.wallet.jupiter.statemanager.validator.SwapValidator
-import org.p2p.wallet.jupiter.ui.info.SwapInfoMapper
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapContract
 import org.p2p.wallet.jupiter.ui.main.JupiterSwapPresenter
+import org.p2p.wallet.jupiter.ui.main.SwapShareDeeplinkBuilder
 import org.p2p.wallet.jupiter.ui.main.SwapTokenRateLoader
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapButtonMapper
 import org.p2p.wallet.jupiter.ui.main.mapper.SwapRateTickerMapper
@@ -102,13 +102,15 @@ object JupiterSwapModule : InjectionModule {
         factoryOf(::JupiterSwapTransactionRpcErrorMapper)
         factoryOf(::JupiterSwapInteractor)
         factoryOf(::SwapUserTokensChangeHandler)
-        factoryOf(::MinimumSolAmountValidator)
+        factoryOf(::SwapMinimumSolAmountValidator)
         factoryOf(::SwapValidator)
         factoryOf(::SwapStateRoutesRefresher)
         factoryOf(::SwapWidgetMapper)
         factoryOf(::SwapWidgetTokenFormatter)
         factoryOf(::SwapButtonMapper)
         factoryOf(::SwapRateTickerMapper)
+
+        factoryOf(::SwapShareDeeplinkBuilder)
 
         factory { (initialData: JupiterPresenterInitialData) ->
             val stateManager: SwapStateManager = getSwapStateManager(
@@ -149,7 +151,7 @@ object JupiterSwapModule : InjectionModule {
     private fun Module.initV6Api() {
         factory { get<Retrofit>(named(JUPITER_RETROFIT_V6_QUALIFIER)).create<SwapJupiterV6Api>() }
         factoryOf(::JupiterSwapRoutesRemoteV6Repository) bind JupiterSwapRoutesV6Repository::class
-        factoryOf(::JupiterSwapRoutesV6Mapper)
+        factoryOf(::JupiterSwapRoutesRepositoryV6Mapper)
     }
 
     private fun Module.initJupiterSwapStateManager() {
@@ -224,7 +226,6 @@ object JupiterSwapModule : InjectionModule {
         }
 
         factoryOf(::SwapCommonSettingsMapper)
-        factoryOf(::SwapInfoMapper)
         factoryOf(::SwapSelectRoutesMapper)
         factoryOf(::SwapEmptySettingsMapper)
         factoryOf(::SwapLoadingSettingsMapper)

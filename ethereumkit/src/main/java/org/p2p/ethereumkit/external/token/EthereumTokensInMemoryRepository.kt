@@ -11,9 +11,9 @@ class EthereumTokensInMemoryRepository : EthereumTokensLocalRepository {
 
     private val cachedTokens = MutableStateFlow<List<Token.Eth>>(emptyList())
 
-    override suspend fun cacheTokens(newTokens: List<Token.Eth>) {
+    override suspend fun cacheTokens(tokens: List<Token.Eth>) {
         val oldTokens = cachedTokens.value
-        val validatedTokens = newTokens.map { newToken ->
+        val validatedTokens = tokens.map { newToken ->
             val oldToken = oldTokens.firstOrNull { newToken.tokenServiceAddress == it.tokenServiceAddress }
 
             val newTokenRate = newToken.rate ?: oldToken?.rate
@@ -25,14 +25,14 @@ class EthereumTokensInMemoryRepository : EthereumTokensLocalRepository {
 
     override suspend fun updateTokensRate(tokensRate: List<TokenServicePrice>) {
         val newTokenRates = buildList<TokenServicePrice> {
-            val nativePrice = tokensRate.firstOrNull { it.address == ERC20Tokens.ETH.contractAddress }
+            val nativePrice = tokensRate.firstOrNull { it.tokenAddress == ERC20Tokens.ETH.contractAddress }
             if (nativePrice != null) {
-                this += nativePrice.copy(address = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN)
+                this += nativePrice.copy(tokenAddress = Constants.TOKEN_SERVICE_NATIVE_SOL_TOKEN)
             }
             this += tokensRate
         }
         cachedTokens.value = cachedTokens.value.map { token ->
-            val foundTokenRate = newTokenRates.firstOrNull { it.address == token.tokenServiceAddress }
+            val foundTokenRate = newTokenRates.firstOrNull { it.tokenAddress == token.tokenServiceAddress }
             val totalInUsd = foundTokenRate?.usdRate?.let { token.total.times(it) }
             token.copy(totalInUsd = totalInUsd, rate = foundTokenRate?.usdRate)
         }

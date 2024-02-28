@@ -2,7 +2,6 @@ package org.p2p.wallet.send.model
 
 import java.math.BigInteger
 import org.p2p.solanaj.kits.TokenExtensionsMap
-import org.p2p.wallet.feerelayer.model.TransactionFeeLimits
 
 sealed interface FeeRelayerState {
     object Idle : FeeRelayerState
@@ -13,9 +12,11 @@ sealed interface FeeRelayerState {
 
     data class UpdateFee(
         val solanaFee: SendSolanaFee?,
-        val feeLimitInfo: TransactionFeeLimits,
         val tokenExtensions: TokenExtensionsMap
-    ) : FeeRelayerState
+    ) : FeeRelayerState {
+        val hasToken2022Fee: Boolean
+            get() = tokenExtensions.isNotEmpty()
+    }
 
     data class Failure(
         val previousState: FeeRelayerState,
